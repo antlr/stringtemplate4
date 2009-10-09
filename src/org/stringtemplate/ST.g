@@ -30,6 +30,8 @@ grammar ST;
 tokens { IF='if('; ELSE='else'; ELSEIF='elseif('; ENDIF='endif'; }
 
 @header { package org.stringtemplate; }
+@lexer::header { package org.stringtemplate; }
+
 @members {
 ParserListener listener;
 public STParser(TokenStream input, ParserListener listener) {

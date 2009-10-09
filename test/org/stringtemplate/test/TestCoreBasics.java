@@ -25,10 +25,12 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate;
+package org.stringtemplate.test;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.stringtemplate.ST;
+import org.stringtemplate.STGroup;
 
 import java.util.ArrayList;
 import java.util.List;

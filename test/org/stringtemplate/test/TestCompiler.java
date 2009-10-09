@@ -25,17 +25,19 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate;
+package org.stringtemplate.test;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.stringtemplate.*;
+import org.stringtemplate.Compiler;
 
 import java.util.Arrays;
 
 public class TestCompiler {   
     @Test public void testAttr() throws Exception {
         String template = "hi <name>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new org.stringtemplate.Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
             "write, " +
