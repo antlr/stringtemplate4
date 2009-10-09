@@ -33,13 +33,9 @@ public class CompiledST {
      */
     protected String template;
     
-    String[] strings;
-    byte[] instrs;        // byte-addressable code memory.
-    int codeSize;
-
-    STGroup group = defaultGroup;
-    
-    public static STGroup defaultGroup = new STGroup();
+    public String[] strings;
+    public byte[] instrs;        // byte-addressable code memory.
+    public int codeSize;
 
     public String instrs() {
         BytecodeDisassembler dis = new BytecodeDisassembler(instrs,

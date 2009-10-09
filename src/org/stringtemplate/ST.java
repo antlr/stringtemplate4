@@ -42,7 +42,7 @@ public class ST {
      *  fixed once we call toString() on an ST.  I wish we could leave
      *  this field out but people won't want to specify group to toString().
      */
-    STGroup group = STGroup.defaultGroup;
+    public STGroup group = STGroup.defaultGroup;
     
     /** Map an attribute name to its value(s). */
     Map<String,Object> attributes;
