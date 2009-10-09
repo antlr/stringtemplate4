@@ -25,33 +25,12 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate.interp;
+package org.stringtemplate;
 
-import org.stringtemplate.interp.BytecodeDisassembler;
+import org.stringtemplate.Chunk;
 
-public class CompiledST {
-    /** The original, immutable pattern (not really used again after
-     *  initial "compilation")
-     */
-    protected String template;
-    
-    public String[] strings;
-    public byte[] instrs;        // byte-addressable code memory.
-    public int codeSize;
-
-    public String instrs() {
-        BytecodeDisassembler dis = new BytecodeDisassembler(instrs,
-                                                            codeSize,
-                                                            strings);
-        return dis.instrs();
-    }
-
-    public void dump() {
-        BytecodeDisassembler dis = new BytecodeDisassembler(instrs,
-                                                            codeSize,
-                                                            strings);
-        System.out.println(dis.disassemble());
-        System.out.println("Strings:");
-        System.out.println(dis.strings());
-    }
+public class ExprChunk extends Chunk {
+    public ExprChunk(String expr) { this.text = expr; }
+    boolean isExpr() { return true; }        
 }
+

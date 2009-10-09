@@ -27,7 +27,7 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.interp.CompiledST;
+import org.stringtemplate.CompiledST;
 
 import java.util.HashMap;
 import java.util.Map;

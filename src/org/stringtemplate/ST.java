@@ -27,8 +27,7 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.interp.*;
-import org.stringtemplate.interp.Compiler;
+import org.stringtemplate.Compiler;
 
 import java.util.*;
 import java.io.StringWriter;
