@@ -25,18 +25,18 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate.impl;
+package org.stringtemplate.interp;
 
 import java.util.*;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
-import org.stringtemplate.impl.Chunk;
-import org.stringtemplate.impl.BytecodeDefinition;
-import org.stringtemplate.impl.ParserListener;
-import org.stringtemplate.impl.STLexer;
-import org.stringtemplate.impl.STParser;
+import org.stringtemplate.interp.Chunk;
+import org.stringtemplate.interp.BytecodeDefinition;
+import org.stringtemplate.interp.ParserListener;
+import org.stringtemplate.interp.STLexer;
+import org.stringtemplate.interp.STParser;
 
 public class Compiler implements ParserListener {
     public static final int INITIAL_CODE_SIZE = 100;

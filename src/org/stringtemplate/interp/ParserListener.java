@@ -25,12 +25,25 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate.impl;
+package org.stringtemplate.interp;
 
-import org.stringtemplate.impl.Chunk;
+import org.antlr.runtime.Token;
 
-public class ExprChunk extends Chunk {
-    public ExprChunk(String expr) { this.text = expr; }
-    boolean isExpr() { return true; }        
+public interface ParserListener {
+    public void refAttr(Token id);
+    public void refProp(Token id);
+    public void refString(Token str);
+    public void instance(Token id);
+    public void setArg(Token arg);
+    public void apply();
+    public void applyAlternating(int numTemplates);
+    
+    // TODO: add token range to each callback?
+    
+    public void ifExpr(Token t);                        // IF
+    public void ifExprClause(Token t, boolean not);     // after IF expr
+    public void elseifExpr(Token t);                    // ELSEIF
+    public void elseifExprClause(Token t, boolean not); // after ELSEIF expr
+    public void elseClause();                           // ELSE
+    public void endif();                                // ENDIF
 }
-

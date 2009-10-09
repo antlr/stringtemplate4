@@ -29,8 +29,8 @@ grammar ST;
 
 tokens { IF='if('; ELSE='else'; ELSEIF='elseif('; ENDIF='endif'; }
 
-@header { package org.stringtemplate.impl; }
-@lexer::header { package org.stringtemplate.impl; }
+@header { package org.stringtemplate.interp; }
+@lexer::header { package org.stringtemplate.interp; }
 
 @members {
 ParserListener listener;

@@ -25,27 +25,33 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate.impl;
+package org.stringtemplate.interp;
 
-import java.util.List;
-import java.util.ArrayList;
+import org.stringtemplate.interp.BytecodeDisassembler;
 
-public class Chunk {
-    String text;
-    int line, charPositionInLine;
-
-    /** Tracks address of branch operand (in code block).  It's how
-     *  we backpatch forward references when generating code for IFs.
+public class CompiledST {
+    /** The original, immutable pattern (not really used again after
+     *  initial "compilation")
      */
-    int prevBranch;
-
-    /** Branch instruction operands that are forward refs to end of IF.
-     *  We need to update them once we see the endif.
-     */
-    List<Integer> endRefs = new ArrayList<Integer>();
+    protected String template;
     
-    public Chunk() {;}
-    public Chunk(String text) { this.text = text; }
-    boolean isExpr() { return false; }
-    public String toString() { return text; }
+    public String[] strings;
+    public byte[] instrs;        // byte-addressable code memory.
+    public int codeSize;
+
+    public String instrs() {
+        BytecodeDisassembler dis = new BytecodeDisassembler(instrs,
+                                                            codeSize,
+                                                            strings);
+        return dis.instrs();
+    }
+
+    public void dump() {
+        BytecodeDisassembler dis = new BytecodeDisassembler(instrs,
+                                                            codeSize,
+                                                            strings);
+        System.out.println(dis.disassemble());
+        System.out.println("Strings:");
+        System.out.println(dis.strings());
+    }
 }

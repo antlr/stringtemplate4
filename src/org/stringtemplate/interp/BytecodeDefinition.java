@@ -25,7 +25,7 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate.impl;
+package org.stringtemplate.interp;
 
 public class BytecodeDefinition {
     public static final int OPND_SIZE_IN_BYTES = 2;

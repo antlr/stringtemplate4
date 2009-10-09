@@ -25,10 +25,10 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate.impl;
+package org.stringtemplate.interp;
 
-import org.stringtemplate.impl.BytecodeDefinition;
-import org.stringtemplate.impl.BytecodeDisassembler;
+import org.stringtemplate.interp.BytecodeDefinition;
+import org.stringtemplate.interp.BytecodeDisassembler;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.ST;
 import org.stringtemplate.ArrayIterator;

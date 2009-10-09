@@ -25,25 +25,27 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate.impl;
+package org.stringtemplate.interp;
 
-import org.antlr.runtime.Token;
+import java.util.List;
+import java.util.ArrayList;
 
-public interface ParserListener {
-    public void refAttr(Token id);
-    public void refProp(Token id);
-    public void refString(Token str);
-    public void instance(Token id);
-    public void setArg(Token arg);
-    public void apply();
-    public void applyAlternating(int numTemplates);
+public class Chunk {
+    String text;
+    int line, charPositionInLine;
+
+    /** Tracks address of branch operand (in code block).  It's how
+     *  we backpatch forward references when generating code for IFs.
+     */
+    int prevBranch;
+
+    /** Branch instruction operands that are forward refs to end of IF.
+     *  We need to update them once we see the endif.
+     */
+    List<Integer> endRefs = new ArrayList<Integer>();
     
-    // TODO: add token range to each callback?
-    
-    public void ifExpr(Token t);                        // IF
-    public void ifExprClause(Token t, boolean not);     // after IF expr
-    public void elseifExpr(Token t);                    // ELSEIF
-    public void elseifExprClause(Token t, boolean not); // after ELSEIF expr
-    public void elseClause();                           // ELSE
-    public void endif();                                // ENDIF
+    public Chunk() {;}
+    public Chunk(String text) { this.text = text; }
+    boolean isExpr() { return false; }
+    public String toString() { return text; }
 }
