@@ -44,6 +44,7 @@ public class Compiler implements ParserListener {
     byte[] instrs;
     int ip = 0;
     Stack<Chunk> ifs = new Stack<Chunk>();
+    Map<String, String> subtemplates = new HashMap<String, String>();
 
     public CompiledST compile(String template) throws Exception {
         strings = new ArrayList<String>();
@@ -93,12 +94,18 @@ public class Compiler implements ParserListener {
 
     // LISTEN TO PARSER
     
-    public void apply() {
+    public void map() {
         gen(BytecodeDefinition.INSTR_MAP);
     }
 
-    public void applyAlternating(int numTemplates) {
+    public void mapAlternating(int numTemplates) {
         gen(BytecodeDefinition.INSTR_ROT_MAP, numTemplates);
+    }
+
+    public String defineAnonTemplate(Token subtemplate) {
+        String name = "anon"+subtemplates.size()+1;
+        subtemplates.put(name, subtemplate.getText());
+        return name;
     }
 
     public void instance(Token id) {

@@ -27,6 +27,8 @@
 */
 package org.stringtemplate;
 
+import org.stringtemplate.interp.CompiledST;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +37,7 @@ public class STGroup {
     protected String name;
 
     /** Maps template name to StringTemplate object */
-    protected Map<String,CompiledST> templates = new HashMap<String,CompiledST>();
+    protected Map<String, CompiledST> templates = new HashMap<String,CompiledST>();
 
     public static STGroup defaultGroup = new STGroup();
     

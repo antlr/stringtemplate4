@@ -35,8 +35,9 @@ public interface ParserListener {
     public void refString(Token str);
     public void instance(Token id);
     public void setArg(Token arg);
-    public void apply();
-    public void applyAlternating(int numTemplates);
+    public void map();
+    public void mapAlternating(int numTemplates);
+    public String defineAnonTemplate(Token subtemplate);
     
     // TODO: add token range to each callback?
     

@@ -27,16 +27,19 @@
 */
 package org.stringtemplate;
 
+import org.stringtemplate.interp.*;
+import org.stringtemplate.interp.Compiler;
+
 import java.util.*;
 import java.io.StringWriter;
 
 public class ST {
-    String name = ANON_NAME;
+    public String name = ANON_NAME;
     
     /** The code to interpret; it pulls from attributes and this template's
      *  group of templates to evaluate to string.
      */
-    CompiledST code;
+    public CompiledST code;
 
     /** The group that was asked to create this instance.  This is
      *  fixed once we call toString() on an ST.  I wish we could leave
@@ -101,7 +104,7 @@ public class ST {
         }
     }
 
-    protected void setAttribute(String name, Object value) {
+    public void setAttribute(String name, Object value) {
         if ( attributes==null ) attributes = new HashMap<String,Object>();
         attributes.put(name, value);
     }

@@ -44,9 +44,9 @@ stexpr
 scope { int level; }
 @init { $stexpr::level = 0; int n=1;}
 	:	expr
-		(	':' t=ID {listener.refString($t);}
-			(	(',' t=ID {n++; listener.refString($t);})+  {listener.applyAlternating(n);}
-			|										        {listener.apply();}
+		(	':' template
+			(	(',' template {n++;})+  {listener.mapAlternating(n);}
+			|						    {listener.map();}
 			)
 		)*
 	|	i='if(' not='!'? {listener.ifExpr($i);} expr ')'
@@ -64,9 +64,13 @@ expr:	call
 	|	STRING    {listener.refString($STRING);}
 	;
 	
-call
-	:	ID {listener.instance($ID);} '(' args? ')'
-//	|	'{' template... '}'
+call:	ID {listener.instance($ID);} '(' args? ')'
+	;
+
+template
+	:	ID			{listener.refString($ID);}
+	|	SUBTEMPLATE {String name = listener.defineAnonTemplate($SUBTEMPLATE);
+	                 listener.refString(name);}
 	;
 	
 args:	arg (',' arg)* ;
@@ -81,6 +85,10 @@ ID  :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'/')*
 STRING
     :	'"' ( '\\"' | ~('\\'|'"') )* '"'
     	{setText(getText().substring(1, getText().length()-1));}
+    ;
+
+SUBTEMPLATE
+    :    '{' (SUBTEMPLATE|'\\' .|~('\\'|'{'|'}'))* '}'
     ;
 
 WS  :       (' '|'\t'|'\r'|'\n')+ {skip();}
