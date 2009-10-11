@@ -29,8 +29,8 @@ grammar ST;
 
 tokens { IF='if('; ELSE='else'; ELSEIF='elseif('; ENDIF='endif'; }
 
-@header { package org.stringtemplate.interp; }
-@lexer::header { package org.stringtemplate.interp; }
+@header { package org.stringtemplate; }
+@lexer::header { package org.stringtemplate; }
 
 @members {
 ParserListener listener;
@@ -70,7 +70,7 @@ call:	ID {listener.instance($ID);} '(' args? ')'
 template
 	:	ID			{listener.refString($ID);}
 	|	SUBTEMPLATE {String name = listener.defineAnonTemplate($SUBTEMPLATE);
-	                 listener.refString(name);}
+	                 listener.refString(new CommonToken(STRING,name));}
 	;
 	
 args:	arg (',' arg)* ;
@@ -88,7 +88,7 @@ STRING
     ;
 
 SUBTEMPLATE
-    :    '{' (SUBTEMPLATE|'\\' .|~('\\'|'{'|'}'))* '}'
+    :    '{' (SUBTEMPLATE | '\\' . | ~('\\'|'{'|'}'))* '}'
     ;
 
 WS  :       (' '|'\t'|'\r'|'\n')+ {skip();}

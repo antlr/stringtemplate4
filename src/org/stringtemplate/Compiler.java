@@ -32,13 +32,6 @@ import java.util.*;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
-import org.stringtemplate.Chunk;
-import org.stringtemplate.BytecodeDefinition;
-import org.stringtemplate.CompiledST;
-import org.stringtemplate.ParserListener;
-import org.stringtemplate.interp.STLexer;
-import org.stringtemplate.interp.STParser;
-import org.stringtemplate.ExprChunk;
 
 public class Compiler implements ParserListener {
     public static final int INITIAL_CODE_SIZE = 100;
@@ -52,7 +45,7 @@ public class Compiler implements ParserListener {
         strings = new ArrayList<String>();
         instrs = new byte[INITIAL_CODE_SIZE];
         //System.out.println("compile "+template);
-        List<Chunk> chunks = breakTemplateIntoChunks(template, '<', '>');
+        List<Chunk> chunks = new Chunkifier(template, '<', '>').chunkify();
         for (Chunk c : chunks) {
             //System.out.println("compile chunk "+c.text);
             if ( c.isExpr() ) {
@@ -63,18 +56,18 @@ public class Compiler implements ParserListener {
                 if ( firstTokenType==STLexer.IF ) ifs.push(c);
 
                 parser.stexpr();
-                
+
                 if ( firstTokenType==STLexer.ENDIF ) ifs.pop();
                 if ( !(firstTokenType==STLexer.IF ||
                        firstTokenType==STLexer.ELSE ||
                        firstTokenType==STLexer.ELSEIF ||
                        firstTokenType==STLexer.ENDIF) )
                 {
-                    gen(BytecodeDefinition.INSTR_WRITE);                    
+                    gen(BytecodeDefinition.INSTR_WRITE);
                 }
             }
             else {
-                gen(BytecodeDefinition.INSTR_LOAD_STR, c.text);                
+                gen(BytecodeDefinition.INSTR_LOAD_STR, c.text);
                 gen(BytecodeDefinition.INSTR_WRITE);
             }
         }
@@ -95,7 +88,7 @@ public class Compiler implements ParserListener {
     }
 
     // LISTEN TO PARSER
-    
+
     public void map() {
         gen(BytecodeDefinition.INSTR_MAP);
     }
@@ -128,12 +121,12 @@ public class Compiler implements ParserListener {
 
     public void setArg(Token arg) {
         gen(BytecodeDefinition.INSTR_STORE_ATTR, arg.getText());
-    }        
-    
+    }
+
     public void ifExpr(Token t) {
         //System.out.println("ifExpr @ "+ip);
     }
-    
+
     public void ifExprClause(Token t, boolean not) {
         //System.out.println("ifExprClause @ "+ip);
         ifs.peek().prevBranch = ip+1;
@@ -141,7 +134,7 @@ public class Compiler implements ParserListener {
         if ( not ) i = BytecodeDefinition.INSTR_BRT;
         gen(i, -1); // write placeholder
     }
-    
+
     public void elseifExpr(Token t) {
         //System.out.println("elseifExpr @ "+ip);
         ifs.peek().endRefs.add(ip+1);
@@ -149,7 +142,7 @@ public class Compiler implements ParserListener {
         writeShort(instrs, ifs.peek().prevBranch, (short)ip);
         ifs.peek().prevBranch = -1;
     }
-    
+
     public void elseifExprClause(Token t, boolean not) {
         //System.out.println("elseifExprClause of "+ifs.peek()+" @ "+ip);
         ifs.peek().prevBranch = ip+1;
@@ -157,7 +150,7 @@ public class Compiler implements ParserListener {
         if ( not ) i = BytecodeDefinition.INSTR_BRT;
         gen(i, -1); // write placeholder
     }
-    
+
     public void elseClause() {
         //System.out.println("else of "+ifs.peek());
         ifs.peek().endRefs.add(ip+1);
@@ -177,7 +170,7 @@ public class Compiler implements ParserListener {
     }
 
     // GEN
-    
+
     public void gen(short opcode) {
         ensureCapacity();
         instrs[ip++] = (byte)opcode;
@@ -189,12 +182,12 @@ public class Compiler implements ParserListener {
         writeShort(instrs, ip, (short)arg);
         ip += 2;
     }
-    
+
     public void gen(short opcode, String s) {
         int i = defineString(s);
         gen(opcode, i);
     }
-    
+
     protected void ensureCapacity() {
         if ( (ip+1) >= instrs.length ) {
             byte[] c = new byte[instrs.length*2];
@@ -203,55 +196,6 @@ public class Compiler implements ParserListener {
         }
     }
 
-    public List<Chunk> breakTemplateIntoChunks(String template,
-                                               char start,
-                                               char stop)
-    {
-        List<Chunk> chunks = new ArrayList<Chunk>();
-        int i = 0;
-        int n = template.length();
-        int strStart = i;
-        while ( i < n ) {
-            char c = template.charAt(i);
-            if ( c==start ) {       // match everything inside delimiters
-                if ( i>strStart ) {
-                    String text = template.substring(strStart,i);
-                    chunks.add(new Chunk(text));
-                }
-                i++;                // skip over start delimiter
-                c = template.charAt(i);
-                int exprStart = i;
-                int exprStop = i;
-                while ( i < n ) {   // scan for stop delimiter
-                    if ( c=='\\' ) { i+=2; continue; }
-                    if ( c==stop ) { exprStop=i-1; break; }
-                    i++;
-                    c = template.charAt(i);
-                }
-                if ( i >= n ) {
-                    System.err.println("missing terminating delimiter expression; i="+i);
-                }
-                String expr = template.substring(exprStart, exprStop+1);
-                chunks.add(new ExprChunk(expr));
-                strStart = i+1; // string starts again after stop delimiter
-            }
-            i++;
-        }
-        if ( strStart < n ) {
-            String expr = template.substring(strStart, n);            
-            chunks.add(new Chunk(expr));
-        }
-        return chunks;
-    }
-
-    /*
-    void forwardRef(String label, int opndAddress) {
-    }
-    
-    void defineLabel(String label, int addr) {
-    }
-    */
-    
     /** Write value at index into a byte array highest to lowest byte,
      *  left to right.
      */

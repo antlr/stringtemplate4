@@ -27,11 +27,6 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.STGroup;
-import org.stringtemplate.ST;
-import org.stringtemplate.BytecodeDefinition;
-import org.stringtemplate.BytecodeDisassembler;
-
 import java.io.Writer;
 import java.io.IOException;
 import java.util.*;
