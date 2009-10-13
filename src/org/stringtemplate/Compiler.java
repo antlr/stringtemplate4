@@ -34,12 +34,21 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
 
 public class Compiler implements ParserListener {
+    public static final String ATTR_NAME_REGEX = "[a-zA-Z/][a-zA-Z0-9_/]*";
     public static final int INITIAL_CODE_SIZE = 100;
+
     List<String> strings;
     byte[] instrs;
     int ip = 0;
     Stack<Chunk> ifs = new Stack<Chunk>();
+
+    /** Track list of anonymous subtemplates. We need to name them
+     *  here not in their eventual group because we need to generate
+     *  code that references their names.
+     */
     Map<String, String> subtemplates = new HashMap<String, String>();
+
+    public static int subtemplateCount = 0;
 
     public CompiledST compile(String template) throws Exception {
         strings = new ArrayList<String>();
@@ -78,6 +87,7 @@ public class Compiler implements ParserListener {
         }
         code.instrs = instrs;
         code.codeSize = ip;
+        if ( subtemplates.size()>0 ) System.out.println("subtemplates="+subtemplates);
         //code.dump();
         return code;
     }
@@ -85,6 +95,19 @@ public class Compiler implements ParserListener {
     public int defineString(String s) {
         strings.add(s);
         return strings.size()-1;
+    }
+
+    public LinkedHashMap<String,FormalArgument> parseSubtemplateArg(String block) {
+        LinkedHashMap<String,FormalArgument> args = null;
+        int pipe = block.indexOf('|');
+        String[] elems = block.substring(0,pipe+1).split(" ");
+        if ( elems.length==2 &&
+             elems[0].matches(Compiler.ATTR_NAME_REGEX) )
+        {
+            args = new LinkedHashMap<String,FormalArgument>();
+            args.put(elems[0],null);
+        }
+        return args;
     }
 
     // LISTEN TO PARSER
@@ -98,7 +121,8 @@ public class Compiler implements ParserListener {
     }
 
     public String defineAnonTemplate(Token subtemplate) {
-        String name = "anon"+subtemplates.size()+1;
+        subtemplateCount++;
+        String name = "sub"+subtemplateCount;
         subtemplates.put(name, subtemplate.getText());
         return name;
     }

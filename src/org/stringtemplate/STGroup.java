@@ -31,6 +31,8 @@ import org.stringtemplate.CompiledST;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.LinkedHashMap;
+import java.io.StreamTokenizer;
 
 public class STGroup {
     /** What is the group name */
@@ -66,19 +68,36 @@ public class STGroup {
         return templates.get(name);        
     }
 
-    public void defineTemplate(String name, String template) {
-        if ( name!=null && name.indexOf('.')>=0 ) {
+    public CompiledST defineTemplate(String name, String template) {
+        if ( name!=null && (name.length()==0 || name.indexOf('.')>=0) ) {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
+        template = template.trim();
         try {
-            CompiledST code = new Compiler().compile(template);
+            Compiler c = new Compiler();
+            CompiledST code = c.compile(template);
+            for (String subname : c.subtemplates.keySet()) {
+                String block = c.subtemplates.get(subname);
+                // look for argument in "{n | actual template}"
+                LinkedHashMap<String,FormalArgument> args =
+                    c.parseSubtemplateArg(block);
+                String t = block;
+                if ( args!=null ) {
+                    int pipe = block.indexOf('|');
+                    t = block.substring(pipe+1);
+                }
+                CompiledST compiledSub = defineTemplate(subname, t);
+                compiledSub.formalArguments = args;
+            }
             templates.put(name, code);
+            return code;
         }
         catch (Exception e) {
             System.err.println("can't parse template: "+template);
         }
+        return null;
     }
-    
+
     /** StringTemplate object factory; each group can have its own. */
     public ST createStringTemplate() {
         ST st = new ST();

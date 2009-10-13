@@ -27,13 +27,15 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.BytecodeDisassembler;
+import java.util.LinkedHashMap;
 
 public class CompiledST {
     /** The original, immutable pattern (not really used again after
      *  initial "compilation")
      */
     protected String template;
+
+    protected LinkedHashMap<String,FormalArgument> formalArguments;
     
     public String[] strings;
     public byte[] instrs;        // byte-addressable code memory.

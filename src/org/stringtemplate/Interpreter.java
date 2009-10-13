@@ -180,7 +180,7 @@ public class Interpreter {
             while ( iter.hasNext() ) {
                 Object iterValue = iter.next();
                 ST st = group.getEmbeddedInstanceOf(self, name);
-                st.setAttribute("it", iterValue);
+                setSoleArgument(st, iterValue);
                 mapped.add(st);
             }
             operands[++sp] = mapped;
@@ -188,7 +188,7 @@ public class Interpreter {
         }
         else { // map template to single value
             ST st = group.getInstanceOf(name);
-            st.setAttribute("it", attr);
+            setSoleArgument(st, attr);
             operands[++sp] = st;
         }
     }
@@ -205,7 +205,7 @@ public class Interpreter {
                 int templateIndex = i % templates.size(); // rotate through
                 String name = templates.get(templateIndex);
                 ST st = group.getEmbeddedInstanceOf(self, name);
-                st.setAttribute("it", iterValue);
+                setSoleArgument(st, iterValue);
                 mapped.add(st);
                 i++;
             }
@@ -213,9 +213,17 @@ public class Interpreter {
             //System.out.println("mapped="+mapped);
         }
         else { // if only single value, just apply first template to attribute
-            ST st = group.getInstanceOf(templates.get(1));
+            map(self, attr, templates.get(1));
+        }
+    }
+
+    protected void setSoleArgument(ST st, Object attr) {
+        if ( st.code.formalArguments!=null ) {
+            String arg = st.code.formalArguments.keySet().iterator().next();
+            st.setAttribute(arg, attr);
+        }
+        else {
             st.setAttribute("it", attr);
-            operands[++sp] = st;
         }
     }
 

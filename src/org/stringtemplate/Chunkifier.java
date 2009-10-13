@@ -1,92 +1,124 @@
 package org.stringtemplate;
 
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CharStream;
+
 import java.util.List;
 import java.util.ArrayList;
 
 public class Chunkifier {
-    String template;
+    CharStream input;
+    int start; // where we start lexing within input 
+    //String temp late;
     List<Chunk> chunks = new ArrayList<Chunk>();
-    int i;
     int n;
-    int exprStart = i;
-    int exprStop = i;
+    int exprStart = start;
+    int exprStop = start;
     int strStart;
-    char start;
-    char stop;
-    char c;
+    char delimiterStartChar;
+    char delimiterStopChar;
+    int c;
 
-    public Chunkifier(String template, char start, char stop) {
-        this.template = template;
-        this.start = start;
-        this.stop = stop;
+    int line;
+    int charPositionInLine; // not used at moment, might be in future for errors
+
+    public Chunkifier(char delimiterStartChar, char delimiterStopChar) {
+        this.delimiterStartChar = delimiterStartChar;
+        this.delimiterStopChar = delimiterStopChar;
+        charPositionInLine=0;
+        line = 1;
+    }
+
+    public Chunkifier(String template, char delimiterStartChar, char delimiterStopChar) {
+        this(delimiterStartChar, delimiterStopChar);
+        input = new ANTLRStringStream(template);
+        //this.template = template;
         n = template.length();
+        c = input.LA(1);
+        start = 0;
+        //i = start;
+        exprStart = start;
+        exprStop = start;
+    }
+
+    public Chunkifier(CharStream input, char delimiterStartChar, char delimiterStopChar) {
+        this(delimiterStartChar, delimiterStopChar);
+        this.input = input;
+        n = input.size();
+        c = input.LA(1);
+        start = input.index();
+        //i = start;
+        exprStart = start;
+        exprStop = start;
     }
 
     public List<Chunk> chunkify() {
-        while ( i < n ) {
-            c = template.charAt(i);
-            if ( c=='\\' ) { i+=2; continue; }
-            if ( c==start ) {       // match everything inside delimiters
-                exprStart = i+1;
-                if ( i>strStart ) {
-                    String text = template.substring(strStart,i);
-                    chunks.add(new Chunk(text));
+        while ( input.index() < n ) {
+            if ( c=='\\' ) { consume(); consume(); continue; }
+            if ( c== delimiterStartChar) {       // match everything inside delimiters
+                exprStart = input.index()+1;
+                if ( input.index()>strStart ) {
+                    String text = input.substring(strStart,input.index()-1);
+                    chunks.add(new Chunk(text, line, strStart));
                 }
                 matchExpr();
-                String expr = template.substring(exprStart, exprStop+1);
-                chunks.add(new ExprChunk(expr));
-                strStart = i+1; // string starts again after stop delimiter
+                String expr = input.substring(exprStart, exprStop+1-1);
+                chunks.add(new ExprChunk(expr,line,exprStart-1));
+                strStart = input.index()+1; // string starts again after stop delimiter
             }
-            i++;
+            consume();
         }
         if ( strStart < n ) {
-            String expr = template.substring(strStart, n);
-            chunks.add(new Chunk(expr));
+            String expr = input.substring(strStart, n-1);
+            chunks.add(new Chunk(expr, line, strStart));
         }
         return chunks;
     }
 
     protected void matchExpr() {
-        i++;                // skip over start delimiter
-        c = template.charAt(i);
-        while ( i < n ) {   // scan for stop delimiter
-            if ( c=='\\' ) { i+=2; continue; }
+        consume();                // skip over start delimiter
+        while ( input.index() < n ) {   // scan for stop delimiter
+            if ( c=='\\' ) { consume(); consume(); continue; }
             if ( c=='"' ) { matchString(); continue; }
-            if ( c=='{' ) { matchBlock(); continue; }
-            if ( c==stop ) { exprStop=i-1; break; }
-            i++;
-            c = template.charAt(i);
+            if ( c=='{' ) { consume(); matchBlock(); continue; }
+            if ( c== delimiterStopChar) { exprStop=input.index()-1; break; }
+            consume();
         }
-        if ( i >= n ) {
-            throw new IllegalArgumentException("missing terminating delimiter expression; i="+i);
+        if ( input.index() >= n ) {
+            throw new IllegalArgumentException("missing terminating delimiter expression; i="+input.index());
         }
     }
 
     protected void matchString() {
-        i++; // jump over first "
-        c = template.charAt(i);
-        while ( i < n ) {   // scan for stop delimiter
-            if ( c=='\\' ) { i+=2; c = template.charAt(i); continue; }
-            if ( c=='"' ) { i++; break; }
-            i++;
-            c = template.charAt(i);
+        consume(); // jump over first "
+        while ( c!='"' ) {   // scan for stop quote
+            if ( c=='\\' ) { consume(); consume(); continue; }
+            if ( c=='"' ) { consume(); break; }
+            consume();
         }
-        if ( i>=n ) throw new IllegalArgumentException("unterminated string");
-        c = template.charAt(i);
+        if ( input.index()>=n ) throw new IllegalArgumentException("unterminated string");
+        consume();
     }
 
     protected void matchBlock() {
-        i++; // jump over first {
-        c = template.charAt(i);
-        while ( i < n ) {   // scan for stop delimiter
-            if ( c=='\\' ) { i+=2; c = template.charAt(i); continue; }
-            if ( c==start ) { matchExpr(); continue; }
-            if ( c=='}' ) { i++; break; }
-            i++;
-            c = template.charAt(i);
+        // don't jump over first { since ST.g lexer matches '{' then calls us
+        while ( c!='}' ) {   // scan for stop block '}'
+            if ( c=='\\' ) { consume(); consume(); continue; }
+            if ( c== delimiterStartChar) { matchExpr(); continue; }
+            consume();
         }
-        if ( i>=n ) throw new IllegalArgumentException("unterminated block");
-        c = template.charAt(i);
+        if ( input.index()>=n ) throw new IllegalArgumentException("unterminated block");
+        consume();
     }
-    
+
+    protected void consume() {
+        //i++;
+        input.consume();
+        if ( input.index()<n ) {
+            charPositionInLine++;
+            //c = template.charAt(i);
+            c = input.LA(1);
+            if ( c=='\n' ) { line++; charPositionInLine=0; }
+        }
+    }
 }

@@ -44,8 +44,11 @@ public class Chunk {
      */
     List<Integer> endRefs = new ArrayList<Integer>();
     
-    public Chunk() {;}
-    public Chunk(String text) { this.text = text; }
+    public Chunk(String text, int line, int charPositionInLine) {
+        this.text = text;
+        this.line = line;
+        this.charPositionInLine = charPositionInLine;
+    }
     boolean isExpr() { return false; }
-    public String toString() { return text; }
+    public String toString() { return line+":"+charPositionInLine+":"+text; }
 }

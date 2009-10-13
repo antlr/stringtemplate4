@@ -27,10 +27,10 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.Chunk;
-
 public class ExprChunk extends Chunk {
-    public ExprChunk(String expr) { this.text = expr; }
+    public ExprChunk(String expr, int line, int charPositionInLine) {
+        super(expr, line, charPositionInLine);
+    }
     boolean isExpr() { return true; }        
 }
 

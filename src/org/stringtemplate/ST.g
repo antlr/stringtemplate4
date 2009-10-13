@@ -88,7 +88,8 @@ STRING
     ;
 
 SUBTEMPLATE
-    :    '{' (SUBTEMPLATE | '\\' . | ~('\\'|'{'|'}'))* '}'
+    :    '{'  { new Chunkifier(input, '<', '>').matchBlock(); }
+    	{setText(getText().substring(1, getText().length()-1));}
     ;
 
 WS  :       (' '|'\t'|'\r'|'\n')+ {skip();}

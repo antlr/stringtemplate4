@@ -27,18 +27,17 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.Compiler;
-
 import java.util.*;
 import java.io.StringWriter;
 
 public class ST {
+    public static final String ANON_NAME = "anonymous";
     public String name = ANON_NAME;
     
     /** The code to interpret; it pulls from attributes and this template's
      *  group of templates to evaluate to string.
      */
-    public CompiledST code;
+    public CompiledST code; // TODO: is this the right name?
 
     /** The group that was asked to create this instance.  This is
      *  fixed once we call toString() on an ST.  I wish we could leave
@@ -53,7 +52,6 @@ public class ST {
      *  IF-subtemplates are considered embedded as well.
      */
     ST enclosingInstance; // who's your daddy?
-    public static final String ANON_NAME = "anonymous";
 
     /** Just an alias for ArrayList, but this way I can track whether a
      *  list is something ST created or it's an incoming list.
@@ -66,7 +64,7 @@ public class ST {
     public ST() {;}
     
     public ST(String template) throws Exception {
-        this.code = new Compiler().compile(template);
+        code = group.defineTemplate(ANON_NAME, template);
     }
 
     public void add(String name, Object value) {
