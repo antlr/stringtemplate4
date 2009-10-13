@@ -33,7 +33,7 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
 
-public class Compiler implements ParserListener {
+public class Compiler implements ExprParserListener {
     public static final String ATTR_NAME_REGEX = "[a-zA-Z/][a-zA-Z0-9_/]*";
     public static final int INITIAL_CODE_SIZE = 100;
 

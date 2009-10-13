@@ -27,33 +27,6 @@
 */
 package org.stringtemplate;
 
-import java.util.LinkedHashMap;
-
-public class CompiledST {
-    /** The original, immutable pattern (not really used again after
-     *  initial "compilation"). Useful for debugging.
-     */
-    protected String template;
-
-    protected LinkedHashMap<String,FormalArgument> formalArguments;
-    
-    public String[] strings;
-    public byte[] instrs;        // byte-addressable code memory.
-    public int codeSize;
-
-    public String instrs() {
-        BytecodeDisassembler dis = new BytecodeDisassembler(instrs,
-                                                            codeSize,
-                                                            strings);
-        return dis.instrs();
-    }
-
-    public void dump() {
-        BytecodeDisassembler dis = new BytecodeDisassembler(instrs,
-                                                            codeSize,
-                                                            strings);
-        System.out.println(dis.disassemble());
-        System.out.println("Strings:");
-        System.out.println(dis.strings());
-    }
+public interface GroupParserListener {
+    public void defineGroup(STGroup group);
 }

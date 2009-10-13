@@ -64,7 +64,11 @@ public class FormalArgument {
         }
     }
 
-	public boolean equals(Object o) {
+    public int hashCode() {
+        return name.hashCode() + defaultValueST.hashCode();
+    }
+
+    public boolean equals(Object o) {
 		if ( o==null || !(o instanceof FormalArgument) ) {
 			return false;
 		}

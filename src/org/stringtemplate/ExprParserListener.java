@@ -29,7 +29,7 @@ package org.stringtemplate;
 
 import org.antlr.runtime.Token;
 
-public interface ParserListener {
+public interface ExprParserListener {
     public void refAttr(Token id);
     public void refProp(Token id);
     public void refString(Token str);

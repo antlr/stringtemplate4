@@ -33,8 +33,8 @@ tokens { IF='if('; ELSE='else'; ELSEIF='elseif('; ENDIF='endif'; }
 @lexer::header { package org.stringtemplate; }
 
 @members {
-ParserListener listener;
-public STParser(TokenStream input, ParserListener listener) {
+ExprParserListener listener;
+public STParser(TokenStream input, ExprParserListener listener) {
     this(input, new RecognizerSharedState());
     this.listener = listener;
 }

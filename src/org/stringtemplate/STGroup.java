@@ -27,21 +27,30 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.CompiledST;
+import org.antlr.runtime.ANTLRFileStream;
+import org.antlr.runtime.CommonTokenStream;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.io.StreamTokenizer;
+import java.io.IOException;
 
 public class STGroup {
     /** What is the group name */
-    protected String name;
+    public String name;
+
+    public String supergroup;
+
+    public List<String> interfaces;
+
 
     /** Maps template name to StringTemplate object */
     protected Map<String, CompiledST> templates = new HashMap<String,CompiledST>();
 
     public static STGroup defaultGroup = new STGroup();
+
+    public STGroup() {
+        ;
+    }
     
     /** The primary means of getting an instance of a template from this
      *  group.
@@ -69,6 +78,13 @@ public class STGroup {
     }
 
     public CompiledST defineTemplate(String name, String template) {
+        return defineTemplate(name, null, template);
+    }
+
+    public CompiledST defineTemplate(String name,
+                                     LinkedHashMap<String,String> args,
+                                     String template)
+    {
         if ( name!=null && (name.length()==0 || name.indexOf('.')>=0) ) {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
@@ -76,18 +92,19 @@ public class STGroup {
         try {
             Compiler c = new Compiler();
             CompiledST code = c.compile(template);
+            // TODO: factor out
             for (String subname : c.subtemplates.keySet()) {
                 String block = c.subtemplates.get(subname);
                 // look for argument in "{n | actual template}"
-                LinkedHashMap<String,FormalArgument> args =
+                LinkedHashMap<String,FormalArgument> subargs =
                     c.parseSubtemplateArg(block);
                 String t = block;
-                if ( args!=null ) {
+                if ( subargs!=null ) {
                     int pipe = block.indexOf('|');
                     t = block.substring(pipe+1);
                 }
                 CompiledST compiledSub = defineTemplate(subname, t);
-                compiledSub.formalArguments = args;
+                compiledSub.formalArguments = subargs;
             }
             templates.put(name, code);
             return code;
@@ -103,4 +120,39 @@ public class STGroup {
         ST st = new ST();
         return st;
     }
+
+    public String toString() {
+        return show();
+    }
+
+    public String show() {
+        StringBuilder buf = new StringBuilder();
+        buf.append("group "+name);
+        if ( supergroup!=null ) buf.append(" : "+supergroup);
+        buf.append(";"+Misc.newline);
+        for (String name : templates.keySet()) {
+            CompiledST c = templates.get(name);
+            buf.append(name);
+            buf.append('(');
+            if ( c.formalArguments!=null ) {
+                buf.append( Misc.join(c.formalArguments.values().iterator(), ",") );
+            }
+            buf.append(')');
+            buf.append("::= <<"+Misc.newline);
+            buf.append(c.template+Misc.newline);
+            buf.append(">>"+Misc.newline);
+        }
+        return buf.toString();
+    }
+
+    // Temp / testing
+    public static STGroup load(String filename) throws Exception {
+        ANTLRFileStream fs = new ANTLRFileStream(filename);
+        GroupLexer lexer = new GroupLexer(fs);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        GroupParser parser = new GroupParser(tokens);
+        STGroup g = parser.group();
+        return g;
+    }
+
 }
