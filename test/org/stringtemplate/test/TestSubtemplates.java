@@ -6,13 +6,6 @@ import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
 
 public class TestSubtemplates {
-    public static class User {
-        public int id;
-        public String name;
-        public User(int id, String name) { this.id = id; this.name = name; }
-        public String getName() { return name; }
-    }
-
     @Test public void testSimpleIteration() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "<names:{<it>}>!");
@@ -63,9 +56,9 @@ public class TestSubtemplates {
         STGroup group = new STGroup();
         group.defineTemplate("test", "<users:{u | <u.id:{i | <i>=}><u.name>}>!");
         ST st = group.getInstanceOf("test");
-        st.add("users", new User(1, "parrt"));
-        st.add("users", new User(2, "tombu"));
-        st.add("users", new User(3, "sri"));
+        st.add("users", new TestCoreBasics.User(1, "parrt"));
+        st.add("users", new TestCoreBasics.User(2, "tombu"));
+        st.add("users", new TestCoreBasics.User(3, "sri"));
         String expected = "1=parrt2=tombu3=sri!";
         String result = st.render();
         assertEquals(expected, result);

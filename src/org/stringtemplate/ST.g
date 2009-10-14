@@ -41,20 +41,40 @@ public STParser(TokenStream input, ExprParserListener listener) {
 }
 
 stexpr
-scope { int level; }
-@init { $stexpr::level = 0; int n=1;}
-	:	expr
-		(	':' template
-			(	(',' template {n++;})+  {listener.mapAlternating(n);}
-			|						    {listener.map();}
-			)
-		)*
+	:	mapExpr (';' exprOptions)?
 	|	i='if(' not='!'? {listener.ifExpr($i);} expr ')'
 										{listener.ifExprClause($i,$not!=null);}
 	|	i='elseif(' not='!'? {listener.elseifExpr($i);} expr ')'
 										{listener.elseifExprClause($i,$not!=null);}
 	|	'else'							{listener.elseClause();}
 	|	'endif'							{listener.endif();}
+	;
+
+mapExpr
+@init {int n=1;}
+	:	expr
+		(	':' template
+			(	(',' template {n++;})+  {listener.mapAlternating(n);}
+			|						    {listener.map();}
+			)
+		)*
+	;
+
+exprOptions
+	:	{listener.options();} option (',' option)*
+	;
+
+option
+	:	ID ( '=' optionValue | {listener.defaultOption($ID);} ) {listener.setOption($ID);}
+	;
+	
+optionValue
+	:	expr
+	|	ANONYMOUS_TEMPLATE
+		{
+		String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
+        listener.instance(new CommonToken(STRING,name)); // call anon template
+        }
 	;
 
 expr:	call
@@ -69,7 +89,8 @@ call:	ID {listener.instance($ID);} '(' args? ')'
 
 template
 	:	ID			{listener.refString($ID);}
-	|	SUBTEMPLATE {String name = listener.defineAnonTemplate($SUBTEMPLATE);
+	|	ANONYMOUS_TEMPLATE
+					{String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
 	                 listener.refString(new CommonToken(STRING,name));}
 	;
 	
@@ -87,8 +108,8 @@ STRING
     	{setText(getText().substring(1, getText().length()-1));}
     ;
 
-SUBTEMPLATE
-    :    '{'  { new Chunkifier(input, '<', '>').matchBlock(); }
+ANONYMOUS_TEMPLATE
+    :	'{'  { new Chunkifier(input, '<', '>').matchBlock(); }
     	{setText(getText().substring(1, getText().length()-1));}
     ;
 

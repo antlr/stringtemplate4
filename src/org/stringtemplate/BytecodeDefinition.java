@@ -54,14 +54,15 @@ public class BytecodeDefinition {
     public static final short INSTR_LOAD_ATTR   = 2;
     public static final short INSTR_LOAD_PROP   = 3;
     public static final short INSTR_STORE_ATTR  = 4;
-    public static final short INSTR_NEW         = 5;  // create new template instance
-    public static final short INSTR_WRITE       = 6;
-    public static final short INSTR_MAP         = 7;  // <a:b()>, <a:b():c()>, <a:{...}>
-    public static final short INSTR_ROT_MAP     = 8;  // <a:b(),c()>
-    public static final short INSTR_PAR_MAP     = 9;  // <x,y:{...}>
+    public static final short INSTR_STORE_OPTION= 5;
+    public static final short INSTR_NEW         = 6;  // create new template instance
+    public static final short INSTR_WRITE       = 7;
+    public static final short INSTR_MAP         = 8;  // <a:b()>, <a:b():c()>, <a:{...}>
+    public static final short INSTR_ROT_MAP     = 9;  // <a:b(),c()>
     public static final short INSTR_BR          = 10;
     public static final short INSTR_BRF         = 11;
     public static final short INSTR_BRT         = 12;
+    public static final short INSTR_OPTIONS     = 13;  // push options block
 
     /** Used for assembly/disassembly; describes instruction set */
     // START: instr
@@ -71,14 +72,15 @@ public class BytecodeDefinition {
         new Instruction("load_attr",STRING),
         new Instruction("load_prop",STRING),
         new Instruction("store_attr",STRING),
+        new Instruction("store_option",STRING),
         new Instruction("new",STRING),
         new Instruction("write"),
         new Instruction("map"),
         new Instruction("rot_map", INT),
-        new Instruction("par_map"),
         new Instruction("br", ADDR),
         new Instruction("brf", ADDR),
-        new Instruction("brt", ADDR)
+        new Instruction("brt", ADDR),
+        new Instruction("options")
     };
     // END: instr
 }

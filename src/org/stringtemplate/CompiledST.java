@@ -36,7 +36,8 @@ public class CompiledST {
     protected String template;
 
     protected LinkedHashMap<String,FormalArgument> formalArguments;
-    
+    //protected LinkedHashMap<String,CompiledST> compiledDefaultValues;
+
     public String[] strings;
     public byte[] instrs;        // byte-addressable code memory.
     public int codeSize;

@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2009 Terence Parr
+ Copyright (c) 2003-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,17 @@
 */
 package org.stringtemplate;
 
-public interface GroupParserListener {
-    public void defineGroup(STGroup group);
+import java.io.Writer;
+import java.io.IOException;
+
+/** Just pass through the text */
+public class NoIndentWriter extends AutoIndentWriter {
+    public NoIndentWriter(Writer out) {
+        super(out);
+    }
+
+    public int write(String str) throws IOException {
+	    out.write(str);
+		return str.length();
+    }
 }

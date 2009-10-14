@@ -31,8 +31,6 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CommonTokenStream;
 
 import java.util.*;
-import java.io.StreamTokenizer;
-import java.io.IOException;
 
 public class STGroup {
     /** What is the group name */
@@ -44,7 +42,7 @@ public class STGroup {
 
 
     /** Maps template name to StringTemplate object */
-    protected Map<String, CompiledST> templates = new HashMap<String,CompiledST>();
+    protected LinkedHashMap<String, CompiledST> templates = new LinkedHashMap<String,CompiledST>();
 
     public static STGroup defaultGroup = new STGroup();
 
@@ -82,7 +80,7 @@ public class STGroup {
     }
 
     public CompiledST defineTemplate(String name,
-                                     LinkedHashMap<String,String> args,
+                                     LinkedHashMap<String,FormalArgument> args,
                                      String template)
     {
         if ( name!=null && (name.length()==0 || name.indexOf('.')>=0) ) {
@@ -92,27 +90,45 @@ public class STGroup {
         try {
             Compiler c = new Compiler();
             CompiledST code = c.compile(template);
-            // TODO: factor out
+            code.formalArguments = args;
+            templates.put(name, code);
+            // compile any default args
+            if ( args!=null ) {
+                for (String a : args.keySet()) {
+                    FormalArgument fa = args.get(a);
+                    if ( fa.defaultValue!=null ) {
+                        Compiler c2 = new Compiler();
+                        fa.compiledDefaultValue = c2.compile(template);
+                    }
+                }
+            }
+            // compile any anonymous subtemplates
             for (String subname : c.subtemplates.keySet()) {
                 String block = c.subtemplates.get(subname);
-                // look for argument in "{n | actual template}"
-                LinkedHashMap<String,FormalArgument> subargs =
-                    c.parseSubtemplateArg(block);
-                String t = block;
-                if ( subargs!=null ) {
-                    int pipe = block.indexOf('|');
-                    t = block.substring(pipe+1);
-                }
-                CompiledST compiledSub = defineTemplate(subname, t);
-                compiledSub.formalArguments = subargs;
+                defineAnonSubtemplate(subname, block);
             }
-            templates.put(name, code);
             return code;
         }
         catch (Exception e) {
             System.err.println("can't parse template: "+template);
+            e.printStackTrace(System.err);
         }
         return null;
+    }
+
+    public CompiledST defineAnonSubtemplate(String subname, String block) {
+        // look for argument in "{n | actual template}"
+        // only allow one
+        LinkedHashMap<String,FormalArgument> args =
+            Compiler.parseSubtemplateArg(block);
+        String t = block;
+        if ( args!=null ) {
+            int pipe = block.indexOf('|');
+            t = block.substring(pipe+1);
+        }
+        CompiledST compiledSub = defineTemplate(subname, t);
+        compiledSub.formalArguments = args;
+        return compiledSub;
     }
 
     /** StringTemplate object factory; each group can have its own. */
@@ -138,7 +154,7 @@ public class STGroup {
                 buf.append( Misc.join(c.formalArguments.values().iterator(), ",") );
             }
             buf.append(')');
-            buf.append("::= <<"+Misc.newline);
+            buf.append(" ::= <<"+Misc.newline);
             buf.append(c.template+Misc.newline);
             buf.append(">>"+Misc.newline);
         }

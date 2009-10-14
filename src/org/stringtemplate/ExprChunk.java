@@ -27,7 +27,11 @@
 */
 package org.stringtemplate;
 
+import java.util.Map;
+
 public class ExprChunk extends Chunk {
+    // public Map<String,Object> options;
+
     public ExprChunk(String expr, int line, int charPositionInLine) {
         super(expr, line, charPositionInLine);
     }

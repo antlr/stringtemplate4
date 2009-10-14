@@ -29,6 +29,7 @@ package org.stringtemplate;
 
 import java.util.*;
 import java.io.StringWriter;
+import java.io.IOException;
 
 public class ST {
     public static final String ANON_NAME = "anonymous";
@@ -152,15 +153,28 @@ public class ST {
         return names.toString().replaceAll(",","");
     }    
 
-    public String toString() {
-        return "<<"+name+">>";
-    }
-
-    public String render() {
+    public int write(STWriter out) throws IOException {
         Interpreter interp = new Interpreter();
         interp.group = this.group;
         interp.out = new StringWriter();
         interp.exec(this);
-        return interp.out.toString();
+        int n = out.write(interp.out.toString());
+        return n;
+    }
+
+    public String render() {
+        StringWriter out = new StringWriter();
+        STWriter wr = new AutoIndentWriter(out);
+        try {
+            write(wr);
+        }
+        catch (IOException io) {
+            System.err.println("Got IOException writing to writer");
+        }
+        return out.toString();
+    }
+
+    public String toString() {
+        return "<<"+name+">>";
     }
 }

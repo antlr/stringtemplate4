@@ -85,8 +85,10 @@ templateDef
 		|	name=ID 
 		)
 	    '(' formalArgs? ')' '::='
-	    (	STRING     {template=$STRING.text;}
-	    |	BIGSTRING  {template=$BIGSTRING.text;}
+	    (	STRING     {template=$STRING.text;
+	    				template = template.substring(1, template.length()-1);}
+	    |	BIGSTRING  {template=$BIGSTRING.text;
+						template = template.substring(2, template.length()-2);}
 	    )
 	    {
 	    group.defineTemplate($name.text, $formalArgs.args, template);
@@ -94,17 +96,18 @@ templateDef
 	|   alias=ID '::=' target=ID	    
 	;
 
-formalArgs returns[LinkedHashMap<String,String> args]
-@init {args = new LinkedHashMap<String,String>();}
-    :	formalArg[args] ( ',' formalArg[args] )*
+formalArgs returns[LinkedHashMap<String,FormalArgument> args]
+@init {$args = new LinkedHashMap<String,FormalArgument>();}
+    :	formalArg[$args] ( ',' formalArg[$args] )*
 	;
 
-formalArg[LinkedHashMap<String,String> args]
+formalArg[LinkedHashMap<String,FormalArgument> args]
+@init {String defvalue = null;}
 	:	ID
-		(	'=' STRING				{args.put($ID.text,$STRING.text);}
-		|	'=' ANONYMOUS_TEMPLATE	{args.put($ID.text,$ANONYMOUS_TEMPLATE.text);}
-		|							{args.put($ID.text,null);}
-		)
+		(	'=' STRING				{defvalue = $STRING.text;}
+		|	'=' ANONYMOUS_TEMPLATE	{defvalue = $ANONYMOUS_TEMPLATE.text;}
+		)?
+		{$args.put($ID.text, new FormalArgument($ID.text, defvalue));}
     ;
 
 /*
@@ -151,7 +154,6 @@ ID
 
 STRING
 	:	'"' ( '\\' '"' | '\\' ~'"' | ~('\\'|'"') )* '"'
-    	{setText(getText().substring(1, getText().length()-1));}
 	;
 
 BIGSTRING
@@ -162,18 +164,22 @@ BIGSTRING
 		|	~'\\'
 		)*
         '>>'
-    	{setText(getText().substring(2, getText().length()-2));}
 	;
 
+ANONYMOUS_TEMPLATE
+    :    '{'  { new Chunkifier(input, '<', '>').matchBlock(); }
+    ;
+
+/*
 ANONYMOUS_TEMPLATE
 	:	'{'
 		(	'\\' '}'   // \} escape
 		|	'\\' ~'}'
-		|	~'\\'
+		|	~('\\'|'}')
 		)*
 	    '}'
-    	{setText(getText().substring(1, getText().length()-1));}
 	;
+*/
 
 COMMENT
     :   '/*' ( options {greedy=false;} : . )* '*/' {skip();}

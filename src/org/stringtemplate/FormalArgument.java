@@ -1,10 +1,5 @@
 package org.stringtemplate;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.LinkedHashMap;
-
 /** Represents the name of a formal argument
  *  defined in a template:
  *
@@ -43,15 +38,16 @@ public class FormalArgument {
     //protected int cardinality = REQUIRED;
 
 	/** If they specified name="value", store the template here */
-	public ST defaultValueST;
+	public String defaultValue;
+    public CompiledST compiledDefaultValue;
 
-	public FormalArgument(String name) {
+    public FormalArgument(String name) {
 		this.name = name;
 	}
 
-	public FormalArgument(String name, ST defaultValueST) {
+	public FormalArgument(String name, String defaultValue) {
 		this.name = name;
-		this.defaultValueST = defaultValueST;
+		this.defaultValue = defaultValue;
 	}
 
     public static String getCardinalityName(int cardinality) {
@@ -65,7 +61,7 @@ public class FormalArgument {
     }
 
     public int hashCode() {
-        return name.hashCode() + defaultValueST.hashCode();
+        return name.hashCode() + defaultValue.hashCode();
     }
 
     public boolean equals(Object o) {
@@ -77,16 +73,16 @@ public class FormalArgument {
 			return false;
 		}
 		// only check if there is a default value; that's all
-		if ( (this.defaultValueST!=null && other.defaultValueST==null) ||
-			 (this.defaultValueST==null && other.defaultValueST!=null) ) {
+		if ( (this.defaultValue !=null && other.defaultValue ==null) ||
+			 (this.defaultValue ==null && other.defaultValue !=null) ) {
 			return false;
 		}
 		return true;
 	}
 
     public String toString() {
-		if ( defaultValueST!=null ) {
-			return name+"="+defaultValueST;
+		if ( defaultValue !=null ) {
+			return name+"="+ defaultValue;
 		}
         return name;
     }

@@ -37,7 +37,25 @@ public class Compiler implements ExprParserListener {
     public static final String ATTR_NAME_REGEX = "[a-zA-Z/][a-zA-Z0-9_/]*";
     public static final int INITIAL_CODE_SIZE = 100;
 
-    List<String> strings;
+    public static final Set<String> supportedOptions = new HashSet<String>() {
+        {
+            add("anchor");
+            add("format");
+            add("null");
+            add("separator");
+            add("wrap");
+        }
+    };
+
+    public static final Map<String,String> defaultOptionValues =
+        new HashMap<String,String>() {
+        {
+            put("anchor", "true");
+            put("wrap", "\n");
+        }
+    };
+
+    StringTable strings;
     byte[] instrs;
     int ip = 0;
     Stack<Chunk> ifs = new Stack<Chunk>();
@@ -51,7 +69,7 @@ public class Compiler implements ExprParserListener {
     public static int subtemplateCount = 0;
 
     public CompiledST compile(String template) throws Exception {
-        strings = new ArrayList<String>();
+        strings = new StringTable();
         instrs = new byte[INITIAL_CODE_SIZE];
         //System.out.println("compile "+template);
         List<Chunk> chunks = new Chunkifier(template, '<', '>').chunkify();
@@ -83,7 +101,7 @@ public class Compiler implements ExprParserListener {
         CompiledST code = new CompiledST();
         code.template = template;
         if ( strings!=null ) {
-            code.strings = strings.toArray(new String[strings.size()]);
+            code.strings = strings.toArray();
         }
         code.instrs = instrs;
         code.codeSize = ip;
@@ -93,11 +111,10 @@ public class Compiler implements ExprParserListener {
     }
 
     public int defineString(String s) {
-        strings.add(s);
-        return strings.size()-1;
+        return strings.add(s);
     }
 
-    public LinkedHashMap<String,FormalArgument> parseSubtemplateArg(String block) {
+    public static LinkedHashMap<String,FormalArgument> parseSubtemplateArg(String block) {
         LinkedHashMap<String,FormalArgument> args = null;
         int pipe = block.indexOf('|');
         String[] elems = block.substring(0,pipe+1).split(" ");
@@ -122,7 +139,7 @@ public class Compiler implements ExprParserListener {
 
     public String defineAnonTemplate(Token subtemplate) {
         subtemplateCount++;
-        String name = "sub"+subtemplateCount;
+        String name = "_sub"+subtemplateCount;
         subtemplates.put(name, subtemplate.getText());
         return name;
     }
@@ -141,6 +158,23 @@ public class Compiler implements ExprParserListener {
 
     public void refString(Token str) {
         gen(BytecodeDefinition.INSTR_LOAD_STR, str.getText());
+    }
+
+    public void options() {
+        gen(BytecodeDefinition.INSTR_OPTIONS);        
+    }
+
+    public void setOption(Token id) {
+        gen(BytecodeDefinition.INSTR_STORE_OPTION, id.getText());
+    }
+
+    public void defaultOption(Token id) {
+        String v = defaultOptionValues.get(id.getText());
+        if ( v==null ) {
+            System.err.println("no def value for "+id.getText());
+            return;
+        }
+        gen(BytecodeDefinition.INSTR_LOAD_STR, v);
     }
 
     public void setArg(Token arg) {

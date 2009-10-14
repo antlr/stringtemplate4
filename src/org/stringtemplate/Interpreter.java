@@ -35,6 +35,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 public class Interpreter {
+    /** writing -1 characters means missing not empty */
+    public static final int MISSING = -1;
+
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
     public static final int DEFAULT_CALL_SIZE = 100;
 

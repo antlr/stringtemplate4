@@ -33,6 +33,9 @@ public interface ExprParserListener {
     public void refAttr(Token id);
     public void refProp(Token id);
     public void refString(Token str);
+    public void options();
+    public void setOption(Token id);
+    public void defaultOption(Token id);
     public void instance(Token id);
     public void setArg(Token arg);
     public void map();
