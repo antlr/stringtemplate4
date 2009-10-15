@@ -146,6 +146,7 @@ public class AutoIndentWriter implements STWriter {
 
 	/** Write out a string literal or attribute expression or expression element.*/
 	public int write(String str) throws IOException {
+        if ( str==Interpreter.MISSING_ATTR ) return Interpreter.MISSING;
 		int n = 0;
 		for (int i=0; i<str.length(); i++) {
 			char c = str.charAt(i);

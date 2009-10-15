@@ -41,7 +41,9 @@ public interface ExprParserListener {
     public void map();
     public void mapAlternating(int numTemplates);
     public String defineAnonTemplate(Token subtemplate);
-    
+    public void list();
+    public void add();
+
     // TODO: add token range to each callback?
     
     public void ifExpr(Token t);                        // IF

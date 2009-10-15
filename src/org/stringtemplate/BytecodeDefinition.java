@@ -64,6 +64,8 @@ public class BytecodeDefinition {
     public static final short INSTR_BRF         = 12;
     public static final short INSTR_BRT         = 13;
     public static final short INSTR_OPTIONS     = 14;  // push options block
+    public static final short INSTR_LIST        = 15;
+    public static final short INSTR_ADD         = 16;
 
     /** Used for assembly/disassembly; describes instruction set */
     // START: instr
@@ -82,7 +84,9 @@ public class BytecodeDefinition {
         new Instruction("br", ADDR),
         new Instruction("brf", ADDR),
         new Instruction("brt", ADDR),
-        new Instruction("options")
+        new Instruction("options"),
+        new Instruction("list"),
+        new Instruction("add")
     };
     // END: instr
 }

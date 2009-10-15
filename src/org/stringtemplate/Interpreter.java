@@ -37,6 +37,7 @@ import java.lang.reflect.InvocationTargetException;
 public class Interpreter {
     /** writing -1 characters means missing not empty */
     public static final int MISSING = -1;
+    public static final String MISSING_ATTR = new String(); // force new; don't share with ""
 
     public static final int OPTION_ANCHOR       = 0;
     public static final int OPTION_FORMAT       = 1;
@@ -62,8 +63,8 @@ public class Interpreter {
     }
 
     public int exec(STWriter out, ST self) {
-        int n = 0; // how many char we write out
-        boolean missing = true;
+        int n = MISSING; // how many char we write out (assume missing)
+        int nw = 0;
         int nameIndex = 0;
         int addr = 0;
         String name = null;
@@ -120,12 +121,18 @@ public class Interpreter {
                 break;
             case BytecodeDefinition.INSTR_WRITE :
                 o = operands[sp--];
-                n += writeObject(out, o, null);
+                nw = writeObject(out, o, null);
+                if ( nw!=MISSING ) {
+                    if ( n>=0 ) n += nw; else n = nw;
+                }
                 break;
             case BytecodeDefinition.INSTR_WRITE_OPT :
                 options = (Object[])operands[sp--]; // get options
                 o = operands[sp--];                 // get option to write
-                n += writeObject(out, o, options);
+                nw = writeObject(out, o, options);
+                if ( nw!=MISSING ) {
+                    if ( n>=0 ) n += nw; else n = nw;
+                }
                 break;
             case BytecodeDefinition.INSTR_MAP :
                 name = (String)operands[sp--];
@@ -158,6 +165,14 @@ public class Interpreter {
                 break;
             case BytecodeDefinition.INSTR_OPTIONS :
                 operands[++sp] = new Object[Compiler.NUM_OPTIONS];
+                break;
+            case BytecodeDefinition.INSTR_LIST :
+                operands[++sp] = new ArrayList();
+                break;
+            case BytecodeDefinition.INSTR_ADD :
+                o = operands[sp--];             // pop value
+                List list = (List)operands[sp]; // don't pop list
+                list.add(o);
                 break;
             default :
                 System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));
@@ -206,7 +221,7 @@ public class Interpreter {
     }
 
     protected int writeIterator(STWriter out, Object o, String[] options) throws IOException {
-        int n = 0;
+        int n = MISSING;
         Iterator it = (Iterator)o;
         int prevN = MISSING;
         while ( it.hasNext() ) {
@@ -313,6 +328,7 @@ public class Interpreter {
 
     protected boolean testAttributeTrue(Object a) {
         if ( a==null ) return false;
+        if ( a==MISSING_ATTR ) return false;
         if ( a instanceof Boolean ) return ((Boolean)a).booleanValue();
         if ( a instanceof Collection ) return ((Collection)a).size()>0;
         if ( a instanceof Map ) return ((Map)a).size()>0;

@@ -242,6 +242,10 @@ public class Compiler implements ExprParserListener {
         //System.out.println("endif end");
     }
 
+    public void list() { gen(BytecodeDefinition.INSTR_LIST); }
+
+    public void add() { gen(BytecodeDefinition.INSTR_ADD); }
+
     // GEN
 
     public void gen(short opcode) {

@@ -112,12 +112,12 @@ public class ST {
     public Object getAttribute(String name) {
         ST p = this;
         while ( p!=null ) {
-            Object o = null;
-            if ( p.attributes!=null ) o = p.attributes.get(name);
-            if ( o!=null ) return o;
+            if ( p.attributes!=null && p.attributes.containsKey(name) ) {
+                return p.attributes.get(name);
+            }
             p = p.enclosingInstance;
         }
-        return null;
+        return Interpreter.MISSING_ATTR;
     }
 
     protected AttributeList convertToAttributeList(Object curvalue) {

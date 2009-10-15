@@ -66,10 +66,10 @@ exprOptions
 	;
 
 option
-	:	ID ( '=' optionValue | {listener.defaultOption($ID);} ) {listener.setOption($ID);}
+	:	ID ( '=' value | {listener.defaultOption($ID);} ) {listener.setOption($ID);}
 	;
 	
-optionValue
+value
 	:	expr
 	|	ANONYMOUS_TEMPLATE
 		{
@@ -83,9 +83,7 @@ expr:	call
 	|	o=ID	  {listener.refAttr($o);}
 		('.' p=ID {listener.refProp($p);} )*
 	|	STRING    {listener.refString($STRING);}
-	;
-	
-call:	ID {listener.instance($ID);} '(' args? ')'
+	|	list
 	;
 
 template
@@ -95,11 +93,21 @@ template
 	                 listener.refString(new CommonToken(STRING,name));}
 	;
 	
+call:	ID {listener.instance($ID);} '(' args? ')'
+	;
+
 args:	arg (',' arg)* ;
 
 arg :	ID '=' expr {listener.setArg($ID);}
 //	|	expr set sole arg
 	;
+
+list:	{listener.list();} '[' listElement (',' listElement)* ']' ;
+
+listElement
+    :   value {listener.add();}
+    |
+    ;
 
 ID  :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'/')*
     ;
