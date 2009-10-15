@@ -27,7 +27,6 @@
 */
 package org.stringtemplate;
 
-import java.io.Writer;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
@@ -39,8 +38,13 @@ public class Interpreter {
     /** writing -1 characters means missing not empty */
     public static final int MISSING = -1;
 
+    public static final int OPTION_ANCHOR       = 0;
+    public static final int OPTION_FORMAT       = 1;
+    public static final int OPTION_NULL         = 2;
+    public static final int OPTION_SEPARATOR    = 3;
+    public static final int OPTION_WRAP         = 4;
+
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
-    public static final int DEFAULT_CALL_SIZE = 100;
 
     /** Operand stack, grows upwards */
     Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
@@ -169,28 +173,17 @@ public class Interpreter {
         if ( options!=null ) {
             optionStrings = new String[options.length];
             for (int i=0; i<Compiler.NUM_OPTIONS; i++) {
-                optionStrings[i] = evalOption(options[i]);
+                optionStrings[i] = toString(options[i]);
             }
         }
         return writeObject(out, o, optionStrings);
     }
 
-    protected String evalOption(Object value) {
-        if ( value!=null ) {
-            if ( value.getClass()==String.class ) return (String)value;
-            // if not string already, must evaluate it
-            StringWriter sw = new StringWriter();
-            writeObject(new NoIndentWriter(sw), value, null);
-            return sw.toString();
-        }
-        return null;
-    }
-
     protected int writeObject(STWriter out, Object o, String[] options) {
         int n = MISSING;
         if ( o == null ) {
-            if ( options!=null && options[Compiler.OPTION_NULL]!=null ) {
-                try { n = out.write(options[Compiler.OPTION_NULL]); }
+            if ( options!=null && options[OPTION_NULL]!=null ) {
+                try { n = out.write(options[OPTION_NULL]); }
                 catch (IOException ioe) {
                     System.err.println("can't write "+o);
                 }
@@ -221,17 +214,17 @@ public class Interpreter {
             // Emit separator if we just emit something and next value
             // isn't null w/o a null option.
             if ( iterValue!=null ) {
-                if ( prevN >= 0 && options!=null && options[Compiler.OPTION_SEPARATOR]!=null ) {
-                    n += out.writeSeparator(options[Compiler.OPTION_SEPARATOR]);
+                if ( prevN >= 0 && options!=null && options[OPTION_SEPARATOR]!=null ) {
+                    n += out.writeSeparator(options[OPTION_SEPARATOR]);
                 }
                 prevN = writeObject(out, iterValue, options);
             }
             else {
                 if ( prevN >= 0 && options!=null &&
-                     options[Compiler.OPTION_SEPARATOR]!=null &&
-                     options[Compiler.OPTION_NULL]!=null )
+                     options[OPTION_SEPARATOR]!=null &&
+                     options[OPTION_NULL]!=null )
                 {
-                    n += out.writeSeparator(options[Compiler.OPTION_SEPARATOR]);
+                    n += out.writeSeparator(options[OPTION_SEPARATOR]);
                 }
                 int nullN = writeObject(out, iterValue, options);
                 if ( nullN!=MISSING ) prevN = nullN;
@@ -296,6 +289,17 @@ public class Interpreter {
         }
     }
 
+    protected String toString(Object value) {
+        if ( value!=null ) {
+            if ( value.getClass()==String.class ) return (String)value;
+            // if not string already, must evaluate it
+            StringWriter sw = new StringWriter();
+            writeObject(new NoIndentWriter(sw), value, null);
+            return sw.toString();
+        }
+        return null;
+    }
+    
     protected static Object convertAnythingIteratableToIterator(Object o) {
         Iterator iter = null;
         if ( o == null ) return null;

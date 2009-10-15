@@ -40,20 +40,14 @@ public class Compiler implements ExprParserListener {
      */
     public static final double CODE_SIZE_FACTOR = 5.0;
 
-    public static final int OPTION_ANCHOR       = 0;
-    public static final int OPTION_FORMAT       = 1;
-    public static final int OPTION_NULL         = 2;
-    public static final int OPTION_SEPARATOR    = 3;
-    public static final int OPTION_WRAP         = 4;
-
     public static final Map<String, Integer> supportedOptions =
         new HashMap<String, Integer>() {
         {
-            put("anchor",       OPTION_ANCHOR);
-            put("format",       OPTION_FORMAT);
-            put("null",         OPTION_NULL);
-            put("separator",    OPTION_SEPARATOR);
-            put("wrap",         OPTION_WRAP);
+            put("anchor",       Interpreter.OPTION_ANCHOR);
+            put("format",       Interpreter.OPTION_FORMAT);
+            put("null",         Interpreter.OPTION_NULL);
+            put("separator",    Interpreter.OPTION_SEPARATOR);
+            put("wrap",         Interpreter.OPTION_WRAP);
         }
     };
 
