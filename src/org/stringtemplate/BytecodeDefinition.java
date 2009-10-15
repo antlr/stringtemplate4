@@ -57,12 +57,13 @@ public class BytecodeDefinition {
     public static final short INSTR_STORE_OPTION= 5;
     public static final short INSTR_NEW         = 6;  // create new template instance
     public static final short INSTR_WRITE       = 7;
-    public static final short INSTR_MAP         = 8;  // <a:b()>, <a:b():c()>, <a:{...}>
-    public static final short INSTR_ROT_MAP     = 9;  // <a:b(),c()>
-    public static final short INSTR_BR          = 10;
-    public static final short INSTR_BRF         = 11;
-    public static final short INSTR_BRT         = 12;
-    public static final short INSTR_OPTIONS     = 13;  // push options block
+    public static final short INSTR_WRITE_OPT   = 8;
+    public static final short INSTR_MAP         = 9;  // <a:b()>, <a:b():c()>, <a:{...}>
+    public static final short INSTR_ROT_MAP     = 10;  // <a:b(),c()>
+    public static final short INSTR_BR          = 11;
+    public static final short INSTR_BRF         = 12;
+    public static final short INSTR_BRT         = 13;
+    public static final short INSTR_OPTIONS     = 14;  // push options block
 
     /** Used for assembly/disassembly; describes instruction set */
     // START: instr
@@ -72,9 +73,10 @@ public class BytecodeDefinition {
         new Instruction("load_attr",STRING),
         new Instruction("load_prop",STRING),
         new Instruction("store_attr",STRING),
-        new Instruction("store_option",STRING),
+        new Instruction("store_option",INT),
         new Instruction("new",STRING),
         new Instruction("write"),
+        new Instruction("write_opt"),
         new Instruction("map"),
         new Instruction("rot_map", INT),
         new Instruction("br", ADDR),

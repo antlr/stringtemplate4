@@ -84,7 +84,7 @@ public class BytecodeDisassembler {
             System.err.println("no such instruction "+opcode);
         }
         String instrName = I.name;
-        buf.append( String.format("%04d:\t%-11s", ip, instrName) );
+        buf.append( String.format("%04d:\t%-14s", ip, instrName) );
         ip++;
         if ( I.n==0 ) {
             buf.append( String.format("  ") );

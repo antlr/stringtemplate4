@@ -35,23 +35,35 @@ import org.antlr.runtime.Token;
 
 public class Compiler implements ExprParserListener {
     public static final String ATTR_NAME_REGEX = "[a-zA-Z/][a-zA-Z0-9_/]*";
-    public static final int INITIAL_CODE_SIZE = 100;
+    /** Given a template of length n, how much code will result?
+     *  For now, let's assume n/5. Later, we can test in practice.
+     */
+    public static final double CODE_SIZE_FACTOR = 5.0;
 
-    public static final Set<String> supportedOptions = new HashSet<String>() {
+    public static final int OPTION_ANCHOR       = 0;
+    public static final int OPTION_FORMAT       = 1;
+    public static final int OPTION_NULL         = 2;
+    public static final int OPTION_SEPARATOR    = 3;
+    public static final int OPTION_WRAP         = 4;
+
+    public static final Map<String, Integer> supportedOptions =
+        new HashMap<String, Integer>() {
         {
-            add("anchor");
-            add("format");
-            add("null");
-            add("separator");
-            add("wrap");
+            put("anchor",       OPTION_ANCHOR);
+            put("format",       OPTION_FORMAT);
+            put("null",         OPTION_NULL);
+            put("separator",    OPTION_SEPARATOR);
+            put("wrap",         OPTION_WRAP);
         }
     };
+
+    public static final int NUM_OPTIONS = supportedOptions.size();
 
     public static final Map<String,String> defaultOptionValues =
         new HashMap<String,String>() {
         {
             put("anchor", "true");
-            put("wrap", "\n");
+            put("wrap",   "\n");
         }
     };
 
@@ -70,7 +82,8 @@ public class Compiler implements ExprParserListener {
 
     public CompiledST compile(String template) throws Exception {
         strings = new StringTable();
-        instrs = new byte[INITIAL_CODE_SIZE];
+        int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
+        instrs = new byte[initialSize];
         //System.out.println("compile "+template);
         List<Chunk> chunks = new Chunkifier(template, '<', '>').chunkify();
         for (Chunk c : chunks) {
@@ -80,17 +93,20 @@ public class Compiler implements ExprParserListener {
                 CommonTokenStream tokens = new CommonTokenStream(lexer);
                 STParser parser = new STParser(tokens, this);
                 int firstTokenType = tokens.LA(1);
+
                 if ( firstTokenType==STLexer.IF ) ifs.push(c);
 
-                parser.stexpr();
+                parser.stexpr(); // parse, trigger compile actions for single expr 
 
                 if ( firstTokenType==STLexer.ENDIF ) ifs.pop();
+                
                 if ( !(firstTokenType==STLexer.IF ||
                        firstTokenType==STLexer.ELSE ||
                        firstTokenType==STLexer.ELSEIF ||
                        firstTokenType==STLexer.ENDIF) )
                 {
-                    gen(BytecodeDefinition.INSTR_WRITE);
+                    if ( parser.exprHasOptions ) gen(BytecodeDefinition.INSTR_WRITE_OPT);
+                    else gen(BytecodeDefinition.INSTR_WRITE);
                 }
             }
             else {
@@ -165,7 +181,12 @@ public class Compiler implements ExprParserListener {
     }
 
     public void setOption(Token id) {
-        gen(BytecodeDefinition.INSTR_STORE_OPTION, id.getText());
+        Integer I = supportedOptions.get(id.getText());
+        if ( I==null ) {
+            System.err.println("no such option: "+id.getText());
+            return;
+        }
+        gen(BytecodeDefinition.INSTR_STORE_OPTION, I);
     }
 
     public void defaultOption(Token id) {
@@ -247,9 +268,9 @@ public class Compiler implements ExprParserListener {
     }
 
     protected void ensureCapacity() {
-        if ( (ip+1) >= instrs.length ) {
+        if ( (ip+3) >= instrs.length ) { // ensure room for full instruction
             byte[] c = new byte[instrs.length*2];
-            System.arraycopy(instrs, 0, c, 0, instrs.length-1);
+            System.arraycopy(instrs, 0, c, 0, instrs.length);
             instrs = c;
         }
     }

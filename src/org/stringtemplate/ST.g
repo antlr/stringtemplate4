@@ -33,6 +33,7 @@ tokens { IF='if('; ELSE='else'; ELSEIF='elseif('; ENDIF='endif'; }
 @lexer::header { package org.stringtemplate; }
 
 @members {
+public boolean exprHasOptions = false;
 ExprParserListener listener;
 public STParser(TokenStream input, ExprParserListener listener) {
     this(input, new RecognizerSharedState());
@@ -61,7 +62,7 @@ mapExpr
 	;
 
 exprOptions
-	:	{listener.options();} option (',' option)*
+	:	{exprHasOptions=true; listener.options();} option (',' option)*
 	;
 
 option

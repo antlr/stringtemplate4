@@ -32,13 +32,15 @@ import java.io.StringWriter;
 import java.io.IOException;
 
 public class ST {
-    public static final String ANON_NAME = "anonymous";
-    public String name = ANON_NAME;
+    public static final String UNKNOWN_NAME = "unknown";
+    public String name = UNKNOWN_NAME;
     
     /** The code to interpret; it pulls from attributes and this template's
      *  group of templates to evaluate to string.
      */
     public CompiledST code; // TODO: is this the right name?
+
+    public static final ST BLANK = new BlankST();
 
     /** The group that was asked to create this instance.  This is
      *  fixed once we call toString() on an ST.  I wish we could leave
@@ -65,11 +67,11 @@ public class ST {
     public ST() {;}
     
     public ST(String template) throws Exception {
-        code = group.defineTemplate(ANON_NAME, template);
+        code = group.defineTemplate(UNKNOWN_NAME, template);
     }
 
     public void add(String name, Object value) {
-        if ( value==null || name==null ) return;
+        if ( name==null ) return; // allow null value
         if ( name.indexOf('.')>=0 ) {
             throw new IllegalArgumentException("cannot have '.' in attribute names");
         }
@@ -77,11 +79,11 @@ public class ST {
         if ( value instanceof ST ) ((ST)value).enclosingInstance = this;
 
         Object curvalue = null;
-        if ( attributes!=null ) curvalue = attributes.get(name);
-        if ( curvalue==null ) { // new attribute
+        if ( attributes==null || !attributes.containsKey(name) ) { // new attribute
             setAttribute(name, value);
             return;
         }
+        if ( attributes!=null ) curvalue = attributes.get(name);
 
         // attribute will be multi-valued for sure now
         // convert current attribute to list if not already
@@ -94,7 +96,7 @@ public class ST {
             // flatten incoming list into existing list
             multi.addAll((List)value);
         }
-        else if ( value.getClass().isArray() ) {
+        else if ( value!=null && value.getClass().isArray() ) {
             multi.addAll(Arrays.asList((Object[])value));
         }
         else {
@@ -108,13 +110,23 @@ public class ST {
     }
 
     public Object getAttribute(String name) {
-        if ( attributes==null ) return null;
-        return attributes.get(name);
+        ST p = this;
+        while ( p!=null ) {
+            Object o = null;
+            if ( p.attributes!=null ) o = p.attributes.get(name);
+            if ( o!=null ) return o;
+            p = p.enclosingInstance;
+        }
+        return null;
     }
 
     protected AttributeList convertToAttributeList(Object curvalue) {
         AttributeList multi;
-        if ( curvalue.getClass() == AttributeList.class ) { // already a list made by ST
+        if ( curvalue == null ) {
+            multi = new AttributeList(); // make list to hold multiple values
+            multi.add(curvalue);         // add previous single-valued attribute            
+        }
+        else if ( curvalue.getClass() == AttributeList.class ) { // already a list made by ST
             multi = (AttributeList)curvalue;
         }
         else if ( curvalue instanceof List) { // existing attribute is non-ST List
@@ -154,11 +166,10 @@ public class ST {
     }    
 
     public int write(STWriter out) throws IOException {
-        Interpreter interp = new Interpreter();
-        interp.group = this.group;
-        interp.out = new StringWriter();
-        interp.exec(this);
-        int n = out.write(interp.out.toString());
+        StringWriter sw = new StringWriter();
+        Interpreter interp = new Interpreter(group);
+        interp.exec(new AutoIndentWriter(sw), this);
+        int n = out.write(sw.toString());
         return n;
     }
 

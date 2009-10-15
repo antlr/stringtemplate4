@@ -29,6 +29,7 @@ package org.stringtemplate;
 
 import java.io.Writer;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
@@ -50,16 +51,21 @@ public class Interpreter {
      */
     STGroup group;
     
-    Writer out;
-
     public boolean trace = false;
 
-    public void exec(ST self) {
+    public Interpreter(STGroup group) {
+        this.group = group;
+    }
+
+    public int exec(STWriter out, ST self) {
+        int n = 0; // how many char we write out
+        boolean missing = true;
         int nameIndex = 0;
         int addr = 0;
         String name = null;
         Object o = null;
         ST st = null;
+        Object[] options = null;
         int ip = 0;
         byte[] code = self.code.instrs;        // which code block are we executing
         while ( ip < self.code.codeSize ) {
@@ -89,7 +95,7 @@ public class Interpreter {
                 nameIndex = getShort(code, ip);
                 ip += 2;
                 name = self.code.strings[nameIndex];
-                st = group.getInstanceOf(name);
+                st = group.getEmbeddedInstanceOf(self, name);
                 if ( st == null ) System.err.println("no such template "+name);
                 operands[++sp] = st;
                 break;
@@ -101,9 +107,21 @@ public class Interpreter {
                 st = (ST)operands[sp]; // store arg in ST on top of stack
                 st.setAttribute(name, o);
                 break;
+            case BytecodeDefinition.INSTR_STORE_OPTION:
+                int optionIndex = getShort(code, ip);
+                ip += 2;
+                o = operands[sp--];    // value to store
+                options = (Object[])operands[sp]; // get options
+                options[optionIndex] = o; // store value into options on stack
+                break;
             case BytecodeDefinition.INSTR_WRITE :
                 o = operands[sp--];
-                writeObject(o);
+                n += writeObject(out, o, null);
+                break;
+            case BytecodeDefinition.INSTR_WRITE_OPT :
+                options = (Object[])operands[sp--]; // get options
+                o = operands[sp--];                 // get option to write
+                n += writeObject(out, o, options);
                 break;
             case BytecodeDefinition.INSTR_MAP :
                 name = (String)operands[sp--];
@@ -111,11 +129,11 @@ public class Interpreter {
                 if ( o!=null ) map(self,o,name);
                 break;
             case BytecodeDefinition.INSTR_ROT_MAP :
-                int n = getShort(code, ip);
+                int nmaps = getShort(code, ip);
                 ip += 2;
                 List<String> templates = new ArrayList<String>();
-                for (int i=n-1; i>=0; i--) templates.add((String)operands[sp-i]);
-                sp -= n;
+                for (int i=nmaps-1; i>=0; i--) templates.add((String)operands[sp-i]);
+                sp -= nmaps;
                 o = operands[sp--];
                 if ( o!=null ) rot_map(self,o,templates);
                 break;
@@ -134,45 +152,93 @@ public class Interpreter {
                 o = (String)operands[sp--]; // <if(expr)>...<endif>
                 if ( testAttributeTrue(o) ) ip = addr; // jump
                 break;
+            case BytecodeDefinition.INSTR_OPTIONS :
+                operands[++sp] = new Object[Compiler.NUM_OPTIONS];
+                break;
             default :
                 System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));
                 self.code.dump();
             }
         }
+        return n;
     }
 
-    /** I'd prefer to avoid recursion here but we must write out templates
-     *  in order; can't push them all and then continue (gets reverse order).
-     */
-    protected void writeObject(Object o) {
-        if ( o == null ) return;
+    protected int writeObject(STWriter out, Object o, Object[] options) {
+        // precompute all option values (render all the way to strings) 
+        String[] optionStrings = null;
+        if ( options!=null ) {
+            optionStrings = new String[options.length];
+            for (int i=0; i<Compiler.NUM_OPTIONS; i++) {
+                optionStrings[i] = evalOption(options[i]);
+            }
+        }
+        return writeObject(out, o, optionStrings);
+    }
+
+    protected String evalOption(Object value) {
+        if ( value!=null ) {
+            if ( value.getClass()==String.class ) return (String)value;
+            // if not string already, must evaluate it
+            StringWriter sw = new StringWriter();
+            writeObject(new NoIndentWriter(sw), value, null);
+            return sw.toString();
+        }
+        return null;
+    }
+
+    protected int writeObject(STWriter out, Object o, String[] options) {
+        int n = MISSING;
+        if ( o == null ) {
+            if ( options!=null && options[Compiler.OPTION_NULL]!=null ) {
+                try { n = out.write(options[Compiler.OPTION_NULL]); }
+                catch (IOException ioe) {
+                    System.err.println("can't write "+o);
+                }
+            }
+            return n;
+        }
         if ( o instanceof ST ) {
-            exec((ST)o);
-            return;
+            n = exec(out, (ST)o);
+            return n;
         }
         o = convertAnythingIteratableToIterator(o); // normalize
         try {
-            if ( o instanceof Iterator) {
-                Iterator it = (Iterator)o;
-                while ( it.hasNext() ) {
-                    Object iterValue = it.next();
-                    if ( iterValue!=null ) {
-                        if ( iterValue instanceof ST ) {
-                            exec((ST)iterValue);
-                        }
-                        else {
-                            out.write(iterValue.toString());
-                        }
-                    }
-                }
-            }
-            else {
-                out.write(o.toString());
-            }
+            if ( o instanceof Iterator) n = writeIterator(out, o, options);
+            else n = out.write(o.toString());
         }
         catch (IOException ioe) {
             System.err.println("can't write "+o);
         }
+        return n;
+    }
+
+    protected int writeIterator(STWriter out, Object o, String[] options) throws IOException {
+        int n = 0;
+        Iterator it = (Iterator)o;
+        int prevN = MISSING;
+        while ( it.hasNext() ) {
+            Object iterValue = it.next();
+            // Emit separator if we just emit something and next value
+            // isn't null w/o a null option.
+            if ( iterValue!=null ) {
+                if ( prevN >= 0 && options!=null && options[Compiler.OPTION_SEPARATOR]!=null ) {
+                    n += out.writeSeparator(options[Compiler.OPTION_SEPARATOR]);
+                }
+                prevN = writeObject(out, iterValue, options);
+            }
+            else {
+                if ( prevN >= 0 && options!=null &&
+                     options[Compiler.OPTION_SEPARATOR]!=null &&
+                     options[Compiler.OPTION_NULL]!=null )
+                {
+                    n += out.writeSeparator(options[Compiler.OPTION_SEPARATOR]);
+                }
+                int nullN = writeObject(out, iterValue, options);
+                if ( nullN!=MISSING ) prevN = nullN;
+            }
+            if ( prevN!=MISSING ) n += prevN;
+        }
+        return n;
     }
 
     protected void map(ST self, Object attr, String name) {
@@ -339,7 +405,7 @@ public class Interpreter {
         StringBuilder buf = new StringBuilder();
         dis.disassembleInstruction(buf,ip);
         String name = self.name+":";
-        if ( self.name==ST.ANON_NAME ) name = "";
+        if ( self.name==ST.UNKNOWN_NAME) name = "";
         System.out.printf("%-40s",name+buf);
         System.out.print("\tstack=[");
         for (int i = 0; i <= sp; i++) {

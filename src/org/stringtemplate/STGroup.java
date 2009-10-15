@@ -67,6 +67,10 @@ public class STGroup {
 
     public ST getEmbeddedInstanceOf(ST enclosingInstance, String name) {
         ST st = getInstanceOf(name);
+        if ( st==null ) {
+            System.err.println("no such template: "+name);
+            return ST.BLANK;
+        }
         st.enclosingInstance = enclosingInstance;
         return st;
     }

@@ -1,8 +1,6 @@
 package org.stringtemplate;
 
-import java.util.Map;
 import java.util.LinkedHashMap;
-import java.util.Collections;
 
 /** A unique set of strings where we can get a string's index.
  *  We can also get them back out in original order. 
