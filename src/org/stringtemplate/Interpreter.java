@@ -35,10 +35,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 public class Interpreter {
-    /** writing -1 characters means missing not empty */
-    public static final int MISSING = -1;
-    public static final String MISSING_ATTR = new String(); // force new; don't share with ""
-
     public static final int OPTION_ANCHOR       = 0;
     public static final int OPTION_FORMAT       = 1;
     public static final int OPTION_NULL         = 2;
@@ -63,7 +59,7 @@ public class Interpreter {
     }
 
     public int exec(STWriter out, ST self) {
-        int n = MISSING; // how many char we write out (assume missing)
+        int n = 0; // how many char we write out
         int nw = 0;
         int nameIndex = 0;
         int addr = 0;
@@ -121,18 +117,12 @@ public class Interpreter {
                 break;
             case BytecodeDefinition.INSTR_WRITE :
                 o = operands[sp--];
-                nw = writeObject(out, o, null);
-                if ( nw!=MISSING ) {
-                    if ( n>=0 ) n += nw; else n = nw;
-                }
+                n += writeObject(out, o, null);
                 break;
             case BytecodeDefinition.INSTR_WRITE_OPT :
                 options = (Object[])operands[sp--]; // get options
                 o = operands[sp--];                 // get option to write
-                nw = writeObject(out, o, options);
-                if ( nw!=MISSING ) {
-                    if ( n>=0 ) n += nw; else n = nw;
-                }
+                n += writeObject(out, o, options);
                 break;
             case BytecodeDefinition.INSTR_MAP :
                 name = (String)operands[sp--];
@@ -195,7 +185,7 @@ public class Interpreter {
     }
 
     protected int writeObject(STWriter out, Object o, String[] options) {
-        int n = MISSING;
+        int n = 0;
         if ( o == null ) {
             if ( options!=null && options[OPTION_NULL]!=null ) {
                 try { n = out.write(options[OPTION_NULL]); }
@@ -221,30 +211,19 @@ public class Interpreter {
     }
 
     protected int writeIterator(STWriter out, Object o, String[] options) throws IOException {
-        int n = MISSING;
+        int n = 0;
         Iterator it = (Iterator)o;
-        int prevN = MISSING;
+        String separator = null;
+        if ( options!=null ) separator = options[OPTION_SEPARATOR];
+        int i = 0;
         while ( it.hasNext() ) {
             Object iterValue = it.next();
-            // Emit separator if we just emit something and next value
-            // isn't null w/o a null option.
-            if ( iterValue!=null ) {
-                if ( prevN >= 0 && options!=null && options[OPTION_SEPARATOR]!=null ) {
-                    n += out.writeSeparator(options[OPTION_SEPARATOR]);
-                }
-                prevN = writeObject(out, iterValue, options);
+            // Emit separator if we're beyond first value
+            if ( i > 0 && separator!=null ) {
+                n += out.writeSeparator(separator);
             }
-            else {
-                if ( prevN >= 0 && options!=null &&
-                     options[OPTION_SEPARATOR]!=null &&
-                     options[OPTION_NULL]!=null )
-                {
-                    n += out.writeSeparator(options[OPTION_SEPARATOR]);
-                }
-                int nullN = writeObject(out, iterValue, options);
-                if ( nullN!=MISSING ) prevN = nullN;
-            }
-            if ( prevN!=MISSING ) n += prevN;
+            n += writeObject(out, iterValue, options);
+            i++;
         }
         return n;
     }
@@ -328,7 +307,6 @@ public class Interpreter {
 
     protected boolean testAttributeTrue(Object a) {
         if ( a==null ) return false;
-        if ( a==MISSING_ATTR ) return false;
         if ( a instanceof Boolean ) return ((Boolean)a).booleanValue();
         if ( a instanceof Collection ) return ((Collection)a).size()>0;
         if ( a instanceof Map ) return ((Map)a).size()>0;

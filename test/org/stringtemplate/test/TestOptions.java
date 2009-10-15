@@ -68,7 +68,7 @@ public class TestOptions {
         st.add("name", null);
         st.add("name", "Tom");
         st.add("name", "Sumana");
-        String expected = "hi Tom, Sumana!";
+        String expected = "hi , Tom, Sumana!";
         String result = st.render();
         assertEquals(expected, result);
     }
@@ -80,7 +80,7 @@ public class TestOptions {
         st.add("name", "Ter");
         st.add("name", null);
         st.add("name", "Sumana");
-        String expected = "hi Ter, Sumana!";
+        String expected = "hi Ter, , Sumana!";
         String result = st.render();
         assertEquals(expected, result);
     }
@@ -92,7 +92,7 @@ public class TestOptions {
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", null);
-        String expected = "hi Ter, Tom!";
+        String expected = "hi Ter, Tom, !";
         String result = st.render();
         assertEquals(expected, result);
     }
@@ -106,7 +106,7 @@ public class TestOptions {
         st.add("name", null);
         st.add("name", null);
         st.add("name", "Sri");
-        String expected = "hi Ter, Tom, Sri!";
+        String expected = "hi Ter, Tom, , , Sri!";
         String result = st.render();
         assertEquals(expected, result);
     }
@@ -137,40 +137,40 @@ public class TestOptions {
 
     @Test public void testNullValueAndNullOption() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "<name; null=\"n/a\">!");
+        group.defineTemplate("test", "<name; null=\"n/a\">");
         ST st = group.getInstanceOf("test");
         st.add("name", null);
-        String expected = "n/a!";
+        String expected = "n/a";
         String result = st.render();
         assertEquals(expected, result);
     }
 
     @Test public void testMissingValueAndNullOption() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "<name; null=\"n/a\">!");
+        group.defineTemplate("test", "<name; null=\"n/a\">");
         ST st = group.getInstanceOf("test");
-        String expected = "!";
+        String expected = "n/a";
         String result = st.render();
         assertEquals(expected, result);
     }
 
     @Test public void testMissingValuesInListAndNullOption() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "hi <[x,y]; null=\"n/a\", separator=\", \">!");
+        group.defineTemplate("test", "<[x,y]; null=\"n/a\", separator=\", \">");
         ST st = group.getInstanceOf("test");
-        String expected = "hi !";
+        String expected = "n/a, n/a";
         String result = st.render();
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorDoesntApplyToNestedTemplate() throws Exception {
+    @Test public void testOptionDoesntApplyToNestedTemplate() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("foo", "<zippo>");
-        group.defineTemplate("test", "hi <foo(); null=\"n/a\">!");
+        group.defineTemplate("test", "<foo(); null=\"n/a\">");
         ST st = group.getInstanceOf("test");
         st.code.dump();
         st.add("zippo", null);
-        String expected = "hi !";
+        String expected = "";
         String result = st.render();
         assertEquals(expected, result);
     }

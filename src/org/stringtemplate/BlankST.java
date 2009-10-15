@@ -17,7 +17,7 @@ public class BlankST extends ST {
 
     public String getEnclosingInstanceStackString() { return null; }
 
-    public int write(STWriter out) throws IOException { return Interpreter.MISSING; }
+    public int write(STWriter out) throws IOException { return 0; }
 
     public String render() { return ""; }
 }
