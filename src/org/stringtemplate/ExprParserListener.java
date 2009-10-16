@@ -45,6 +45,7 @@ public interface ExprParserListener {
     public void list();
     public void add();
     public void eval();
+    public void func(Token id);
 
     // TODO: add token range to each callback?
     

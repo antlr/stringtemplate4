@@ -94,17 +94,28 @@ expr:	call
 	|	primary
 	;
 
-call:	ID {listener.instance($ID);} '(' args? ')' ;
+call:	{Interpreter.funcs.containsKey(input.LT(1).getText())}?
+		ID '(' arg ')' {listener.func($ID);}
+	|	ID {listener.instance($ID);} '(' args? ')'
+	;
 	
 primary
 	:	'super.' ('.' ID )*
 	|	'it'      {listener.refIteratorValue();}
 	|	o=ID	  {listener.refAttr($o);}
-		('.' p=ID {listener.refProp($p);} )*
+		(	'.' p=ID {listener.refProp($p);}
+		|	'.' '(' mapExpr ')' {listener.refProp(null);}
+		)*
 	|	STRING    {listener.refString($STRING);}
 	|	list
 	|	'(' mapExpr ')' {listener.eval();}
-		( {listener.instance(null);} '(' args? ')' )?
+		( {listener.instance(null);} '(' args? ')' )? // indirect call
+	;
+
+args:	arg (',' arg)* ;
+
+arg :	ID '=' expr {listener.setArg($ID);}
+	|	expr // TODO; set sole arg
 	;
 
 template
@@ -112,14 +123,9 @@ template
 	|	ANONYMOUS_TEMPLATE
 					{String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
 	                 listener.refString(new CommonToken(STRING,name));}
+	|	'(' mapExpr ')' {listener.eval();}
 	;
 	
-args:	arg (',' arg)* ;
-
-arg :	ID '=' expr {listener.setArg($ID);}
-//	|	expr set sole arg
-	;
-
 list:	{listener.list();} '[' listElement (',' listElement)* ']'
 	|	{listener.list();} '[' ']'
 	;

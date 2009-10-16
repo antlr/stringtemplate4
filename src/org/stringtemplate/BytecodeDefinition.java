@@ -50,25 +50,27 @@ public class BytecodeDefinition {
     }
 
     // INSTRUCTION BYTECODES (byte is signed; use a short to keep 0..255)
-    public static final short INSTR_LOAD_STR    = 1;
-    public static final short INSTR_LOAD_ATTR   = 2;
-    public static final short INSTR_LOAD_IT     = 3;
-    public static final short INSTR_LOAD_PROP   = 4;
-    public static final short INSTR_STORE_ATTR  = 5;
-    public static final short INSTR_STORE_OPTION= 6;
-    public static final short INSTR_NEW         = 7;  // create new template instance
-    public static final short INSTR_VNEW        = 8;  // create new template instance using value on stack
-    public static final short INSTR_WRITE       = 9;
-    public static final short INSTR_WRITE_OPT   = 10;
-    public static final short INSTR_MAP         = 11;  // <a:b()>, <a:b():c()>, <a:{...}>
-    public static final short INSTR_ROT_MAP     = 12;  // <a:b(),c()>
-    public static final short INSTR_BR          = 13;
-    public static final short INSTR_BRF         = 14;
-    public static final short INSTR_BRT         = 15;
-    public static final short INSTR_OPTIONS     = 16;  // push options block
-    public static final short INSTR_LIST        = 17;
-    public static final short INSTR_ADD         = 18;
-    public static final short INSTR_TOSTR       = 19;
+    public static final short INSTR_LOAD_STR        = 1;
+    public static final short INSTR_LOAD_ATTR       = 2;
+    public static final short INSTR_LOAD_IT         = 3;
+    public static final short INSTR_LOAD_PROP       = 4;
+    public static final short INSTR_LOAD_PROP_IND   = 5;
+    public static final short INSTR_STORE_ATTR      = 6;
+    public static final short INSTR_STORE_OPTION    = 7;
+    public static final short INSTR_NEW             = 8;  // create new template instance
+    public static final short INSTR_NEW_IND         = 9;  // create new template instance using value on stack
+    public static final short INSTR_WRITE           = 10;
+    public static final short INSTR_WRITE_OPT       = 11;
+    public static final short INSTR_MAP             = 12;  // <a:b()>, <a:b():c()>, <a:{...}>
+    public static final short INSTR_ROT_MAP         = 13;  // <a:b(),c()>
+    public static final short INSTR_BR              = 14;
+    public static final short INSTR_BRF             = 15;
+    public static final short INSTR_BRT             = 16;
+    public static final short INSTR_OPTIONS         = 17;  // push options block
+    public static final short INSTR_LIST            = 18;
+    public static final short INSTR_ADD             = 19;
+    public static final short INSTR_TOSTR           = 20;
+    public static final short INSTR_FUNC            = 21;
 
     /** Used for assembly/disassembly; describes instruction set */
     // START: instr
@@ -78,10 +80,11 @@ public class BytecodeDefinition {
         new Instruction("load_attr",STRING),
         new Instruction("load_it"),
         new Instruction("load_prop",STRING),
+        new Instruction("load_prop_ind"),
         new Instruction("store_attr",STRING),
         new Instruction("store_option",INT),
         new Instruction("new",STRING),
-        new Instruction("vnew"),
+        new Instruction("new_ind"),
         new Instruction("write"),
         new Instruction("write_opt"),
         new Instruction("map"),
@@ -92,7 +95,8 @@ public class BytecodeDefinition {
         new Instruction("options"),
         new Instruction("list"),
         new Instruction("add"),
-        new Instruction("tostr")
+        new Instruction("tostr"),
+        new Instruction("func",STRING)
     };
     // END: instr
 }

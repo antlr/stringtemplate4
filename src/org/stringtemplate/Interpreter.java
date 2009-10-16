@@ -43,6 +43,8 @@ public class Interpreter {
 
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
+    public interface fptr { public Object exec(Object v); }
+
     /** Operand stack, grows upwards */
     Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
     int sp = -1;        // stack pointer register
@@ -97,6 +99,10 @@ public class Interpreter {
                 name = self.code.strings[nameIndex];
                 operands[++sp] = rawGetObjectProperty(o, name);
                 break;
+            case BytecodeDefinition.INSTR_LOAD_PROP_IND :
+                name = (String)operands[sp--];
+                operands[sp] = rawGetObjectProperty(operands[sp], name);
+                break;
             case BytecodeDefinition.INSTR_NEW :
                 nameIndex = getShort(code, ip);
                 ip += 2;
@@ -105,7 +111,7 @@ public class Interpreter {
                 if ( st == null ) System.err.println("no such template "+name);
                 operands[++sp] = st;
                 break;
-            case BytecodeDefinition.INSTR_VNEW :
+            case BytecodeDefinition.INSTR_NEW_IND:
                 name = (String)operands[sp--];
                 st = group.getEmbeddedInstanceOf(self, name);
                 if ( st == null ) System.err.println("no such template "+name);
@@ -178,6 +184,12 @@ public class Interpreter {
             case BytecodeDefinition.INSTR_TOSTR :
                 // replace with string value; early eval
                 operands[sp] = toString(operands[sp]);
+                break;
+            case BytecodeDefinition.INSTR_FUNC :
+                nameIndex = getShort(code, ip);
+                ip += 2;
+                name = self.code.strings[nameIndex];
+                operands[sp] = func(name, operands[sp]);
                 break;
             default :
                 System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));
@@ -344,6 +356,110 @@ public class Interpreter {
         else {
             list.add(o);
         }
+    }
+
+    /** Return the first attribute if multiple valued or the attribute
+     *  itself if single-valued.  Used in <names:first()>
+     */
+    public static fptr _first = new fptr() {
+        public Object exec(Object v) {
+            if ( v==null ) return null;
+            Object r = v;
+            v = convertAnythingIteratableToIterator(v);
+            if ( v instanceof Iterator ) {
+                Iterator it = (Iterator)v;
+                if ( it.hasNext() ) {
+                    r = it.next();
+                }
+            }
+            return r;
+        }
+    };
+
+    /** Return the last attribute if multiple valued or the attribute
+     *  itself if single-valued.  Used in <names:last()>.  This is pretty
+     *  slow as it iterates until the last element.  Ultimately, I could
+     *  make a special case for a List or Vector.
+     */
+    public static fptr _last = new fptr() {
+        public Object exec(Object v) {
+            return null;
+        }
+    };
+
+    /** Return the everything but the first attribute if multiple valued
+     *  or null if single-valued.  Used in <names:rest()>.
+     */
+    public static fptr _rest = new fptr() {
+        public Object exec(Object v) {
+            return null;
+        }
+    };
+
+    /** Return all but the last element.  trunc(x)=null if x is single-valued. */
+    public static fptr _trunc = new fptr() {
+        public Object exec(Object v) {
+            return null;
+        }
+    };
+
+    /** Return a new list w/o null values. */
+    public static fptr _strip = new fptr() {
+        public Object exec(Object v) {
+            return null;
+        }
+    };
+
+    /** Return the length of a mult-valued attribute or 1 if it is a
+     *  single attribute. If attribute is null return 0.
+     *  Special case several common collections and primitive arrays for
+     *  speed. This method by Kay Roepke from v3.
+     */
+    public static fptr _length = new fptr() {
+        public Object exec(Object v) {
+            if ( v == null) return 0;
+            int i = 1;      // we have at least one of something. Iterator and arrays might be empty.
+            if ( v instanceof Map ) i = ((Map)v).size();
+            else if ( v instanceof Collection ) i = ((Collection)v).size();
+            else if ( v instanceof Object[] ) i = ((Object[])v).length;
+            else if ( v instanceof String[] ) i = ((String[])v).length;
+            else if ( v instanceof int[] ) i = ((int[])v).length;
+            else if ( v instanceof long[] ) i = ((long[])v).length;
+            else if ( v instanceof float[] ) i = ((float[])v).length;
+            else if ( v instanceof double[] ) i = ((double[])v).length;
+            else if ( v instanceof Iterator) {
+                Iterator it = (Iterator)v;
+                i = 0;
+                while ( it.hasNext() ) {
+                    it.next();
+                    i++;
+                }
+            }
+            return i;
+        }
+    };
+
+    /** Predefined functions; sorry to hide here but needs to be after func
+     *  implementations.
+     */
+    public static Map<String, fptr> funcs = new HashMap<String, fptr>() {
+        {
+            put("first",  _first);
+            put("last",   _last);
+            put("rest",   _rest);
+            put("trunc",  _trunc);
+            put("strip",  _strip);
+            put("length", _length);
+        }
+    };    
+
+    protected Object func(String name, Object value) {
+        fptr f = funcs.get(name);
+        if ( f == null ) {
+            System.err.println("no such func: "+name);
+            return null;
+        }
+        return f.exec(value);
     }
         
     protected String toString(Object value) {
