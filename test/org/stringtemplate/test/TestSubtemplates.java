@@ -54,7 +54,7 @@ public class TestSubtemplates {
 
     @Test public void testNestedIterationWithArg() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "<users:{u | <u.id:{i | <i>=}><u.name>}>!");
+        group.defineTemplate("test", "<users:{u | <u.id:{id | <id>=}><u.name>}>!");
         ST st = group.getInstanceOf("test");
         st.add("users", new TestCoreBasics.User(1, "parrt"));
         st.add("users", new TestCoreBasics.User(2, "tombu"));

@@ -249,7 +249,9 @@ public class Interpreter {
         return n;
     }
 
-    protected void map(ST self, Object attr, String name) {
+    protected void map(ST self, Object attr, final String name) {
+        rot_map(self, attr, new ArrayList<String>() {{add(name);}});
+        /*
         if ( attr==null ) {
             operands[++sp] = null;
             return;
@@ -258,10 +260,14 @@ public class Interpreter {
         if ( attr instanceof Iterator ) {
             List<ST> mapped = new ArrayList<ST>();
             Iterator iter = (Iterator)attr;
+            int i0 = 0;
+            int i = 1;
             while ( iter.hasNext() ) {
                 Object iterValue = iter.next();
                 ST st = group.getEmbeddedInstanceOf(self, name);
                 setSoleArgument(st, iterValue);
+                st.rawSetAttribute("i0", i0);
+                st.rawSetAttribute("i", i);
                 mapped.add(st);
             }
             operands[++sp] = mapped;
@@ -270,31 +276,50 @@ public class Interpreter {
         else { // map template to single value
             ST st = group.getInstanceOf(name);
             setSoleArgument(st, attr);
+            st.rawSetAttribute("i0", 0);
+            st.rawSetAttribute("i", 1);
             operands[++sp] = st;
         }
+        */
     }
 
     // <names:a,b>
     protected void rot_map(ST self, Object attr, List<String> templates) {
+        if ( attr==null ) {
+            operands[++sp] = null;
+            return;
+        }
         attr = convertAnythingIteratableToIterator(attr);
         if ( attr instanceof Iterator ) {
             List<ST> mapped = new ArrayList<ST>();
             Iterator iter = (Iterator)attr;
-            int i = 0;
+            int i0 = 0;
+            int i = 1;
+            int ti = 0;
             while ( iter.hasNext() ) {
                 Object iterValue = iter.next();
-                int templateIndex = i % templates.size(); // rotate through
+                if ( iterValue == null ) continue;
+                int templateIndex = ti % templates.size(); // rotate through
+                ti++;
                 String name = templates.get(templateIndex);
                 ST st = group.getEmbeddedInstanceOf(self, name);
                 setSoleArgument(st, iterValue);
+                st.rawSetAttribute("i0", i0);
+                st.rawSetAttribute("i", i);
                 mapped.add(st);
+                i0++;
                 i++;
             }
             operands[++sp] = mapped;
             //System.out.println("mapped="+mapped);
         }
         else { // if only single value, just apply first template to attribute
-            map(self, attr, templates.get(1));
+            ST st = group.getInstanceOf(templates.get(0));
+            setSoleArgument(st, attr);
+            st.rawSetAttribute("i0", 0);
+            st.rawSetAttribute("i", 1);
+            operands[++sp] = st;
+//            map(self, attr, templates.get(1));
         }
     }
 

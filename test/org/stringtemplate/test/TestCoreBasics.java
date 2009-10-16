@@ -182,6 +182,21 @@ public class TestCoreBasics {
         assertEquals(expected, result);
     }
 
+    @Test public void testMapIndexes() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("inc", "<i>:<it>");
+        group.defineTemplate("test", "<name:inc; separator=\", \">");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        st.add("name", "Tom");
+        st.add("name", null); // don't count this one
+        st.add("name", "Sumana");
+        String expected =
+            "1:Ter, 2:Tom, 3:Sumana";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
     @Test public void testMapSingleValue() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("a", "[<it>]");
