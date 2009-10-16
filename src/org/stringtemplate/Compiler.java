@@ -163,11 +163,20 @@ public class Compiler implements ExprParserListener {
     }
 
     public void instance(Token id) {
-        gen(BytecodeDefinition.INSTR_NEW, id.getText());
+        if ( id==null ) {
+            gen(BytecodeDefinition.INSTR_VNEW);
+        }
+        else {
+            gen(BytecodeDefinition.INSTR_NEW, id.getText());
+        }
     }
 
     public void refAttr(Token id) {
         gen(BytecodeDefinition.INSTR_LOAD_ATTR, id.getText());
+    }
+
+    public void refIteratorValue() {
+        gen(BytecodeDefinition.INSTR_LOAD_IT);
     }
 
     public void refProp(Token id) {
@@ -253,6 +262,8 @@ public class Compiler implements ExprParserListener {
     public void list() { gen(BytecodeDefinition.INSTR_LIST); }
 
     public void add() { gen(BytecodeDefinition.INSTR_ADD); }
+
+    public void eval() { gen(BytecodeDefinition.INSTR_TOSTR); }
 
     // GEN
 

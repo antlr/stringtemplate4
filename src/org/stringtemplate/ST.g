@@ -91,11 +91,20 @@ value
 	;
 
 expr:	call
-	|	'super.' ('.' ID )*
+	|	primary
+	;
+
+call:	ID {listener.instance($ID);} '(' args? ')' ;
+	
+primary
+	:	'super.' ('.' ID )*
+	|	'it'      {listener.refIteratorValue();}
 	|	o=ID	  {listener.refAttr($o);}
 		('.' p=ID {listener.refProp($p);} )*
 	|	STRING    {listener.refString($STRING);}
 	|	list
+	|	'(' mapExpr ')' {listener.eval();}
+		( {listener.instance(null);} '(' args? ')' )?
 	;
 
 template
@@ -105,9 +114,6 @@ template
 	                 listener.refString(new CommonToken(STRING,name));}
 	;
 	
-call:	ID {listener.instance($ID);} '(' args? ')'
-	;
-
 args:	arg (',' arg)* ;
 
 arg :	ID '=' expr {listener.setArg($ID);}

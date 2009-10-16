@@ -85,6 +85,11 @@ public class Interpreter {
                 name = self.code.strings[nameIndex];
                 operands[++sp] = self.getAttribute(name);
                 break;
+            case BytecodeDefinition.INSTR_LOAD_IT :
+                if ( self.attributes!=null ) o = self.attributes.get("it");
+                else o = null;
+                operands[++sp] = o;
+                break;
             case BytecodeDefinition.INSTR_LOAD_PROP :
                 nameIndex = getShort(code, ip);
                 ip += 2;
@@ -96,6 +101,12 @@ public class Interpreter {
                 nameIndex = getShort(code, ip);
                 ip += 2;
                 name = self.code.strings[nameIndex];
+                st = group.getEmbeddedInstanceOf(self, name);
+                if ( st == null ) System.err.println("no such template "+name);
+                operands[++sp] = st;
+                break;
+            case BytecodeDefinition.INSTR_VNEW :
+                name = (String)operands[sp--];
                 st = group.getEmbeddedInstanceOf(self, name);
                 if ( st == null ) System.err.println("no such template "+name);
                 operands[++sp] = st;
@@ -163,6 +174,10 @@ public class Interpreter {
                 o = operands[sp--];             // pop value
                 List<Object> list = (List<Object>)operands[sp]; // don't pop list
                 addToList(list, o);
+                break;
+            case BytecodeDefinition.INSTR_TOSTR :
+                // replace with string value; early eval
+                operands[sp] = toString(operands[sp]);
                 break;
             default :
                 System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));

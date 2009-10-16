@@ -297,5 +297,54 @@ public class TestCoreBasics {
         String expected = "works";
         String result = st.render();
         assertEquals(expected, result);
+    }
+
+    @Test public void testEarlyEval() throws Exception {
+        String template = "<(name)>";
+        ST st = new ST(template);
+        st.add("name", "Ter");
+        String expected = "Ter";
+        String result = st.render();
+        assertEquals(expected, result);
     }    
+
+    @Test public void testIndirectTemplateInclude() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("foo", "bar");
+        String template = "<(name)()>";
+        group.defineTemplate("test", template);
+        ST st = group.getInstanceOf("test");
+        st.add("name", "foo");
+        String expected = "bar";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testIndirectTemplateIncludeViaTemplate() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("foo", "bar");
+        group.defineTemplate("tname", "foo");
+        String template = "<(tname())()>";
+        group.defineTemplate("test", template);
+        ST st = group.getInstanceOf("test");
+        String expected = "bar";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testITDoesntPropagate() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("foo", "<it>");   // <it> not visible
+        String template = "<names:{<foo()>}>"; // <it> visible only to {...} here
+        group.defineTemplate("test", template);
+        ST st = group.getInstanceOf("test");
+        group.getInstanceOf("foo").code.dump();
+        st.code.dump();
+        st.add("names", "Ter");
+        st.add("names", "Tom");
+        String expected = "";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
 }

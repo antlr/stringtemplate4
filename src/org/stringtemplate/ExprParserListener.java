@@ -31,6 +31,7 @@ import org.antlr.runtime.Token;
 
 public interface ExprParserListener {
     public void refAttr(Token id);
+    public void refIteratorValue();
     public void refProp(Token id);
     public void refString(Token str);
     public void options();
@@ -43,6 +44,7 @@ public interface ExprParserListener {
     public String defineAnonTemplate(Token subtemplate);
     public void list();
     public void add();
+    public void eval();
 
     // TODO: add token range to each callback?
     

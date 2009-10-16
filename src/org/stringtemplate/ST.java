@@ -184,6 +184,11 @@ public class ST {
         STWriter wr = new AutoIndentWriter(out);
         try {
             write(wr);
+            /*
+            System.err.println("template size = "+code.template.length()+
+                               ", code size = "+code.instrs.length+", ratio = "+
+                               ((float)code.instrs.length/code.template.length()));
+                               */
         }
         catch (IOException io) {
             System.err.println("Got IOException writing to writer");
