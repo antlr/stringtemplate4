@@ -71,4 +71,18 @@ public class TestExprChunkifier {
         String result = chunks.toString();
         assertEquals(expected, result);
     }
+
+    @Test public void testNestedList() throws Exception {
+        String template =
+            "*<[names, [\"foo\",\"bar\"]:{<it>!},phones]; separator=\", \">*";
+        List<Chunk> chunks = new Chunkifier(template, '<', '>').chunkify();
+        String expected =
+            "[1:0:*, " +
+            "1:1:[names, [\"foo\",\"bar\"]:{<it>!},phones]; separator=\", \", " +
+            "1:56:*]";
+        String result = chunks.toString();
+        assertEquals(expected, result);
+    }
+
+
 }

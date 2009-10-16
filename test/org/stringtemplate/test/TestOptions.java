@@ -154,15 +154,6 @@ public class TestOptions {
         assertEquals(expected, result);
     }
 
-    @Test public void testMissingValuesInListAndNullOption() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "<[x,y]; null=\"n/a\", separator=\", \">");
-        ST st = group.getInstanceOf("test");
-        String expected = "n/a, n/a";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
     @Test public void testOptionDoesntApplyToNestedTemplate() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("foo", "<zippo>");

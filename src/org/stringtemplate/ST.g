@@ -82,7 +82,7 @@ option
 	;
 	
 value
-	:	expr
+	:	expr ( ':' template {listener.map();} )?
 	|	ANONYMOUS_TEMPLATE
 		{
 		String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
@@ -114,11 +114,12 @@ arg :	ID '=' expr {listener.setArg($ID);}
 //	|	expr set sole arg
 	;
 
-list:	{listener.list();} '[' listElement (',' listElement)* ']' ;
+list:	{listener.list();} '[' listElement (',' listElement)* ']'
+	|	{listener.list();} '[' ']'
+	;
 
 listElement
     :   value {listener.add();}
-    |
     ;
 
 ID  :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'/')*

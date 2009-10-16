@@ -135,8 +135,8 @@ public class Compiler implements ExprParserListener {
     public static LinkedHashMap<String,FormalArgument> parseSubtemplateArg(String block) {
         LinkedHashMap<String,FormalArgument> args = null;
         int pipe = block.indexOf('|');
-        String[] elems = block.substring(0,pipe+1).split(" ");
-        if ( elems.length==2 &&
+        String[] elems = block.substring(0,pipe+1).split("[ |]");
+        if ( elems.length==1 && // only allow 1 arg for now
              elems[0].matches(Compiler.ATTR_NAME_REGEX) )
         {
             args = new LinkedHashMap<String,FormalArgument>();

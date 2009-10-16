@@ -127,7 +127,7 @@ public class Interpreter {
             case BytecodeDefinition.INSTR_MAP :
                 name = (String)operands[sp--];
                 o = operands[sp--];
-                if ( o!=null ) map(self,o,name);
+                map(self,o,name);
                 break;
             case BytecodeDefinition.INSTR_ROT_MAP :
                 int nmaps = getShort(code, ip);
@@ -144,25 +144,25 @@ public class Interpreter {
             case BytecodeDefinition.INSTR_BRF :
                 addr = getShort(code, ip);
                 ip += 2;
-                o = (String)operands[sp--]; // <if(expr)>...<endif>
+                o = operands[sp--]; // <if(expr)>...<endif>
                 if ( !testAttributeTrue(o) ) ip = addr; // jump
                 break;
             case BytecodeDefinition.INSTR_BRT :
                 addr = getShort(code, ip);
                 ip += 2;
-                o = (String)operands[sp--]; // <if(expr)>...<endif>
+                o = operands[sp--]; // <if(expr)>...<endif>
                 if ( testAttributeTrue(o) ) ip = addr; // jump
                 break;
             case BytecodeDefinition.INSTR_OPTIONS :
                 operands[++sp] = new Object[Compiler.NUM_OPTIONS];
                 break;
             case BytecodeDefinition.INSTR_LIST :
-                operands[++sp] = new ArrayList();
+                operands[++sp] = new ArrayList<Object>();
                 break;
             case BytecodeDefinition.INSTR_ADD :
                 o = operands[sp--];             // pop value
-                List list = (List)operands[sp]; // don't pop list
-                list.add(o);
+                List<Object> list = (List<Object>)operands[sp]; // don't pop list
+                addToList(list, o);
                 break;
             default :
                 System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));
@@ -211,6 +211,7 @@ public class Interpreter {
     }
 
     protected int writeIterator(STWriter out, Object o, String[] options) throws IOException {
+        if ( o==null ) return 0;
         int n = 0;
         Iterator it = (Iterator)o;
         String separator = null;
@@ -229,6 +230,10 @@ public class Interpreter {
     }
 
     protected void map(ST self, Object attr, String name) {
+        if ( attr==null ) {
+            operands[++sp] = null;
+            return;
+        }
         attr = convertAnythingIteratableToIterator(attr);
         if ( attr instanceof Iterator ) {
             List<ST> mapped = new ArrayList<ST>();
@@ -283,6 +288,19 @@ public class Interpreter {
         }
     }
 
+    protected void addToList(List<Object> list, Object o) {
+        if ( o==null ) return; // [a,b,c] lists ignore null values
+        o = Interpreter.convertAnythingIteratableToIterator(o);
+        if ( o instanceof Iterator ) {
+            // copy of elements into our temp list
+            Iterator it = (Iterator)o;
+            while (it.hasNext()) list.add(it.next());
+        }
+        else {
+            list.add(o);
+        }
+    }
+        
     protected String toString(Object value) {
         if ( value!=null ) {
             if ( value.getClass()==String.class ) return (String)value;
@@ -315,6 +333,10 @@ public class Interpreter {
     }
 
     protected Object rawGetObjectProperty(Object o, Object property) {
+        if ( o==null || property==null ) {
+            // TODO: throw Ill arg if they want
+            return null;
+        }
         Class c = o.getClass();
         Object value = null;
 
@@ -416,9 +438,8 @@ public class Interpreter {
     }
 
     protected void printForTrace(Object o) {
-        if ( o==null ) return;
         if ( o instanceof ST ) {
-            System.out.print(" <<"+((ST)o).name+">>");
+            System.out.print(" "+((ST)o).name+"()");
             return;
         }
         o = convertAnythingIteratableToIterator(o);
