@@ -106,7 +106,7 @@ public class Interpreter {
                 ip += 2;
                 o = operands[sp--];    // value to store
                 st = (ST)operands[sp]; // store arg in ST on top of stack
-                st.setAttribute(name, o);
+                st.rawSetAttribute(name, o);
                 break;
             case BytecodeDefinition.INSTR_STORE_OPTION:
                 int optionIndex = getShort(code, ip);
@@ -216,14 +216,19 @@ public class Interpreter {
         Iterator it = (Iterator)o;
         String separator = null;
         if ( options!=null ) separator = options[OPTION_SEPARATOR];
+        boolean seenAValue = false;
         int i = 0;
         while ( it.hasNext() ) {
             Object iterValue = it.next();
             // Emit separator if we're beyond first value
-            if ( i > 0 && separator!=null ) {
-                n += out.writeSeparator(separator);
-            }
-            n += writeObject(out, iterValue, options);
+            boolean needSeparator = seenAValue &&
+                separator!=null &&            // we have a separator and
+                (iterValue!=null ||           // either we have a value
+                 options[OPTION_NULL]!=null); // or no value but null option
+            if ( needSeparator ) n += out.writeSeparator(separator);
+            int nw = writeObject(out, iterValue, options);
+            if ( nw > 0 ) seenAValue = true;
+            n += nw;
             i++;
         }
         return n;
@@ -281,10 +286,10 @@ public class Interpreter {
     protected void setSoleArgument(ST st, Object attr) {
         if ( st.code.formalArguments!=null ) {
             String arg = st.code.formalArguments.keySet().iterator().next();
-            st.setAttribute(arg, attr);
+            st.rawSetAttribute(arg, attr);
         }
         else {
-            st.setAttribute("it", attr);
+            st.rawSetAttribute("it", attr);
         }
     }
 

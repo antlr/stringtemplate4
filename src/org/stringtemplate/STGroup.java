@@ -48,6 +48,24 @@ public class STGroup {
 
     public static STGroup defaultGroup = new STGroup();
 
+    public static STErrorListener DEFAULT_ERROR_LISTENER =
+        new STErrorListener() {
+            public void error(String s, Throwable e) {
+                System.err.println(s);
+                if ( e!=null ) {
+                    e.printStackTrace(System.err);
+                }
+            }
+            public void warning(String s) {
+                System.out.println(s);
+            }
+        };
+
+    /** Where to report errors.  All string templates in this group
+     *  use this error handler by default.
+     */
+    protected STErrorListener listener = DEFAULT_ERROR_LISTENER;
+
     public STGroup() {
         ;
     }
@@ -167,6 +185,10 @@ public class STGroup {
         return buf.toString();
     }
 
+    public void setErrorListener(STErrorListener listener) {
+        this.listener = listener;
+    }
+    
     // Temp / testing
     public static STGroup load(String filename) throws Exception {
         ANTLRFileStream fs = new ANTLRFileStream(filename);

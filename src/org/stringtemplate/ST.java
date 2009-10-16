@@ -86,7 +86,7 @@ public class ST {
 
         Object curvalue = null;
         if ( attributes==null || !attributes.containsKey(name) ) { // new attribute
-            setAttribute(name, value);
+            rawSetAttribute(name, value);
             return;
         }
         if ( attributes!=null ) curvalue = attributes.get(name);
@@ -95,7 +95,7 @@ public class ST {
         // convert current attribute to list if not already
         // copy-on-write semantics; copy a list injected by user to add new value
         AttributeList multi = convertToAttributeList(curvalue);
-        setAttribute(name, multi); // replace with list
+        rawSetAttribute(name, multi); // replace with list
 
         // now, add incoming value to multi-valued attribute
         if ( value instanceof List ) {
@@ -110,7 +110,7 @@ public class ST {
         }
     }
 
-    public void setAttribute(String name, Object value) {
+    protected void rawSetAttribute(String name, Object value) {
         if ( attributes==null ) attributes = new HashMap<String,Object>();
         attributes.put(name, value);
     }

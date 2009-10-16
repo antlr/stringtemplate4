@@ -11,7 +11,7 @@ public class BlankST extends ST {
 
     public void add(String name, Object value) { }
 
-    public void setAttribute(String name, Object value) { }
+    public void rawSetAttribute(String name, Object value) { }
 
     public Object getAttribute(String name) { return null; }
 

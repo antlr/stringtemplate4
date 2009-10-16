@@ -61,56 +61,6 @@ public class TestOptions {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorWithNullFirstValue() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "hi <name; separator=\", \">!");
-        ST st = group.getInstanceOf("test");
-        st.add("name", null);
-        st.add("name", "Tom");
-        st.add("name", "Sumana");
-        String expected = "hi , Tom, Sumana!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
-    @Test public void testSeparatorWithNull2ndValue() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "hi <name; separator=\", \">!");
-        ST st = group.getInstanceOf("test");
-        st.add("name", "Ter");
-        st.add("name", null);
-        st.add("name", "Sumana");
-        String expected = "hi Ter, , Sumana!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
-    @Test public void testSeparatorWithNullLastValue() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "hi <name; separator=\", \">!");
-        ST st = group.getInstanceOf("test");
-        st.add("name", "Ter");
-        st.add("name", "Tom");
-        st.add("name", null);
-        String expected = "hi Ter, Tom, !";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
-    @Test public void testSeparatorWithTwoNullValuesInRow() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "hi <name; separator=\", \">!");
-        ST st = group.getInstanceOf("test");
-        st.add("name", "Ter");
-        st.add("name", "Tom");
-        st.add("name", null);
-        st.add("name", null);
-        st.add("name", "Sri");
-        String expected = "hi Ter, Tom, , , Sri!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
     @Test public void testSeparatorWithNullFirstValueAndNullOption() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "hi <name; null=\"n/a\", separator=\", \">!");
