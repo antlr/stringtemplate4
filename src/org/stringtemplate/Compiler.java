@@ -75,17 +75,25 @@ public class Compiler implements ExprParserListener {
     public static int subtemplateCount = 0;
 
     public CompiledST compile(String template) throws Exception {
+        return compile(template, '<', '>');
+    }
+    
+    public CompiledST compile(String template,
+                              char delimiterStartChar,
+                              char delimiterStopChar)
+        throws Exception
+    {
         strings = new StringTable();
         int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
         instrs = new byte[initialSize];
         //System.out.println("compile "+template);
-        List<Chunk> chunks = new Chunkifier(template, '<', '>').chunkify();
+        List<Chunk> chunks = new Chunkifier(template, delimiterStartChar, delimiterStopChar).chunkify();
         for (Chunk c : chunks) {
             //System.out.println("compile chunk "+c.text);
             if ( c.isExpr() ) {
                 STLexer lexer = new STLexer(new ANTLRStringStream(c.text));
                 CommonTokenStream tokens = new CommonTokenStream(lexer);
-                STParser parser = new STParser(tokens, this);
+                STParser parser = new STParser(tokens, this, delimiterStartChar, delimiterStopChar);
                 int firstTokenType = tokens.LA(1);
 
                 if ( firstTokenType==STLexer.IF ) ifs.push(c);

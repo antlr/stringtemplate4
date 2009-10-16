@@ -55,7 +55,7 @@ public class Chunkifier {
     public List<Chunk> chunkify() {
         while ( input.index() < n ) {
             if ( c=='\\' ) { consume(); consume(); continue; }
-            if ( c== delimiterStartChar) {       // match everything inside delimiters
+            if ( c==delimiterStartChar) {       // match everything inside delimiters
                 exprStart = input.index()+1;
                 if ( input.index()>strStart ) {
                     String text = input.substring(strStart,input.index()-1);
@@ -64,7 +64,8 @@ public class Chunkifier {
                 matchExpr();
                 String expr = input.substring(exprStart, exprStop+1-1);
                 chunks.add(new ExprChunk(expr,line,exprStart-1));
-                strStart = input.index()+1; // string starts again after stop delimiter
+                strStart = input.index(); // string starts again after stop delimiter
+                continue;
             }
             consume();
         }
@@ -77,16 +78,17 @@ public class Chunkifier {
 
     protected void matchExpr() {
         consume();                // skip over start delimiter
-        while ( input.index() < n ) {   // scan for stop delimiter
+        while ( c!=delimiterStopChar ) {   // scan for stop delimiter
             if ( c=='\\' ) { consume(); consume(); continue; }
             if ( c=='"' ) { matchString(); continue; }
             if ( c=='{' ) { consume(); matchBlock(); continue; }
-            if ( c== delimiterStopChar) { exprStop=input.index()-1; break; }
             consume();
         }
+        exprStop=input.index()-1;
         if ( input.index() >= n ) {
             throw new IllegalArgumentException("missing terminating delimiter expression; i="+input.index());
         }
+        consume(); // skip final > or $ delimiter char
     }
 
     protected void matchString() {
@@ -112,13 +114,12 @@ public class Chunkifier {
     }
 
     protected void consume() {
-        //i++;
         input.consume();
         if ( input.index()<n ) {
             charPositionInLine++;
-            //c = template.charAt(i);
             c = input.LA(1);
             if ( c=='\n' ) { line++; charPositionInLine=0; }
         }
+        // TODO: else ERROR
     }
 }

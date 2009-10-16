@@ -32,12 +32,24 @@ tokens { IF='if('; ELSE='else'; ELSEIF='elseif('; ENDIF='endif'; }
 @header { package org.stringtemplate; }
 @lexer::header { package org.stringtemplate; }
 
+@lexer::members {
+char delimiterStartChar;
+char delimiterStopChar;
+}
+
 @members {
 public boolean exprHasOptions = false;
 ExprParserListener listener;
-public STParser(TokenStream input, ExprParserListener listener) {
+public STParser(TokenStream input,
+				ExprParserListener listener,
+                char delimiterStartChar,
+                char delimiterStopChar)
+{
     this(input, new RecognizerSharedState());
     this.listener = listener;
+    STLexer lex = (STLexer)input.getTokenSource();
+    lex.delimiterStartChar = delimiterStartChar;
+    lex.delimiterStopChar = delimiterStopChar;
 }
 }
 
@@ -118,9 +130,8 @@ STRING
     ;
 
 ANONYMOUS_TEMPLATE
-    :	'{'  { new Chunkifier(input, '<', '>').matchBlock(); }
+    :	'{'  { new Chunkifier(input,delimiterStartChar,delimiterStopChar).matchBlock(); }
     	{setText(getText().substring(1, getText().length()-1));}
     ;
 
-WS  :       (' '|'\t'|'\r'|'\n')+ {skip();}
-    ;
+WS  :	(' '|'\t'|'\r'|'\n')+ {skip();} ;

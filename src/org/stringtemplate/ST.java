@@ -70,6 +70,12 @@ public class ST {
         code = group.defineTemplate(UNKNOWN_NAME, template);
     }
 
+    public ST(String template, char delimiterStartChar, char delimiterStopChar)
+        throws Exception
+    {
+        code = group.defineTemplate(UNKNOWN_NAME, template);
+    }
+
     public void add(String name, Object value) {
         if ( name==null ) return; // allow null value
         if ( name.indexOf('.')>=0 ) {

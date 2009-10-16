@@ -297,5 +297,5 @@ public class TestCoreBasics {
         String expected = "works";
         String result = st.render();
         assertEquals(expected, result);
-    }
+    }    
 }

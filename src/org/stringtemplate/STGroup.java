@@ -40,6 +40,8 @@ public class STGroup {
 
     public List<String> interfaces;
 
+    public char delimiterStartChar = '<';
+    public char delimiterStopChar = '>';
 
     /** Maps template name to StringTemplate object */
     protected LinkedHashMap<String, CompiledST> templates = new LinkedHashMap<String,CompiledST>();
