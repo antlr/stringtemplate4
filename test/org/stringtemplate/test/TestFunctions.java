@@ -297,10 +297,19 @@ public class TestFunctions extends BaseTest {
 
     @Test public void testTrim() throws Exception {
         ST e = new ST(
-                "<last(names)>"
+                "<trim(name)>"
             );
-        e.add("names", new ArrayList() {{add("Ter");}});
+        e.add("name", " Ter  \n");
         String expecting = "Ter";
+        assertEquals(expecting, e.render());
+    }
+
+    @Test public void testStrlen() throws Exception {
+        ST e = new ST(
+                "<strlen(name)>"
+            );
+        e.add("name", "012345");
+        String expecting = "6";
         assertEquals(expecting, e.render());
     }
 }
