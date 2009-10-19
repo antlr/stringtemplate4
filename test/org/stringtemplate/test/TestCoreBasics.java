@@ -35,14 +35,7 @@ import org.stringtemplate.STGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestCoreBasics {
-    public static class User {
-        public int id;
-        public String name;
-        public User(int id, String name) { this.id = id; this.name = name; }
-        public String getName() { return name; }
-    }
-
+public class TestCoreBasics extends BaseTest {
     @Test public void testNullAttr() throws Exception {
         String template = "hi <name>!";
         ST st = new ST(template);
@@ -126,6 +119,16 @@ public class TestCoreBasics {
         String template = "load <box(x=\"arg\")>;";
         ST st = new ST(template);
         st.group.defineTemplate("box", "kewl <x> daddy");
+        st.add("name", "Ter");
+        String expected = "load kewl arg daddy;";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testIncludeWithSingleUnnamedArg() throws Exception {
+        String template = "load <box(\"arg\")>;";
+        ST st = new ST(template);
+        st.group.defineTemplate("box", new String[]{"x"}, "kewl <x> daddy");
         st.add("name", "Ter");
         String expected = "load kewl arg daddy;";
         String result = st.render();

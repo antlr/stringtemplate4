@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
 
-public class TestSubtemplates {
+public class TestSubtemplates extends BaseTest {
     @Test public void testSimpleIteration() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "<names:{<it>}>!");

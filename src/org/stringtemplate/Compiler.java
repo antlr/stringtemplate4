@@ -134,10 +134,18 @@ public class Compiler implements ExprParserListener {
 
     public static LinkedHashMap<String,FormalArgument> parseSubtemplateArg(String block) {
         LinkedHashMap<String,FormalArgument> args = null;
+        /*
+        String ws = "\\s*";
+        String argPattern = ws+ATTR_NAME_REGEX+ws+"|";
+        if ( block.matches(argPattern) ) System.out.println("matches: "+block);
+        else System.out.println("doens't match "+argPattern+": "+block);
+        */
         int pipe = block.indexOf('|');
-        String[] elems = block.substring(0,pipe+1).split("[ |]");
+        if ( pipe<0 ) return null;
+        String argStr = block.substring(0,pipe+1).trim();
+        String[] elems = argStr.split("[, |]");
         if ( elems.length==1 && // only allow 1 arg for now
-             elems[0].matches(Compiler.ATTR_NAME_REGEX) )
+             elems[0].matches(ATTR_NAME_REGEX) )
         {
             args = new LinkedHashMap<String,FormalArgument>();
             args.put(elems[0],null);
@@ -215,7 +223,8 @@ public class Compiler implements ExprParserListener {
     }
 
     public void setArg(Token arg) {
-        gen(BytecodeDefinition.INSTR_STORE_ATTR, arg.getText());
+        if ( arg==null ) gen(BytecodeDefinition.INSTR_STORE_SOLE_ARG);
+        else gen(BytecodeDefinition.INSTR_STORE_ATTR, arg.getText());
     }
 
     public void ifExpr(Token t) {
@@ -271,7 +280,12 @@ public class Compiler implements ExprParserListener {
     public void eval() { gen(BytecodeDefinition.INSTR_TOSTR); }
 
     public void func(Token id) {
-        gen(BytecodeDefinition.INSTR_FUNC, id.getText());
+        Integer funcIndex = Interpreter.funcs.get(id.getText());
+        if ( funcIndex==null ) {
+            System.err.println("no such fun: "+id);
+            gen(BytecodeDefinition.INSTR_FUNC, Interpreter.FUNC_NOOP);
+        }
+        gen(BytecodeDefinition.INSTR_FUNC, funcIndex);
     }
 
     // GEN

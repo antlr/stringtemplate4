@@ -6,7 +6,7 @@ import org.stringtemplate.*;
 
 import java.util.List;
 
-public class TestDollarDelimiters {
+public class TestDollarDelimiters extends BaseTest {
     @Test public void testSimpleAttr() throws Exception {
         String template = "hi $name$";
         List<Chunk> chunks = new Chunkifier(template, '$', '$').chunkify();

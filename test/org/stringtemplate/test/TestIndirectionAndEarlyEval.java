@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
 
-public class TestIndirectionAndEarlyEval {
+public class TestIndirectionAndEarlyEval extends BaseTest {
     @Test public void testEarlyEval() throws Exception {
         String template = "<(name)>";
         ST st = new ST(template);

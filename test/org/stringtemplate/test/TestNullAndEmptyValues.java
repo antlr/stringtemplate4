@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 
-public class TestNullAndEmptyValues {
+public class TestNullAndEmptyValues extends BaseTest {
     @Test public void testSeparatorWithNullFirstValue() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "hi <name; separator=\", \">!");

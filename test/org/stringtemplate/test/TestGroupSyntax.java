@@ -4,9 +4,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.*;
 
-public class TestGroupSyntax {
-    private static final String tmpdir = System.getProperty("java.io.tmpdir");
-
+public class TestGroupSyntax extends BaseTest {
     @Test public void testSimpleGroup() throws Exception {
         String templates =
             "group t;" + Misc.newline+

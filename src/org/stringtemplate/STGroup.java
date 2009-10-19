@@ -100,7 +100,27 @@ public class STGroup {
     }
 
     public CompiledST defineTemplate(String name, String template) {
-        return defineTemplate(name, null, template);
+        return defineTemplate(name, (LinkedHashMap<String,FormalArgument>)null, template);
+    }
+
+    public CompiledST defineTemplate(String name,
+                                     List<String> args,
+                                     String template)
+    {
+        LinkedHashMap<String,FormalArgument> margs =
+            new LinkedHashMap<String,FormalArgument>();
+        for (String a : args) margs.put(a, new FormalArgument(a));
+        return defineTemplate(name, margs, template);
+    }
+
+    public CompiledST defineTemplate(String name,
+                                     String[] args,
+                                     String template)
+    {
+        LinkedHashMap<String,FormalArgument> margs =
+            new LinkedHashMap<String,FormalArgument>();
+        for (String a : args) margs.put(a, new FormalArgument(a));
+        return defineTemplate(name, margs, template);
     }
 
     public CompiledST defineTemplate(String name,

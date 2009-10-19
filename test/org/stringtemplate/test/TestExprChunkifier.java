@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-public class TestExprChunkifier {
+public class TestExprChunkifier extends BaseTest {
     @Test public void testEsc() throws Exception {
         String template = "hi \\<name>";
         List<Chunk> chunks = new Chunkifier(template, '<', '>').chunkify();

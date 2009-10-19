@@ -50,6 +50,7 @@ public class FormalArgument {
 		this.defaultValue = defaultValue;
 	}
 
+    /*
     public static String getCardinalityName(int cardinality) {
         switch (cardinality) {
             case OPTIONAL : return "optional";
@@ -59,6 +60,7 @@ public class FormalArgument {
             default : return "unknown";
         }
     }
+    */
 
     public int hashCode() {
         return name.hashCode() + defaultValue.hashCode();

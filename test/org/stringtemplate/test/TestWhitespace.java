@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.ST;
 
-public class TestWhitespace {
+public class TestWhitespace extends BaseTest {
     @Test public void testTrimmedSubtemplates() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "<names:{n | <n> }>!");

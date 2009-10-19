@@ -3,8 +3,12 @@ package org.stringtemplate.test;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
+import org.stringtemplate.STGroup;
+import org.stringtemplate.Misc;
 
-public class TestLists {
+import java.io.StringReader;
+
+public class TestLists extends BaseTest {
 	@Test public void testJustCat() throws Exception {
 		ST e = new ST(
 				"<[names,phones]>"
@@ -100,4 +104,22 @@ public class TestLists {
         String expecting = "Ter, Tom, foo!, bar!, 1, 2";
         assertEquals(expecting, e.render());
     }
+
+    @Test public void testListAsTemplateArgument() throws Exception {
+		String templates =
+				"group test;" +newline+
+				"test(names,phones) ::= \"<foo([names,phones])>\""+newline+
+				"foo(items) ::= \"<items:{a | *<a>*}>\""+newline
+				;
+        Misc.writeFile(tmpdir, "t.stg", templates);
+        STGroup group = STGroup.load(tmpdir+"/"+"t.stg");
+		ST e = group.getInstanceOf("test");
+		e.add("names", "Ter");
+		e.add("names", "Tom");
+		e.add("phones", "1");
+		e.add("phones", "2");
+		String expecting = "*Ter**Tom**1**2*";
+		String result = e.render();
+		assertEquals(expecting, result);
+	}    
 }

@@ -43,7 +43,35 @@ public class Interpreter {
 
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
-    public interface fptr { public Object exec(Object v); }
+    /** Predefined functions */
+    public static final int FUNC_FIRST  = 1;
+    public static final int FUNC_LAST   = 2;
+    public static final int FUNC_REST   = 3;
+    public static final int FUNC_TRUNC  = 4;
+    public static final int FUNC_STRIP  = 5;
+    public static final int FUNC_TRIM   = 6;
+    public static final int FUNC_LENGTH = 7;
+    public static final int FUNC_STRLEN = 8;
+    public static final int FUNC_NOOP   = 9; // do nothing
+    public static final int NUM_FUNCS   = 9;
+
+    /*
+    public static String[] funcName =
+        { "first", "last", "rest", "trunc", "strip", "length", "strlen" };
+     */
+
+    public static Map<String, Integer> funcs = new HashMap<String, Integer>() {
+        {
+            put("first", FUNC_FIRST);
+            put("last", FUNC_LAST);
+            put("rest", FUNC_REST);
+            put("trunc", FUNC_TRUNC);
+            put("strip", FUNC_STRIP);
+            put("trim", FUNC_TRIM);
+            put("length", FUNC_LENGTH);
+            put("strlen", FUNC_STRLEN);
+        }
+    };    
 
     /** Operand stack, grows upwards */
     Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
@@ -62,7 +90,6 @@ public class Interpreter {
 
     public int exec(STWriter out, ST self) {
         int n = 0; // how many char we write out
-        int nw = 0;
         int nameIndex = 0;
         int addr = 0;
         String name = null;
@@ -125,6 +152,23 @@ public class Interpreter {
                 st = (ST)operands[sp]; // store arg in ST on top of stack
                 st.rawSetAttribute(name, o);
                 break;
+            case BytecodeDefinition.INSTR_STORE_SOLE_ARG :
+                // unnamed arg, set to sole arg (or first if multiple)
+                o = operands[sp--];    // value to store
+                st = (ST)operands[sp]; // store arg in ST on top of stack
+                int nargs = 0;
+                if ( st.code.formalArguments!=null ) {
+                    nargs = st.code.formalArguments.size();
+                }
+                if ( nargs!=1 ) {
+                    System.err.println("arg mismatch; expecting 1, found "+nargs);
+                }
+                else {
+                    Iterator it = st.code.formalArguments.keySet().iterator();
+                    name = (String)it.next();
+                    st.rawSetAttribute(name, o);
+                }
+                break;
             case BytecodeDefinition.INSTR_STORE_OPTION:
                 int optionIndex = getShort(code, ip);
                 ip += 2;
@@ -186,10 +230,9 @@ public class Interpreter {
                 operands[sp] = toString(operands[sp]);
                 break;
             case BytecodeDefinition.INSTR_FUNC :
-                nameIndex = getShort(code, ip);
+                int funcIndex = getShort(code, ip);
                 ip += 2;
-                name = self.code.strings[nameIndex];
-                operands[sp] = func(name, operands[sp]);
+                operands[sp] = func(funcIndex, operands[sp]);
                 break;
             default :
                 System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));
@@ -361,105 +404,174 @@ public class Interpreter {
     /** Return the first attribute if multiple valued or the attribute
      *  itself if single-valued.  Used in <names:first()>
      */
-    public static fptr _first = new fptr() {
-        public Object exec(Object v) {
-            if ( v==null ) return null;
-            Object r = v;
-            v = convertAnythingIteratableToIterator(v);
-            if ( v instanceof Iterator ) {
-                Iterator it = (Iterator)v;
-                if ( it.hasNext() ) {
-                    r = it.next();
-                }
+    public Object first(Object v) {
+        if ( v==null ) return null;
+        Object r = v;
+        v = convertAnythingIteratableToIterator(v);
+        if ( v instanceof Iterator ) {
+            Iterator it = (Iterator)v;
+            if ( it.hasNext() ) {
+                r = it.next();
             }
-            return r;
         }
-    };
+        return r;
+    }
 
     /** Return the last attribute if multiple valued or the attribute
-     *  itself if single-valued.  Used in <names:last()>.  This is pretty
-     *  slow as it iterates until the last element.  Ultimately, I could
-     *  make a special case for a List or Vector.
+     *  itself if single-valued. Unless it's a list or array, this is pretty
+     *  slow as it iterates until the last element.
      */
-    public static fptr _last = new fptr() {
-        public Object exec(Object v) {
-            return null;
+    public Object last(Object v) {
+        if ( v==null ) return null;
+        if ( v instanceof List ) return ((List)v).get(((List)v).size()-1);
+        else if ( v.getClass().isArray() ) {
+            Object[] elems = (Object[])v;
+            return elems[elems.length-1];
         }
-    };
+        Object last = v;
+        v = convertAnythingIteratableToIterator(v);
+        if ( v instanceof Iterator ) {
+            Iterator it = (Iterator)v;
+            while ( it.hasNext() ) {
+                last = it.next();
+            }
+        }
+        return last;
+    }
 
-    /** Return the everything but the first attribute if multiple valued
-     *  or null if single-valued.  Used in <names:rest()>.
+    /** Return everything but the first attribute if multiple valued
+     *  or null if single-valued.
      */
-    public static fptr _rest = new fptr() {
-        public Object exec(Object v) {
+    public Object rest(Object v) {
+        if ( v==null ) {
             return null;
         }
-    };
+        if ( v instanceof List ) { // optimize list case
+            List elems = (List)v;
+            if ( elems.size()<=1 ) return null;
+            return elems.subList(1, elems.size());
+        }
+        Object theRest = v; // else iterate and copy 
+        v = convertAnythingIteratableToIterator(v);
+        if ( v instanceof Iterator ) {
+            List a = new ArrayList();
+            Iterator it = (Iterator)v;
+            if ( !it.hasNext() ) {
+                return null; // if not even one value return null
+            }
+            it.next(); // ignore first value
+            while (it.hasNext()) {
+                Object o = (Object) it.next();
+                if ( o!=null ) a.add(o);
+            }
+            return a;
+        }
+        else {
+            theRest = null;  // rest of single-valued attribute is null
+        }
+        return theRest;
+    }
 
     /** Return all but the last element.  trunc(x)=null if x is single-valued. */
-    public static fptr _trunc = new fptr() {
-        public Object exec(Object v) {
+    public Object trunc(Object v) {
+        if ( v ==null ) {
             return null;
         }
-    };
+        if ( v instanceof List ) { // optimize list case
+            List elems = (List)v;
+            if ( elems.size()<=1 ) return null;
+            return elems.subList(0, elems.size()-1);
+        }
+        v = convertAnythingIteratableToIterator(v);
+        if ( v instanceof Iterator ) {
+            List a = new ArrayList();
+            Iterator it = (Iterator) v;
+            while (it.hasNext()) {
+                Object o = (Object) it.next();
+                if ( it.hasNext() ) a.add(o); // only add if not last one
+            }
+            return a;
+        }
+        return null; // trunc(x)==null when x single-valued attribute
+    }
 
     /** Return a new list w/o null values. */
-    public static fptr _strip = new fptr() {
-        public Object exec(Object v) {
+    public Object strip(Object v) {
+        if ( v ==null ) {
             return null;
         }
-    };
+        v = convertAnythingIteratableToIterator(v);
+        if ( v instanceof Iterator ) {
+            List a = new ArrayList();
+            Iterator it = (Iterator) v;
+            while (it.hasNext()) {
+                Object o = (Object) it.next();
+                if ( o!=null ) a.add(o);
+            }
+            return a;
+        }
+        return v; // strip(x)==x when x single-valued attribute
+    }
 
     /** Return the length of a mult-valued attribute or 1 if it is a
      *  single attribute. If attribute is null return 0.
      *  Special case several common collections and primitive arrays for
      *  speed. This method by Kay Roepke from v3.
      */
-    public static fptr _length = new fptr() {
-        public Object exec(Object v) {
-            if ( v == null) return 0;
-            int i = 1;      // we have at least one of something. Iterator and arrays might be empty.
-            if ( v instanceof Map ) i = ((Map)v).size();
-            else if ( v instanceof Collection ) i = ((Collection)v).size();
-            else if ( v instanceof Object[] ) i = ((Object[])v).length;
-            else if ( v instanceof String[] ) i = ((String[])v).length;
-            else if ( v instanceof int[] ) i = ((int[])v).length;
-            else if ( v instanceof long[] ) i = ((long[])v).length;
-            else if ( v instanceof float[] ) i = ((float[])v).length;
-            else if ( v instanceof double[] ) i = ((double[])v).length;
-            else if ( v instanceof Iterator) {
-                Iterator it = (Iterator)v;
-                i = 0;
-                while ( it.hasNext() ) {
-                    it.next();
-                    i++;
-                }
+    public Object length(Object v) {
+        if ( v == null) return 0;
+        int i = 1;      // we have at least one of something. Iterator and arrays might be empty.
+        if ( v instanceof Map ) i = ((Map)v).size();
+        else if ( v instanceof Collection ) i = ((Collection)v).size();
+        else if ( v instanceof Object[] ) i = ((Object[])v).length;
+        else if ( v instanceof String[] ) i = ((String[])v).length;
+        else if ( v instanceof int[] ) i = ((int[])v).length;
+        else if ( v instanceof long[] ) i = ((long[])v).length;
+        else if ( v instanceof float[] ) i = ((float[])v).length;
+        else if ( v instanceof double[] ) i = ((double[])v).length;
+        else if ( v instanceof Iterator) {
+            Iterator it = (Iterator)v;
+            i = 0;
+            while ( it.hasNext() ) {
+                it.next();
+                i++;
             }
-            return i;
         }
-    };
+        return i;
+    }
 
-    /** Predefined functions; sorry to hide here but needs to be after func
-     *  implementations.
+    public Object strlen(Object v) {
+        return null;
+    }
+
+    /** Exec builtin function; could do with pseudo func ptrs but it's
+     *  weird in Java and harder to port to other languages.  I'm doing
+     *  a simple func lookup via int instead.
      */
-    public static Map<String, fptr> funcs = new HashMap<String, fptr>() {
-        {
-            put("first",  _first);
-            put("last",   _last);
-            put("rest",   _rest);
-            put("trunc",  _trunc);
-            put("strip",  _strip);
-            put("length", _length);
+    protected Object func(int func, Object value) {
+        switch ( func ) {
+            case FUNC_FIRST  : return first(value);
+            case FUNC_LAST   : return last(value);
+            case FUNC_REST   : return rest(value);
+            case FUNC_TRUNC  : return trunc(value);
+            case FUNC_STRIP  : return strip(value);
+            case FUNC_TRIM   :
+                if ( value.getClass() == String.class ) {
+                    return ((String)value).trim();
+                }
+                else System.err.println("strlen(non string)");
+                break;
+            case FUNC_LENGTH : return length(value);
+            case FUNC_STRLEN :
+                if ( value.getClass() == String.class ) {
+                    return ((String)value).length();
+                }
+                else System.err.println("strlen(non string)"); 
+                break;
+            default :
+                System.err.println("no such func: "+func);
         }
-    };    
-
-    protected Object func(String name, Object value) {
-        fptr f = funcs.get(name);
-        if ( f == null ) {
-            System.err.println("no such func: "+name);
-            return null;
-        }
-        return f.exec(value);
+        return null;
     }
         
     protected String toString(Object value) {

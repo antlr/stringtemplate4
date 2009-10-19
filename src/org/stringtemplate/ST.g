@@ -95,7 +95,7 @@ expr:	call
 	;
 
 call:	{Interpreter.funcs.containsKey(input.LT(1).getText())}?
-		ID '(' arg ')' {listener.func($ID);}
+		ID '(' expr ')' {listener.func($ID);}
 	|	ID {listener.instance($ID);} '(' args? ')'
 	;
 	
@@ -115,7 +115,7 @@ primary
 args:	arg (',' arg)* ;
 
 arg :	ID '=' expr {listener.setArg($ID);}
-	|	expr // TODO; set sole arg
+	|	expr        {listener.setArg(null);}
 	;
 
 template
