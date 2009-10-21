@@ -43,33 +43,21 @@ public class Interpreter {
 
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
-    /** Predefined functions */
-    public static final int FUNC_FIRST  = 1;
-    public static final int FUNC_LAST   = 2;
-    public static final int FUNC_REST   = 3;
-    public static final int FUNC_TRUNC  = 4;
-    public static final int FUNC_STRIP  = 5;
-    public static final int FUNC_TRIM   = 6;
-    public static final int FUNC_LENGTH = 7;
-    public static final int FUNC_STRLEN = 8;
-    public static final int FUNC_NOOP   = 9; // do nothing
-    public static final int NUM_FUNCS   = 9;
-
     /*
     public static String[] funcName =
         { "first", "last", "rest", "trunc", "strip", "length", "strlen" };
      */
 
-    public static Map<String, Integer> funcs = new HashMap<String, Integer>() {
+    public static Map<String, Short> funcs = new HashMap<String, Short>() {
         {
-            put("first", FUNC_FIRST);
-            put("last", FUNC_LAST);
-            put("rest", FUNC_REST);
-            put("trunc", FUNC_TRUNC);
-            put("strip", FUNC_STRIP);
-            put("trim", FUNC_TRIM);
-            put("length", FUNC_LENGTH);
-            put("strlen", FUNC_STRLEN);
+            put("first", BytecodeDefinition.INSTR_FIRST);
+            put("last", BytecodeDefinition.INSTR_LAST);
+            put("rest", BytecodeDefinition.INSTR_REST);
+            put("trunc", BytecodeDefinition.INSTR_TRUNC);
+            put("strip", BytecodeDefinition.INSTR_STRIP);
+            put("trim", BytecodeDefinition.INSTR_TRIM);
+            put("length", BytecodeDefinition.INSTR_LENGTH);
+            put("strlen", BytecodeDefinition.INSTR_STRLEN);
         }
     };    
 
@@ -229,10 +217,37 @@ public class Interpreter {
                 // replace with string value; early eval
                 operands[sp] = toString(operands[sp]);
                 break;
-            case BytecodeDefinition.INSTR_FUNC :
-                int funcIndex = getShort(code, ip);
-                ip += 2;
-                operands[sp] = func(funcIndex, operands[sp]);
+            case BytecodeDefinition.INSTR_FIRST  :
+                operands[sp] = first(operands[sp]);
+                break;
+            case BytecodeDefinition.INSTR_LAST   :
+                operands[sp] = last(operands[sp]);
+                break;
+            case BytecodeDefinition.INSTR_REST   :
+                operands[sp] = rest(operands[sp]);
+                break;
+            case BytecodeDefinition.INSTR_TRUNC  :
+                operands[sp] = trunc(operands[sp]);
+                break;
+            case BytecodeDefinition.INSTR_STRIP  :
+                operands[sp] = strip(operands[sp]);
+                break;
+            case BytecodeDefinition.INSTR_TRIM   :
+                o = operands[sp--];
+                if ( o.getClass() == String.class ) {
+                    operands[++sp] = ((String)o).trim();
+                }
+                else System.err.println("strlen(non string)");
+                break;
+            case BytecodeDefinition.INSTR_LENGTH :
+                operands[sp] = length(operands[sp]);
+                break;
+            case BytecodeDefinition.INSTR_STRLEN :
+                o = operands[sp--];
+                if ( o.getClass() == String.class ) {
+                    operands[++sp] = ((String)o).length();
+                }
+                else System.err.println("strlen(non string)");
                 break;
             default :
                 System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));
@@ -547,7 +562,6 @@ public class Interpreter {
     /** Exec builtin function; could do with pseudo func ptrs but it's
      *  weird in Java and harder to port to other languages.  I'm doing
      *  a simple func lookup via int instead.
-     */
     protected Object func(int func, Object value) {
         switch ( func ) {
             case FUNC_FIRST  : return first(value);
@@ -573,6 +587,7 @@ public class Interpreter {
         }
         return null;
     }
+     */
         
     protected String toString(Object value) {
         if ( value!=null ) {

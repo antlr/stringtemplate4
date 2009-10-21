@@ -280,12 +280,14 @@ public class Compiler implements ExprParserListener {
     public void eval() { gen(BytecodeDefinition.INSTR_TOSTR); }
 
     public void func(Token id) {
-        Integer funcIndex = Interpreter.funcs.get(id.getText());
-        if ( funcIndex==null ) {
+        Short funcBytecode = Interpreter.funcs.get(id.getText());
+        if ( funcBytecode==null ) {
             System.err.println("no such fun: "+id);
-            gen(BytecodeDefinition.INSTR_FUNC, Interpreter.FUNC_NOOP);
+            gen(BytecodeDefinition.INSTR_NOOP);
         }
-        gen(BytecodeDefinition.INSTR_FUNC, funcIndex);
+        else {
+            gen(funcBytecode);
+        }
     }
 
     // GEN

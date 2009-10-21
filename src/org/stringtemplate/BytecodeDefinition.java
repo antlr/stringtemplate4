@@ -71,7 +71,16 @@ public class BytecodeDefinition {
     public static final short INSTR_LIST            = 19;
     public static final short INSTR_ADD             = 20;
     public static final short INSTR_TOSTR           = 21;
-    public static final short INSTR_FUNC            = 22;
+    // Predefined functions
+    public static final short INSTR_FIRST           = 22;
+    public static final short INSTR_LAST            = 23;
+    public static final short INSTR_REST            = 24;
+    public static final short INSTR_TRUNC           = 25;
+    public static final short INSTR_STRIP           = 26;
+    public static final short INSTR_TRIM            = 27;
+    public static final short INSTR_LENGTH          = 28;
+    public static final short INSTR_STRLEN          = 29;
+    public static final short INSTR_NOOP            = 30; // do nothing
 
     /** Used for assembly/disassembly; describes instruction set */
     // START: instr
@@ -98,7 +107,15 @@ public class BytecodeDefinition {
         new Instruction("list"),
         new Instruction("add"),
         new Instruction("tostr"),
-        new Instruction("func",INT)
+        new Instruction("first"),
+        new Instruction("last"),
+        new Instruction("rest"),
+        new Instruction("trunc"),
+        new Instruction("strip"),
+        new Instruction("trim"),
+        new Instruction("length"),
+        new Instruction("strlen"),
+        new Instruction("noop")
     };
     // END: instr
 }
