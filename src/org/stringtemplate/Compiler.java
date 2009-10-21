@@ -61,6 +61,20 @@ public class Compiler implements ExprParserListener {
         }
     };
 
+    public static Map<String, Short> funcs = new HashMap<String, Short>() {
+        {
+            put("first", BytecodeDefinition.INSTR_FIRST);
+            put("last", BytecodeDefinition.INSTR_LAST);
+            put("rest", BytecodeDefinition.INSTR_REST);
+            put("trunc", BytecodeDefinition.INSTR_TRUNC);
+            put("strip", BytecodeDefinition.INSTR_STRIP);
+            put("trim", BytecodeDefinition.INSTR_TRIM);
+            put("length", BytecodeDefinition.INSTR_LENGTH);
+            put("strlen", BytecodeDefinition.INSTR_STRLEN);
+            put("reverse", BytecodeDefinition.INSTR_REVERSE);
+        }
+    };
+
     StringTable strings;
     byte[] instrs;
     int ip = 0;
@@ -280,7 +294,7 @@ public class Compiler implements ExprParserListener {
     public void eval() { gen(BytecodeDefinition.INSTR_TOSTR); }
 
     public void func(Token id) {
-        Short funcBytecode = Interpreter.funcs.get(id.getText());
+        Short funcBytecode = funcs.get(id.getText());
         if ( funcBytecode==null ) {
             System.err.println("no such fun: "+id);
             gen(BytecodeDefinition.INSTR_NOOP);

@@ -94,7 +94,7 @@ expr:	call
 	|	primary
 	;
 
-call:	{Interpreter.funcs.containsKey(input.LT(1).getText())}?
+call:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
 		ID '(' expr ')' {listener.func($ID);}
 	|	ID {listener.instance($ID);} '(' args? ')'
 	;

@@ -312,4 +312,16 @@ public class TestFunctions extends BaseTest {
         String expecting = "6";
         assertEquals(expecting, e.render());
     }
+
+    @Test public void testReverse() throws Exception {
+        ST e = new ST(
+                "<reverse(names); separator=\", \">"
+            );
+        e.add("names", "Ter");
+        e.add("names", "Tom");
+        e.add("names", "Sriram");
+        String expecting = "Sriram, Tom, Ter";
+        assertEquals(expecting, e.render());
+    }
+
 }

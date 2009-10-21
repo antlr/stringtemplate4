@@ -43,24 +43,6 @@ public class Interpreter {
 
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
-    /*
-    public static String[] funcName =
-        { "first", "last", "rest", "trunc", "strip", "length", "strlen" };
-     */
-
-    public static Map<String, Short> funcs = new HashMap<String, Short>() {
-        {
-            put("first", BytecodeDefinition.INSTR_FIRST);
-            put("last", BytecodeDefinition.INSTR_LAST);
-            put("rest", BytecodeDefinition.INSTR_REST);
-            put("trunc", BytecodeDefinition.INSTR_TRUNC);
-            put("strip", BytecodeDefinition.INSTR_STRIP);
-            put("trim", BytecodeDefinition.INSTR_TRIM);
-            put("length", BytecodeDefinition.INSTR_LENGTH);
-            put("strlen", BytecodeDefinition.INSTR_STRLEN);
-        }
-    };    
-
     /** Operand stack, grows upwards */
     Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
     int sp = -1;        // stack pointer register
@@ -248,6 +230,9 @@ public class Interpreter {
                     operands[++sp] = ((String)o).length();
                 }
                 else System.err.println("strlen(non string)");
+                break;
+            case BytecodeDefinition.INSTR_REVERSE   :
+                operands[sp] = reverse(operands[sp]);
                 break;
             default :
                 System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));
@@ -458,9 +443,7 @@ public class Interpreter {
      *  or null if single-valued.
      */
     public Object rest(Object v) {
-        if ( v==null ) {
-            return null;
-        }
+        if ( v ==null ) return null;
         if ( v instanceof List ) { // optimize list case
             List elems = (List)v;
             if ( elems.size()<=1 ) return null;
@@ -471,9 +454,7 @@ public class Interpreter {
         if ( v instanceof Iterator ) {
             List a = new ArrayList();
             Iterator it = (Iterator)v;
-            if ( !it.hasNext() ) {
-                return null; // if not even one value return null
-            }
+            if ( !it.hasNext() ) return null; // if not even one value return null
             it.next(); // ignore first value
             while (it.hasNext()) {
                 Object o = (Object) it.next();
@@ -489,9 +470,7 @@ public class Interpreter {
 
     /** Return all but the last element.  trunc(x)=null if x is single-valued. */
     public Object trunc(Object v) {
-        if ( v ==null ) {
-            return null;
-        }
+        if ( v ==null ) return null;
         if ( v instanceof List ) { // optimize list case
             List elems = (List)v;
             if ( elems.size()<=1 ) return null;
@@ -512,9 +491,7 @@ public class Interpreter {
 
     /** Return a new list w/o null values. */
     public Object strip(Object v) {
-        if ( v ==null ) {
-            return null;
-        }
+        if ( v ==null ) return null;
         v = convertAnythingIteratableToIterator(v);
         if ( v instanceof Iterator ) {
             List a = new ArrayList();
@@ -526,6 +503,21 @@ public class Interpreter {
             return a;
         }
         return v; // strip(x)==x when x single-valued attribute
+    }
+
+    /** Return a list with the same elements as v but in reverse order. null
+     *  values are NOT stripped out. use reverse(strip(v)) to do that.
+     */
+    public Object reverse(Object v) {
+        if ( v==null ) return null;
+        v = convertAnythingIteratableToIterator(v);
+        if ( v instanceof Iterator ) {
+            List a = new LinkedList();
+            Iterator it = (Iterator)v;
+            while (it.hasNext()) a.add(0, it.next());
+            return a;
+        }
+        return v;
     }
 
     /** Return the length of a mult-valued attribute or 1 if it is a
