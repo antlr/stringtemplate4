@@ -5,6 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
 
+import java.util.Map;
+import java.util.HashMap;
+
 public class TestIndirectionAndEarlyEval extends BaseTest {
     @Test public void testEarlyEval() throws Exception {
         String template = "<(name)>";
@@ -49,7 +52,7 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMap() throws Exception {
+    @Test public void testIndirectMap() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("a", "[<it>]");
         group.defineTemplate("test", "hi <names:(templateName)>!");
@@ -60,6 +63,18 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
         st.add("templateName", "a");
         String expected =
             "hi [Ter][Tom][Sumana]!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testNonStringDictLookup() throws Exception {
+        String template = "<m.(intkey)>";
+        ST st = new ST(template);
+        Map<Integer, String> m = new HashMap<Integer, String>();
+        m.put(36, "foo");
+        st.add("m", m);
+        st.add("intkey", 36);
+        String expected = "foo";
         String result = st.render();
         assertEquals(expected, result);
     }

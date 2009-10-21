@@ -33,20 +33,9 @@ import org.antlr.runtime.CommonTokenStream;
 import java.util.*;
 
 public class STGroup {
-    /** What is the group name */
-    public String name;
-
-    public String supergroup;
-
-    public List<String> interfaces;
-
-    public char delimiterStartChar = '<';
-    public char delimiterStopChar = '>';
-
-    /** Maps template name to StringTemplate object */
-    protected LinkedHashMap<String, CompiledST> templates = new LinkedHashMap<String,CompiledST>();
-
-    public static STGroup defaultGroup = new STGroup();
+    /** When we use key as a value in a dictionary, this is how we signify. */
+    public static final String DICT_KEY = "key";
+    public static final String DEFAULT_KEY = "default";
 
     public static STErrorListener DEFAULT_ERROR_LISTENER =
         new STErrorListener() {
@@ -60,6 +49,28 @@ public class STGroup {
                 System.out.println(s);
             }
         };
+
+    /** What is the group name */
+    public String name;
+
+    public String supergroup;
+
+    public List<String> interfaces;
+
+    public char delimiterStartChar = '<'; // Use <expr> by default
+    public char delimiterStopChar = '>';
+
+    /** Maps template name to StringTemplate object */
+    protected LinkedHashMap<String, CompiledST> templates =
+        new LinkedHashMap<String,CompiledST>();
+
+    public static STGroup defaultGroup = new STGroup();
+
+    /** Maps dict names to HashMap objects.  This is the list of dictionaries
+     *  defined by the user like typeInitMap ::= ["int":"0"]
+     */
+    protected Map<String, Map<String,Object>> dictionaries =
+        new HashMap<String, Map<String,Object>>();
 
     /** Where to report errors.  All string templates in this group
      *  use this error handler by default.
@@ -173,6 +184,13 @@ public class STGroup {
         CompiledST compiledSub = defineTemplate(subname, t);
         compiledSub.formalArguments = args;
         return compiledSub;
+    }
+
+    /** Define a map for this group; not thread safe...do not keep adding
+     *  these while you reference them.
+     */
+    public void defineDictionary(String name, Map<String,Object> mapping) {
+        dictionaries.put(name, mapping);
     }
 
     /** StringTemplate object factory; each group can have its own. */

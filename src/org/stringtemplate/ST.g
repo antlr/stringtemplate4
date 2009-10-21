@@ -138,9 +138,9 @@ ID  :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'/')*
     ;
 
 STRING
-    :	'"' ( '\\"' | ~('\\'|'"') )* '"'
+	:	'"' ( '\\' '"' | '\\' ~'"' | ~('\\'|'"') )* '"'
     	{setText(getText().substring(1, getText().length()-1));}
-    ;
+	;
 
 ANONYMOUS_TEMPLATE
     :	'{'  { new Chunkifier(input,delimiterStartChar,delimiterStopChar).matchBlock(); }

@@ -94,11 +94,12 @@ public class Interpreter {
                 ip += 2;
                 o = operands[sp--];
                 name = self.code.strings[nameIndex];
-                operands[++sp] = rawGetObjectProperty(o, name);
+                operands[++sp] = getObjectProperty(self, o, name);
                 break;
             case BytecodeDefinition.INSTR_LOAD_PROP_IND :
-                name = (String)operands[sp--];
-                operands[sp] = rawGetObjectProperty(operands[sp], name);
+                Object propName = operands[sp--];
+                o = operands[sp];
+                operands[sp] = getObjectProperty(self, o, propName);
                 break;
             case BytecodeDefinition.INSTR_NEW :
                 nameIndex = getShort(code, ip);
@@ -148,12 +149,12 @@ public class Interpreter {
                 break;
             case BytecodeDefinition.INSTR_WRITE :
                 o = operands[sp--];
-                n += writeObject(out, o, null);
+                n += writeObject(out, self, o, null);
                 break;
             case BytecodeDefinition.INSTR_WRITE_OPT :
                 options = (Object[])operands[sp--]; // get options
                 o = operands[sp--];                 // get option to write
-                n += writeObject(out, o, options);
+                n += writeObject(out, self, o, options);
                 break;
             case BytecodeDefinition.INSTR_MAP :
                 name = (String)operands[sp--];
@@ -197,7 +198,7 @@ public class Interpreter {
                 break;
             case BytecodeDefinition.INSTR_TOSTR :
                 // replace with string value; early eval
-                operands[sp] = toString(operands[sp]);
+                operands[sp] = toString(self, operands[sp]);
                 break;
             case BytecodeDefinition.INSTR_FIRST  :
                 operands[sp] = first(operands[sp]);
@@ -242,19 +243,19 @@ public class Interpreter {
         return n;
     }
 
-    protected int writeObject(STWriter out, Object o, Object[] options) {
+    protected int writeObject(STWriter out, ST self, Object o, Object[] options) {
         // precompute all option values (render all the way to strings) 
         String[] optionStrings = null;
         if ( options!=null ) {
             optionStrings = new String[options.length];
             for (int i=0; i<Compiler.NUM_OPTIONS; i++) {
-                optionStrings[i] = toString(options[i]);
+                optionStrings[i] = toString(self, options[i]);
             }
         }
-        return writeObject(out, o, optionStrings);
+        return writeObject(out, self, o, optionStrings);
     }
 
-    protected int writeObject(STWriter out, Object o, String[] options) {
+    protected int writeObject(STWriter out, ST self, Object o, String[] options) {
         int n = 0;
         if ( o == null ) {
             if ( options!=null && options[OPTION_NULL]!=null ) {
@@ -266,12 +267,13 @@ public class Interpreter {
             return n;
         }
         if ( o instanceof ST ) {
+            ((ST)o).enclosingInstance = self;
             n = exec(out, (ST)o);
             return n;
         }
         o = convertAnythingIteratableToIterator(o); // normalize
         try {
-            if ( o instanceof Iterator) n = writeIterator(out, o, options);
+            if ( o instanceof Iterator) n = writeIterator(out, self, o, options);
             else n = out.write(o.toString());
         }
         catch (IOException ioe) {
@@ -280,7 +282,7 @@ public class Interpreter {
         return n;
     }
 
-    protected int writeIterator(STWriter out, Object o, String[] options) throws IOException {
+    protected int writeIterator(STWriter out, ST self, Object o, String[] options) throws IOException {
         if ( o==null ) return 0;
         int n = 0;
         Iterator it = (Iterator)o;
@@ -296,7 +298,7 @@ public class Interpreter {
                 (iterValue!=null ||           // either we have a value
                  options[OPTION_NULL]!=null); // or no value but null option
             if ( needSeparator ) n += out.writeSeparator(separator);
-            int nw = writeObject(out, iterValue, options);
+            int nw = writeObject(out, self, iterValue, options);
             if ( nw > 0 ) seenAValue = true;
             n += nw;
             i++;
@@ -306,36 +308,6 @@ public class Interpreter {
 
     protected void map(ST self, Object attr, final String name) {
         rot_map(self, attr, new ArrayList<String>() {{add(name);}});
-        /*
-        if ( attr==null ) {
-            operands[++sp] = null;
-            return;
-        }
-        attr = convertAnythingIteratableToIterator(attr);
-        if ( attr instanceof Iterator ) {
-            List<ST> mapped = new ArrayList<ST>();
-            Iterator iter = (Iterator)attr;
-            int i0 = 0;
-            int i = 1;
-            while ( iter.hasNext() ) {
-                Object iterValue = iter.next();
-                ST st = group.getEmbeddedInstanceOf(self, name);
-                setSoleArgument(st, iterValue);
-                st.rawSetAttribute("i0", i0);
-                st.rawSetAttribute("i", i);
-                mapped.add(st);
-            }
-            operands[++sp] = mapped;
-            //System.out.println("mapped="+mapped);
-        }
-        else { // map template to single value
-            ST st = group.getInstanceOf(name);
-            setSoleArgument(st, attr);
-            st.rawSetAttribute("i0", 0);
-            st.rawSetAttribute("i", 1);
-            operands[++sp] = st;
-        }
-        */
     }
 
     // <names:a,b>
@@ -551,42 +523,14 @@ public class Interpreter {
         return null;
     }
 
-    /** Exec builtin function; could do with pseudo func ptrs but it's
-     *  weird in Java and harder to port to other languages.  I'm doing
-     *  a simple func lookup via int instead.
-    protected Object func(int func, Object value) {
-        switch ( func ) {
-            case FUNC_FIRST  : return first(value);
-            case FUNC_LAST   : return last(value);
-            case FUNC_REST   : return rest(value);
-            case FUNC_TRUNC  : return trunc(value);
-            case FUNC_STRIP  : return strip(value);
-            case FUNC_TRIM   :
-                if ( value.getClass() == String.class ) {
-                    return ((String)value).trim();
-                }
-                else System.err.println("strlen(non string)");
-                break;
-            case FUNC_LENGTH : return length(value);
-            case FUNC_STRLEN :
-                if ( value.getClass() == String.class ) {
-                    return ((String)value).length();
-                }
-                else System.err.println("strlen(non string)"); 
-                break;
-            default :
-                System.err.println("no such func: "+func);
-        }
-        return null;
-    }
-     */
-        
-    protected String toString(Object value) {
+    protected String toString(ST self, Object value) {
         if ( value!=null ) {
             if ( value.getClass()==String.class ) return (String)value;
+            // if ST, make sure it evaluates with enclosing template as self
+            if ( value.getClass()==ST.class ) ((ST)value).enclosingInstance = self;
             // if not string already, must evaluate it
             StringWriter sw = new StringWriter();
-            writeObject(new NoIndentWriter(sw), value, null);
+            writeObject(new NoIndentWriter(sw), self, value, null);
             return sw.toString();
         }
         return null;
@@ -612,13 +556,32 @@ public class Interpreter {
         return true; // any other non-null object, return true--it's present
     }
 
-    protected Object rawGetObjectProperty(Object o, Object property) {
+    protected Object getObjectProperty(ST self, Object o, Object property) {
         if ( o==null || property==null ) {
             // TODO: throw Ill arg if they want
             return null;
         }
-        Class c = o.getClass();
+
         Object value = null;
+
+        if (o instanceof Map) {
+            Map map = (Map)o;
+            if ( value == STGroup.DICT_KEY ) value = property;
+            else if ( property.equals("keys") ) value = map.keySet();
+            else if ( property.equals("values") ) value = map.values();
+            else if ( map.containsKey(property) ) value = map.get(property);
+            else if ( map.containsKey(toString(self, property)) ) {
+                // if we can't find the key, toString it
+                value = map.get(toString(self, property));
+            }
+            else value = map.get(STGroup.DEFAULT_KEY); // not found, use default
+            if ( value == STGroup.DICT_KEY ) {
+                value = property;
+            }
+            return value;
+        }
+
+        Class c = o.getClass();
 
         // try getXXX and isXXX properties
 

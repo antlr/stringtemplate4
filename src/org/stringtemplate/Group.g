@@ -64,6 +64,7 @@ package org.stringtemplate;
 
 @members {
 protected STGroup group;
+public String strip(String s, int n) { return s.substring(n, s.length()-n); }
 }
 
 group returns[STGroup group]
@@ -74,7 +75,7 @@ this.group = $group = new STGroup();
 		( ':' s=ID {$group.supergroup = $s.text;} )?
 	    ( 'implements' i+=ID (',' i+=ID )* {$group.interfaces=toStrings($i);} )?
 	    ';'
-	    ( templateDef | mapDef )+
+	    ( templateDef | dictDef )+
     ;
 
 templateDef
@@ -85,10 +86,8 @@ templateDef
 		|	name=ID 
 		)
 	    '(' formalArgs? ')' '::='
-	    (	STRING     {template=$STRING.text;
-	    				template = template.substring(1, template.length()-1);}
-	    |	BIGSTRING  {template=$BIGSTRING.text;
-						template = template.substring(2, template.length()-2);}
+	    (	STRING     {template=strip($STRING.text, 1);}
+	    |	BIGSTRING  {template=strip($BIGSTRING.text, 2);}
 	    )
 	    {
 	    group.defineTemplate($name.text, $formalArgs.args, template);
@@ -119,37 +118,50 @@ suffix returns [int cardinality=FormalArgument.REQUIRED]
     ;
     */
 
-mapDef
-	:	name=ID '::=' m=map
+dictDef
+	:	ID '::=' dict
+        {
+        if ( group.dictionaries.get($ID.text)!=null ) {
+            System.err.println("redefinition of map: "+$ID.text);
+        }
+        else if ( group.templates.get($ID.text)!=null ) {
+            System.err.println("redefinition of template as map: "+$ID.text);
+        }
+        else {
+            group.defineDictionary($ID.text, $dict.mapping);
+        }
+        }
 	;
 
-map returns [Map mapping=new HashMap()]
-	:   '[' mapPairs[mapping] ']'
+dict returns [Map<String,Object> mapping]
+@init {mapping=new HashMap<String,Object>();}
+	:   '[' dictPairs[mapping] ']'
 	;
 	
-mapPairs[Map mapping]
-    : keyValuePair[mapping] (',' keyValuePair[mapping])*
-      (',' defaultValuePair[mapping])?
-    | defaultValuePair[mapping] 
+dictPairs[Map<String,Object> mapping]
+    :	keyValuePair[mapping]
+    	(',' keyValuePair[mapping])* (',' defaultValuePair[mapping])?
+    |	defaultValuePair[mapping] 
     ;	
 	
-defaultValuePair[Map mapping]
-	:	'default' ':' v=keyValue        
+defaultValuePair[Map<String,Object> mapping]
+	:	'default' ':' keyValue {mapping.put(STGroup.DEFAULT_KEY, $keyValue.value);}
 	;
 
-keyValuePair[Map mapping]
-	:	key=STRING ':' v=keyValue 
+keyValuePair[Map<String,Object> mapping]
+	:	STRING ':' keyValue {mapping.put(strip($STRING.text, 1), $keyValue.value);}
 	;
 
-keyValue returns [ST value=null]
-	:	s1=BIGSTRING	
-	|	s2=STRING		
-	|	k=ID
-	|					
+keyValue returns [Object value]
+	:	BIGSTRING			{$value = new ST(group, strip($BIGSTRING.text,2));}
+	|	ANONYMOUS_TEMPLATE	{$value = new ST(group, strip($ANONYMOUS_TEMPLATE.text,1));}
+	|	STRING				{$value = strip($STRING.text, 1);}
+	|	{input.LT(1).getText().equals("key")}?=> ID
+							{$value = STGroup.DICT_KEY;}
+	|						{$value = null;}
 	;
 
-ID
-	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'-'|'_')*
+ID	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'-'|'_')*
 	;
 
 STRING
@@ -167,19 +179,8 @@ BIGSTRING
 	;
 
 ANONYMOUS_TEMPLATE
-    :    '{'  { new Chunkifier(input, '<', '>').matchBlock(); }
+    :	'{'  { new Chunkifier(input, '<', '>').matchBlock(); }
     ;
-
-/*
-ANONYMOUS_TEMPLATE
-	:	'{'
-		(	'\\' '}'   // \} escape
-		|	'\\' ~'}'
-		|	~('\\'|'}')
-		)*
-	    '}'
-	;
-*/
 
 COMMENT
     :   '/*' ( options {greedy=false;} : . )* '*/' {skip();}

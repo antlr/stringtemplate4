@@ -78,7 +78,7 @@ public class Chunkifier {
 
     protected void matchExpr() {
         consume();                // skip over start delimiter
-        while ( c!=delimiterStopChar ) {   // scan for stop delimiter
+        while ( c!=delimiterStopChar && input.index() < n ) {   // scan for stop delimiter
             if ( c=='\\' ) { consume(); consume(); continue; }
             if ( c=='"' ) { matchString(); continue; }
             if ( c=='{' ) { consume(); matchBlock(); continue; }

@@ -66,13 +66,15 @@ public class ST {
     
     public ST() {;}
     
-    public ST(String template) throws Exception {
+    public ST(String template) {
         code = group.defineTemplate(UNKNOWN_NAME, template);
     }
 
-    public ST(String template, char delimiterStartChar, char delimiterStopChar)
-        throws Exception
-    {
+    public ST(STGroup group, String template) {
+        code = group.defineTemplate(UNKNOWN_NAME, template);
+    }
+
+    public ST(String template, char delimiterStartChar, char delimiterStopChar) {
         code = group.defineTemplate(UNKNOWN_NAME, template);
     }
 
@@ -115,6 +117,10 @@ public class ST {
         attributes.put(name, value);
     }
 
+    /** Find an attr with dynamic scoping up enclosing ST chain.
+     *  If not found, look for a map.  So attributes sent in to a template
+     *  override dictionary names.
+     */
     public Object getAttribute(String name) {
         ST p = this;
         while ( p!=null ) {
@@ -122,6 +128,10 @@ public class ST {
             if ( p.attributes!=null ) o = p.attributes.get(name);
             if ( o!=null ) return o;
             p = p.enclosingInstance;
+        }
+        if ( code.formalArguments==null || code.formalArguments.get(name)==null ) {
+            // if not hidden by formal args, return any dictionary
+            return group.dictionaries.get(name);
         }
         return null;
     }
