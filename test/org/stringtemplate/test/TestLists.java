@@ -6,8 +6,6 @@ import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.Misc;
 
-import java.io.StringReader;
-
 public class TestLists extends BaseTest {
 	@Test public void testJustCat() throws Exception {
 		ST e = new ST(
@@ -112,7 +110,7 @@ public class TestLists extends BaseTest {
 				"foo(items) ::= \"<items:{a | *<a>*}>\""+newline
 				;
         Misc.writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.load(tmpdir+"/"+"t.stg");
+        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
 		ST e = group.getInstanceOf("test");
 		e.add("names", "Ter");
 		e.add("names", "Tom");

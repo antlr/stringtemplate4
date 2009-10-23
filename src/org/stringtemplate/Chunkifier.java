@@ -32,11 +32,9 @@ public class Chunkifier {
     public Chunkifier(String template, char delimiterStartChar, char delimiterStopChar) {
         this(delimiterStartChar, delimiterStopChar);
         input = new ANTLRStringStream(template);
-        //this.template = template;
         n = template.length();
         c = input.LA(1);
         start = 0;
-        //i = start;
         exprStart = start;
         exprStop = start;
     }

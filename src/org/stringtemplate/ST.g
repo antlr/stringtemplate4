@@ -60,6 +60,10 @@ public void reportError(RecognitionException e) {
 }
 }
 
+@rulecatch {
+   catch (RecognitionException re) { throw re; }
+}
+
 stexpr
 	:	mapExpr (';' exprOptions)?
 	|	i='if(' not='!'? {listener.ifExpr($i);} expr ')'

@@ -67,9 +67,9 @@ protected STGroup group;
 public String strip(String s, int n) { return s.substring(n, s.length()-n); }
 }
 
-group returns[STGroup group]
+group[STGroup group]
 @init {
-this.group = $group = new STGroup();
+this.group = $group;
 }
 	:	'group' name=ID {$group.name = $name.text;}
 		( ':' s=ID {$group.supergroup = $s.text;} )?
@@ -90,7 +90,14 @@ templateDef
 	    |	BIGSTRING  {template=strip($BIGSTRING.text, 2);}
 	    )
 	    {
-	    group.defineTemplate($name.text, $formalArgs.args, template);
+	    try {
+		    group.defineTemplate($name.text, $formalArgs.args, template);
+		}
+        catch (STRecognitionException e) {
+            group.listener.error(input.LT(-1).getLine()+":"+input.LT(-1).getCharPositionInLine()+
+                               ": can't parse chunk: '"+e.chunk+"' in "+
+                               e.chunk.enclosingTemplate.template,null);
+        }		
 	    }
 	|   alias=ID '::=' target=ID	    
 	;

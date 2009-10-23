@@ -29,8 +29,11 @@ package org.stringtemplate;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 
 import java.util.*;
+import java.io.File;
+import java.io.IOException;
 
 public class STGroup {
     /** When we use key as a value in a dictionary, this is how we signify. */
@@ -72,19 +75,47 @@ public class STGroup {
     protected Map<String, Map<String,Object>> dictionaries =
         new HashMap<String, Map<String,Object>>();
 
+    public String fileName = null; // !=null if loaded from file
+    public String dirName = null;  // !=null if rooted at a dir
+    protected boolean alreadyLoaded = false;
+    
     /** Where to report errors.  All string templates in this group
      *  use this error handler by default.
      */
-    protected STErrorListener listener = DEFAULT_ERROR_LISTENER;
+    public STErrorListener listener = DEFAULT_ERROR_LISTENER;
 
     public STGroup() {
         ;
+    }
+
+    public STGroup(String groupFileOrDir) {
+        File f = new File(groupFileOrDir);
+        if ( f.isDirectory() ) dirName = groupFileOrDir;
+        else fileName = groupFileOrDir;
+    }
+
+    public void load() {
+        if ( fileName==null ) return; // do nothing if no file or it's a dir
+        if ( alreadyLoaded ) return;
+
+        try {
+            ANTLRFileStream fs = new ANTLRFileStream(fileName);
+            GroupLexer lexer = new GroupLexer(fs);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            GroupParser parser = new GroupParser(tokens);
+            parser.group(this);
+            alreadyLoaded = true;
+        }
+        catch (Exception e) {
+            listener.error("can't load group file", e);
+        }
     }
     
     /** The primary means of getting an instance of a template from this
      *  group.
      */
     public ST getInstanceOf(String name) {
+        if ( !alreadyLoaded ) load();
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
             ST instanceST = createStringTemplate();
@@ -107,7 +138,8 @@ public class STGroup {
     }
 
     public CompiledST lookupTemplate(String name) {
-        return templates.get(name);        
+        if ( !alreadyLoaded ) load();
+        return templates.get(name);
     }
 
     public CompiledST defineTemplate(String name, String template) {
@@ -142,33 +174,35 @@ public class STGroup {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
         template = template.trim();
-        try {
-            Compiler c = new Compiler();
-            CompiledST code = c.compile(template);
-            code.formalArguments = args;
-            templates.put(name, code);
-            // compile any default args
-            if ( args!=null ) {
-                for (String a : args.keySet()) {
-                    FormalArgument fa = args.get(a);
-                    if ( fa.defaultValue!=null ) {
-                        Compiler c2 = new Compiler();
-                        fa.compiledDefaultValue = c2.compile(template);
-                    }
+//        try {
+        Compiler c = new Compiler();
+        CompiledST code = c.compile(template);
+        code.formalArguments = args;
+        templates.put(name, code);
+        // compile any default args
+        if ( args!=null ) {
+            for (String a : args.keySet()) {
+                FormalArgument fa = args.get(a);
+                if ( fa.defaultValue!=null ) {
+                    Compiler c2 = new Compiler();
+                    fa.compiledDefaultValue = c2.compile(template);
                 }
             }
-            // compile any anonymous subtemplates
-            for (String subname : c.subtemplates.keySet()) {
-                String block = c.subtemplates.get(subname);
-                defineAnonSubtemplate(subname, block);
-            }
-            return code;
+        }
+        // compile any anonymous subtemplates
+        for (String subname : c.subtemplates.keySet()) {
+            String block = c.subtemplates.get(subname);
+            defineAnonSubtemplate(subname, block);
+        }
+        return code;
+/*
         }
         catch (Exception e) {
             System.err.println("can't parse template: "+template);
             e.printStackTrace(System.err);
         }
         return null;
+         */
     }
 
     public CompiledST defineAnonSubtemplate(String subname, String block) {
@@ -204,6 +238,7 @@ public class STGroup {
     }
 
     public String show() {
+        if ( !alreadyLoaded ) load();
         StringBuilder buf = new StringBuilder();
         buf.append("group "+name);
         if ( supergroup!=null ) buf.append(" : "+supergroup);
@@ -228,13 +263,9 @@ public class STGroup {
     }
     
     // Temp / testing
-    public static STGroup load(String filename) throws Exception {
-        ANTLRFileStream fs = new ANTLRFileStream(filename);
-        GroupLexer lexer = new GroupLexer(fs);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        GroupParser parser = new GroupParser(tokens);
-        STGroup g = parser.group();
-        return g;
+    public static STGroup loadGroup(String filename) throws Exception {
+        STGroup group = new STGroup(filename);
+        return group;
     }
 
 }

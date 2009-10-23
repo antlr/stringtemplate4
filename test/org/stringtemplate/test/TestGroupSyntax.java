@@ -11,7 +11,7 @@ public class TestGroupSyntax extends BaseTest {
             "t() ::= <<foo>>" + Misc.newline;
 
         Misc.writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.load(tmpdir+"/"+"t.stg");
+        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
         String expected =
             "group t;" + Misc.newline+
             "t() ::= <<" + Misc.newline+
@@ -29,7 +29,7 @@ public class TestGroupSyntax extends BaseTest {
             "wow() ::= <<last>>" + Misc.newline;
 
         Misc.writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.load(tmpdir+"/"+"t.stg");
+        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
         String expected =
             "group t;" + Misc.newline+
             "ta() ::= <<" +Misc.newline+
@@ -51,7 +51,7 @@ public class TestGroupSyntax extends BaseTest {
             "t(a,b) ::= \"[<a>]\"" + Misc.newline;
 
         Misc.writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.load(tmpdir+"/"+"t.stg");
+        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
         String expected =
             "group t;" + Misc.newline+
             "t(a,b) ::= <<" + Misc.newline+
@@ -67,7 +67,7 @@ public class TestGroupSyntax extends BaseTest {
             "t(a={def1},b=\"def2\") ::= \"[<a>]\"" + Misc.newline;
 
         Misc.writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.load(tmpdir+"/"+"t.stg");
+        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
         String expected =
             "group t;" + Misc.newline+
             "t(a={def1},b=\"def2\") ::= <<" + Misc.newline+
@@ -83,7 +83,7 @@ public class TestGroupSyntax extends BaseTest {
             "t(a={x | 2*<x>}) ::= \"[<a>]\"" + Misc.newline;
 
         Misc.writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.load(tmpdir+"/"+"t.stg");
+        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
         String expected =
             "group t;" + Misc.newline+
             "t(a={x | 2*<x>}) ::= <<" + Misc.newline+
@@ -99,7 +99,7 @@ public class TestGroupSyntax extends BaseTest {
             "t(a={x | \\< <x:{<it>\\}}>}) ::= \"[<a>]\"" + Misc.newline;
 
         Misc.writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.load(tmpdir+"/"+"t.stg");
+        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
         String expected =
             "group t;" + Misc.newline+
             "t(a={x | \\< <x:{<it>\\}}>}) ::= <<" + Misc.newline+

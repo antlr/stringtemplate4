@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import java.io.StringReader;
 
 public class TestFunctions extends BaseTest {
     @Test public void testFirst() throws Exception {
@@ -86,7 +85,7 @@ public class TestFunctions extends BaseTest {
             "b(x) ::= \"<x>, <x>\""+newline
             ;
         Misc.writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.load(tmpdir+"/"+"t.stg");
+        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
         ST e = group.getInstanceOf("a");
         List names = new ArrayList();
         names.add("Ter");
@@ -141,7 +140,7 @@ public class TestFunctions extends BaseTest {
             "b(x) ::= \"<x>, <x>\""+newline
             ;
         Misc.writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.load(tmpdir+"/"+"t.stg");
+        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
         ST e = group.getInstanceOf("a");
         List mine = new ArrayList();
         mine.add("Ter");

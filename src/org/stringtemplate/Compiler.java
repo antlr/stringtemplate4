@@ -32,6 +32,7 @@ import java.util.*;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
+import org.antlr.runtime.RecognitionException;
 
 public class Compiler implements ExprParserListener {
     public static final String ATTR_NAME_REGEX = "[a-zA-Z/][a-zA-Z0-9_/]*";
@@ -88,15 +89,16 @@ public class Compiler implements ExprParserListener {
 
     public static int subtemplateCount = 0;
 
-    public CompiledST compile(String template) throws Exception {
+    public CompiledST compile(String template) {
         return compile(template, '<', '>');
     }
     
     public CompiledST compile(String template,
                               char delimiterStartChar,
                               char delimiterStopChar)
-        throws Exception
     {
+        CompiledST code = new CompiledST();
+        code.template = template;
         strings = new StringTable();
         int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
         instrs = new byte[initialSize];
@@ -104,6 +106,7 @@ public class Compiler implements ExprParserListener {
         List<Chunk> chunks = new Chunkifier(template, delimiterStartChar, delimiterStopChar).chunkify();
         for (Chunk c : chunks) {
             //System.out.println("compile chunk "+c.text);
+            c.enclosingTemplate = code; // who's my daddy?
             if ( c.isExpr() ) {
                 STLexer lexer = new STLexer(new ANTLRStringStream(c.text));
                 CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -112,7 +115,12 @@ public class Compiler implements ExprParserListener {
 
                 if ( firstTokenType==STLexer.IF ) ifs.push(c);
 
-                parser.stexpr(); // parse, trigger compile actions for single expr 
+                try {
+                    parser.stexpr(); // parse, trigger compile actions for single expr
+                }
+                catch (RecognitionException re) {
+                    throw new STRecognitionException(c, re);
+                }
 
                 if ( firstTokenType==STLexer.ENDIF ) ifs.pop();
                 
@@ -130,14 +138,12 @@ public class Compiler implements ExprParserListener {
                 gen(BytecodeDefinition.INSTR_WRITE);
             }
         }
-        CompiledST code = new CompiledST();
-        code.template = template;
         if ( strings!=null ) {
             code.strings = strings.toArray();
         }
         code.instrs = instrs;
         code.codeSize = ip;
-        if ( subtemplates.size()>0 ) System.out.println("subtemplates="+subtemplates);
+        //if ( subtemplates.size()>0 ) System.out.println("subtemplates="+subtemplates);
         //code.dump();
         return code;
     }
