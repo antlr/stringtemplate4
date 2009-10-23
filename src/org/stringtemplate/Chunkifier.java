@@ -59,11 +59,11 @@ public class Chunkifier {
                 exprStart = input.index()+1;
                 if ( input.index()>strStart ) {
                     String text = input.substring(strStart,input.index()-1);
-                    chunks.add(new Chunk(text, line, strStart));
+                    chunks.add(new Chunk(text, line, strStart, input.index()-1));
                 }
                 matchExpr();
                 String expr = input.substring(exprStart, exprStop+1-1);
-                chunks.add(new ExprChunk(expr,line,exprStart-1));
+                chunks.add(new ExprChunk(expr,line,exprStart,exprStop));
                 strStart = input.index(); // string starts again after stop delimiter
                 continue;
             }
@@ -71,7 +71,7 @@ public class Chunkifier {
         }
         if ( strStart < n ) {
             String expr = input.substring(strStart, n-1);
-            chunks.add(new Chunk(expr, line, strStart));
+            chunks.add(new Chunk(expr, line, strStart, n-1));
         }
         return chunks;
     }

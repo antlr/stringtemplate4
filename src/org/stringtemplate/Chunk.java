@@ -32,7 +32,14 @@ import java.util.ArrayList;
 
 public class Chunk {
     String text;
-    int line, charPositionInLine;
+    int line;
+    /** Char indexes for start/stop positions of this chunk. Doesn't
+     *  include the delimiter chars.
+     */
+    int start, stop;
+
+    /** What template are we part of?  Helps with error messages */
+    CompiledST enclosingTemplate;
 
     /** Tracks address of branch operand (in code block).  It's how
      *  we backpatch forward references when generating code for IFs.
@@ -44,11 +51,12 @@ public class Chunk {
      */
     List<Integer> endRefs = new ArrayList<Integer>();
     
-    public Chunk(String text, int line, int charPositionInLine) {
+    public Chunk(String text, int line, int start, int stop) {
         this.text = text;
         this.line = line;
-        this.charPositionInLine = charPositionInLine;
+        this.start = start;
+        this.stop = stop;
     }
     boolean isExpr() { return false; }
-    public String toString() { return line+":"+charPositionInLine+":"+text; }
+    public String toString() { return line+":"+start+".."+stop+":"+text; }
 }
