@@ -122,6 +122,7 @@ args:	arg (',' arg)* ;
 
 arg :	ID '=' expr {listener.setArg($ID);}
 	|	expr        {listener.setArg(null);}
+	|	elip='...'	{listener.setPassThroughArg($elip);}
 	;
 
 template

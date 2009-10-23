@@ -51,6 +51,14 @@ public class ST {
     /** Map an attribute name to its value(s). */
     Map<String,Object> attributes;
 
+    /** Normally, formal parameters hide any attributes inherited from the
+     *  enclosing template with the same name.  This is normally what you
+     *  want, but makes it hard to invoke another template passing in all
+     *  the data.  Use notation now: <otherTemplate(...)> to say "pass in
+     *  all data".  Works great.  Can also say <otherTemplate(foo="xxx",...)>
+     */
+    protected boolean passThroughAttributes = false;    
+
     /** Enclosing instance if I'm embedded within another template.
      *  IF-subtemplates are considered embedded as well.
      */
@@ -122,9 +130,22 @@ public class ST {
      *  override dictionary names.
      */
     public Object getAttribute(String name) {
-        ST p = this;
+        Object o = null;
+        if ( attributes!=null ) o = attributes.get(name);
+        if ( o!=null ) return o;
+        
+        if ( code.formalArguments!=null &&
+             code.formalArguments.get(name)!=null &&  // no local value && it's a formal arg
+             !passThroughAttributes )                 // but no ... in arg list
+        {
+            // if you've defined attribute as formal arg for this
+            // template and it has no value, do not look up the
+            // enclosing dynamic scopes.
+            return null;
+        }
+
+        ST p = this.enclosingInstance;
         while ( p!=null ) {
-            Object o = null;
             if ( p.attributes!=null ) o = p.attributes.get(name);
             if ( o!=null ) return o;
             p = p.enclosingInstance;

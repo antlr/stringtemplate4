@@ -146,6 +146,10 @@ public class Interpreter {
                     st.rawSetAttribute(name, o);
                 }
                 break;
+            case BytecodeDefinition.INSTR_SET_PASS_THRU :
+                st = (ST)operands[sp]; // ST on top of stack
+                st.passThroughAttributes = true;
+                break;
             case BytecodeDefinition.INSTR_STORE_OPTION:
                 int optionIndex = getShort(code, ip);
                 ip += 2;

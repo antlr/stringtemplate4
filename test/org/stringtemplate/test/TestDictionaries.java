@@ -222,8 +222,7 @@ public class TestDictionaries extends BaseTest {
         String templates =
                 "group test;" +newline+
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
-// TODO                "intermediate(type,name) ::= \"<var(...)>\""+newline+
-                "intermediate(type,name) ::= \"<var()>\""+newline+
+                "intermediate(type,name) ::= \"<var(...)>\""+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
         Misc.writeFile(tmpdir, "test.stg", templates);

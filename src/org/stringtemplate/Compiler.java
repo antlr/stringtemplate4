@@ -243,6 +243,10 @@ public class Compiler implements ExprParserListener {
         else gen(BytecodeDefinition.INSTR_STORE_ATTR, arg.getText());
     }
 
+    public void setPassThroughArg(Token arg) {
+        gen(BytecodeDefinition.INSTR_SET_PASS_THRU);
+    }
+
     public void ifExpr(Token t) {
         //System.out.println("ifExpr @ "+ip);
     }

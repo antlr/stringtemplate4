@@ -38,6 +38,7 @@ public interface ExprParserListener {
     public void defaultOption(Token id);
     public void instance(Token id);
     public void setArg(Token arg);
+    public void setPassThroughArg(Token arg);
     public void map();
     public void mapAlternating(int numTemplates);
     public String defineAnonTemplate(Token subtemplate);
