@@ -51,6 +51,13 @@ public STParser(TokenStream input,
     lex.delimiterStartChar = delimiterStartChar;
     lex.delimiterStopChar = delimiterStopChar;
 }
+
+public void reportError(RecognitionException e) {
+    System.err.println("report "+e);
+    System.err.println("expr="+input.toString());
+    e.printStackTrace(System.err);
+    super.reportError(e);
+}
 }
 
 stexpr

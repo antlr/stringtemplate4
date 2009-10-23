@@ -6,6 +6,9 @@ import org.stringtemplate.ST;
 import org.stringtemplate.Misc;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Map;
+import java.util.HashMap;
+
 public class TestDictionaries extends BaseTest {
     @Test public void testDict() throws Exception {
         String templates =
@@ -40,8 +43,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test
-    public void testDictKeyLookupViaTemplate() throws Exception {
+    @Test public void testDictKeyLookupViaTemplate() throws Exception {
         // Make sure we try rendering stuff to string if not found as regular object
         String templates =
                 "group test;" +newline+
@@ -55,7 +57,26 @@ public class TestDictionaries extends BaseTest {
         st.add("type", new ST("int"));
         st.add("name", "x");
         String expecting = "int x = 0L;";
-        st.code.dump();
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testDictKeyLookupAsNonToStringableObject() throws Exception {
+        // Make sure we try rendering stuff to string if not found as regular object
+        String templates =
+                "group test;" +newline+
+                "foo(m,k) ::= \"<m.(k)>\""+newline
+                ;
+        Misc.writeFile(tmpdir, "test.stg", templates);
+        STGroup group = STGroup.load(tmpdir+"/"+"test.stg");
+        ST st = group.getInstanceOf("foo");
+        Map<HashableUser,String> m = new HashMap<HashableUser,String>();
+        m.put(new HashableUser(99,"parrt"), "first");
+        m.put(new HashableUser(172036,"tombu"), "second");
+        m.put(new HashableUser(391,"sriram"), "third");
+        st.add("m", m);
+        st.add("k", new HashableUser(172036,"tombu"));
+        String expecting = "second";
         String result = st.render();
         assertEquals(expecting, result);
     }
@@ -201,7 +222,8 @@ public class TestDictionaries extends BaseTest {
         String templates =
                 "group test;" +newline+
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
-                "intermediate(type,name) ::= \"<var(...)>\""+newline+
+// TODO                "intermediate(type,name) ::= \"<var(...)>\""+newline+
+                "intermediate(type,name) ::= \"<var()>\""+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
         Misc.writeFile(tmpdir, "test.stg", templates);
