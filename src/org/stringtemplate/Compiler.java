@@ -194,11 +194,13 @@ public class Compiler implements ExprParserListener {
     }
 
     public void refAttr(Token id) {
-        gen(BytecodeDefinition.INSTR_LOAD_ATTR, id.getText());
-    }
-
-    public void refIteratorValue() {
-        gen(BytecodeDefinition.INSTR_LOAD_IT);
+        String name = id.getText();
+        if ( Interpreter.predefinedAttributes.contains(name) ) {
+            gen(BytecodeDefinition.INSTR_LOAD_LOCAL, name);
+        }
+        else {
+            gen(BytecodeDefinition.INSTR_LOAD_ATTR, name);
+        }
     }
 
     public void refProp(Token id) {

@@ -31,7 +31,6 @@ import org.antlr.runtime.Token;
 
 public interface ExprParserListener {
     public void refAttr(Token id);
-    public void refIteratorValue();
     public void refProp(Token id);
     public void refString(Token str);
     public void options();

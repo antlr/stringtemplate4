@@ -52,7 +52,7 @@ public class BytecodeDefinition {
     // INSTRUCTION BYTECODES (byte is signed; use a short to keep 0..255)
     public static final short INSTR_LOAD_STR        = 1;
     public static final short INSTR_LOAD_ATTR       = 2;
-    public static final short INSTR_LOAD_IT         = 3;
+    public static final short INSTR_LOAD_LOCAL      = 3; // load stuff like it, i, i0
     public static final short INSTR_LOAD_PROP       = 4;
     public static final short INSTR_LOAD_PROP_IND   = 5;
     public static final short INSTR_STORE_ATTR      = 6;
@@ -89,7 +89,7 @@ public class BytecodeDefinition {
         null, // <INVALID>
         new Instruction("load_str",STRING), // index is the opcode
         new Instruction("load_attr",STRING),
-        new Instruction("load_it"),
+        new Instruction("load_local",STRING),
         new Instruction("load_prop",STRING),
         new Instruction("load_prop_ind"),
         new Instruction("store_attr",STRING),

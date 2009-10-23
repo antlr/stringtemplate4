@@ -43,6 +43,9 @@ public class Interpreter {
 
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
+    public static final Set<String> predefinedAttributes =
+        new HashSet<String>() { { add("it"); add("i"); add("i0"); } };
+
     /** Operand stack, grows upwards */
     Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
     int sp = -1;        // stack pointer register
@@ -84,8 +87,11 @@ public class Interpreter {
                 name = self.code.strings[nameIndex];
                 operands[++sp] = self.getAttribute(name);
                 break;
-            case BytecodeDefinition.INSTR_LOAD_IT :
-                if ( self.attributes!=null ) o = self.attributes.get("it");
+            case BytecodeDefinition.INSTR_LOAD_LOCAL:
+                nameIndex = getShort(code, ip);
+                ip += 2;
+                name = self.code.strings[nameIndex];
+                if ( self.attributes!=null ) o = self.attributes.get(name);
                 else o = null;
                 operands[++sp] = o;
                 break;

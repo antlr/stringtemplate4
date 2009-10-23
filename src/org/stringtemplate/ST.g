@@ -108,7 +108,6 @@ call:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
 	
 primary
 	:	'super.' ('.' ID )*
-	|	'it'      {listener.refIteratorValue();}
 	|	o=ID	  {listener.refAttr($o);}
 		(	'.' p=ID {listener.refProp($p);}
 		|	'.' '(' mapExpr ')' {listener.refProp(null);}
