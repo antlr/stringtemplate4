@@ -29,10 +29,7 @@ package org.stringtemplate;
 
 import java.util.*;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.Token;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.*;
 
 public class Compiler implements ExprParserListener {
     public static final String ATTR_NAME_REGEX = "[a-zA-Z/][a-zA-Z0-9_/]*";
@@ -80,72 +77,112 @@ public class Compiler implements ExprParserListener {
     byte[] instrs;
     int ip = 0;
     Stack<Chunk> ifs = new Stack<Chunk>();
+    Chunk currentChunk;
+    ExprChunk enclosingChunk;
+    CompiledST code;
+
+    public Compiler() {;}
+    
+    public Compiler(ExprChunk enclosingChunk) {
+        this.enclosingChunk = enclosingChunk;
+    }
+    
+    protected static class TrackSubtemplate {
+        String name;
+        String template;
+        ExprChunk enclosingChunk;
+        int start;
+
+        public TrackSubtemplate(String name, String template, ExprChunk enclosingChunk) {
+            this.name = name;
+            this.template = template;
+            this.enclosingChunk = enclosingChunk;
+        }
+    }
 
     /** Track list of anonymous subtemplates. We need to name them
      *  here not in their eventual group because we need to generate
-     *  code that references their names.
+     *  code that references their names now.
      */
-    Map<String, String> subtemplates = new HashMap<String, String>();
+    protected Map<String, TrackSubtemplate> subtemplates =
+        new HashMap<String, TrackSubtemplate>();
 
-    public static int subtemplateCount = 0;
+    public static int subtemplateCount = 0; // public for testing access
 
     public CompiledST compile(String template) {
-        return compile(template, '<', '>');
+        return compile(0, template, '<', '>');
     }
-    
-    public CompiledST compile(String template,
+
+    public CompiledST compile(int startCharIndex, String template) {
+        return compile(startCharIndex, template, '<', '>');
+    }
+
+    public CompiledST compile(int startCharIndex,
+                              String template,
                               char delimiterStartChar,
                               char delimiterStopChar)
     {
-        CompiledST code = new CompiledST();
+        System.out.println("compile("+template+"), enclosingChunk="+enclosingChunk);
+        code = new CompiledST();
+        code.enclosingChunk = enclosingChunk;
+        code.start = startCharIndex;
+        code.stop = code.start + template.length()-1;
         code.template = template;
         strings = new StringTable();
         int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
         instrs = new byte[initialSize];
         //System.out.println("compile "+template);
         List<Chunk> chunks = new Chunkifier(template, delimiterStartChar, delimiterStopChar).chunkify();
-        for (Chunk c : chunks) {
-            //System.out.println("compile chunk "+c.text);
-            c.enclosingTemplate = code; // who's my daddy?
-            if ( c.isExpr() ) {
-                STLexer lexer = new STLexer(new ANTLRStringStream(c.text));
-                CommonTokenStream tokens = new CommonTokenStream(lexer);
-                STParser parser = new STParser(tokens, this, delimiterStartChar, delimiterStopChar);
-                int firstTokenType = tokens.LA(1);
-
-                if ( firstTokenType==STLexer.IF ) ifs.push(c);
-
-                try {
-                    parser.stexpr(); // parse, trigger compile actions for single expr
-                }
-                catch (RecognitionException re) {
-                    throw new STRecognitionException(c, re);
-                }
-
-                if ( firstTokenType==STLexer.ENDIF ) ifs.pop();
-                
-                if ( !(firstTokenType==STLexer.IF ||
-                       firstTokenType==STLexer.ELSE ||
-                       firstTokenType==STLexer.ELSEIF ||
-                       firstTokenType==STLexer.ENDIF) )
-                {
-                    if ( parser.exprHasOptions ) gen(BytecodeDefinition.INSTR_WRITE_OPT);
-                    else gen(BytecodeDefinition.INSTR_WRITE);
-                }
-            }
-            else {
-                gen(BytecodeDefinition.INSTR_LOAD_STR, c.text);
-                gen(BytecodeDefinition.INSTR_WRITE);
-            }
+        for (Chunk chunk : chunks) {
+            currentChunk = chunk;
+            System.out.println("compile chunk "+chunk.text);
+            //chunk.enclosingChunk = enclosingChunk;
+            chunk.code = code;
+            compile(chunk, delimiterStartChar, delimiterStopChar);
         }
-        if ( strings!=null ) {
-            code.strings = strings.toArray();
-        }
+        if ( strings!=null ) code.strings = strings.toArray();
         code.instrs = instrs;
         code.codeSize = ip;
-        //if ( subtemplates.size()>0 ) System.out.println("subtemplates="+subtemplates);
+
+        // We may have found embedded subtemplates; compile those too
+        // and store in code
+        compileSubtemplates();
+        
         //code.dump();
         return code;
+    }
+
+    protected void compile(Chunk chunk, char delimiterStartChar, char delimiterStopChar) {
+        if ( chunk.isExpr() ) {
+            STLexer lexer = new STLexer(new ANTLRStringStream(chunk.text));
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            STParser parser = new STParser(tokens, this, delimiterStartChar, delimiterStopChar);
+            int firstTokenType = tokens.LA(1);
+
+            if ( firstTokenType==STLexer.IF ) ifs.push(chunk);
+
+            try {
+                parser.stexpr(); // parse, trigger compile actions for single expr
+            }
+            catch (RecognitionException re) {
+                throw new STRecognitionException(chunk, re);
+            }
+
+            if ( firstTokenType==STLexer.ENDIF ) ifs.pop();
+
+            if ( !(firstTokenType==STLexer.IF ||
+                   firstTokenType==STLexer.ELSE ||
+                   firstTokenType==STLexer.ELSEIF ||
+                   firstTokenType==STLexer.ENDIF) )
+            {
+                if ( parser.exprHasOptions ) gen(BytecodeDefinition.INSTR_WRITE_OPT);
+                else gen(BytecodeDefinition.INSTR_WRITE);
+            }
+        }
+        else {
+            gen(BytecodeDefinition.INSTR_LOAD_STR, chunk.text);
+            gen(BytecodeDefinition.INSTR_WRITE);
+        }
     }
 
     public int defineString(String s) {
@@ -173,6 +210,29 @@ public class Compiler implements ExprParserListener {
         return args;
     }
 
+    protected void compileSubtemplates() {
+        if ( subtemplates.size()>0 ) System.out.println("subtemplates="+subtemplates);
+        for (String subname : subtemplates.keySet()) {
+            TrackSubtemplate s = subtemplates.get(subname);
+            LinkedHashMap<String,FormalArgument> args =
+                Compiler.parseSubtemplateArg(s.template);
+            String t = s.template;
+            if ( args!=null ) {
+                int pipe = s.template.indexOf('|');
+                t = s.template.substring(pipe+1);
+            }
+            t = t.trim();
+            Compiler c = new Compiler(s.enclosingChunk);
+            CompiledST sub = c.compile(s.start, t);
+            sub.name = subname;
+            sub.formalArguments = args;
+            if ( code.compiledSubtemplates==null ) {
+                code.compiledSubtemplates = new ArrayList<CompiledST>();
+            }
+            code.compiledSubtemplates.add(sub);
+        }
+    }
+
     // LISTEN TO PARSER
 
     public void map() {
@@ -184,10 +244,39 @@ public class Compiler implements ExprParserListener {
     }
 
     public String defineAnonTemplate(Token subtemplate) {
+        CommonToken t= (CommonToken)subtemplate;
         subtemplateCount++;
         String name = "_sub"+subtemplateCount;
-        subtemplates.put(name, subtemplate.getText());
+        TrackSubtemplate s =
+            new TrackSubtemplate(name, t.getText(), (ExprChunk)currentChunk);
+        s.start = t.getStartIndex() + 1; // don't count '{' on left
+        subtemplates.put(name,s);
         return name;
+
+/*
+        String text = subtemplate.getText();
+
+        System.out.println("define sub template "+text+" in "+code.template);
+
+        LinkedHashMap<String,FormalArgument> args =
+            Compiler.parseSubtemplateArg(text);
+        String t = text;
+        if ( args!=null ) {
+            int pipe = text.indexOf('|');
+            t = text.substring(pipe+1);
+        }
+        t = t.trim();
+        Compiler c = new Compiler((ExprChunk)currentChunk);
+        CompiledST sub = c.compile(t);
+        sub.name = name;
+        sub.formalArguments = args;
+        if ( code.compiledSubtemplates==null ) {
+            code.compiledSubtemplates = new ArrayList<CompiledST>();
+        }
+        code.compiledSubtemplates.add(sub);
+
+        return name;
+         */
     }
 
     public void instance(Token id) {

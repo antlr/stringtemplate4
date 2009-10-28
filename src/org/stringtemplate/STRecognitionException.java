@@ -10,8 +10,8 @@ public class STRecognitionException extends STException {
         this.chunk = chunk;
     }
     public STRecognitionException(Chunk chunk, RecognitionException cause) {
-        this(chunk);
-        this.cause = cause;
+        super(cause);
+        this.chunk = chunk;
     }
 
 }

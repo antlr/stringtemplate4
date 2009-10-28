@@ -50,4 +50,26 @@ public class TestSyntaxErrors extends BaseTest {
         String result = errors.toString();
         assertEquals(expected, result);
     }
+
+    @Test public void testErrorInNestedTemplate() throws Exception {
+        String templates =
+            "group t;\n" +
+            "foo() ::= \"hi <name:{[<aaa.bb!>]}> mom\"\n";
+        Misc.writeFile(tmpdir, "t.stg", templates);
+
+        STGroup group = null;
+        STErrorListener errors = new ErrorBuffer();
+        try {
+            group = new STGroup(tmpdir+"/"+"t.stg");
+            group.listener = errors;
+            group.load(); // force load
+        }
+        catch (Exception e) {
+            System.err.println(e);
+            e.printStackTrace(System.err);
+        }
+        String expected = "";
+        String result = errors.toString();
+        assertEquals(expected, result);
+    }
 }

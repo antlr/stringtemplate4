@@ -94,9 +94,9 @@ templateDef
 		    group.defineTemplate($name.text, $formalArgs.args, template);
 		}
         catch (STRecognitionException e) {
-            group.listener.error(input.LT(-1).getLine()+":"+input.LT(-1).getCharPositionInLine()+
-                               ": can't parse chunk: '"+e.chunk+"' in "+
-                               e.chunk.enclosingTemplate.template,null);
+            int i = group.getCharPositionInLine(input.LT(-1), e);
+	        group.listener.error(input.LT(-1).getLine()+":"+i+
+	                             ": "+getErrorMessage((RecognitionException)e.getCause(), tokenNames), null);
         }		
 	    }
 	|   alias=ID '::=' target=ID	    

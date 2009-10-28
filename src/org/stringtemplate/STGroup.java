@@ -27,13 +27,10 @@
 */
 package org.stringtemplate;
 
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.*;
 
 import java.util.*;
 import java.io.File;
-import java.io.IOException;
 
 public class STGroup {
     /** When we use key as a value in a dictionary, this is how we signify. */
@@ -142,6 +139,7 @@ public class STGroup {
         return templates.get(name);
     }
 
+    // TODO: send in start/stop char or line/col so errors can be relative
     public CompiledST defineTemplate(String name, String template) {
         return defineTemplate(name, (LinkedHashMap<String,FormalArgument>)null, template);
     }
@@ -174,13 +172,12 @@ public class STGroup {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
         template = template.trim();
-//        try {
         Compiler c = new Compiler();
         CompiledST code = c.compile(template);
+        code.name = name;
         code.formalArguments = args;
         templates.put(name, code);
-        // compile any default args
-        if ( args!=null ) {
+        if ( args!=null ) { // compile any default args
             for (String a : args.keySet()) {
                 FormalArgument fa = args.get(a);
                 if ( fa.defaultValue!=null ) {
@@ -189,37 +186,21 @@ public class STGroup {
                 }
             }
         }
-        // compile any anonymous subtemplates
-        for (String subname : c.subtemplates.keySet()) {
-            String block = c.subtemplates.get(subname);
-            defineAnonSubtemplate(subname, block);
-        }
+        // define any anonymous subtemplates
+        defineAnonSubtemplates(code);
+
         return code;
-/*
-        }
-        catch (Exception e) {
-            System.err.println("can't parse template: "+template);
-            e.printStackTrace(System.err);
-        }
-        return null;
-         */
     }
 
-    public CompiledST defineAnonSubtemplate(String subname, String block) {
-        // look for argument in "{n | actual template}"
-        // only allow one
-        LinkedHashMap<String,FormalArgument> args =
-            Compiler.parseSubtemplateArg(block);
-        String t = block;
-        if ( args!=null ) {
-            int pipe = block.indexOf('|');
-            t = block.substring(pipe+1);
+    public void defineAnonSubtemplates(CompiledST code) {
+        if ( code.compiledSubtemplates!=null ) {
+            for (CompiledST sub : code.compiledSubtemplates) {
+                templates.put(sub.name, sub);
+                defineAnonSubtemplates(sub);
+            }
         }
-        CompiledST compiledSub = defineTemplate(subname, t);
-        compiledSub.formalArguments = args;
-        return compiledSub;
     }
-
+    
     /** Define a map for this group; not thread safe...do not keep adding
      *  these while you reference them.
      */
@@ -260,6 +241,36 @@ public class STGroup {
 
     public void setErrorListener(STErrorListener listener) {
         this.listener = listener;
+    }
+
+    public int getCharPositionInLine(Token errToken, STRecognitionException e) {
+        RecognitionException re = (RecognitionException)e.getCause();
+        int tokenIndex = re.index;
+        System.out.println("token index = "+tokenIndex);
+        CommonTokenStream tokens = (CommonTokenStream)re.input;
+        CommonToken t = (CommonToken)tokens.get(tokenIndex);
+        System.out.println("token="+t);
+        int charIndex = t.getStartIndex();
+        System.out.println("char "+charIndex);
+        System.out.println("template starts at "+e.chunk.code.start);
+
+        int i = charIndex; // index into this chunk
+
+        Chunk c = e.chunk;
+
+        while ( c!=null ) {
+            i += c.start;
+            i += c.code.start;
+            c = c.code.enclosingChunk;
+        }
+
+        System.out.println("error token="+errToken);
+        System.out.println("absolute char index in outer template="+i);
+        i += errToken.getCharPositionInLine();
+        if ( errToken.getType()==GroupParser.STRING ) i++;
+        else if ( errToken.getType()==GroupParser.STRING ) i+=2;
+        System.out.println("char position in line: "+i);
+        return i;
     }
     
     // Temp / testing

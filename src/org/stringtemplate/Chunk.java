@@ -34,13 +34,13 @@ public class Chunk {
     String text;
     int line;
     /** Char indexes for start/stop positions of this chunk. Doesn't
-     *  include the delimiter chars.
+     *  include the delimiter chars.  Relative to code.start
      */
     int start, stop;
 
-    /** What template are we part of?  Helps with error messages */
-    CompiledST enclosingTemplate;
-
+    /** All chunks compile into a single compiled ST. */
+    CompiledST code;
+    
     /** Tracks address of branch operand (in code block).  It's how
      *  we backpatch forward references when generating code for IFs.
      */
@@ -50,7 +50,7 @@ public class Chunk {
      *  We need to update them once we see the endif.
      */
     List<Integer> endRefs = new ArrayList<Integer>();
-    
+
     public Chunk(String text, int line, int start, int stop) {
         this.text = text;
         this.line = line;

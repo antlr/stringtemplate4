@@ -27,6 +27,8 @@
 */
 package org.stringtemplate;
 
+import org.antlr.runtime.RecognitionException;
+
 import java.util.*;
 import java.io.StringWriter;
 import java.io.IOException;
@@ -82,6 +84,7 @@ public class ST {
         code = group.defineTemplate(UNKNOWN_NAME, template);
     }
 
+    // TODO: who uses this?
     public ST(String template, char delimiterStartChar, char delimiterStopChar) {
         code = group.defineTemplate(UNKNOWN_NAME, template);
     }

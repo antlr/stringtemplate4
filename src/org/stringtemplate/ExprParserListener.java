@@ -28,6 +28,7 @@
 package org.stringtemplate;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.CommonToken;
 
 public interface ExprParserListener {
     public void refAttr(Token id);

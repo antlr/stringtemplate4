@@ -52,11 +52,10 @@ public STParser(TokenStream input,
     lex.delimiterStopChar = delimiterStopChar;
 }
 
-public void reportError(RecognitionException e) {
-    System.err.println("report "+e);
-    System.err.println("expr="+input.toString());
-    e.printStackTrace(System.err);
-    super.reportError(e);
+protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
+	throws RecognitionException
+{
+	throw new MismatchedTokenException(ttype, input);
 }
 }
 
@@ -65,6 +64,10 @@ public void reportError(RecognitionException e) {
 }
 
 stexpr
+	:	stexprNoEOF EOF
+	;
+	
+stexprNoEOF
 	:	mapExpr (';' exprOptions)?
 	|	i='if(' not='!'? {listener.ifExpr($i);} expr ')'
 										{listener.ifExprClause($i,$not!=null);}
@@ -132,8 +135,10 @@ arg :	ID '=' expr {listener.setArg($ID);}
 template
 	:	ID			{listener.refString($ID);}
 	|	ANONYMOUS_TEMPLATE
-					{String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
-	                 listener.refString(new CommonToken(STRING,name));}
+		{
+		String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
+		listener.refString(new CommonToken(STRING,name));
+		}
 	|	'(' mapExpr ')' {listener.eval();}
 	;
 	

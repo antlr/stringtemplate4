@@ -27,8 +27,6 @@
 */
 package org.stringtemplate;
 
-import java.util.Map;
-
 public class ExprChunk extends Chunk {
     public ExprChunk(String expr, int line, int start, int stop) {
         super(expr, line, start, stop);

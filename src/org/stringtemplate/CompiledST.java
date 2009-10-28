@@ -28,15 +28,28 @@
 package org.stringtemplate;
 
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 public class CompiledST {
+    // TODO: only used by subtemplates
+    protected String name;
+
     /** The original, immutable pattern (not really used again after
      *  initial "compilation"). Useful for debugging.
      */
     protected String template;
 
     protected LinkedHashMap<String,FormalArgument> formalArguments;
-    //protected LinkedHashMap<String,CompiledST> compiledDefaultValues;
+
+    List<CompiledST> compiledSubtemplates;
+
+    Chunk enclosingChunk;
+
+    /** Char indexes for start/stop positions of this template. Doesn't
+     *  include the delimiter chars. Relative to enclosingChunk.start
+     */
+    int start, stop;
 
     public String[] strings;
     public byte[] instrs;        // byte-addressable code memory.
