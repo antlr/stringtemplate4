@@ -96,7 +96,7 @@ templateDef
         catch (STRecognitionException e) {
             int i = group.getCharPositionInLine(input.LT(-1), e);
 	        group.listener.error(input.LT(-1).getLine()+":"+i+
-	                             ": "+getErrorMessage((RecognitionException)e.getCause(), tokenNames), null);
+	                             ": "+e.msg, null);
         }		
 	    }
 	|   alias=ID '::=' target=ID	    

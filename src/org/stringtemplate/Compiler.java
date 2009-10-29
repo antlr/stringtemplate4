@@ -86,7 +86,8 @@ public class Compiler implements ExprParserListener {
     public Compiler(ExprChunk enclosingChunk) {
         this.enclosingChunk = enclosingChunk;
     }
-    
+
+    /*
     protected static class TrackSubtemplate {
         String name;
         String template;
@@ -99,13 +100,16 @@ public class Compiler implements ExprParserListener {
             this.enclosingChunk = enclosingChunk;
         }
     }
+    */
 
     /** Track list of anonymous subtemplates. We need to name them
      *  here not in their eventual group because we need to generate
      *  code that references their names now.
      */
+    /*
     protected Map<String, TrackSubtemplate> subtemplates =
         new HashMap<String, TrackSubtemplate>();
+        */
 
     public static int subtemplateCount = 0; // public for testing access
 
@@ -146,7 +150,7 @@ public class Compiler implements ExprParserListener {
 
         // We may have found embedded subtemplates; compile those too
         // and store in code
-        compileSubtemplates();
+        //compileSubtemplates();
         
         //code.dump();
         return code;
@@ -165,7 +169,8 @@ public class Compiler implements ExprParserListener {
                 parser.stexpr(); // parse, trigger compile actions for single expr
             }
             catch (RecognitionException re) {
-                throw new STRecognitionException(chunk, re);
+                String msg = parser.getErrorMessage(re, parser.getTokenNames());
+                throw new STRecognitionException(chunk, msg, re);
             }
 
             if ( firstTokenType==STLexer.ENDIF ) ifs.pop();
@@ -210,6 +215,7 @@ public class Compiler implements ExprParserListener {
         return args;
     }
 
+    /*
     protected void compileSubtemplates() {
         if ( subtemplates.size()>0 ) System.out.println("subtemplates="+subtemplates);
         for (String subname : subtemplates.keySet()) {
@@ -232,7 +238,8 @@ public class Compiler implements ExprParserListener {
             code.compiledSubtemplates.add(sub);
         }
     }
-
+*/
+    
     // LISTEN TO PARSER
 
     public void map() {
@@ -244,16 +251,17 @@ public class Compiler implements ExprParserListener {
     }
 
     public String defineAnonTemplate(Token subtemplate) {
-        CommonToken t= (CommonToken)subtemplate;
+        CommonToken tok= (CommonToken)subtemplate;
         subtemplateCount++;
         String name = "_sub"+subtemplateCount;
+        /*
         TrackSubtemplate s =
-            new TrackSubtemplate(name, t.getText(), (ExprChunk)currentChunk);
-        s.start = t.getStartIndex() + 1; // don't count '{' on left
+            new TrackSubtemplate(name, tok.getText(), (ExprChunk)currentChunk);
+        s.start = tok.getStartIndex() + 1; // don't count '{' on left
         subtemplates.put(name,s);
         return name;
+        */
 
-/*
         String text = subtemplate.getText();
 
         System.out.println("define sub template "+text+" in "+code.template);
@@ -267,7 +275,8 @@ public class Compiler implements ExprParserListener {
         }
         t = t.trim();
         Compiler c = new Compiler((ExprChunk)currentChunk);
-        CompiledST sub = c.compile(t);
+        int templateStart = tok.getStartIndex() + 1; // don't count '{' on left
+        CompiledST sub = c.compile(templateStart, t);
         sub.name = name;
         sub.formalArguments = args;
         if ( code.compiledSubtemplates==null ) {
@@ -276,7 +285,6 @@ public class Compiler implements ExprParserListener {
         code.compiledSubtemplates.add(sub);
 
         return name;
-         */
     }
 
     public void instance(Token id) {

@@ -264,11 +264,14 @@ public class STGroup {
             c = c.code.enclosingChunk;
         }
 
-        System.out.println("error token="+errToken);
-        System.out.println("absolute char index in outer template="+i);
-        i += errToken.getCharPositionInLine();
-        if ( errToken.getType()==GroupParser.STRING ) i++;
-        else if ( errToken.getType()==GroupParser.STRING ) i+=2;
+        if ( errToken!=null ) {
+            System.out.println("error token="+errToken);
+            System.out.println("absolute char index in outer template="+i);
+            i += errToken.getCharPositionInLine();
+            if ( errToken.getType()==GroupParser.STRING ) i++;
+            else if ( errToken.getType()==GroupParser.STRING ) i+=2;
+        }
+        
         System.out.println("char position in line: "+i);
         return i;
     }

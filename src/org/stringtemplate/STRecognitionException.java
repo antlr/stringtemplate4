@@ -4,14 +4,15 @@ import org.antlr.runtime.RecognitionException;
 
 public class STRecognitionException extends STException {
     Chunk chunk; // which chunk caused trouble?
-    int error;   // which error occurred?
-
+    String msg;
+    
     public STRecognitionException(Chunk chunk) {
         this.chunk = chunk;
     }
-    public STRecognitionException(Chunk chunk, RecognitionException cause) {
+    public STRecognitionException(Chunk chunk, String msg, RecognitionException cause) {
         super(cause);
         this.chunk = chunk;
+        this.msg = msg;
     }
 
 }

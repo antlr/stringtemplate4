@@ -78,6 +78,15 @@ public class ST {
     
     public ST(String template) {
         code = group.defineTemplate(UNKNOWN_NAME, template);
+/*
+        try {
+            code = group.defineTemplate(UNKNOWN_NAME, template);
+        }
+        catch (STRecognitionException e) {
+            int i = group.getCharPositionInLine(null, e);
+	        group.listener.error(e.msg, null);
+        }
+         */
     }
 
     public ST(STGroup group, String template) {
