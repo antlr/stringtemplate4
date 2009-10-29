@@ -27,7 +27,12 @@
 */
 grammar ST;
 
-tokens { IF='if('; ELSE='else'; ELSEIF='elseif('; ENDIF='endif'; }
+tokens {
+	IF='if('; ELSE='else'; ELSEIF='elseif('; ENDIF='endif'; SUPER='super.';
+	SEMI=';'; BANG='!'; ELLIPSIS='...'; EQUALS='='; COLON=':';
+	LPAREN='('; RPAREN=')'; LBRACK='['; RBRACK=']'; COMMA=','; DOT='.';
+	TEXT; LDELIM; RDELIM;
+}
 
 @header { package org.stringtemplate; }
 @lexer::header { package org.stringtemplate; }
