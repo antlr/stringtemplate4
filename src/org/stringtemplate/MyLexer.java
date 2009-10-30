@@ -2,39 +2,68 @@ package org.stringtemplate;
 
 import org.antlr.runtime.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MyLexer implements TokenSource {
     public static final char EOF = (char)-1;            // EOF char
     public static final int EOF_TYPE = CharStream.EOF;  // EOF token type
+
+    public static class MyToken extends CommonToken {
+        public MyToken(CharStream input, int type, int channel, int start, int stop) {
+            super(input, type, channel, start, stop);
+        }
+
+        public MyToken(int type, String text) { super(type, text); }
+
+        public String toString() {
+            String channelStr = "";
+            if ( channel>0 ) {
+                channelStr=",channel="+channel;
+            }
+            String txt = getText();
+            if ( txt!=null ) {
+                txt = txt.replaceAll("\n","\\\\n");
+                txt = txt.replaceAll("\r","\\\\r");
+                txt = txt.replaceAll("\t","\\\\t");
+            }
+            else {
+                txt = "<no text>";
+            }
+            return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+STParser.tokenNames[type]+">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
+        }
+    }
 
     // pasted from STParser
     public static final int RBRACK=17;
     public static final int LBRACK=16;
     public static final int ELSE=5;
     public static final int ELLIPSIS=11;
+    public static final int LCURLY=20;
     public static final int BANG=10;
     public static final int EQUALS=12;
-    public static final int ANONYMOUS_TEMPLATE=24;
-    public static final int TEXT=20;
-    public static final int ID=23;
+    public static final int TEXT=22;
+    public static final int ID=25;
     public static final int SEMI=9;
     public static final int LPAREN=14;
     public static final int IF=4;
     public static final int ELSEIF=6;
     public static final int COLON=13;
     public static final int RPAREN=15;
-    public static final int WS=26;
+    public static final int WS=27;
     public static final int COMMA=18;
+    public static final int RCURLY=21;
     public static final int ENDIF=7;
-    public static final int RDELIM=22;
+    public static final int RDELIM=24;
     public static final int SUPER=8;
     public static final int DOT=19;
-    public static final int LDELIM=21;
-    public static final int STRING=25;
+    public static final int LDELIM=23;
+    public static final int STRING=26;
 
     char delimiterStartChar = '<';
     char delimiterStopChar = '>';
 
-    boolean insideExpr = false;
+    boolean scanningInsideExpr = false;
 
     ANTLRStringStream input;
     char c;        // current character
@@ -59,90 +88,146 @@ public class MyLexer implements TokenSource {
     }
 
     public Token nextToken() {
-        while ( c!=EOF ) {
-            startChar = input.index();
-            startLine = input.getLine();
-            startCharPositionInLine = input.getCharPositionInLine();
-            if ( !insideExpr ) {
-                if ( c==delimiterStartChar ) {
-                    consume();
-                    insideExpr = true;
-                    return newToken(LDELIM);
-                }
-                return mTEXT();
-            }
+        startChar = input.index();
+        startLine = input.getLine();
+        startCharPositionInLine = input.getCharPositionInLine();
+
+        if ( c==EOF ) return newToken(EOF_TYPE);
+        if ( scanningInsideExpr ) return inside();
+        return outside();
+    }
+
+    protected Token outside() {
+        if ( c==delimiterStartChar ) {
+            consume();
+            scanningInsideExpr = true;
+            return newToken(LDELIM);
+        }
+        if ( c=='}' ) {
+            consume();
+            scanningInsideExpr = true;
+            return newToken(RCURLY);
+        }
+        return mTEXT();
+    }
+
+    protected Token inside() {
+        while ( true ) {
             switch ( c ) {
-                case ' ': case '\t': case '\n': case '\r': WS(); continue;
+                case ' ': case '\t': case '\n': case '\r': consume(); continue;
+                case '.' : consume(); return newToken(DOT);
                 case ',' : consume(); return newToken(COMMA);
+                case ':' : consume(); return newToken(COLON);
+                case '(' : consume(); return newToken(LPAREN);
+                case ')' : consume(); return newToken(RPAREN);
                 case '[' : consume(); return newToken(LBRACK);
                 case ']' : consume(); return newToken(RBRACK);
                 case '=' : consume(); return newToken(EQUALS);
                 case '>' :
                     consume();
-                    insideExpr=false;
+                    scanningInsideExpr =false;
                     return newToken(RDELIM);
-                case '"' : consume(); return mSTRING();
+                case '"' : return mSTRING();
+                case '{' :
+                    // look for args ID (',' ID)* '|'
+                    int m = input.mark();
+                    List<String> args = new ArrayList<String>();
+                    consume();
+                    WS();
+                    args.add( mID().getText() );
+                    WS();
+                    while ( c==',' ) {
+                        consume();
+                        WS();
+                        args.add( mID().getText() );
+                        WS();
+                    }
+                    WS();
+                    match('|');
+                    System.out.println("matched args: "+args);
+                    input.rewind(m);
+                    consume();
+                    scanningInsideExpr = false;
+                    return newToken(LCURLY);                    
                 default:
                     if ( isIDStartLetter(c) ) { return mID(); }
                     throw new Error("invalid character: "+(char)c);
             }
         }
-        return newToken(EOF_TYPE);
     }
 
     Token mTEXT() {
+        boolean sawEscape = false;
         StringBuilder buf = new StringBuilder();
         while ( c != EOF && c != delimiterStartChar ) {
-            if ( c=='\\' ) { buf.append(c); consume(); buf.append(c); consume(); continue; }
+            if ( c=='\\' ) {
+                if ( input.LA(2)==delimiterStartChar ) {
+                    sawEscape = true;
+                    consume(); // toss out \ char
+                    buf.append(c); consume();
+                }
+                else {
+                    consume();
+                }
+                continue;
+            }
             buf.append(c);
             consume();
         }
-        return newToken(TEXT);
+        if ( sawEscape ) return newToken(TEXT, buf.toString());
+        else return newToken(TEXT);
     }
 
     /** ID  :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'/')* ; */
     Token mID() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(c);
         consume();
         while ( isIDLetter(c) ) {
-            buf.append(c);
             consume();
         }
         return newToken(ID);
     }
 
-    boolean isIDStartLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z'; }
-    boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9'; }
-
     /** STRING : '"' ( '\\' '"' | '\\' ~'"' | ~('\\'|'"') )* '"' ; */
     Token mSTRING() {
     	//{setText(getText().substring(1, getText().length()-1));}
+        boolean sawEscape = false;
         StringBuilder buf = new StringBuilder();
+        buf.append(c); consume();
         while ( c != '"' ) {
-            if ( c=='\\' ) { buf.append(c); consume(); buf.append(c); consume(); continue; }
+            if ( c=='\\' ) {
+                sawEscape = true;
+                consume();
+                buf.append(c); consume();
+                continue;
+            }
             buf.append(c);
             consume();
         }
+        buf.append(c);
         consume();
-        return newToken(STRING);
+        if ( sawEscape ) return newToken(STRING, buf.toString());
+        else return newToken(STRING);
     }
 
-    Token ANONYMOUS_TEMPLATE() {
-        match('{');
-        insideExpr = false;
-        return newToken(ANONYMOUS_TEMPLATE);
-    }
-
-    /** WS : (' '|'\t'|'\n'|'\r')* ; // ignore any whitespace */
     void WS() {
         while ( c==' ' || c=='\t' || c=='\n' || c=='\r' ) consume();
     }
+    
+    boolean isIDStartLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z'; }
+    boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9'; }
 
     public Token newToken(int ttype) {
-        CommonToken t = new CommonToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
-                                        startChar, input.index()-1);
+        MyToken t = new MyToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
+                                startChar, input.index()-1);
 
+        t.setLine(startLine);
+        t.setCharPositionInLine(startCharPositionInLine);
+        return t;
+    }
+
+    public Token newToken(int ttype, String text) {
+        MyToken t = new MyToken(ttype, text);
+        t.setStartIndex(startChar); // record when we start even if we modified text
         t.setLine(startLine);
         t.setCharPositionInLine(startCharPositionInLine);
         return t;

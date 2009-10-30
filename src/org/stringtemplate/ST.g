@@ -27,10 +27,15 @@
 */
 grammar ST;
 
+options {
+	tokenVocab=MyLexer;
+}
+
 tokens {
 	IF='if('; ELSE='else'; ELSEIF='elseif('; ENDIF='endif'; SUPER='super.';
 	SEMI=';'; BANG='!'; ELLIPSIS='...'; EQUALS='='; COLON=':';
 	LPAREN='('; RPAREN=')'; LBRACK='['; RBRACK=']'; COMMA=','; DOT='.';
+	LCURLY='{'; RCURLY='}';
 	TEXT; LDELIM; RDELIM;
 }
 
@@ -102,10 +107,10 @@ option
 	
 value
 	:	expr ( ':' template {listener.map();} )?
-	|	ANONYMOUS_TEMPLATE
+	|	'{'
 		{
-		String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
-        listener.instance(new CommonToken(STRING,name)); // call anon template
+//		String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
+//        listener.instance(new CommonToken(STRING,name)); // call anon template
         }
 	;
 
@@ -139,10 +144,10 @@ arg :	ID '=' expr {listener.setArg($ID);}
 
 template
 	:	ID			{listener.refString($ID);}
-	|	ANONYMOUS_TEMPLATE
+	|	'{'
 		{
-		String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
-		listener.refString(new CommonToken(STRING,name));
+//		String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
+//		listener.refString(new CommonToken(STRING,name));
 		}
 	|	'(' mapExpr ')' {listener.eval();}
 	;
@@ -163,9 +168,10 @@ STRING
     	{setText(getText().substring(1, getText().length()-1));}
 	;
 
+/*
 ANONYMOUS_TEMPLATE
     :	'{'  { new Chunkifier(input,delimiterStartChar,delimiterStopChar).matchBlock(); }
     	{setText(getText().substring(1, getText().length()-1));}
     ;
-
+*/
 WS  :	(' '|'\t'|'\r'|'\n')+ {skip();} ;
