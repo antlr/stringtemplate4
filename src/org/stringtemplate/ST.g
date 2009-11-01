@@ -25,41 +25,33 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-grammar ST;
+
+/** Recognize a single StringTemplate template text, expressions, and conditionals */
+parser grammar ST;
 
 options {
 	tokenVocab=MyLexer;
 }
 
+/*
 tokens {
 	IF='if('; ELSE='else'; ELSEIF='elseif('; ENDIF='endif'; SUPER='super.';
 	SEMI=';'; BANG='!'; ELLIPSIS='...'; EQUALS='='; COLON=':';
 	LPAREN='('; RPAREN=')'; LBRACK='['; RBRACK=']'; COMMA=','; DOT='.';
-	LCURLY='{'; RCURLY='}';
+	LCURLY='{'; RCURLY='}'; PIPE='|';
 	TEXT; LDELIM; RDELIM;
 }
+*/
 
 @header { package org.stringtemplate; }
-@lexer::header { package org.stringtemplate; }
-
-@lexer::members {
-char delimiterStartChar;
-char delimiterStopChar;
-}
 
 @members {
-public boolean exprHasOptions = false;
 ExprParserListener listener;
 public STParser(TokenStream input,
-				ExprParserListener listener,
-                char delimiterStartChar,
-                char delimiterStopChar)
+				ExprParserListener listener)
 {
     this(input, new RecognizerSharedState());
     this.listener = listener;
-    STLexer lex = (STLexer)input.getTokenSource();
-    lex.delimiterStartChar = delimiterStartChar;
-    lex.delimiterStopChar = delimiterStopChar;
 }
 
 protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
@@ -73,28 +65,20 @@ protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet f
    catch (RecognitionException re) { throw re; }
 }
 
-stexpr
-	:	stexprNoEOF EOF
+st	:	stNoEof EOF
 	;
 	
-stexprNoEOF
-	:	mapExpr (';' exprOptions)?
-	|	i='if(' not='!'? {listener.ifExpr($i);} expr ')'
-										{listener.ifExprClause($i,$not!=null);}
-	|	i='elseif(' not='!'? {listener.elseifExpr($i);} expr ')'
-										{listener.elseifExprClause($i,$not!=null);}
-	|	'else'							{listener.elseClause();}
-	|	'endif'							{listener.endif();}
+stNoEof
+	:	( TEXT | LDELIM ( conditional | expr (';' exprOptions)? ) RDELIM )*
 	;
 
-mapExpr
-@init {int n=1;}
-	:	expr
-		(	':' template
-			(	(',' template {n++;})+  {listener.mapAlternating(n);}
-			|						    {listener.map();}
-			)
-		)*
+conditional
+	:	i='if' '(' not='!'? {listener.ifExpr($i);} primary ')'
+							{listener.ifExprClause($i,$not!=null);}
+	|	i='elseif' '(' not='!'? {listener.elseifExpr($i);} primary ')'
+							{listener.elseifExprClause($i,$not!=null);}
+	|	'else'				{listener.elseClause();}
+	|	'endif'				{listener.endif();}
 	;
 
 exprOptions
@@ -102,11 +86,11 @@ exprOptions
 	;
 
 option
-	:	ID ( '=' value | {listener.defaultOption($ID);} ) {listener.setOption($ID);}
+	:	ID ( '=' exprNoComma | {listener.defaultOption($ID);} ) {listener.setOption($ID);}
 	;
 	
-value
-	:	expr ( ':' template {listener.map();} )?
+exprNoComma
+	:	callExpr ( ':' template {listener.map();} )?
 	|	'{'
 		{
 //		String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
@@ -114,13 +98,25 @@ value
         }
 	;
 
-expr:	call
-	|	primary
+expr : mapExpr ;
+
+mapExpr
+@init {int n=1;}
+	:	callExpr
+		(	':' template
+			(	(',' template {n++;})+  {listener.mapAlternating(n);}
+			|						    {listener.map();}
+			)
+		)*
 	;
 
-call:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
-		ID '(' expr ')' {listener.func($ID);}
+
+callExpr
+options {k=2;} // prevent full LL(*) which fails, falling back on k=1; need k=2
+	:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
+		ID '(' arg ')' {listener.func($ID);}
 	|	ID {listener.instance($ID);} '(' args? ')'
+	|	primary
 	;
 	
 primary
@@ -131,15 +127,15 @@ primary
 		)*
 	|	STRING    {listener.refString($STRING);}
 	|	list
-	|	'(' mapExpr ')' {listener.eval();}
+	|	'(' expr ')' {listener.eval();}
 		( {listener.instance(null);} '(' args? ')' )? // indirect call
 	;
 
 args:	arg (',' arg)* ;
 
-arg :	ID '=' expr {listener.setArg($ID);}
-	|	expr        {listener.setArg(null);}
-	|	elip='...'	{listener.setPassThroughArg($elip);}
+arg :	ID '=' exprNoComma {listener.setArg($ID);}
+	|	exprNoComma        {listener.setArg(null);}
+	|	elip='...'		   {listener.setPassThroughArg($elip);}
 	;
 
 template
@@ -157,21 +153,5 @@ list:	{listener.list();} '[' listElement (',' listElement)* ']'
 	;
 
 listElement
-    :   value {listener.add();}
+    :   exprNoComma {listener.add();}
     ;
-
-ID  :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'/')*
-    ;
-
-STRING
-	:	'"' ( '\\' '"' | '\\' ~'"' | ~('\\'|'"') )* '"'
-    	{setText(getText().substring(1, getText().length()-1));}
-	;
-
-/*
-ANONYMOUS_TEMPLATE
-    :	'{'  { new Chunkifier(input,delimiterStartChar,delimiterStopChar).matchBlock(); }
-    	{setText(getText().substring(1, getText().length()-1));}
-    ;
-*/
-WS  :	(' '|'\t'|'\r'|'\n')+ {skip();} ;
