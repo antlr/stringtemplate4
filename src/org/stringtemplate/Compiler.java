@@ -37,6 +37,7 @@ public class Compiler implements CodeGenerator {
      *  For now, let's assume n/5. Later, we can test in practice.
      */
     public static final double CODE_SIZE_FACTOR = 5.0;
+	public static final int SUBTEMPLATE_INITIAL_CODE_SIZE = 15;
 
     public static final Map<String, Integer> supportedOptions =
         new HashMap<String, Integer>() {
@@ -73,13 +74,13 @@ public class Compiler implements CodeGenerator {
         }
     };
 
-    StringTable strings;
+    StringTable strings = new StringTable();
     byte[] instrs;
     int ip = 0;
     Stack<Chunk> ifs = new Stack<Chunk>();
     Chunk currentChunk;
     ExprChunk enclosingChunk;
-    CompiledST code;
+    CompiledST code = new CompiledST();
 
     public Compiler() {;}
     
@@ -117,11 +118,9 @@ public class Compiler implements CodeGenerator {
         return compile(template, '<', '>');
     }
 
-    public CompiledST compile(String template,
+	public CompiledST compile(String template,
 							  char delimiterStartChar,
-                              char delimiterStopChar) {
-		code = new CompiledST();
-		strings = new StringTable();
+							  char delimiterStopChar) {
 		int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
 		instrs = new byte[initialSize];
 
@@ -143,7 +142,26 @@ public class Compiler implements CodeGenerator {
 		code.instrs = instrs;
 		code.codeSize = ip;
 		return code;
-    }
+	}
+
+	public CompiledST compile(TokenStream tokens, RecognizerSharedState state) {
+		instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
+		STParser parser = new STParser(tokens, state, this);
+		try {
+			parser.template(); // parse, trigger compile actions for single expr
+		}
+		catch (RecognitionException re) {
+			String msg = parser.getErrorMessage(re, parser.getTokenNames());
+			System.err.println(msg);
+			re.printStackTrace(System.err);
+//			throw new STRecognitionException(null, msg, re);
+		}
+
+		if ( strings!=null ) code.strings = strings.toArray();
+		code.instrs = instrs;
+		code.codeSize = ip;
+		return code;
+	}
 
 	/*
     public CompiledST compile(int startCharIndex,
@@ -219,14 +237,9 @@ public class Compiler implements CodeGenerator {
         return strings.add(s);
     }
 
+	/*
     public static LinkedHashMap<String,FormalArgument> parseSubtemplateArg(String block) {
         LinkedHashMap<String,FormalArgument> args = null;
-        /*
-        String ws = "\\s*";
-        String argPattern = ws+ATTR_NAME_REGEX+ws+"|";
-        if ( block.matches(argPattern) ) System.out.println("matches: "+block);
-        else System.out.println("doens't match "+argPattern+": "+block);
-        */
         int pipe = block.indexOf('|');
         if ( pipe<0 ) return null;
         String argStr = block.substring(0,pipe+1).trim();
@@ -239,7 +252,7 @@ public class Compiler implements CodeGenerator {
         }
         return args;
     }
-
+*/
     /*
     protected void compileSubtemplates() {
         if ( subtemplates.size()>0 ) System.out.println("subtemplates="+subtemplates);
@@ -267,23 +280,12 @@ public class Compiler implements CodeGenerator {
     
     // LISTEN TO PARSER
 
-	public void refText(Token text) {
-		refString(text);
-		emit(Bytecode.INSTR_WRITE);
-	}
-
-    public void map() {
-        emit(Bytecode.INSTR_MAP);
-    }
-
-    public void mapAlternating(int numTemplates) {
-        emit(Bytecode.INSTR_ROT_MAP, numTemplates);
-    }
-
-    public String defineAnonTemplate(Token subtemplate) {
+/*    public String defineAnonTemplate(Token subtemplate) {
         CommonToken tok= (CommonToken)subtemplate;
         subtemplateCount++;
         String name = "_sub"+subtemplateCount;
+		return name;
+		*/
         /*
         TrackSubtemplate s =
             new TrackSubtemplate(name, tok.getText(), (ExprChunk)currentChunk);
@@ -292,6 +294,7 @@ public class Compiler implements CodeGenerator {
         return name;
         */
 
+		/*
         String text = subtemplate.getText();
 
         System.out.println("define sub template "+text+" in "+code.template);
@@ -315,155 +318,10 @@ public class Compiler implements CodeGenerator {
         code.compiledSubtemplates.add(sub);
 
         return name;
-    }
+        */
+//    }
 
-    public void instance(Token id) {
-        if ( id==null ) {
-            emit(Bytecode.INSTR_NEW_IND);
-        }
-        else {
-            emit(Bytecode.INSTR_NEW, id.getText());
-        }
-    }
-
-    public void refAttr(Token id) {
-        String name = id.getText();
-        if ( Interpreter.predefinedAttributes.contains(name) ) {
-            emit(Bytecode.INSTR_LOAD_LOCAL, name);
-        }
-        else {
-            emit(Bytecode.INSTR_LOAD_ATTR, name);
-        }
-    }
-
-    public void refProp(Token id) {
-        if ( id == null) {
-            emit(Bytecode.INSTR_LOAD_PROP_IND);
-        }
-        else {
-            emit(Bytecode.INSTR_LOAD_PROP, id.getText());
-        }
-    }
-
-    public void refString(Token str) {
-        emit(Bytecode.INSTR_LOAD_STR, str.getText());
-    }
-
-    public void options() {
-        emit(Bytecode.INSTR_OPTIONS);
-    }
-
-    public void setOption(Token id) {
-        Integer I = supportedOptions.get(id.getText());
-        if ( I==null ) {
-            System.err.println("no such option: "+id.getText());
-            return;
-        }
-        emit(Bytecode.INSTR_STORE_OPTION, I);
-    }
-
-    public void defaultOption(Token id) {
-        String v = defaultOptionValues.get(id.getText());
-        if ( v==null ) {
-            System.err.println("no def value for "+id.getText());
-            return;
-        }
-        emit(Bytecode.INSTR_LOAD_STR, v);
-    }
-
-    public void setArg(Token arg) {
-        if ( arg==null ) emit(Bytecode.INSTR_STORE_SOLE_ARG);
-        else emit(Bytecode.INSTR_STORE_ATTR, arg.getText());
-    }
-
-    public void setPassThroughArg(Token arg) {
-        emit(Bytecode.INSTR_SET_PASS_THRU);
-    }
-
-	static class Label {
-		String name;
-		int branchOperandAddress;
-	}
-
-    public void ifExpr(Token t) {
-        //System.out.println("ifExpr @ "+ip);
-		//return new ArrayList<Label>(); 
-    }
-
-    public void ifExprClause(Token t, boolean not) {
-        System.out.println("ifExprClause @ "+ip);
-		System.out.println("ref label (else, @"+(ip+1)+")");
-        ifs.peek().prevBranch = ip+1;
-        short i = Bytecode.INSTR_BRF;
-        if ( not ) i = Bytecode.INSTR_BRT;
-        emit(i, -1); // write placeholder
-    }
-
-    public void elseifExpr(Token t) {
-        System.out.println("elseifExpr @ "+ip);
-		System.out.println("ref label (end, @"+(ip+1)+")");
-        ifs.peek().endRefs.add(ip+1);
-        emit(Bytecode.INSTR_BR, -1); // write placeholder
-		System.out.println("def label else=="+ip);
-        writeShort(instrs, ifs.peek().prevBranch, (short)ip);
-        ifs.peek().prevBranch = -1;
-    }
-
-    public void elseifExprClause(Token t, boolean not) {
-        System.out.println("elseifExprClause of "+ifs.peek()+" @ "+ip);
-		System.out.println("ref label (else, @"+(ip+1)+")");
-        ifs.peek().prevBranch = ip+1;
-        short i = Bytecode.INSTR_BRF;
-        if ( not ) i = Bytecode.INSTR_BRT;
-        emit(i, -1); // write placeholder
-    }
-
-    public void elseClause() {
-        System.out.println("else of "+ifs.peek());
-		System.out.println("ref label (end, @"+(ip+1)+")");
-        ifs.peek().endRefs.add(ip+1);
-        emit(Bytecode.INSTR_BR, -1); // write placeholder
-		System.out.println("def label else=="+ip);
-        writeShort(instrs, ifs.peek().prevBranch, (short)ip);
-        ifs.peek().prevBranch = -1;
-    }
-
-    public void endif() {
-		System.out.println("endif");
-		System.out.println("def label end=="+ip);
-		System.out.println("if else ref'd, def label else=="+ip);
-        if ( ifs.peek().prevBranch>=0 ) writeShort(instrs, ifs.peek().prevBranch, (short)ip);
-        List<Integer> ends = ifs.peek().endRefs;
-        //System.out.println("endrefs="+ends);
-        for (int opnd : ends) {
-            writeShort(instrs, opnd, (short)ip);
-        }
-        //System.out.println("endif end");
-    }
-
-    public void list() { emit(Bytecode.INSTR_LIST); }
-
-    public void add() { emit(Bytecode.INSTR_ADD); }
-
-    public void eval() { emit(Bytecode.INSTR_TOSTR); }
-
-    public void func(Token id) {
-        Short funcBytecode = funcs.get(id.getText());
-        if ( funcBytecode==null ) {
-            System.err.println("no such fun: "+id);
-            emit(Bytecode.INSTR_NOOP);
-        }
-        else {
-            emit(funcBytecode);
-        }
-    }
-
-	public void endExpr(boolean hasOptions) {
-		if ( hasOptions ) emit(Bytecode.INSTR_WRITE_OPT);
-		else emit(Bytecode.INSTR_WRITE);
-	}
-
-    // GEN
+    // CodeGenerator interface impl.
 
     public void emit(short opcode) {
         ensureCapacity();
@@ -487,6 +345,19 @@ public class Compiler implements CodeGenerator {
 	}
 
 	public int address() { return ip; }
+
+	public String compileAnonTemplate(TokenStream input, RecognizerSharedState state) {
+		subtemplateCount++;
+		String name = "_sub"+subtemplateCount;
+		Compiler c = new Compiler();
+		CompiledST sub = c.compile(input, state);
+		sub.name = name;
+		if ( code.compiledSubtemplates==null ) {
+			code.compiledSubtemplates = new ArrayList<CompiledST>();
+		}
+		code.compiledSubtemplates.add(sub);
+		return name;
+	}
 
     protected void ensureCapacity() {
         if ( (ip+3) >= instrs.length ) { // ensure room for full instruction

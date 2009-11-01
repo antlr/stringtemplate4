@@ -78,10 +78,14 @@ public class BytecodeDisassembler {
 
     public int disassembleInstruction(StringBuilder buf, int ip) {
         int opcode = code[ip];
+		if ( ip>=codeSize ) {
+			throw new IllegalArgumentException("ip out of range: "+ip);
+		}
         Bytecode.Instruction I =
             Bytecode.instructions[opcode];
         if ( I==null ) {
-            System.err.println("no such instruction "+opcode);
+            throw new IllegalArgumentException("no such instruction "+opcode+
+				" at address "+ip);
         }
         String instrName = I.name;
         buf.append( String.format("%04d:\t%-14s", ip, instrName) );
@@ -119,8 +123,11 @@ public class BytecodeDisassembler {
         StringBuffer buf = new StringBuffer();
         buf.append("#");
         buf.append(poolIndex);
-        String s = strings[poolIndex].toString();
-        if ( strings[poolIndex] instanceof String ) s='"'+s+'"';
+		String s = "<bad string index>";
+		if ( poolIndex<strings.length ) {
+			s = strings[poolIndex].toString();
+			if ( strings[poolIndex] instanceof String ) s='"'+s+'"';
+		}
         buf.append(":");
         buf.append(s);
         return buf.toString();

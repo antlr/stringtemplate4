@@ -133,7 +133,8 @@ public class MyLexer implements TokenSource {
                 case ' ': case '\t': case '\n': case '\r': consume(); continue;
                 case '.' : consume(); return newToken(DOT);
                 case ',' : consume(); return newToken(COMMA);
-                case ':' : consume(); return newToken(COLON);
+				case ':' : consume(); return newToken(COLON);
+				case ';' : consume(); return newToken(SEMI);
                 case '(' : consume(); return newToken(LPAREN);
                 case ')' : consume(); return newToken(RPAREN);
                 case '[' : consume(); return newToken(LBRACK);

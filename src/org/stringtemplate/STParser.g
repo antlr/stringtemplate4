@@ -47,9 +47,11 @@ tokens {
 
 @members {
 CodeGenerator gen;
-public STParser(TokenStream input, CodeGenerator gen)
-{
-    this(input, new RecognizerSharedState());
+public STParser(TokenStream input, CodeGenerator gen) {
+    this(input, new RecognizerSharedState(), gen);
+}
+public STParser(TokenStream input, RecognizerSharedState state, CodeGenerator gen) {
+    this(input, state);
     this.gen = gen;
 }
 
@@ -58,6 +60,8 @@ protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet f
 {
 	throw new MismatchedTokenException(ttype, input);
 }
+
+    public String strip(String s, int n) { return s.substring(n, s.length()-n); }
 
     public void refAttr(Token id) {
         String name = id.getText();
@@ -122,6 +126,15 @@ template
 		)*
 	;
 
+subtemplate returns [String name]
+	:	'{' ( ID (',' ID)* '|' )?
+		{
+		$name = gen.compileAnonTemplate(input, state);
+		// TODO: sub.formalArguments = args;
+        }
+        '}'
+    ;
+    
 conditional
 @init {
     /** Tracks address of branch operand (in code block).  It's how
@@ -188,11 +201,7 @@ option
 	
 exprNoComma
 	:	callExpr ( ':' templateRef {gen.emit(Bytecode.INSTR_MAP);} )?
-	|	'{'
-		{
-//		String name = defineAnonTemplate($ANONYMOUS_TEMPLATE);
-//        instance(new CommonToken(STRING,name)); // call anon template
-        }
+	|	subtemplate {gen.emit(Bytecode.INSTR_NEW, $subtemplate.name);}
 	;
 
 expr : mapExpr ;
@@ -211,7 +220,7 @@ callExpr
 options {k=2;} // prevent full LL(*) which fails, falling back on k=1; need k=2
 	:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
 		ID '(' arg ')' {func($ID);}
-	|	ID {gen.emit(Bytecode.INSTR_NEW);} '(' args? ')'
+	|	ID {gen.emit(Bytecode.INSTR_NEW, $ID.text);} '(' args? ')'
 	|	primary
 	;
 	
@@ -221,7 +230,7 @@ primary
 		(	'.' p=ID {gen.emit(Bytecode.INSTR_LOAD_PROP, $p.text);}
 		|	'.' '(' mapExpr ')' {gen.emit(Bytecode.INSTR_LOAD_PROP_IND);}
 		)*
-	|	STRING    {gen.emit(Bytecode.INSTR_LOAD_STR, $STRING.text);}
+	|	STRING    {gen.emit(Bytecode.INSTR_LOAD_STR, strip($STRING.text,1));}
 	|	list
 	|	'(' expr ')' {gen.emit(Bytecode.INSTR_TOSTR);}
 		( {gen.emit(Bytecode.INSTR_NEW_IND);} '(' args? ')' )? // indirect call
@@ -236,11 +245,7 @@ arg :	ID '=' exprNoComma {gen.emit(Bytecode.INSTR_STORE_ATTR, $ID.text);}
 
 templateRef
 	:	ID			{gen.emit(Bytecode.INSTR_LOAD_STR, $ID.text);}
-	|	'{'
-		{
-//		String name = defineAnonTemplate($ANONYMOUS_TEMPLATE);
-//		refString(new CommonToken(STRING,name));
-		}
+	|	subtemplate {gen.emit(Bytecode.INSTR_LOAD_STR, $subtemplate.name);}
 	|	'(' mapExpr ')' {gen.emit(Bytecode.INSTR_TOSTR);}
 	;
 	
