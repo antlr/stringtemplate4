@@ -27,7 +27,7 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.BytecodeDefinition;
+import org.stringtemplate.Bytecode;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class BytecodeDisassembler {
     byte[] code;
     int codeSize;
     protected Object[] strings;
-    BytecodeDefinition def;
+    Bytecode def;
 
     public BytecodeDisassembler(byte[] code,
                                 int codeSize,
@@ -54,13 +54,13 @@ public class BytecodeDisassembler {
         while (ip<codeSize) {
             if ( ip>0 ) buf.append(", ");
             int opcode = code[ip];
-            BytecodeDefinition.Instruction I = BytecodeDefinition.instructions[opcode];
+            Bytecode.Instruction I = Bytecode.instructions[opcode];
             buf.append(I.name);
             ip++;
             for (int opnd=0; opnd<I.n; opnd++) {
                 buf.append(' ');
                 buf.append(getShort(code, ip));
-                ip += BytecodeDefinition.OPND_SIZE_IN_BYTES;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
             }
         }
         return buf.toString();
@@ -78,8 +78,8 @@ public class BytecodeDisassembler {
 
     public int disassembleInstruction(StringBuilder buf, int ip) {
         int opcode = code[ip];
-        BytecodeDefinition.Instruction I =
-            BytecodeDefinition.instructions[opcode];
+        Bytecode.Instruction I =
+            Bytecode.instructions[opcode];
         if ( I==null ) {
             System.err.println("no such instruction "+opcode);
         }
@@ -93,13 +93,13 @@ public class BytecodeDisassembler {
         List<String> operands = new ArrayList<String>();
         for (int i=0; i<I.n; i++) {
             int opnd = getShort(code, ip);
-            ip += BytecodeDefinition.OPND_SIZE_IN_BYTES;
+            ip += Bytecode.OPND_SIZE_IN_BYTES;
             switch ( I.type[i] ) {
-                case BytecodeDefinition.STRING :
+                case Bytecode.STRING :
                     operands.add(showConstPoolOperand(opnd));
                     break;
-                case BytecodeDefinition.ADDR :
-                case BytecodeDefinition.INT :
+                case Bytecode.ADDR :
+                case Bytecode.INT :
                     operands.add(String.valueOf(opnd));
                     break;
                 default:

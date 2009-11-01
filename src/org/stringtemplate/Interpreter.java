@@ -76,18 +76,18 @@ public class Interpreter {
             short opcode = code[ip];
             ip++; //jump to next instruction or first byte of operand
             switch (opcode) {
-            case BytecodeDefinition.INSTR_LOAD_STR :
+            case Bytecode.INSTR_LOAD_STR :
                 int strIndex = getShort(code, ip);
                 ip += 2;
                 operands[++sp] = self.code.strings[strIndex];
                 break;
-            case BytecodeDefinition.INSTR_LOAD_ATTR :
+            case Bytecode.INSTR_LOAD_ATTR :
                 nameIndex = getShort(code, ip);
                 ip += 2;
                 name = self.code.strings[nameIndex];
                 operands[++sp] = self.getAttribute(name);
                 break;
-            case BytecodeDefinition.INSTR_LOAD_LOCAL:
+            case Bytecode.INSTR_LOAD_LOCAL:
                 nameIndex = getShort(code, ip);
                 ip += 2;
                 name = self.code.strings[nameIndex];
@@ -95,19 +95,19 @@ public class Interpreter {
                 else o = null;
                 operands[++sp] = o;
                 break;
-            case BytecodeDefinition.INSTR_LOAD_PROP :
+            case Bytecode.INSTR_LOAD_PROP :
                 nameIndex = getShort(code, ip);
                 ip += 2;
                 o = operands[sp--];
                 name = self.code.strings[nameIndex];
                 operands[++sp] = getObjectProperty(self, o, name);
                 break;
-            case BytecodeDefinition.INSTR_LOAD_PROP_IND :
+            case Bytecode.INSTR_LOAD_PROP_IND :
                 Object propName = operands[sp--];
                 o = operands[sp];
                 operands[sp] = getObjectProperty(self, o, propName);
                 break;
-            case BytecodeDefinition.INSTR_NEW :
+            case Bytecode.INSTR_NEW :
                 nameIndex = getShort(code, ip);
                 ip += 2;
                 name = self.code.strings[nameIndex];
@@ -115,13 +115,13 @@ public class Interpreter {
                 if ( st == null ) System.err.println("no such template "+name);
                 operands[++sp] = st;
                 break;
-            case BytecodeDefinition.INSTR_NEW_IND:
+            case Bytecode.INSTR_NEW_IND:
                 name = (String)operands[sp--];
                 st = group.getEmbeddedInstanceOf(self, name);
                 if ( st == null ) System.err.println("no such template "+name);
                 operands[++sp] = st;
                 break;
-            case BytecodeDefinition.INSTR_STORE_ATTR:
+            case Bytecode.INSTR_STORE_ATTR:
                 nameIndex = getShort(code, ip);
                 name = self.code.strings[nameIndex];
                 ip += 2;
@@ -129,7 +129,7 @@ public class Interpreter {
                 st = (ST)operands[sp]; // store arg in ST on top of stack
                 st.rawSetAttribute(name, o);
                 break;
-            case BytecodeDefinition.INSTR_STORE_SOLE_ARG :
+            case Bytecode.INSTR_STORE_SOLE_ARG :
                 // unnamed arg, set to sole arg (or first if multiple)
                 o = operands[sp--];    // value to store
                 st = (ST)operands[sp]; // store arg in ST on top of stack
@@ -146,32 +146,32 @@ public class Interpreter {
                     st.rawSetAttribute(name, o);
                 }
                 break;
-            case BytecodeDefinition.INSTR_SET_PASS_THRU :
+            case Bytecode.INSTR_SET_PASS_THRU :
                 st = (ST)operands[sp]; // ST on top of stack
                 st.passThroughAttributes = true;
                 break;
-            case BytecodeDefinition.INSTR_STORE_OPTION:
+            case Bytecode.INSTR_STORE_OPTION:
                 int optionIndex = getShort(code, ip);
                 ip += 2;
                 o = operands[sp--];    // value to store
                 options = (Object[])operands[sp]; // get options
                 options[optionIndex] = o; // store value into options on stack
                 break;
-            case BytecodeDefinition.INSTR_WRITE :
+            case Bytecode.INSTR_WRITE :
                 o = operands[sp--];
                 n += writeObject(out, self, o, null);
                 break;
-            case BytecodeDefinition.INSTR_WRITE_OPT :
+            case Bytecode.INSTR_WRITE_OPT :
                 options = (Object[])operands[sp--]; // get options
                 o = operands[sp--];                 // get option to write
                 n += writeObject(out, self, o, options);
                 break;
-            case BytecodeDefinition.INSTR_MAP :
+            case Bytecode.INSTR_MAP :
                 name = (String)operands[sp--];
                 o = operands[sp--];
                 map(self,o,name);
                 break;
-            case BytecodeDefinition.INSTR_ROT_MAP :
+            case Bytecode.INSTR_ROT_MAP :
                 int nmaps = getShort(code, ip);
                 ip += 2;
                 List<String> templates = new ArrayList<String>();
@@ -180,69 +180,69 @@ public class Interpreter {
                 o = operands[sp--];
                 if ( o!=null ) rot_map(self,o,templates);
                 break;
-            case BytecodeDefinition.INSTR_BR :
+            case Bytecode.INSTR_BR :
                 ip = getShort(code, ip);
                 break;
-            case BytecodeDefinition.INSTR_BRF :
+            case Bytecode.INSTR_BRF :
                 addr = getShort(code, ip);
                 ip += 2;
                 o = operands[sp--]; // <if(expr)>...<endif>
                 if ( !testAttributeTrue(o) ) ip = addr; // jump
                 break;
-            case BytecodeDefinition.INSTR_BRT :
+            case Bytecode.INSTR_BRT :
                 addr = getShort(code, ip);
                 ip += 2;
                 o = operands[sp--]; // <if(expr)>...<endif>
                 if ( testAttributeTrue(o) ) ip = addr; // jump
                 break;
-            case BytecodeDefinition.INSTR_OPTIONS :
+            case Bytecode.INSTR_OPTIONS :
                 operands[++sp] = new Object[Compiler.NUM_OPTIONS];
                 break;
-            case BytecodeDefinition.INSTR_LIST :
+            case Bytecode.INSTR_LIST :
                 operands[++sp] = new ArrayList<Object>();
                 break;
-            case BytecodeDefinition.INSTR_ADD :
+            case Bytecode.INSTR_ADD :
                 o = operands[sp--];             // pop value
                 List<Object> list = (List<Object>)operands[sp]; // don't pop list
                 addToList(list, o);
                 break;
-            case BytecodeDefinition.INSTR_TOSTR :
+            case Bytecode.INSTR_TOSTR :
                 // replace with string value; early eval
                 operands[sp] = toString(self, operands[sp]);
                 break;
-            case BytecodeDefinition.INSTR_FIRST  :
+            case Bytecode.INSTR_FIRST  :
                 operands[sp] = first(operands[sp]);
                 break;
-            case BytecodeDefinition.INSTR_LAST   :
+            case Bytecode.INSTR_LAST   :
                 operands[sp] = last(operands[sp]);
                 break;
-            case BytecodeDefinition.INSTR_REST   :
+            case Bytecode.INSTR_REST   :
                 operands[sp] = rest(operands[sp]);
                 break;
-            case BytecodeDefinition.INSTR_TRUNC  :
+            case Bytecode.INSTR_TRUNC  :
                 operands[sp] = trunc(operands[sp]);
                 break;
-            case BytecodeDefinition.INSTR_STRIP  :
+            case Bytecode.INSTR_STRIP  :
                 operands[sp] = strip(operands[sp]);
                 break;
-            case BytecodeDefinition.INSTR_TRIM   :
+            case Bytecode.INSTR_TRIM   :
                 o = operands[sp--];
                 if ( o.getClass() == String.class ) {
                     operands[++sp] = ((String)o).trim();
                 }
                 else System.err.println("strlen(non string)");
                 break;
-            case BytecodeDefinition.INSTR_LENGTH :
+            case Bytecode.INSTR_LENGTH :
                 operands[sp] = length(operands[sp]);
                 break;
-            case BytecodeDefinition.INSTR_STRLEN :
+            case Bytecode.INSTR_STRLEN :
                 o = operands[sp--];
                 if ( o.getClass() == String.class ) {
                     operands[++sp] = ((String)o).length();
                 }
                 else System.err.println("strlen(non string)");
                 break;
-            case BytecodeDefinition.INSTR_REVERSE   :
+            case Bytecode.INSTR_REVERSE   :
                 operands[sp] = reverse(operands[sp]);
                 break;
             default :

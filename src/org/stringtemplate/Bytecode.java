@@ -27,7 +27,7 @@
 */
 package org.stringtemplate;
 
-public class BytecodeDefinition {
+public class Bytecode {
     public static final int OPND_SIZE_IN_BYTES = 2;
     public static final int STRING = 1;
     public static final int ADDR   = 2;

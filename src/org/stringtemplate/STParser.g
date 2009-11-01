@@ -46,12 +46,11 @@ tokens {
 @header { package org.stringtemplate; }
 
 @members {
-ExprParserListener listener;
-public STParser(TokenStream input,
-				ExprParserListener listener)
+CodeGenerator gen;
+public STParser(TokenStream input, CodeGenerator gen)
 {
     this(input, new RecognizerSharedState());
-    this.listener = listener;
+    this.gen = gen;
 }
 
 protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
@@ -59,49 +58,140 @@ protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet f
 {
 	throw new MismatchedTokenException(ttype, input);
 }
+
+    public void refAttr(Token id) {
+        String name = id.getText();
+        if ( Interpreter.predefinedAttributes.contains(name) ) {
+            gen.emit(Bytecode.INSTR_LOAD_LOCAL, name);
+        }
+        else {
+            gen.emit(Bytecode.INSTR_LOAD_ATTR, name);
+        }
+    }
+
+    public void setOption(Token id) {
+        Integer I = Compiler.supportedOptions.get(id.getText());
+        if ( I==null ) {
+            System.err.println("no such option: "+id.getText());
+            return;
+        }
+        gen.emit(Bytecode.INSTR_STORE_OPTION, I);
+    }
+
+    public void defaultOption(Token id) {
+        String v = Compiler.defaultOptionValues.get(id.getText());
+        if ( v==null ) {
+            System.err.println("no def value for "+id.getText());
+            return;
+        }
+        gen.emit(Bytecode.INSTR_LOAD_STR, v);
+    }
+    
+    public void func(Token id) {
+        Short funcBytecode = Compiler.funcs.get(id.getText());
+        if ( funcBytecode==null ) {
+            System.err.println("no such fun: "+id);
+            gen.emit(Bytecode.INSTR_NOOP);
+        }
+        else {
+            gen.emit(funcBytecode);
+        }
+    }
 }
 
 @rulecatch {
    catch (RecognitionException re) { throw re; }
 }
 
-st	:	stNoEof EOF
+templateAndEOF
+	:	template EOF
 	;
 
-stNoEof
-	:	(	TEXT {listener.refText($TEXT);}
-		|	LDELIM conditional RDELIM
+template
+	:	(	TEXT
+			{
+			gen.emit(Bytecode.INSTR_LOAD_STR, $TEXT.getText());
+			gen.emit(Bytecode.INSTR_WRITE);
+			}
+		|	conditional
 		|	LDELIM expr
-			(	';' exprOptions {listener.endExpr(true);}
-			|	                {listener.endExpr(false);}
+			(	';' exprOptions {gen.emit(Bytecode.INSTR_WRITE_OPT);}
+			|	                {gen.emit(Bytecode.INSTR_WRITE);}
 			)
 			RDELIM
 		)*
 	;
 
 conditional
-	:	i='if' '(' not='!'? {listener.ifExpr($i);} primary ')'
-							{listener.ifExprClause($i,$not!=null);}
-	|	i='elseif' '(' not='!'? {listener.elseifExpr($i);} primary ')'
-							{listener.elseifExprClause($i,$not!=null);}
-	|	'else'				{listener.elseClause();}
-	|	'endif'				{listener.endif();}
+@init {
+    /** Tracks address of branch operand (in code block).  It's how
+     *  we backpatch forward references when generating code for IFs.
+     */
+    int prevBranchOperand = -1;
+    /** Branch instruction operands that are forward refs to end of IF.
+     *  We need to update them once we see the endif.
+     */
+    List<Integer> endRefs = new ArrayList<Integer>();
+}
+	:	LDELIM i='if' '(' not='!'? {;} primary ')' RDELIM
+		{
+        prevBranchOperand = gen.address()+1;
+        short opcode = Bytecode.INSTR_BRF;
+        if ( $not!=null ) opcode = Bytecode.INSTR_BRT;
+        gen.emit(opcode, -1); // write placeholder as branch target
+		}
+		template
+		(	LDELIM i='elseif'
+			{
+			endRefs.add(gen.address()+1);
+			gen.emit(Bytecode.INSTR_BR, -1); // br end
+			// update previous branch instruction
+			gen.write(prevBranchOperand, (short)gen.address());
+			prevBranchOperand = -1;
+			}
+			'(' not2='!'? primary ')' RDELIM
+			{
+        	prevBranchOperand = gen.address()+1;
+	        opcode = Bytecode.INSTR_BRF;
+	        if ( $not2!=null ) opcode = Bytecode.INSTR_BRT;
+        	gen.emit(opcode, -1); // write placeholder as branch target
+			}
+			template
+		)*
+		(	LDELIM 'else' RDELIM
+			{
+			endRefs.add(gen.address()+1);
+			gen.emit(Bytecode.INSTR_BR, -1); // br end
+			// update previous branch instruction
+			gen.write(prevBranchOperand, (short)gen.address());
+			prevBranchOperand = -1;
+			}
+			template
+		)?
+		LDELIM 'endif' RDELIM
+		{
+		if ( prevBranchOperand>=0 ) {
+			gen.write(prevBranchOperand, (short)gen.address());
+		}
+        for (int opnd : endRefs) gen.write(opnd, (short)gen.address());
+		}
 	;
 
 exprOptions
-	:	{listener.options();} option (',' option)*
+	:	{gen.emit(Bytecode.INSTR_OPTIONS);} option (',' option)*
 	;
 
 option
-	:	ID ( '=' exprNoComma | {listener.defaultOption($ID);} ) {listener.setOption($ID);}
+	:	ID ( '=' exprNoComma | {defaultOption($ID);} )
+		{setOption($ID);}
 	;
 	
 exprNoComma
-	:	callExpr ( ':' template {listener.map();} )?
+	:	callExpr ( ':' templateRef {gen.emit(Bytecode.INSTR_MAP);} )?
 	|	'{'
 		{
-//		String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
-//        listener.instance(new CommonToken(STRING,name)); // call anon template
+//		String name = defineAnonTemplate($ANONYMOUS_TEMPLATE);
+//        instance(new CommonToken(STRING,name)); // call anon template
         }
 	;
 
@@ -110,55 +200,54 @@ expr : mapExpr ;
 mapExpr
 @init {int n=1;}
 	:	callExpr
-		(	':' template
-			(	(',' template {n++;})+  {listener.mapAlternating(n);}
-			|						    {listener.map();}
+		(	':' templateRef
+			(	(',' templateRef {n++;})+  {gen.emit(Bytecode.INSTR_ROT_MAP, n);}
+			|						    {gen.emit(Bytecode.INSTR_MAP);}
 			)
 		)*
 	;
 
-
 callExpr
 options {k=2;} // prevent full LL(*) which fails, falling back on k=1; need k=2
 	:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
-		ID '(' arg ')' {listener.func($ID);}
-	|	ID {listener.instance($ID);} '(' args? ')'
+		ID '(' arg ')' {func($ID);}
+	|	ID {gen.emit(Bytecode.INSTR_NEW);} '(' args? ')'
 	|	primary
 	;
 	
 primary
 	:	'super.' ('.' ID )*
-	|	o=ID	  {listener.refAttr($o);}
-		(	'.' p=ID {listener.refProp($p);}
-		|	'.' '(' mapExpr ')' {listener.refProp(null);}
+	|	o=ID	  {refAttr($o);}
+		(	'.' p=ID {gen.emit(Bytecode.INSTR_LOAD_PROP, $p.text);}
+		|	'.' '(' mapExpr ')' {gen.emit(Bytecode.INSTR_LOAD_PROP_IND);}
 		)*
-	|	STRING    {listener.refString($STRING);}
+	|	STRING    {gen.emit(Bytecode.INSTR_LOAD_STR, $STRING.text);}
 	|	list
-	|	'(' expr ')' {listener.eval();}
-		( {listener.instance(null);} '(' args? ')' )? // indirect call
+	|	'(' expr ')' {gen.emit(Bytecode.INSTR_TOSTR);}
+		( {gen.emit(Bytecode.INSTR_NEW_IND);} '(' args? ')' )? // indirect call
 	;
 
 args:	arg (',' arg)* ;
 
-arg :	ID '=' exprNoComma {listener.setArg($ID);}
-	|	exprNoComma        {listener.setArg(null);}
-	|	elip='...'		   {listener.setPassThroughArg($elip);}
+arg :	ID '=' exprNoComma {gen.emit(Bytecode.INSTR_STORE_ATTR, $ID.text);}
+	|	exprNoComma        {gen.emit(Bytecode.INSTR_STORE_SOLE_ARG);}
+	|	elip='...'		   {gen.emit(Bytecode.INSTR_SET_PASS_THRU);}
 	;
 
-template
-	:	ID			{listener.refString($ID);}
+templateRef
+	:	ID			{gen.emit(Bytecode.INSTR_LOAD_STR, $ID.text);}
 	|	'{'
 		{
-//		String name = listener.defineAnonTemplate($ANONYMOUS_TEMPLATE);
-//		listener.refString(new CommonToken(STRING,name));
+//		String name = defineAnonTemplate($ANONYMOUS_TEMPLATE);
+//		refString(new CommonToken(STRING,name));
 		}
-	|	'(' mapExpr ')' {listener.eval();}
+	|	'(' mapExpr ')' {gen.emit(Bytecode.INSTR_TOSTR);}
 	;
 	
-list:	{listener.list();} '[' listElement (',' listElement)* ']'
-	|	{listener.list();} '[' ']'
+list:	{gen.emit(Bytecode.INSTR_LIST);} '[' listElement (',' listElement)* ']'
+	|	{gen.emit(Bytecode.INSTR_LIST);} '[' ']'
 	;
 
 listElement
-    :   exprNoComma {listener.add();}
+    :   exprNoComma {gen.emit(Bytecode.INSTR_ADD);}
     ;

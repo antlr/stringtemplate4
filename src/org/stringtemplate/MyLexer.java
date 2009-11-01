@@ -140,13 +140,14 @@ public class MyLexer implements TokenSource {
                 case ']' : consume(); return newToken(RBRACK);
 				case '=' : consume(); return newToken(EQUALS);
 				case '!' : consume(); return newToken(BANG);
-                case '>' :
-                    consume();
-                    scanningInsideExpr =false;
-                    return newToken(RDELIM);
                 case '"' : return mSTRING();
-                case '{' : return subTemplate();
-                default:
+				case '{' : return subTemplate();
+				default:
+					if ( c==delimiterStopChar ) {
+						consume();
+						scanningInsideExpr =false;
+						return newToken(RDELIM);
+					}
                     if ( isIDStartLetter(c) ) {
 						Token id = mID();
 						String name = id.getText();

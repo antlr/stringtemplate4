@@ -31,7 +31,7 @@ import java.util.*;
 
 import org.antlr.runtime.*;
 
-public class Compiler implements ExprParserListener {
+public class Compiler implements CodeGenerator {
     public static final String ATTR_NAME_REGEX = "[a-zA-Z/][a-zA-Z0-9_/]*";
     /** Given a template of length n, how much code will result?
      *  For now, let's assume n/5. Later, we can test in practice.
@@ -61,15 +61,15 @@ public class Compiler implements ExprParserListener {
 
     public static Map<String, Short> funcs = new HashMap<String, Short>() {
         {
-            put("first", BytecodeDefinition.INSTR_FIRST);
-            put("last", BytecodeDefinition.INSTR_LAST);
-            put("rest", BytecodeDefinition.INSTR_REST);
-            put("trunc", BytecodeDefinition.INSTR_TRUNC);
-            put("strip", BytecodeDefinition.INSTR_STRIP);
-            put("trim", BytecodeDefinition.INSTR_TRIM);
-            put("length", BytecodeDefinition.INSTR_LENGTH);
-            put("strlen", BytecodeDefinition.INSTR_STRLEN);
-            put("reverse", BytecodeDefinition.INSTR_REVERSE);
+            put("first", Bytecode.INSTR_FIRST);
+            put("last", Bytecode.INSTR_LAST);
+            put("rest", Bytecode.INSTR_REST);
+            put("trunc", Bytecode.INSTR_TRUNC);
+            put("strip", Bytecode.INSTR_STRIP);
+            put("trim", Bytecode.INSTR_TRIM);
+            put("length", Bytecode.INSTR_LENGTH);
+            put("strlen", Bytecode.INSTR_STRLEN);
+            put("reverse", Bytecode.INSTR_REVERSE);
         }
     };
 
@@ -130,7 +130,7 @@ public class Compiler implements ExprParserListener {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		STParser parser = new STParser(tokens, this);
 		try {
-			parser.st(); // parse, trigger compile actions for single expr
+			parser.templateAndEOF(); // parse, trigger compile actions for single expr
 		}
 		catch (RecognitionException re) {
 			String msg = parser.getErrorMessage(re, parser.getTokenNames());
@@ -204,13 +204,13 @@ public class Compiler implements ExprParserListener {
                    firstTokenType==STLexer.ELSEIF ||
                    firstTokenType==STLexer.ENDIF) )
             {
-                if ( parser.exprHasOptions ) gen(BytecodeDefinition.INSTR_WRITE_OPT);
-                else gen(BytecodeDefinition.INSTR_WRITE);
+                if ( parser.exprHasOptions ) emit(Bytecode.INSTR_WRITE_OPT);
+                else emit(Bytecode.INSTR_WRITE);
             }
         }
         else {
-            gen(BytecodeDefinition.INSTR_LOAD_STR, chunk.text);
-            gen(BytecodeDefinition.INSTR_WRITE);
+            emit(Bytecode.INSTR_LOAD_STR, chunk.text);
+            emit(Bytecode.INSTR_WRITE);
         }
     }
 */
@@ -269,15 +269,15 @@ public class Compiler implements ExprParserListener {
 
 	public void refText(Token text) {
 		refString(text);
-		gen(BytecodeDefinition.INSTR_WRITE);
+		emit(Bytecode.INSTR_WRITE);
 	}
 
     public void map() {
-        gen(BytecodeDefinition.INSTR_MAP);
+        emit(Bytecode.INSTR_MAP);
     }
 
     public void mapAlternating(int numTemplates) {
-        gen(BytecodeDefinition.INSTR_ROT_MAP, numTemplates);
+        emit(Bytecode.INSTR_ROT_MAP, numTemplates);
     }
 
     public String defineAnonTemplate(Token subtemplate) {
@@ -319,38 +319,38 @@ public class Compiler implements ExprParserListener {
 
     public void instance(Token id) {
         if ( id==null ) {
-            gen(BytecodeDefinition.INSTR_NEW_IND);
+            emit(Bytecode.INSTR_NEW_IND);
         }
         else {
-            gen(BytecodeDefinition.INSTR_NEW, id.getText());
+            emit(Bytecode.INSTR_NEW, id.getText());
         }
     }
 
     public void refAttr(Token id) {
         String name = id.getText();
         if ( Interpreter.predefinedAttributes.contains(name) ) {
-            gen(BytecodeDefinition.INSTR_LOAD_LOCAL, name);
+            emit(Bytecode.INSTR_LOAD_LOCAL, name);
         }
         else {
-            gen(BytecodeDefinition.INSTR_LOAD_ATTR, name);
+            emit(Bytecode.INSTR_LOAD_ATTR, name);
         }
     }
 
     public void refProp(Token id) {
         if ( id == null) {
-            gen(BytecodeDefinition.INSTR_LOAD_PROP_IND);
+            emit(Bytecode.INSTR_LOAD_PROP_IND);
         }
         else {
-            gen(BytecodeDefinition.INSTR_LOAD_PROP, id.getText());
+            emit(Bytecode.INSTR_LOAD_PROP, id.getText());
         }
     }
 
     public void refString(Token str) {
-        gen(BytecodeDefinition.INSTR_LOAD_STR, str.getText());
+        emit(Bytecode.INSTR_LOAD_STR, str.getText());
     }
 
     public void options() {
-        gen(BytecodeDefinition.INSTR_OPTIONS);        
+        emit(Bytecode.INSTR_OPTIONS);
     }
 
     public void setOption(Token id) {
@@ -359,7 +359,7 @@ public class Compiler implements ExprParserListener {
             System.err.println("no such option: "+id.getText());
             return;
         }
-        gen(BytecodeDefinition.INSTR_STORE_OPTION, I);
+        emit(Bytecode.INSTR_STORE_OPTION, I);
     }
 
     public void defaultOption(Token id) {
@@ -368,55 +368,70 @@ public class Compiler implements ExprParserListener {
             System.err.println("no def value for "+id.getText());
             return;
         }
-        gen(BytecodeDefinition.INSTR_LOAD_STR, v);
+        emit(Bytecode.INSTR_LOAD_STR, v);
     }
 
     public void setArg(Token arg) {
-        if ( arg==null ) gen(BytecodeDefinition.INSTR_STORE_SOLE_ARG);
-        else gen(BytecodeDefinition.INSTR_STORE_ATTR, arg.getText());
+        if ( arg==null ) emit(Bytecode.INSTR_STORE_SOLE_ARG);
+        else emit(Bytecode.INSTR_STORE_ATTR, arg.getText());
     }
 
     public void setPassThroughArg(Token arg) {
-        gen(BytecodeDefinition.INSTR_SET_PASS_THRU);
+        emit(Bytecode.INSTR_SET_PASS_THRU);
     }
+
+	static class Label {
+		String name;
+		int branchOperandAddress;
+	}
 
     public void ifExpr(Token t) {
         //System.out.println("ifExpr @ "+ip);
+		//return new ArrayList<Label>(); 
     }
 
     public void ifExprClause(Token t, boolean not) {
-        //System.out.println("ifExprClause @ "+ip);
+        System.out.println("ifExprClause @ "+ip);
+		System.out.println("ref label (else, @"+(ip+1)+")");
         ifs.peek().prevBranch = ip+1;
-        short i = BytecodeDefinition.INSTR_BRF;
-        if ( not ) i = BytecodeDefinition.INSTR_BRT;
-        gen(i, -1); // write placeholder
+        short i = Bytecode.INSTR_BRF;
+        if ( not ) i = Bytecode.INSTR_BRT;
+        emit(i, -1); // write placeholder
     }
 
     public void elseifExpr(Token t) {
-        //System.out.println("elseifExpr @ "+ip);
+        System.out.println("elseifExpr @ "+ip);
+		System.out.println("ref label (end, @"+(ip+1)+")");
         ifs.peek().endRefs.add(ip+1);
-        gen(BytecodeDefinition.INSTR_BR, -1); // write placeholder
+        emit(Bytecode.INSTR_BR, -1); // write placeholder
+		System.out.println("def label else=="+ip);
         writeShort(instrs, ifs.peek().prevBranch, (short)ip);
         ifs.peek().prevBranch = -1;
     }
 
     public void elseifExprClause(Token t, boolean not) {
-        //System.out.println("elseifExprClause of "+ifs.peek()+" @ "+ip);
+        System.out.println("elseifExprClause of "+ifs.peek()+" @ "+ip);
+		System.out.println("ref label (else, @"+(ip+1)+")");
         ifs.peek().prevBranch = ip+1;
-        short i = BytecodeDefinition.INSTR_BRF;
-        if ( not ) i = BytecodeDefinition.INSTR_BRT;
-        gen(i, -1); // write placeholder
+        short i = Bytecode.INSTR_BRF;
+        if ( not ) i = Bytecode.INSTR_BRT;
+        emit(i, -1); // write placeholder
     }
 
     public void elseClause() {
-        //System.out.println("else of "+ifs.peek());
+        System.out.println("else of "+ifs.peek());
+		System.out.println("ref label (end, @"+(ip+1)+")");
         ifs.peek().endRefs.add(ip+1);
-        gen(BytecodeDefinition.INSTR_BR, -1); // write placeholder
+        emit(Bytecode.INSTR_BR, -1); // write placeholder
+		System.out.println("def label else=="+ip);
         writeShort(instrs, ifs.peek().prevBranch, (short)ip);
         ifs.peek().prevBranch = -1;
     }
 
     public void endif() {
+		System.out.println("endif");
+		System.out.println("def label end=="+ip);
+		System.out.println("if else ref'd, def label else=="+ip);
         if ( ifs.peek().prevBranch>=0 ) writeShort(instrs, ifs.peek().prevBranch, (short)ip);
         List<Integer> ends = ifs.peek().endRefs;
         //System.out.println("endrefs="+ends);
@@ -426,46 +441,52 @@ public class Compiler implements ExprParserListener {
         //System.out.println("endif end");
     }
 
-    public void list() { gen(BytecodeDefinition.INSTR_LIST); }
+    public void list() { emit(Bytecode.INSTR_LIST); }
 
-    public void add() { gen(BytecodeDefinition.INSTR_ADD); }
+    public void add() { emit(Bytecode.INSTR_ADD); }
 
-    public void eval() { gen(BytecodeDefinition.INSTR_TOSTR); }
+    public void eval() { emit(Bytecode.INSTR_TOSTR); }
 
     public void func(Token id) {
         Short funcBytecode = funcs.get(id.getText());
         if ( funcBytecode==null ) {
             System.err.println("no such fun: "+id);
-            gen(BytecodeDefinition.INSTR_NOOP);
+            emit(Bytecode.INSTR_NOOP);
         }
         else {
-            gen(funcBytecode);
+            emit(funcBytecode);
         }
     }
 
 	public void endExpr(boolean hasOptions) {
-		if ( hasOptions ) gen(BytecodeDefinition.INSTR_WRITE_OPT);
-		else gen(BytecodeDefinition.INSTR_WRITE);
+		if ( hasOptions ) emit(Bytecode.INSTR_WRITE_OPT);
+		else emit(Bytecode.INSTR_WRITE);
 	}
 
     // GEN
 
-    public void gen(short opcode) {
+    public void emit(short opcode) {
         ensureCapacity();
         instrs[ip++] = (byte)opcode;
     }
 
-    public void gen(short opcode, int arg) {
+    public void emit(short opcode, int arg) {
         ensureCapacity();
         instrs[ip++] = (byte)opcode;
         writeShort(instrs, ip, (short)arg);
         ip += 2;
     }
 
-    public void gen(short opcode, String s) {
+    public void emit(short opcode, String s) {
         int i = defineString(s);
-        gen(opcode, i);
+        emit(opcode, i);
     }
+
+	public void write(int addr, short value) {
+		writeShort(instrs, addr, value);
+	}
+
+	public int address() { return ip; }
 
     protected void ensureCapacity() {
         if ( (ip+3) >= instrs.length ) { // ensure room for full instruction
