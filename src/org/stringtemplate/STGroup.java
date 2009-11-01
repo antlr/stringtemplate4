@@ -101,6 +101,7 @@ public class STGroup {
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             GroupParser parser = new GroupParser(tokens);
             parser.group(this);
+
             alreadyLoaded = true;
         }
         catch (Exception e) {

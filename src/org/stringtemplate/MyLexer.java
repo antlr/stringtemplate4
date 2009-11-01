@@ -59,6 +59,7 @@ public class MyLexer implements TokenSource {
     public static final int DOT=19;
     public static final int LDELIM=23;
     public static final int STRING=26;
+    public static final int PIPE=28;
 
     char delimiterStartChar = '<';
     char delimiterStopChar = '>';
@@ -67,14 +68,27 @@ public class MyLexer implements TokenSource {
 
     ANTLRStringStream input;
     char c;        // current character
-    int startChar;
+    int startCharIndex;
     int startLine;
     int startCharPositionInLine;
 
-    public MyLexer(ANTLRStringStream input) {
-        this.input = input;
-        c = (char)input.LA(1); // prime lookahead
+    List<Token> tokens = new ArrayList<Token>();
+
+    public Token nextToken() {
+        if ( tokens.size()>0 ) { return tokens.remove(0); }
+        return _nextToken();
     }
+
+    public MyLexer(ANTLRStringStream input) {
+		this(input, '<', '>');
+    }
+
+	public MyLexer(ANTLRStringStream input, char delimiterStartChar, char delimiterStopChar) {
+		this.input = input;
+		c = (char)input.LA(1); // prime lookahead
+		this.delimiterStartChar = delimiterStartChar;
+		this.delimiterStopChar = delimiterStopChar;
+	}
 
     /** Ensure x is next character on the input stream */
     public void match(char x) {
@@ -87,8 +101,10 @@ public class MyLexer implements TokenSource {
         c = (char)input.LA(1);
     }
 
-    public Token nextToken() {
-        startChar = input.index();
+    public void emit(Token token) { tokens.add(token); }
+
+    public Token _nextToken() {
+        startCharIndex = input.index();
         startLine = input.getLine();
         startCharPositionInLine = input.getCharPositionInLine();
 
@@ -122,38 +138,70 @@ public class MyLexer implements TokenSource {
                 case ')' : consume(); return newToken(RPAREN);
                 case '[' : consume(); return newToken(LBRACK);
                 case ']' : consume(); return newToken(RBRACK);
-                case '=' : consume(); return newToken(EQUALS);
+				case '=' : consume(); return newToken(EQUALS);
+				case '!' : consume(); return newToken(BANG);
                 case '>' :
                     consume();
                     scanningInsideExpr =false;
                     return newToken(RDELIM);
                 case '"' : return mSTRING();
-                case '{' :
-                    // look for args ID (',' ID)* '|'
-                    int m = input.mark();
-                    List<String> args = new ArrayList<String>();
-                    consume();
-                    WS();
-                    args.add( mID().getText() );
-                    WS();
-                    while ( c==',' ) {
-                        consume();
-                        WS();
-                        args.add( mID().getText() );
-                        WS();
-                    }
-                    WS();
-                    match('|');
-                    System.out.println("matched args: "+args);
-                    input.rewind(m);
-                    consume();
-                    scanningInsideExpr = false;
-                    return newToken(LCURLY);                    
+                case '{' : return subTemplate();
                 default:
-                    if ( isIDStartLetter(c) ) { return mID(); }
+                    if ( isIDStartLetter(c) ) {
+						Token id = mID();
+						String name = id.getText();
+						if ( name.equals("if") ) return newToken(IF);
+						else if ( name.equals("endif") ) return newToken(ENDIF);
+						else if ( name.equals("else") ) return newToken(ELSE);
+						else if ( name.equals("elseif") ) return newToken(ELSEIF);
+						else if ( name.equals("super") ) return newToken(SUPER);
+						return id;
+					}
                     throw new Error("invalid character: "+(char)c);
             }
         }
+    }
+
+    Token subTemplate() {
+        // look for "{ args ID (',' ID)* '|' ..."
+        int m = input.mark();
+        int curlyStartChar = startCharIndex;
+        int curlyLine = startLine;
+        int curlyPos = startCharPositionInLine;
+        List<Token> argTokens = new ArrayList<Token>();
+        consume();
+		Token curly = newSingleCharToken(LCURLY);
+        WS();
+        argTokens.add( mID() );
+        WS();
+        while ( c==',' ) {
+			consume();
+            argTokens.add( newSingleCharToken(COMMA) );
+            WS();
+            argTokens.add( mID() );
+            WS();
+        }
+        WS();
+        if ( c=='|' ) {
+			consume();
+            argTokens.add( newSingleCharToken(PIPE) );
+            System.out.println("matched args: "+argTokens);
+            for (Token t : argTokens) emit(t);
+			input.release(m);
+			scanningInsideExpr = false;
+			startCharIndex = curlyStartChar; // reset state
+			startLine = curlyLine;
+			startCharPositionInLine = curlyPos;
+			return curly;
+		}
+		System.out.println("no match rewind");
+		input.rewind(m);
+		startCharIndex = curlyStartChar; // reset state
+		startLine = curlyLine;
+        startCharPositionInLine = curlyPos;
+		consume();
+		scanningInsideExpr = false;
+        return curly;
     }
 
     Token mTEXT() {
@@ -180,6 +228,10 @@ public class MyLexer implements TokenSource {
 
     /** ID  :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'/')* ; */
     Token mID() {
+        // called from subTemplate; so keep resetting position during speculation
+        startCharIndex = input.index();
+        startLine = input.getLine();
+        startCharPositionInLine = input.getCharPositionInLine();
         consume();
         while ( isIDLetter(c) ) {
             consume();
@@ -218,20 +270,29 @@ public class MyLexer implements TokenSource {
 
     public Token newToken(int ttype) {
         MyToken t = new MyToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
-                                startChar, input.index()-1);
-
+                startCharIndex, input.index()-1);
         t.setLine(startLine);
         t.setCharPositionInLine(startCharPositionInLine);
-        return t;
-    }
+		return t;
+	}
 
-    public Token newToken(int ttype, String text) {
-        MyToken t = new MyToken(ttype, text);
-        t.setStartIndex(startChar); // record when we start even if we modified text
-        t.setLine(startLine);
-        t.setCharPositionInLine(startCharPositionInLine);
-        return t;
-    }
+	public Token newSingleCharToken(int ttype) {
+		MyToken t =
+			new MyToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
+				input.index()-1, input.index()-1);
+		t.setStartIndex(input.index()-1);
+		t.setLine(input.getLine());
+		t.setCharPositionInLine(input.getCharPositionInLine()-1);
+		return t;
+	}
+
+	public Token newToken(int ttype, String text) {
+		MyToken t = new MyToken(ttype, text);
+		t.setStartIndex(startCharIndex);
+		t.setLine(startLine);
+		t.setCharPositionInLine(startCharPositionInLine);
+		return t;
+	}
 
     public String getSourceName() {
         return "no idea";

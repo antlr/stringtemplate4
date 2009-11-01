@@ -27,7 +27,7 @@
 */
 
 /** Recognize a single StringTemplate template text, expressions, and conditionals */
-parser grammar ST;
+parser grammar STParser;
 
 options {
 	tokenVocab=MyLexer;
@@ -67,9 +67,16 @@ protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet f
 
 st	:	stNoEof EOF
 	;
-	
+
 stNoEof
-	:	( TEXT | LDELIM ( conditional | expr (';' exprOptions)? ) RDELIM )*
+	:	(	TEXT {listener.refText($TEXT);}
+		|	LDELIM conditional RDELIM
+		|	LDELIM expr
+			(	';' exprOptions {listener.endExpr(true);}
+			|	                {listener.endExpr(false);}
+			)
+			RDELIM
+		)*
 	;
 
 conditional
@@ -82,7 +89,7 @@ conditional
 	;
 
 exprOptions
-	:	{exprHasOptions=true; listener.options();} option (',' option)*
+	:	{listener.options();} option (',' option)*
 	;
 
 option

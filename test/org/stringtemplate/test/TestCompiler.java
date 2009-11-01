@@ -37,7 +37,7 @@ import java.util.Arrays;
 public class TestCompiler {   
     @Test public void testAttr() throws Exception {
         String template = "hi <name>";
-        CompiledST code = new org.stringtemplate.Compiler().compile(template);
+        CompiledST code = new Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
             "write, " +

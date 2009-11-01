@@ -114,13 +114,38 @@ public class Compiler implements ExprParserListener {
     public static int subtemplateCount = 0; // public for testing access
 
     public CompiledST compile(String template) {
-        return compile(0, template, '<', '>');
+        return compile(template, '<', '>');
     }
 
-    public CompiledST compile(int startCharIndex, String template) {
-        return compile(startCharIndex, template, '<', '>');
+    public CompiledST compile(String template,
+							  char delimiterStartChar,
+                              char delimiterStopChar) {
+		code = new CompiledST();
+		strings = new StringTable();
+		int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
+		instrs = new byte[initialSize];
+
+		MyLexer lexer =
+			new MyLexer(new ANTLRStringStream(template), delimiterStartChar, delimiterStopChar);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		STParser parser = new STParser(tokens, this);
+		try {
+			parser.st(); // parse, trigger compile actions for single expr
+		}
+		catch (RecognitionException re) {
+			String msg = parser.getErrorMessage(re, parser.getTokenNames());
+			System.err.println(msg);
+			re.printStackTrace(System.err);
+//			throw new STRecognitionException(null, msg, re);
+		}
+
+		if ( strings!=null ) code.strings = strings.toArray();
+		code.instrs = instrs;
+		code.codeSize = ip;
+		return code;
     }
 
+	/*
     public CompiledST compile(int startCharIndex,
                               String template,
                               char delimiterStartChar,
@@ -155,18 +180,17 @@ public class Compiler implements ExprParserListener {
         //code.dump();
         return code;
     }
-
     protected void compile(Chunk chunk, char delimiterStartChar, char delimiterStopChar) {
         if ( chunk.isExpr() ) {
             STLexer lexer = new STLexer(new ANTLRStringStream(chunk.text));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
-            STParser parser = new STParser(tokens, this, delimiterStartChar, delimiterStopChar);
+            STParser parser = new STParser(tokens, this);
             int firstTokenType = tokens.LA(1);
 
             if ( firstTokenType==STLexer.IF ) ifs.push(chunk);
 
             try {
-                parser.stexpr(); // parse, trigger compile actions for single expr
+                parser.st(); // parse, trigger compile actions for single expr
             }
             catch (RecognitionException re) {
                 String msg = parser.getErrorMessage(re, parser.getTokenNames());
@@ -189,6 +213,7 @@ public class Compiler implements ExprParserListener {
             gen(BytecodeDefinition.INSTR_WRITE);
         }
     }
+*/
 
     public int defineString(String s) {
         return strings.add(s);
@@ -242,6 +267,11 @@ public class Compiler implements ExprParserListener {
     
     // LISTEN TO PARSER
 
+	public void refText(Token text) {
+		refString(text);
+		gen(BytecodeDefinition.INSTR_WRITE);
+	}
+
     public void map() {
         gen(BytecodeDefinition.INSTR_MAP);
     }
@@ -276,7 +306,7 @@ public class Compiler implements ExprParserListener {
         t = t.trim();
         Compiler c = new Compiler((ExprChunk)currentChunk);
         int templateStart = tok.getStartIndex() + 1; // don't count '{' on left
-        CompiledST sub = c.compile(templateStart, t);
+        CompiledST sub = c.compile(t);
         sub.name = name;
         sub.formalArguments = args;
         if ( code.compiledSubtemplates==null ) {
@@ -412,6 +442,11 @@ public class Compiler implements ExprParserListener {
             gen(funcBytecode);
         }
     }
+
+	public void endExpr(boolean hasOptions) {
+		if ( hasOptions ) gen(BytecodeDefinition.INSTR_WRITE_OPT);
+		else gen(BytecodeDefinition.INSTR_WRITE);
+	}
 
     // GEN
 

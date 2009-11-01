@@ -31,6 +31,8 @@ import org.antlr.runtime.Token;
 import org.antlr.runtime.CommonToken;
 
 public interface ExprParserListener {
+	public void refText(Token text);
+
     public void refAttr(Token id);
     public void refProp(Token id);
     public void refString(Token str);
@@ -47,6 +49,7 @@ public interface ExprParserListener {
     public void add();
     public void eval();
     public void func(Token id);
+	public void endExpr(boolean hasOptions);
 
     // TODO: add token range to each callback?
     
