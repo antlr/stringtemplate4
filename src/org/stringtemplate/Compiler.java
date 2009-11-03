@@ -77,42 +77,11 @@ public class Compiler implements CodeGenerator {
     StringTable strings = new StringTable();
     byte[] instrs;
     int ip = 0;
-    Stack<Chunk> ifs = new Stack<Chunk>();
-    Chunk currentChunk;
-    ExprChunk enclosingChunk;
     CompiledST code = new CompiledST();
 
-    public Compiler() {;}
-    
-    public Compiler(ExprChunk enclosingChunk) {
-        this.enclosingChunk = enclosingChunk;
-    }
-
-    /*
-    protected static class TrackSubtemplate {
-        String name;
-        String template;
-        ExprChunk enclosingChunk;
-        int start;
-
-        public TrackSubtemplate(String name, String template, ExprChunk enclosingChunk) {
-            this.name = name;
-            this.template = template;
-            this.enclosingChunk = enclosingChunk;
-        }
-    }
-    */
-
-    /** Track list of anonymous subtemplates. We need to name them
-     *  here not in their eventual group because we need to generate
-     *  code that references their names now.
-     */
-    /*
-    protected Map<String, TrackSubtemplate> subtemplates =
-        new HashMap<String, TrackSubtemplate>();
-        */
-
     public static int subtemplateCount = 0; // public for testing access
+
+	public Compiler() {;}
 
     public CompiledST compile(String template) {
         return compile(template, '<', '>');
@@ -120,22 +89,23 @@ public class Compiler implements CodeGenerator {
 
 	public CompiledST compile(String template,
 							  char delimiterStartChar,
-							  char delimiterStopChar) {
+							  char delimiterStopChar)
+	{
 		int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
 		instrs = new byte[initialSize];
+		code.template = template;
 
 		MyLexer lexer =
 			new MyLexer(new ANTLRStringStream(template), delimiterStartChar, delimiterStopChar);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		//CommonTokenStream tokens = new CommonTokenStream(lexer);
+		UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
 		STParser parser = new STParser(tokens, this);
 		try {
 			parser.templateAndEOF(); // parse, trigger compile actions for single expr
 		}
 		catch (RecognitionException re) {
 			String msg = parser.getErrorMessage(re, parser.getTokenNames());
-			System.err.println(msg);
-			re.printStackTrace(System.err);
-//			throw new STRecognitionException(null, msg, re);
+			throw new STRecognitionException(msg, re);
 		}
 
 		if ( strings!=null ) code.strings = strings.toArray();
@@ -152,9 +122,7 @@ public class Compiler implements CodeGenerator {
 		}
 		catch (RecognitionException re) {
 			String msg = parser.getErrorMessage(re, parser.getTokenNames());
-			System.err.println(msg);
-			re.printStackTrace(System.err);
-//			throw new STRecognitionException(null, msg, re);
+			throw new STRecognitionException(msg, re);
 		}
 
 		if ( strings!=null ) code.strings = strings.toArray();
@@ -346,12 +314,21 @@ public class Compiler implements CodeGenerator {
 
 	public int address() { return ip; }
 
-	public String compileAnonTemplate(TokenStream input, RecognizerSharedState state) {
+	public String compileAnonTemplate(TokenStream input,
+							   List<Token> ids,
+							   RecognizerSharedState state) {
 		subtemplateCount++;
 		String name = "_sub"+subtemplateCount;
 		Compiler c = new Compiler();
 		CompiledST sub = c.compile(input, state);
 		sub.name = name;
+		if ( ids!=null ) {
+			sub.formalArguments = new LinkedHashMap<String,FormalArgument>();
+			for (Token arg : ids) {
+				String argName = arg.getText();
+				sub.formalArguments.put(argName, new FormalArgument(argName));
+			}
+		}
 		if ( code.compiledSubtemplates==null ) {
 			code.compiledSubtemplates = new ArrayList<CompiledST>();
 		}

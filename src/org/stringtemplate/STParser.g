@@ -46,13 +46,26 @@ tokens {
 @header { package org.stringtemplate; }
 
 @members {
-CodeGenerator gen;
+CodeGenerator gen = new CodeGenerator() {
+	public void emit(short opcode) {;}
+	public void emit(short opcode, int arg) {;}
+	public void emit(short opcode, String s) {;}
+	public void write(int addr, short value) {;}
+	public int address() { return 0; }
+	public String compileAnonTemplate(TokenStream input, List<Token> ids, RecognizerSharedState state) {
+		Compiler c = new Compiler();
+		c.compile(input, state);
+		return null;
+	}
+};
 public STParser(TokenStream input, CodeGenerator gen) {
     this(input, new RecognizerSharedState(), gen);
 }
 public STParser(TokenStream input, RecognizerSharedState state, CodeGenerator gen) {
-    this(input, state);
-    this.gen = gen;
+    super(null,null); // overcome bug in ANTLR 3.2
+	this.input = input;
+	this.state = state;
+    if ( gen!=null ) this.gen = gen;
 }
 
 protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
@@ -127,10 +140,9 @@ template
 	;
 
 subtemplate returns [String name]
-	:	'{' ( ID (',' ID)* '|' )?
+	:	'{' ( ids+=ID (',' ids+=ID)* '|' )?
 		{
-		$name = gen.compileAnonTemplate(input, state);
-		// TODO: sub.formalArguments = args;
+		$name = gen.compileAnonTemplate(input, $ids, state);
         }
         '}'
     ;
@@ -200,7 +212,7 @@ option
 	;
 	
 exprNoComma
-	:	callExpr ( ':' templateRef {gen.emit(Bytecode.INSTR_MAP);} )?
+	:	memberExpr ( ':' templateRef {gen.emit(Bytecode.INSTR_MAP);} )?
 	|	subtemplate {gen.emit(Bytecode.INSTR_NEW, $subtemplate.name);}
 	;
 
@@ -208,7 +220,7 @@ expr : mapExpr ;
 
 mapExpr
 @init {int n=1;}
-	:	callExpr
+	:	memberExpr
 		(	':' templateRef
 			(	(',' templateRef {n++;})+  {gen.emit(Bytecode.INSTR_ROT_MAP, n);}
 			|						    {gen.emit(Bytecode.INSTR_MAP);}
@@ -216,20 +228,28 @@ mapExpr
 		)*
 	;
 
+memberExpr
+	:	callExpr
+		(	'.' ID {gen.emit(Bytecode.INSTR_LOAD_PROP, $ID.text);}
+		|	'.' '(' mapExpr ')' {gen.emit(Bytecode.INSTR_LOAD_PROP_IND);}
+		)*
+	;
+	
 callExpr
 options {k=2;} // prevent full LL(*) which fails, falling back on k=1; need k=2
 	:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
-		ID '(' arg ')' {func($ID);}
+		ID '(' expr ')' {func($ID);}
 	|	ID {gen.emit(Bytecode.INSTR_NEW, $ID.text);} '(' args? ')'
 	|	primary
 	;
 	
 primary
-	:	'super.' ('.' ID )*
+	:	'super'
 	|	o=ID	  {refAttr($o);}
-		(	'.' p=ID {gen.emit(Bytecode.INSTR_LOAD_PROP, $p.text);}
+/*		(	'.' p=ID {gen.emit(Bytecode.INSTR_LOAD_PROP, $p.text);}
 		|	'.' '(' mapExpr ')' {gen.emit(Bytecode.INSTR_LOAD_PROP_IND);}
 		)*
+		*/
 	|	STRING    {gen.emit(Bytecode.INSTR_LOAD_STR, strip($STRING.text,1));}
 	|	list
 	|	'(' expr ')' {gen.emit(Bytecode.INSTR_TOSTR);}

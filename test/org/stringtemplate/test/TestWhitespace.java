@@ -15,6 +15,7 @@ public class TestWhitespace extends BaseTest {
         st.add("names", "Sumana");
         String expected = "TerTomSumana!";
         String result = st.render();
+		st.code.dump();
         assertEquals(expected, result);
     }
 }

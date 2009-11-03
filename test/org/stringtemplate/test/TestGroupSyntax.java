@@ -93,19 +93,51 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNestedDefaultValueTemplateWithEscapes() throws Exception {
-        String templates =
-            "group t;" + Misc.newline+
-            "t(a={x | \\< <x:{<it>\\}}>}) ::= \"[<a>]\"" + Misc.newline;
+	@Test public void testNestedTemplateInGroupFile() throws Exception {
+		String templates =
+			"group t;" + Misc.newline+
+			"t(a) ::= \"<a:{x | <x:{<it>}>}>\"" + Misc.newline;
 
-        Misc.writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
-        String expected =
-            "group t;" + Misc.newline+
-            "t(a={x | \\< <x:{<it>\\}}>}) ::= <<" + Misc.newline+
-            "[<a>]" + Misc.newline+
-            ">>"+ Misc.newline;
-        String result = group.show();
-        assertEquals(expected, result);
-    }
+		Misc.writeFile(tmpdir, "t.stg", templates);
+		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
+		String expected =
+			"group t;\n" +
+			"t(a) ::= <<\n" +
+			"<a:{x | <x:{<it>}>}>\n" +
+			">>"+ Misc.newline;
+		String result = group.show();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testNestedDefaultValueTemplate() throws Exception {
+		String templates =
+			"group t;" + Misc.newline+
+			"t(a={x | <x:{<it>}>}) ::= \"ick\"" + Misc.newline;
+
+		Misc.writeFile(tmpdir, "t.stg", templates);
+		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
+		String expected =
+			"group t;\n" +
+			"t(a={x | <x:{<it>}>}) ::= <<\n" +
+			"ick\n" +
+			">>"+ Misc.newline;
+		String result = group.show();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testNestedDefaultValueTemplateWithEscapes() throws Exception {
+		String templates =
+			"group t;" + Misc.newline+
+			"t(a={x | \\< <x:{<it>\\}}>}) ::= \"[<a>]\"" + Misc.newline;
+
+		Misc.writeFile(tmpdir, "t.stg", templates);
+		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
+		String expected =
+			"group t;" + Misc.newline+
+			"t(a={x | \\< <x:{<it>\\}}>}) ::= <<" + Misc.newline+
+			"[<a>]" + Misc.newline+
+			">>"+ Misc.newline;
+		String result = group.show();
+		assertEquals(expected, result);
+	}
 }

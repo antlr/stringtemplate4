@@ -98,7 +98,8 @@ public class STGroup {
         try {
             ANTLRFileStream fs = new ANTLRFileStream(fileName);
             GroupLexer lexer = new GroupLexer(fs);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
+			//CommonTokenStream tokens = new CommonTokenStream(lexer);
+			UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
             GroupParser parser = new GroupParser(tokens);
             parser.group(this);
 
@@ -165,6 +166,7 @@ public class STGroup {
         return defineTemplate(name, margs, template);
     }
 
+	// can't trap recog errors here; don't know where in file template is defined
     public CompiledST defineTemplate(String name,
                                      LinkedHashMap<String,FormalArgument> args,
                                      String template)
@@ -172,7 +174,6 @@ public class STGroup {
         if ( name!=null && (name.length()==0 || name.indexOf('.')>=0) ) {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
-        template = template.trim();
         Compiler c = new Compiler();
         CompiledST code = c.compile(template);
         code.name = name;
@@ -226,6 +227,7 @@ public class STGroup {
         if ( supergroup!=null ) buf.append(" : "+supergroup);
         buf.append(";"+Misc.newline);
         for (String name : templates.keySet()) {
+			if ( name.startsWith("_") ) continue;
             CompiledST c = templates.get(name);
             buf.append(name);
             buf.append('(');
@@ -244,6 +246,7 @@ public class STGroup {
         this.listener = listener;
     }
 
+	/*
     public int getCharPositionInLine(Token errToken, STRecognitionException e) {
         RecognitionException re = (RecognitionException)e.getCause();
         int tokenIndex = re.index;
@@ -253,7 +256,6 @@ public class STGroup {
         System.out.println("token="+t);
         int charIndex = t.getStartIndex();
         System.out.println("char "+charIndex);
-        System.out.println("template starts at "+e.chunk.code.start);
 
         int i = charIndex; // index into this chunk
 
@@ -276,7 +278,8 @@ public class STGroup {
         System.out.println("char position in line: "+i);
         return i;
     }
-    
+*/
+	
     // Temp / testing
     public static STGroup loadGroup(String filename) throws Exception {
         STGroup group = new STGroup(filename);

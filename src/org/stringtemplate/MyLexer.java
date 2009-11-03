@@ -65,8 +65,9 @@ public class MyLexer implements TokenSource {
     char delimiterStopChar = '>';
 
     boolean scanningInsideExpr = false;
+	int subtemplateDepth = 0; // start out *not* in a {...} subtemplate 
 
-    ANTLRStringStream input;
+    CharStream input;
     char c;        // current character
     int startCharIndex;
     int startLine;
@@ -83,7 +84,7 @@ public class MyLexer implements TokenSource {
 		this(input, '<', '>');
     }
 
-	public MyLexer(ANTLRStringStream input, char delimiterStartChar, char delimiterStopChar) {
+	public MyLexer(CharStream input, char delimiterStartChar, char delimiterStopChar) {
 		this.input = input;
 		c = (char)input.LA(1); // prime lookahead
 		this.delimiterStartChar = delimiterStartChar;
@@ -131,7 +132,14 @@ public class MyLexer implements TokenSource {
         while ( true ) {
             switch ( c ) {
                 case ' ': case '\t': case '\n': case '\r': consume(); continue;
-                case '.' : consume(); return newToken(DOT);
+                case '.' :
+					consume();
+					if ( input.LA(1)=='.' && input.LA(2)=='.' ) {
+						consume();
+						match('.');
+						return newToken(ELLIPSIS);
+					}
+					return newToken(DOT);
                 case ',' : consume(); return newToken(COMMA);
 				case ':' : consume(); return newToken(COLON);
 				case ';' : consume(); return newToken(SEMI);
@@ -159,13 +167,18 @@ public class MyLexer implements TokenSource {
 						else if ( name.equals("super") ) return newToken(SUPER);
 						return id;
 					}
-                    throw new Error("invalid character: "+(char)c);
+					RecognitionException re = new NoViableAltException("", 0, 0, input);
+					if ( c==EOF ) {
+						throw new STRecognitionException("EOF inside ST expression", re);						
+					}
+                    throw new STRecognitionException("invalid character: "+c, re);
             }
         }
     }
 
     Token subTemplate() {
         // look for "{ args ID (',' ID)* '|' ..."
+		subtemplateDepth++;
         int m = input.mark();
         int curlyStartChar = startCharIndex;
         int curlyLine = startLine;
@@ -187,6 +200,7 @@ public class MyLexer implements TokenSource {
         if ( c=='|' ) {
 			consume();
             argTokens.add( newSingleCharToken(PIPE) );
+			WS(); // ignore any whitespace after |
             System.out.println("matched args: "+argTokens);
             for (Token t : argTokens) emit(t);
 			input.release(m);
@@ -207,12 +221,24 @@ public class MyLexer implements TokenSource {
     }
 
     Token mTEXT() {
-        boolean sawEscape = false;
+		boolean modifiedText = false;
         StringBuilder buf = new StringBuilder();
         while ( c != EOF && c != delimiterStartChar ) {
+			if ( c=='}' && subtemplateDepth>0 ) {
+				subtemplateDepth++;
+				int p = buf.length()-1;
+				while ( p>=0 && isWS(buf.charAt(p)) ) {p--;}
+				if ( p < buf.length()-1 ) { // trim any whitespace off
+					modifiedText = true;
+					buf.setLength(p+1);
+				}
+				break;
+			}
             if ( c=='\\' ) {
-                if ( input.LA(2)==delimiterStartChar ) {
-                    sawEscape = true;
+                if ( input.LA(2)==delimiterStartChar ||
+					 input.LA(2)=='}' )
+				{
+                    modifiedText = true;
                     consume(); // toss out \ char
                     buf.append(c); consume();
                 }
@@ -224,7 +250,7 @@ public class MyLexer implements TokenSource {
             buf.append(c);
             consume();
         }
-        if ( sawEscape ) return newToken(TEXT, buf.toString());
+        if ( modifiedText )	return newToken(TEXT, buf.toString());
         else return newToken(TEXT);
     }
 
@@ -268,7 +294,8 @@ public class MyLexer implements TokenSource {
     }
     
     boolean isIDStartLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z'; }
-    boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9'; }
+	boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9'; }
+	boolean isWS(char c) { return c==' ' || c=='\t' || c=='\n' || c=='\r'; }
 
     public Token newToken(int ttype) {
         MyToken t = new MyToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,

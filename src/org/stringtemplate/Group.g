@@ -66,10 +66,15 @@ package org.stringtemplate;
 protected STGroup group;
 public String strip(String s, int n) { return s.substring(n, s.length()-n); }
 }
+@lexer::members {
+protected STGroup group;
+}
 
 group[STGroup group]
 @init {
 this.group = $group;
+GroupLexer lexer = (GroupLexer)input.getTokenSource();
+lexer.group = group;
 }
 	:	'group' name=ID {$group.name = $name.text;}
 		( ':' s=ID {$group.supergroup = $s.text;} )?
@@ -81,23 +86,28 @@ this.group = $group;
 templateDef
 @init {
     String template=null;
+    int n=0; // num char to strip from left, right of template def
 }
 	:	(	'@' ID '.' region=ID
 		|	name=ID 
 		)
 	    '(' formalArgs? ')' '::='
-	    (	STRING     {template=strip($STRING.text, 1);}
-	    |	BIGSTRING  {template=strip($BIGSTRING.text, 2);}
+	    (	STRING     {template=$STRING.text; n=1;}
+	    |	BIGSTRING  {template=$BIGSTRING.text; n=2;}
 	    )
 	    {
+	    template = strip(template, n);
 	    try {
 		    group.defineTemplate($name.text, $formalArgs.args, template);
 		}
         catch (STRecognitionException e) {
-            int i = group.getCharPositionInLine(input.LT(-1), e);
-	        group.listener.error(input.LT(-1).getLine()+":"+i+
-	                             ": "+e.msg, null);
-        }		
+        	RecognitionException re = (RecognitionException)e.getCause();
+        	int charPosition =
+        		re.charPositionInLine+input.LT(-1).getCharPositionInLine()+n;
+	        group.listener.error(input.LT(-1).getLine()+":"+
+                    	  		 charPosition+
+	                             ": "+e.getMessage(), null);
+      }		
 	    }
 	|   alias=ID '::=' target=ID	    
 	;
@@ -186,7 +196,17 @@ BIGSTRING
 	;
 
 ANONYMOUS_TEMPLATE
-    :	'{'  { new Chunkifier(input, '<', '>').matchBlock(); }
+    :	'{'
+    	{
+		MyLexer lexer =
+			new MyLexer(input, group.delimiterStartChar, group.delimiterStopChar);
+		lexer.subtemplateDepth = 1;
+		//CommonTokenStream tokens = new CommonTokenStream(lexer);
+		UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+        STParser parser = new STParser(tokens, (CodeGenerator)null);
+		parser.template();
+		}
+    	// don't match '}' here; subparser matches it to terminate
     ;
 
 COMMENT
