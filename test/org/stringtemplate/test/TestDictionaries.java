@@ -213,7 +213,7 @@ public class TestDictionaries extends BaseTest {
         Misc.writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("t");
-        String expecting = "default";
+        String expecting = " default ";
         String result = st.render();        
         assertEquals(expecting, result);
     }    
