@@ -84,6 +84,10 @@ public class Bytecode {
     public static final short INSTR_STRLEN          = 31;
     public static final short INSTR_REVERSE         = 32;
 
+	public static final short INSTR_NOT             = 33;
+	public static final short INSTR_OR              = 34;
+	public static final short INSTR_AND             = 35;
+
     /** Used for assembly/disassembly; describes instruction set */
     // START: instr
     public static Instruction[] instructions = new Instruction[] {
@@ -119,7 +123,10 @@ public class Bytecode {
         new Instruction("trim"),
         new Instruction("length"),
         new Instruction("strlen"),
-        new Instruction("reverse")
+		new Instruction("reverse"),
+		new Instruction("not"),
+		new Instruction("or"),
+		new Instruction("and"),
     };
     // END: instr
 }

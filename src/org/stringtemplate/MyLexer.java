@@ -59,7 +59,9 @@ public class MyLexer implements TokenSource {
     public static final int DOT=19;
     public static final int LDELIM=23;
     public static final int STRING=26;
-    public static final int PIPE=28;
+	public static final int PIPE=28;
+	public static final int OR=29;
+	public static final int AND=30;
 
     char delimiterStartChar = '<';
     char delimiterStopChar = '>';
@@ -150,6 +152,8 @@ public class MyLexer implements TokenSource {
 				case '=' : consume(); return newToken(EQUALS);
 				case '!' : consume(); return newToken(BANG);
                 case '"' : return mSTRING();
+				case '&' : consume(); match('&'); return newToken(AND);
+				case '|' : consume(); match('|'); return newToken(OR);
 				case '{' : return subTemplate();
 				default:
 					if ( c==delimiterStopChar ) {

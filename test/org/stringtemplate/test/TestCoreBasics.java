@@ -317,14 +317,39 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
+	@Test public void testOr() throws Exception {
+		String template = "<if(name||notThere)>works<else>fail<endif>";
+		ST st = new ST(template);
+		st.add("name", "Ter");
+		String expected = "works";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testAnd() throws Exception {
+		String template = "<if(name&&notThere)>fail<else>works<endif>";
+		ST st = new ST(template);
+		st.add("name", "Ter");
+		String expected = "works";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testAndNot() throws Exception {
+		String template = "<if(name&&!notThere)>works<else>fail<endif>";
+		ST st = new ST(template);
+		st.add("name", "Ter");
+		String expected = "works";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
     @Test public void testITDoesntPropagate() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("foo", "<it>");   // <it> not visible
         String template = "<names:{<foo()>}>"; // <it> visible only to {...} here
         group.defineTemplate("test", template);
         ST st = group.getInstanceOf("test");
-        group.getInstanceOf("foo").code.dump();
-        st.code.dump();
         st.add("names", "Ter");
         st.add("names", "Tom");
         String expected = "";

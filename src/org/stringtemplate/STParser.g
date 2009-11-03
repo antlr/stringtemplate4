@@ -130,7 +130,7 @@ template
 			gen.emit(Bytecode.INSTR_LOAD_STR, $TEXT.getText());
 			gen.emit(Bytecode.INSTR_WRITE);
 			}
-		|	conditional
+		|	ifstat
 		|	LDELIM expr
 			(	';' exprOptions {gen.emit(Bytecode.INSTR_WRITE_OPT);}
 			|	                {gen.emit(Bytecode.INSTR_WRITE);}
@@ -147,7 +147,7 @@ subtemplate returns [String name]
         '}'
     ;
     
-conditional
+ifstat
 @init {
     /** Tracks address of branch operand (in code block).  It's how
      *  we backpatch forward references when generating code for IFs.
@@ -158,12 +158,10 @@ conditional
      */
     List<Integer> endRefs = new ArrayList<Integer>();
 }
-	:	LDELIM i='if' '(' not='!'? {;} primary ')' RDELIM
+	:	LDELIM i='if' '(' conditional ')' RDELIM
 		{
         prevBranchOperand = gen.address()+1;
-        short opcode = Bytecode.INSTR_BRF;
-        if ( $not!=null ) opcode = Bytecode.INSTR_BRT;
-        gen.emit(opcode, -1); // write placeholder as branch target
+        gen.emit(Bytecode.INSTR_BRF, -1); // write placeholder as branch target
 		}
 		template
 		(	LDELIM i='elseif'
@@ -174,12 +172,10 @@ conditional
 			gen.write(prevBranchOperand, (short)gen.address());
 			prevBranchOperand = -1;
 			}
-			'(' not2='!'? primary ')' RDELIM
+			'(' conditional ')' RDELIM
 			{
         	prevBranchOperand = gen.address()+1;
-	        opcode = Bytecode.INSTR_BRF;
-	        if ( $not2!=null ) opcode = Bytecode.INSTR_BRT;
-        	gen.emit(opcode, -1); // write placeholder as branch target
+        	gen.emit(Bytecode.INSTR_BRF, -1); // write placeholder as branch target
 			}
 			template
 		)*
@@ -202,6 +198,19 @@ conditional
 		}
 	;
 
+conditional
+	:	andConditional ('||' andConditional {gen.emit(Bytecode.INSTR_OR);})*
+	;
+	
+andConditional
+	:	notConditional ('&&' notConditional {gen.emit(Bytecode.INSTR_AND);})*
+	;
+
+notConditional
+	:	'!' primary  {gen.emit(Bytecode.INSTR_NOT);}
+	|	primary
+	;
+	
 exprOptions
 	:	{gen.emit(Bytecode.INSTR_OPTIONS);} option (',' option)*
 	;

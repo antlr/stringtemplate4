@@ -66,7 +66,7 @@ public class Interpreter {
         int nameIndex = 0;
         int addr = 0;
         String name = null;
-        Object o = null;
+        Object o = null, left = null, right = null;
         ST st = null;
         Object[] options = null;
         int ip = 0;
@@ -242,9 +242,22 @@ public class Interpreter {
                 }
                 else System.err.println("strlen(non string)");
                 break;
-            case Bytecode.INSTR_REVERSE   :
-                operands[sp] = reverse(operands[sp]);
-                break;
+            case Bytecode.INSTR_REVERSE :
+				operands[sp] = reverse(operands[sp]);
+				break;
+			case Bytecode.INSTR_NOT :
+				operands[sp] = !testAttributeTrue(operands[sp]);
+				break;
+			case Bytecode.INSTR_OR :
+				right = operands[sp--];
+				left = operands[sp--];
+				operands[++sp] = testAttributeTrue(left) || testAttributeTrue(right);
+				break;
+			case Bytecode.INSTR_AND :
+				right = operands[sp--];
+				left = operands[sp--];
+				operands[++sp] = testAttributeTrue(left) && testAttributeTrue(right);
+				break;
             default :
                 System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));
                 self.code.dump();
