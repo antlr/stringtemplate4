@@ -201,7 +201,7 @@ public class MyLexer implements TokenSource {
 			consume();
             argTokens.add( newSingleCharToken(PIPE) );
 			WS(); // ignore any whitespace after |
-            System.out.println("matched args: "+argTokens);
+            //System.out.println("matched args: "+argTokens);
             for (Token t : argTokens) emit(t);
 			input.release(m);
 			scanningInsideExpr = false;
@@ -210,7 +210,7 @@ public class MyLexer implements TokenSource {
 			startCharPositionInLine = curlyPos;
 			return curly;
 		}
-		System.out.println("no match rewind");
+		//System.out.println("no match rewind");
 		input.rewind(m);
 		startCharIndex = curlyStartChar; // reset state
 		startLine = curlyLine;
