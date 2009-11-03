@@ -5,11 +5,11 @@ import org.antlr.runtime.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyLexer implements TokenSource {
+public class STLexer implements TokenSource {
     public static final char EOF = (char)-1;            // EOF char
     public static final int EOF_TYPE = CharStream.EOF;  // EOF token type
 
-    public static class MyToken extends CommonToken {
+	public static class MyToken extends CommonToken {
         public MyToken(CharStream input, int type, int channel, int start, int stop) {
             super(input, type, channel, start, stop);
         }
@@ -82,11 +82,11 @@ public class MyLexer implements TokenSource {
         return _nextToken();
     }
 
-    public MyLexer(ANTLRStringStream input) {
+    public STLexer(ANTLRStringStream input) {
 		this(input, '<', '>');
     }
 
-	public MyLexer(CharStream input, char delimiterStartChar, char delimiterStopChar) {
+	public STLexer(CharStream input, char delimiterStartChar, char delimiterStopChar) {
 		this.input = input;
 		c = (char)input.LA(1); // prime lookahead
 		this.delimiterStartChar = delimiterStartChar;

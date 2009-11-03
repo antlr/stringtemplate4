@@ -30,7 +30,7 @@
 parser grammar STParser;
 
 options {
-	tokenVocab=MyLexer;
+	tokenVocab=STLexer;
 }
 
 /*

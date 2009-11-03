@@ -199,8 +199,8 @@ BIGSTRING
 ANONYMOUS_TEMPLATE
     :	'{'
     	{
-		MyLexer lexer =
-			new MyLexer(input, group.delimiterStartChar, group.delimiterStopChar);
+		STLexer lexer =
+			new STLexer(input, group.delimiterStartChar, group.delimiterStopChar);
 		lexer.subtemplateDepth = 1;
 		//CommonTokenStream tokens = new CommonTokenStream(lexer);
 		UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);

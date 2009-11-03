@@ -2,18 +2,28 @@ package org.stringtemplate.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.MyLexer;
-import org.stringtemplate.ST;
+import org.stringtemplate.STLexer;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
-
-import java.util.List;
+import org.antlr.runtime.UnbufferedTokenStream;
+import org.antlr.runtime.Token;
 
 public class TestLexer extends BaseTest {
 	public void check(String template, String expected) {
-		MyLexer lexer = new MyLexer(new ANTLRStringStream(template));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		String result = tokens.getTokens().toString();
+		STLexer lexer = new STLexer(new ANTLRStringStream(template));
+		UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+		StringBuffer buf = new StringBuffer();
+		buf.append("[");
+		int i = 1;
+		Token t = tokens.LT(i);
+		while ( t.getType()!=Token.EOF ) {
+			if ( i>1 ) buf.append(", ");
+			buf.append(t);
+			i++;
+			t = tokens.LT(i);
+		}
+		buf.append("]");
+		String result = buf.toString();
 		assertEquals(expected, result);
 	}
 

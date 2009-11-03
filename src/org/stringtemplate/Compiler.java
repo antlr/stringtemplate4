@@ -95,8 +95,8 @@ public class Compiler implements CodeGenerator {
 		instrs = new byte[initialSize];
 		code.template = template;
 
-		MyLexer lexer =
-			new MyLexer(new ANTLRStringStream(template), delimiterStartChar, delimiterStopChar);
+		STLexer lexer =
+			new STLexer(new ANTLRStringStream(template), delimiterStartChar, delimiterStopChar);
 		//CommonTokenStream tokens = new CommonTokenStream(lexer);
 		UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
 		STParser parser = new STParser(tokens, this);
