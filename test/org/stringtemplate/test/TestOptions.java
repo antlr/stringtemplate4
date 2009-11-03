@@ -109,7 +109,6 @@ public class TestOptions extends BaseTest {
         group.defineTemplate("foo", "<zippo>");
         group.defineTemplate("test", "<foo(); null=\"n/a\">");
         ST st = group.getInstanceOf("test");
-        st.code.dump();
         st.add("zippo", null);
         String expected = "";
         String result = st.render();
