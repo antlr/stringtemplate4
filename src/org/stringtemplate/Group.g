@@ -92,6 +92,7 @@ templateDef
 		|	name=ID 
 		)
 	    '(' formalArgs? ')' '::='
+	    {Token templateToken = input.LT(1);}
 	    (	STRING     {template=$STRING.text; n=1;}
 	    |	BIGSTRING  {template=$BIGSTRING.text; n=2;}
 	    )
@@ -103,11 +104,11 @@ templateDef
         catch (STRecognitionException e) {
         	RecognitionException re = (RecognitionException)e.getCause();
         	int charPosition =
-        		re.charPositionInLine+input.LT(-1).getCharPositionInLine()+n;
-	        group.listener.error(input.LT(-1).getLine()+":"+
+        		re.charPositionInLine+templateToken.getCharPositionInLine()+n;
+	        group.listener.error(templateToken.getLine()+":"+
                     	  		 charPosition+
 	                             ": "+e.getMessage(), null);
-      }		
+        }		
 	    }
 	|   alias=ID '::=' target=ID	    
 	;
