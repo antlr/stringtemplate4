@@ -27,8 +27,6 @@
 */
 package org.stringtemplate;
 
-import org.antlr.runtime.RecognitionException;
-
 import java.util.*;
 import java.io.StringWriter;
 import java.io.IOException;
@@ -53,6 +51,20 @@ public class ST {
     /** Map an attribute name to its value(s). */
     Map<String,Object> attributes;
 
+	public static class AddEvent {
+		String name;
+		Object value;
+		Throwable source;
+		public AddEvent(String name, Object value) {
+			this.name = name;
+			this.value = value;
+			this.source = new Throwable();
+		}
+	}
+
+	/** Track add attribute "events"; used for ST user-level debugging */
+	List<AddEvent> addEvents;
+
     /** Normally, formal parameters hide any attributes inherited from the
      *  enclosing template with the same name.  This is normally what you
      *  want, but makes it hard to invoke another template passing in all
@@ -66,7 +78,7 @@ public class ST {
      */
     ST enclosingInstance; // who's your daddy?
 
-    /** Just an alias for ArrayList, but this way I can track whether a
+	/** Just an alias for ArrayList, but this way I can track whether a
      *  list is something ST created or it's an incoming list.
      */
     public static final class AttributeList extends ArrayList {
@@ -104,6 +116,11 @@ public class ST {
             throw new IllegalArgumentException("cannot have '.' in attribute names");
         }
 
+		if ( group.detects(ErrorTolerance.DETECT_ADD_ATTR) ) {
+			if ( addEvents == null ) addEvents = new ArrayList<AddEvent>();
+			addEvents.add(new AddEvent(name, value));
+		}
+		
         if ( value instanceof ST ) ((ST)value).enclosingInstance = this;
 
         Object curvalue = null;

@@ -126,7 +126,12 @@ public class BytecodeDisassembler {
 		String s = "<bad string index>";
 		if ( poolIndex<strings.length ) {
 			s = strings[poolIndex].toString();
-			if ( strings[poolIndex] instanceof String ) s='"'+s+'"';
+			if ( strings[poolIndex] instanceof String ) {
+				s = s.replaceAll("\n", "\\\\n");
+				s = s.replaceAll("\r", "\\\\r");
+				s = s.replaceAll("\t", "\\\\t");
+				s='"'+s+'"';
+			}
 		}
         buf.append(":");
         buf.append(s);
@@ -145,7 +150,11 @@ public class BytecodeDisassembler {
         int addr = 0;
         for (Object o : strings) {
             if ( o instanceof String ) {
-                buf.append( String.format("%04d: \"%s\"\n", addr, o) );
+				String s = (String)o;
+				s = s.replaceAll("\n", "\\\\n");
+				s = s.replaceAll("\r", "\\\\r");
+				s = s.replaceAll("\t", "\\\\t");
+                buf.append( String.format("%04d: \"%s\"\n", addr, s) );
             }
             else {
                 buf.append( String.format("%04d: %s\n", addr, o) );

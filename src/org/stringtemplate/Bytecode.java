@@ -62,7 +62,7 @@ public class Bytecode {
     public static final short INSTR_NEW             = 10;  // create new template instance
     public static final short INSTR_NEW_IND         = 11;  // create new template instance using value on stack
     public static final short INSTR_WRITE           = 12;
-    public static final short INSTR_WRITE_OPT       = 13;
+	public static final short INSTR_WRITE_OPT       = 13;
     public static final short INSTR_MAP             = 14;  // <a:b()>, <a:b():c()>, <a:{...}>
     public static final short INSTR_ROT_MAP         = 15;  // <a:b(),c()>
     public static final short INSTR_BR              = 16;
@@ -88,6 +88,9 @@ public class Bytecode {
 	public static final short INSTR_OR              = 34;
 	public static final short INSTR_AND             = 35;
 
+	public static final short INSTR_INDENT          = 36;
+	public static final short INSTR_DEDENT          = 37;
+
     /** Used for assembly/disassembly; describes instruction set */
     // START: instr
     public static Instruction[] instructions = new Instruction[] {
@@ -104,7 +107,7 @@ public class Bytecode {
         new Instruction("new",STRING),
         new Instruction("new_ind"),
         new Instruction("write"),
-        new Instruction("write_opt"),
+		new Instruction("write_opt"),
         new Instruction("map"),
         new Instruction("rot_map", INT),
         new Instruction("br", ADDR),
@@ -127,6 +130,8 @@ public class Bytecode {
 		new Instruction("not"),
 		new Instruction("or"),
 		new Instruction("and"),
+		new Instruction("indent", STRING),
+		new Instruction("dedent")
     };
     // END: instr
 }

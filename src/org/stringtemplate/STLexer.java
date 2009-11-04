@@ -62,6 +62,8 @@ public class STLexer implements TokenSource {
 	public static final int PIPE=28;
 	public static final int OR=29;
 	public static final int AND=30;
+	public static final int INDENT=31;
+	public static final int NEWLINE=32;
 
     char delimiterStartChar = '<';
     char delimiterStopChar = '>';
@@ -107,6 +109,7 @@ public class STLexer implements TokenSource {
     public void emit(Token token) { tokens.add(token); }
 
     public Token _nextToken() {
+		//System.out.println("nextToken: c="+(char)c+"@"+input.index());
         startCharIndex = input.index();
         startLine = input.getLine();
         startCharPositionInLine = input.getCharPositionInLine();
@@ -117,16 +120,25 @@ public class STLexer implements TokenSource {
     }
 
     protected Token outside() {
+		if ( input.getCharPositionInLine()==0 && (c==' '||c=='\t') ) {
+			while ( c==' ' || c=='\t' ) { // scarf indent
+				consume();
+			}
+			return newToken(INDENT);
+		}
         if ( c==delimiterStartChar ) {
             consume();
             scanningInsideExpr = true;
             return newToken(LDELIM);
         }
-        if ( c=='}' ) {
-            consume();
-            scanningInsideExpr = true;
-            return newToken(RCURLY);
-        }
+		if ( c=='\r' ) { consume(); consume(); return newToken(NEWLINE); }
+		if ( c=='\n') {	consume(); return newToken(NEWLINE); }
+		if ( c=='}' && subtemplateDepth>0 ) {
+			scanningInsideExpr = true;
+			subtemplateDepth--;
+			consume();
+			return newSingleCharToken(RCURLY);
+		}
         return mTEXT();
     }
 
@@ -228,16 +240,8 @@ public class STLexer implements TokenSource {
 		boolean modifiedText = false;
         StringBuilder buf = new StringBuilder();
         while ( c != EOF && c != delimiterStartChar ) {
-			if ( c=='}' && subtemplateDepth>0 ) {
-				subtemplateDepth++;
-				int p = buf.length()-1;
-				while ( p>=0 && isWS(buf.charAt(p)) ) {p--;}
-				if ( p < buf.length()-1 ) { // trim any whitespace off
-					modifiedText = true;
-					buf.setLength(p+1);
-				}
-				break;
-			}
+			if ( c=='\r' || c=='\n') break;
+			if ( c=='}' && subtemplateDepth>0 ) break;
             if ( c=='\\' ) {
                 if ( input.LA(2)==delimiterStartChar ||
 					 input.LA(2)=='}' )
@@ -281,7 +285,13 @@ public class STLexer implements TokenSource {
             if ( c=='\\' ) {
                 sawEscape = true;
                 consume();
-                buf.append(c); consume();
+				switch ( c ) {
+					case 'n' : buf.append('\n'); break;
+					case 'r' : buf.append('\r'); break;
+					case 't' : buf.append('\t'); break;
+                	default : buf.append(c); break;
+				}
+				consume();
                 continue;
             }
             buf.append(c);

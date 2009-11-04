@@ -64,8 +64,6 @@ public class STGroup {
     protected LinkedHashMap<String, CompiledST> templates =
         new LinkedHashMap<String,CompiledST>();
 
-    public static STGroup defaultGroup = new STGroup();
-
     /** Maps dict names to HashMap objects.  This is the list of dictionaries
      *  defined by the user like typeInitMap ::= ["int":"0"]
      */
@@ -80,10 +78,13 @@ public class STGroup {
      *  use this error handler by default.
      */
     public STErrorListener listener = DEFAULT_ERROR_LISTENER;
+	
+	public static ErrorTolerance DEFAULT_ERROR_TOLERANCE = new ErrorTolerance();
+	public ErrorTolerance tolerance = DEFAULT_ERROR_TOLERANCE;
 
-    public STGroup() {
-        ;
-    }
+	public static STGroup defaultGroup = new STGroup();
+
+	public STGroup() { ; }
 
     public STGroup(String groupFileOrDir) {
         File f = new File(groupFileOrDir);
@@ -175,7 +176,8 @@ public class STGroup {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
         Compiler c = new Compiler();
-        CompiledST code = c.compile(template);
+		template = trimTemplate(template);
+		CompiledST code = c.compile(template);
         code.name = name;
         code.formalArguments = args;
         templates.put(name, code);
@@ -194,7 +196,7 @@ public class STGroup {
         return code;
     }
 
-    public void defineAnonSubtemplates(CompiledST code) {
+	public void defineAnonSubtemplates(CompiledST code) {
         if ( code.compiledSubtemplates!=null ) {
             for (CompiledST sub : code.compiledSubtemplates) {
                 templates.put(sub.name, sub);
@@ -246,39 +248,19 @@ public class STGroup {
         this.listener = listener;
     }
 
-	/*
-    public int getCharPositionInLine(Token errToken, STRecognitionException e) {
-        RecognitionException re = (RecognitionException)e.getCause();
-        int tokenIndex = re.index;
-        System.out.println("token index = "+tokenIndex);
-        CommonTokenStream tokens = (CommonTokenStream)re.input;
-        CommonToken t = (CommonToken)tokens.get(tokenIndex);
-        System.out.println("token="+t);
-        int charIndex = t.getStartIndex();
-        System.out.println("char "+charIndex);
+	public void setErrorTolerance(ErrorTolerance errors) { this.tolerance = errors; }
+	public boolean detects(int x) { return tolerance.detects(x); }
+	public void detect(int x) { tolerance.detect(x); }
+	public void ignore(int x) { tolerance.ignore(x); }
 
-        int i = charIndex; // index into this chunk
-
-        Chunk c = e.chunk;
-
-        while ( c!=null ) {
-            i += c.start;
-            i += c.code.start;
-            c = c.code.enclosingChunk;
-        }
-
-        if ( errToken!=null ) {
-            System.out.println("error token="+errToken);
-            System.out.println("absolute char index in outer template="+i);
-            i += errToken.getCharPositionInLine();
-            if ( errToken.getType()==GroupParser.STRING ) i++;
-            else if ( errToken.getType()==GroupParser.STRING ) i+=2;
-        }
-        
-        System.out.println("char position in line: "+i);
-        return i;
-    }
-*/
+	protected String trimTemplate(String template) {
+		// strip newline from front and back, but just one
+		if ( template.startsWith("\r\n") ) template = template.substring(2);
+		else if ( template.startsWith("\n") ) template = template.substring(1);
+		if ( template.endsWith("\r\n") ) template = template.substring(0,template.length()-2);
+		else if ( template.endsWith("\n") ) template = template.substring(0,template.length()-1);
+		return template;
+	}
 	
     // Temp / testing
     public static STGroup loadGroup(String filename) throws Exception {

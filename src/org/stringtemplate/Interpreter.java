@@ -161,11 +161,11 @@ public class Interpreter {
                 o = operands[sp--];
                 n += writeObject(out, self, o, null);
                 break;
-            case Bytecode.INSTR_WRITE_OPT :
-                options = (Object[])operands[sp--]; // get options
-                o = operands[sp--];                 // get option to write
-                n += writeObject(out, self, o, options);
-                break;
+			case Bytecode.INSTR_WRITE_OPT :
+				options = (Object[])operands[sp--]; // get options
+				o = operands[sp--];                 // get option to write
+				n += writeObject(out, self, o, options);
+				break;
             case Bytecode.INSTR_MAP :
                 name = (String)operands[sp--];
                 o = operands[sp--];
@@ -257,6 +257,14 @@ public class Interpreter {
 				right = operands[sp--];
 				left = operands[sp--];
 				operands[++sp] = testAttributeTrue(left) && testAttributeTrue(right);
+				break;
+			case Bytecode.INSTR_INDENT :
+				strIndex = getShort(code, ip);
+				ip += 2;
+				out.pushIndentation(self.code.strings[strIndex]);
+				break;
+			case Bytecode.INSTR_DEDENT :
+				out.popIndentation();
 				break;
             default :
                 System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));

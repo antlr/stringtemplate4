@@ -125,25 +125,32 @@ templateAndEOF
 	;
 
 template
-	:	(	TEXT
+	:	(	options {backtrack=true;}
+		:	i=INDENT  {gen.emit(Bytecode.INSTR_INDENT, $i.getText());}
+			exprTag {gen.emit(Bytecode.INSTR_DEDENT);}
+		|	exprTag
+		|	t=(TEXT|INDENT|NEWLINE)
 			{
-			gen.emit(Bytecode.INSTR_LOAD_STR, $TEXT.getText());
+			gen.emit(Bytecode.INSTR_LOAD_STR, $t.text);
 			gen.emit(Bytecode.INSTR_WRITE);
 			}
 		|	ifstat
-		|	LDELIM expr
-			(	';' exprOptions {gen.emit(Bytecode.INSTR_WRITE_OPT);}
-			|	                {gen.emit(Bytecode.INSTR_WRITE);}
-			)
-			RDELIM
 		)*
+	;
+
+exprTag
+	:	LDELIM expr
+		(	';' exprOptions {gen.emit(Bytecode.INSTR_WRITE_OPT);}
+		|	                {gen.emit(Bytecode.INSTR_WRITE);}
+		)
+		RDELIM
 	;
 
 subtemplate returns [String name]
 	:	'{' ( ids+=ID (',' ids+=ID)* '|' )?
-		{
+		{{ // force execution even when backtracking
 		$name = gen.compileAnonTemplate(input, $ids, state);
-        }
+        }}
         '}'
     ;
     

@@ -68,6 +68,7 @@ public class TestNullAndEmptyValues extends BaseTest {
             "<users:{name: <it>}; separator=\", \">\n" +
             "end\n");
         ST t = group.getInstanceOf("test");
+		t.code.dump();
         t.add("users", null);
         String expecting="begin\nend\n";
         String result = t.render();
