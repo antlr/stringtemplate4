@@ -193,14 +193,6 @@ public class Interpreter {
                 o = operands[sp--]; // <if(expr)>...<endif>
                 if ( !testAttributeTrue(o) ) ip = addr; // jump
                 break;
-/*
-            case Bytecode.INSTR_BRT :
-                addr = getShort(code, ip);
-                ip += 2;
-                o = operands[sp--]; // <if(expr)>...<endif>
-                if ( testAttributeTrue(o) ) ip = addr; // jump
-                break;
-             */
             case Bytecode.INSTR_OPTIONS :
                 operands[++sp] = new Object[Compiler.NUM_OPTIONS];
                 break;
