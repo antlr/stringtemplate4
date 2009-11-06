@@ -67,7 +67,7 @@ public class Bytecode {
     public static final short INSTR_ROT_MAP         = 15;  // <a:b(),c()>
     public static final short INSTR_BR              = 16;
     public static final short INSTR_BRF             = 17;
-    public static final short INSTR_BRT             = 18;
+//    public static final short INSTR_BRT             = 18;
     public static final short INSTR_OPTIONS         = 19;  // push options block
     public static final short INSTR_LIST            = 20;
     public static final short INSTR_ADD             = 21;
@@ -113,7 +113,7 @@ public class Bytecode {
         new Instruction("rot_map", INT),
         new Instruction("br", ADDR),
         new Instruction("brf", ADDR),
-        new Instruction("brt", ADDR),
+        null, // TODO: remove
         new Instruction("options"),
         new Instruction("list"),
         new Instruction("add"),

@@ -191,7 +191,8 @@ ifstat
 			}
 			template
 		)?
-		LDELIM 'endif' RDELIM
+		endif=LDELIM 'endif' RDELIM
+		( {$endif.pos==0}? NEWLINE )? // kill \on for <endif> on line by itself
 		{
 		if ( prevBranchOperand>=0 ) {
 			gen.write(prevBranchOperand, (short)gen.address());
