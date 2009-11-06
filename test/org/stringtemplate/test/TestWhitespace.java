@@ -10,7 +10,6 @@ public class TestWhitespace extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("test", "<names:{n |    <n> }>!");
         ST st = group.getInstanceOf("test");
-        group.getInstanceOf("_sub1").code.dump();
         st.add("names", "Ter");
         st.add("names", "Tom");
         st.add("names", "Sumana");
