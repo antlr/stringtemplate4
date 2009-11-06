@@ -124,8 +124,9 @@ public class STLexer implements TokenSource {
 			while ( c==' ' || c=='\t' ) { // scarf indent
 				consume();
 			}
-            if ( c==delimiterStartChar ) return newToken(INDENT);
+            //if ( c==delimiterStartChar ) return newToken(INDENT);
             // if not indent before expr, let it fall thru and become TEXT
+            return newToken(INDENT);
 		}
         if ( c==delimiterStartChar ) {
             consume();

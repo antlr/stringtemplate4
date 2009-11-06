@@ -32,6 +32,20 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
+    @Test public void testEmptyLineWithIndent() throws Exception {
+        STGroup group =
+                new STGroup("test");
+        STErrorListener errors = new ErrorBuffer();
+        group.setErrorListener(errors);
+        ST t = new ST(group,
+            "begin\n" +
+            "    \n" +
+            "end\n");
+        String expecting="begin\n\nend";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
+
     @Test public void testSizeZeroOnLineByItselfGetsNoOutput() throws Exception {
         STGroup group =
                 new STGroup("test");
@@ -79,21 +93,50 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testSizeZeroOnLineWithIFExpr() throws Exception {
+    @Test public void testIFExpr() throws Exception {
         STGroup group =
                 new STGroup("test");
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
             "begin\n"+
-            "<if(users)><endif>\n"+
+            "<if(x)><endif>\n"+
             "end\n");
         String expecting="begin\nend";
         String result = t.render();
         assertEquals(expecting, result);
     }
 
-    @Test public void testSizeZeroOnLineWithIFElseExpr() throws Exception {
+    @Test public void testIndentedIFExpr() throws Exception {
+        STGroup group =
+                new STGroup("test");
+        STErrorListener errors = new ErrorBuffer();
+        group.setErrorListener(errors);
+        ST t = new ST(group,
+            "begin\n"+
+            "    <if(x)><endif>\n"+
+            "end\n");
+        String expecting="begin\nend";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testIndentedIFWithValueExpr() throws Exception {
+        STGroup group =
+                new STGroup("test");
+        STErrorListener errors = new ErrorBuffer();
+        group.setErrorListener(errors);
+        ST t = new ST(group,
+            "begin\n"+
+            "    <if(x)>foo<endif>\n"+
+            "end\n");
+        t.add("x", "x");
+        String expecting="begin\n    foo\nend";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testIFElseExpr() throws Exception {
         STGroup group =
                 new STGroup("test");
         STErrorListener errors = new ErrorBuffer();
@@ -107,7 +150,7 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testSizeZeroOnLineWithIFOnMultipleLines() throws Exception {
+    @Test public void testIFOnMultipleLines() throws Exception {
         STGroup group =
                 new STGroup("test");
         STErrorListener errors = new ErrorBuffer();
@@ -120,36 +163,67 @@ public class TestWhitespace extends BaseTest {
             "bar\n" +
             "<endif>\n"+
             "end\n");
-        t.code.dump();
         String expecting="begin\nbar\nend";
         String result = t.render();
         assertEquals(expecting, result);
     }
 
-    /*
-    if we wrote n>0 char, emit \n
-    if prev instr was NEWLINE also (no string and no <...> tag), emit \n
-    if no string but was a <...> tag, don't emit \n
-    <if(x)><else><endif>
-    
-    <if(x)>
-    <x>
-    <else>
-    <y>
-    <endif>
+    @Test public void testNestedIFOnMultipleLines() throws Exception {
+        STGroup group =
+                new STGroup("test");
+        STErrorListener errors = new ErrorBuffer();
+        group.setErrorListener(errors);
+        ST t = new ST(group,
+            "begin\n"+
+            "<if(x)>\n" +
+            "<if(y)>\n" +
+            "foo\n" +
+            "<else>\n" +
+            "bar\n" +
+            "<endif>\n"+
+            "<endif>\n"+
+            "end\n");
+        t.add("x", "x");
+        String expecting="begin\nbar\nend";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
 
-<if(x)>foo<endif>
+    @Test public void testIFWithIndentOnMultipleLines() throws Exception {
+        STGroup group =
+                new STGroup("test");
+        STErrorListener errors = new ErrorBuffer();
+        group.setErrorListener(errors);
+        ST t = new ST(group,
+            "begin\n"+
+            "   <if(x)>\n" +
+            "   foo\n" +
+            "   <else>\n" +
+            "   bar\n" +
+            "   <endif>\n"+
+            "end\n");
+        String expecting="begin\n   bar\nend";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
 
-<if(TREE_PARSER)>
-import org.antlr.runtime.tree.*;
-<endif>
+    @Test public void testIFWithIndentAndExprOnMultipleLines() throws Exception {
+        STGroup group =
+                new STGroup("test");
+        STErrorListener errors = new ErrorBuffer();
+        group.setErrorListener(errors);
+        ST t = new ST(group,
+            "begin\n"+
+            "   <if(x)>\n" +
+            "   <x>\n" +
+            "   <else>\n" +
+            "   <y>\n" +
+            "   <endif>\n"+
+            "end\n");
+        t.add("y", "y");
+        String expecting="begin\n   y\nend";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
 
-<if(x)>
-<if(y)>
-    foo
-<else>
-    bar</n>
-<endif>
-<endif>
-     */
 }

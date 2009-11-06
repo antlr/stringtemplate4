@@ -232,11 +232,8 @@ public class ST {
     }    
 
     public int write(STWriter out) throws IOException {
-        StringWriter sw = new StringWriter();
         Interpreter interp = new Interpreter(group);
-        interp.exec(new AutoIndentWriter(sw), this);
-        int n = out.write(sw.toString());
-        return n;
+        return interp.exec(out, this);
     }
 
     public String render() {

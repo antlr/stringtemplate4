@@ -36,6 +36,7 @@ options {
 @header { package org.stringtemplate; }
 
 @members {
+int ifLevel = 0;
 CodeGenerator gen = new CodeGenerator() {
 	public void emit(short opcode) {;}
 	public void emit(short opcode, int arg) {;}
@@ -115,22 +116,45 @@ templateAndEOF
 	;
 
 template
-	:	(	i=INDENT  {gen.emit(Bytecode.INSTR_INDENT, $i.getText());}
-			exprTag {gen.emit(Bytecode.INSTR_DEDENT);}
-		|	exprTag
-		|	(	{input.LA(2)==RCURLY}? t=TEXT
-				{$t.setText(Misc.trimRight($t.text));}
-			|	t=TEXT
-			)
+	:	(	i=INDENT
 			{
-			if ( $t.text.length()>0 ) {
-				gen.emit(Bytecode.INSTR_LOAD_STR, $t.text);
-				gen.emit(Bytecode.INSTR_WRITE);
+			/* To handle indented IF, we want to use IF's indent not
+			   indent in front of clauses:
+			[
+			    <if(x)>
+			    foo
+			    <else>
+			    bar
+			    <endif>
+			]
+			 */
+			if ( ifLevel==0 || (input.LA(1)==LDELIM && input.LA(2)==IF) ) {
+				gen.emit(Bytecode.INSTR_INDENT, $i.getText());
 			}
 			}
-		|	NEWLINE {gen.emit(Bytecode.INSTR_NEWLINE);}
-		|	ifstat
+			element   {gen.emit(Bytecode.INSTR_DEDENT);}
+		|	element
 		)*
+	;
+	
+element
+	:	exprTag
+	|	ifstat
+	|	text
+	|	NEWLINE {gen.emit(Bytecode.INSTR_NEWLINE);}
+	;
+
+text
+	:	(	{input.LA(2)==RCURLY}? t=TEXT
+			{$t.setText(Misc.trimRight($t.text));}
+		|	t=TEXT
+		)
+		{
+		if ( $t.text.length()>0 ) {
+			gen.emit(Bytecode.INSTR_LOAD_STR, $t.text);
+			gen.emit(Bytecode.INSTR_WRITE);
+		}
+		}
 	;
 
 exprTag
@@ -148,7 +172,14 @@ subtemplate returns [String name]
         }}
         '}'
     ;
-    
+
+/** The (...)* loop in rule template doesn't think '}' can follow it because
+ *  we call template in an action (via compileAnonTemplate).  To avoid
+ *  syntax errors upon '}' in rule templatee, we force '}' into FOLLOW set.
+ *  I hope to make ANTLR ignore FOLLOW set for (...)* in future.
+ */
+addRcurlyToFollowOfTemplateRule : template '}' ;
+
 ifstat
 @init {
     /** Tracks address of branch operand (in code block).  It's how
@@ -159,14 +190,16 @@ ifstat
      *  We need to update them once we see the endif.
      */
     List<Integer> endRefs = new ArrayList<Integer>();
+    ifLevel++;
 }
+@after { ifLevel--; }
 	:	LDELIM i='if' '(' conditional ')' RDELIM
 		{
         prevBranchOperand = gen.address()+1;
         gen.emit(Bytecode.INSTR_BRF, -1); // write placeholder as branch target
 		}
 		template
-		(	LDELIM i='elseif'
+		(	INDENT? LDELIM i='elseif'
 			{
 			endRefs.add(gen.address()+1);
 			gen.emit(Bytecode.INSTR_BR, -1); // br end
@@ -181,7 +214,7 @@ ifstat
 			}
 			template
 		)*
-		(	LDELIM 'else' RDELIM
+		(	INDENT? LDELIM 'else' RDELIM
 			{
 			endRefs.add(gen.address()+1);
 			gen.emit(Bytecode.INSTR_BR, -1); // br end
@@ -191,7 +224,7 @@ ifstat
 			}
 			template
 		)?
-		endif=LDELIM 'endif' RDELIM
+		INDENT? endif=LDELIM 'endif' RDELIM
 		( {$endif.pos==0}? NEWLINE )? // kill \on for <endif> on line by itself
 		{
 		if ( prevBranchOperand>=0 ) {

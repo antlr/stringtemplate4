@@ -56,7 +56,7 @@ public class Interpreter {
      */
     STGroup group;
     
-    public boolean trace = false;
+    public boolean trace = true;
 
     public Interpreter(STGroup group) {
         this.group = group;
@@ -266,7 +266,10 @@ public class Interpreter {
 				break;
             case Bytecode.INSTR_NEWLINE :
                 try {
-                    if ( prevOpcode==Bytecode.INSTR_NEWLINE || nw>0 ) {
+                    if ( prevOpcode==Bytecode.INSTR_NEWLINE ||
+                         prevOpcode==Bytecode.INSTR_INDENT ||
+                         nw>0 )
+                    {
                         out.write(Misc.newline);
                     }
                     nw = -1; // indicate nothing written but no WRITE yet
