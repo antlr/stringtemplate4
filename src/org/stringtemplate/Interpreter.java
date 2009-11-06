@@ -56,7 +56,7 @@ public class Interpreter {
      */
     STGroup group;
     
-    public boolean trace = true;
+    public boolean trace = false;
 
     public Interpreter(STGroup group) {
         this.group = group;
