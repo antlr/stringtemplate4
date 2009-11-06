@@ -37,6 +37,7 @@ options {
 
 @members {
 int ifLevel = 0;
+List<String> IFindents = new ArrayList<String>();
 CodeGenerator gen = new CodeGenerator() {
 	public void emit(short opcode) {;}
 	public void emit(short opcode, int arg) {;}
@@ -57,6 +58,25 @@ public STParser(TokenStream input, RecognizerSharedState state, CodeGenerator ge
 	this.input = input;
 	this.state = state;
     if ( gen!=null ) this.gen = gen;
+}
+
+public void pushIFIndentation(String indent) {
+    StringBuilder buf = new StringBuilder();
+	for (String ind : IFindents) { buf.append(ind); }
+	String ifIndent = buf.toString();
+    if ( indent.startsWith(ifIndent) ) indent = indent.substring(ifIndent.length());
+    IFindents.add(indent);
+    gen.emit(Bytecode.INSTR_INDENT, indent);
+}
+
+public String popIFIndentation() { return IFindents.remove(IFindents.size()-1); }
+
+public void indent(String indent) {
+    StringBuilder buf = new StringBuilder();
+	for (String ind : IFindents) { buf.append(ind); }
+	String ifIndent = buf.toString();
+	if ( indent.startsWith(ifIndent) ) indent = indent.substring(ifIndent.length());
+	gen.emit(Bytecode.INSTR_INDENT, indent);
 }
 
 protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
@@ -118,30 +138,19 @@ templateAndEOF
 template
 	:	(	i=INDENT
 			{
-			/* To handle indented IF, we want to use IF's indent not
-			   indent in front of clauses:
-			[
-			    <if(x)>
-			    foo
-			    <else>
-			    bar
-			    <endif>
-			]
-			 */
-			if ( ifLevel==0 || (input.LA(1)==LDELIM && input.LA(2)==IF) ) {
-				gen.emit(Bytecode.INSTR_INDENT, $i.getText());
+			pushIFIndentation($i.text);
 			}
-			}
-			element   {gen.emit(Bytecode.INSTR_DEDENT);}
-		|	element
+			ifstat                                   {gen.emit(Bytecode.INSTR_DEDENT);}
+			{popIFIndentation();}
+		|	ifstat
+		|	i=INDENT {indent($i.getText());} exprTag {gen.emit(Bytecode.INSTR_DEDENT);}
+		|	exprTag
+		|	i=INDENT {indent($i.getText());} text    {gen.emit(Bytecode.INSTR_DEDENT);}
+		|	text
+		|	i=INDENT {indent($i.getText());} NEWLINE 
+			{gen.emit(Bytecode.INSTR_NEWLINE);}      {gen.emit(Bytecode.INSTR_DEDENT);}
+		|	NEWLINE {gen.emit(Bytecode.INSTR_NEWLINE);}
 		)*
-	;
-	
-element
-	:	exprTag
-	|	ifstat
-	|	text
-	|	NEWLINE {gen.emit(Bytecode.INSTR_NEWLINE);}
 	;
 
 text
@@ -233,7 +242,7 @@ ifstat
         for (int opnd : endRefs) gen.write(opnd, (short)gen.address());
 		}
 	;
-
+	
 conditional
 	:	andConditional ('||' andConditional {gen.emit(Bytecode.INSTR_OR);})*
 	;
