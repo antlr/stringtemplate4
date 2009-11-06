@@ -48,7 +48,8 @@ public class Interpreter {
 
     /** Operand stack, grows upwards */
     Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
-    int sp = -1;        // stack pointer register
+    int sp = -1;  // stack pointer register
+    int nw = 0;   // how many char written on this template line so far? ("number written" register)
     
     /** Exec st with respect to this group. Once set in ST.toString(),
      *  it should be fixed.  ST has group also.
@@ -159,12 +160,14 @@ public class Interpreter {
                 break;
             case Bytecode.INSTR_WRITE :
                 o = operands[sp--];
-                n += writeObject(out, self, o, null);
+                nw = writeObject(out, self, o, null);
+                n += nw;
                 break;
 			case Bytecode.INSTR_WRITE_OPT :
 				options = (Object[])operands[sp--]; // get options
 				o = operands[sp--];                 // get option to write
-				n += writeObject(out, self, o, options);
+				nw = writeObject(out, self, o, options);
+                n += nw;
 				break;
             case Bytecode.INSTR_MAP :
                 name = (String)operands[sp--];
@@ -266,6 +269,16 @@ public class Interpreter {
 			case Bytecode.INSTR_DEDENT :
 				out.popIndentation();
 				break;
+            case Bytecode.INSTR_NEWLINE :
+                try {
+                    // write unless we saw a WRITE but it evaluated to ""
+                    if ( nw!=0 ) out.write(Misc.newline);
+                    nw = -1; // indicate nothing written but no WRITE yet
+                }
+                catch (IOException ioe) {
+                    System.err.println("can't write newline");
+                }
+                break;
             default :
                 System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));
                 self.code.dump();
@@ -708,6 +721,7 @@ public class Interpreter {
         }
         System.out.print(" ], calls=");
         System.out.print(self.getEnclosingInstanceStackString());
+        // System.out.print(", sp="+sp+", nw="+nw);
         System.out.println();
     }
 

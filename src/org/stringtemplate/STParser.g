@@ -115,13 +115,12 @@ templateAndEOF
 	;
 
 template
-	:	(	INDENT  {gen.emit(Bytecode.INSTR_INDENT, $INDENT.getText());}
+	:	(	i=INDENT  {gen.emit(Bytecode.INSTR_INDENT, $i.getText());}
 			exprTag {gen.emit(Bytecode.INSTR_DEDENT);}
 		|	exprTag
 		|	(	{input.LA(2)==RCURLY}? t=TEXT
 				{$t.setText(Misc.trimRight($t.text));}
 			|	t=TEXT
-			|	t=NEWLINE
 			)
 			{
 			if ( $t.text.length()>0 ) {
@@ -129,6 +128,7 @@ template
 				gen.emit(Bytecode.INSTR_WRITE);
 			}
 			}
+		|	NEWLINE {gen.emit(Bytecode.INSTR_NEWLINE);}
 		|	ifstat
 		)*
 	;
@@ -143,9 +143,9 @@ exprTag
 
 subtemplate returns [String name]
 	:	'{' ( ids+=ID (',' ids+=ID)* '|' )?
-		{
+		{{ // force exec even when backtracking
 		$name = gen.compileAnonTemplate(input, $ids, state);
-        }
+        }}
         '}'
     ;
     

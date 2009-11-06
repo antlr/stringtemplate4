@@ -89,7 +89,8 @@ public class Bytecode {
 	public static final short INSTR_AND             = 35;
 
 	public static final short INSTR_INDENT          = 36;
-	public static final short INSTR_DEDENT          = 37;
+    public static final short INSTR_DEDENT          = 37;
+    public static final short INSTR_NEWLINE         = 38;
 
     /** Used for assembly/disassembly; describes instruction set */
     // START: instr
@@ -131,7 +132,8 @@ public class Bytecode {
 		new Instruction("or"),
 		new Instruction("and"),
 		new Instruction("indent", STRING),
-		new Instruction("dedent")
+        new Instruction("dedent"),
+        new Instruction("newline")
     };
     // END: instr
 }

@@ -65,12 +65,12 @@ public class TestNullAndEmptyValues extends BaseTest {
         group.setErrorListener(errors);
         group.defineTemplate("test",
             "begin\n" +
-            "<users:{name: <it>}; separator=\", \">\n" +
+            "<users>\n" +
             "end\n");
         ST t = group.getInstanceOf("test");
 		t.code.dump();
         t.add("users", null);
-        String expecting="begin\nend\n";
+        String expecting="begin\nend";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -85,7 +85,7 @@ public class TestNullAndEmptyValues extends BaseTest {
             "end\n");
         ST t = group.getInstanceOf("test");
         //t.setAttribute("users", new Duh());
-        String expecting="begin\nend\n";
+        String expecting="begin\nend";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -100,25 +100,8 @@ public class TestNullAndEmptyValues extends BaseTest {
             "end\n");
         ST t = group.getInstanceOf("test");
         t.add("users", new ArrayList());
-        String expecting="begin\nend\n";
+        String expecting="begin\nend";
         String result = t.render();
         assertEquals(expecting, result);
     }
-
-    @Test public void testEmptyListNoIteratorGetsNoOutput() throws Exception {
-        STGroup group = new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        group.defineTemplate("test",
-            "begin\n" +
-            "<users; separator=\", \">\n" +
-            "end\n");
-        ST t = group.getInstanceOf("test");
-        t.add("users", new ArrayList());
-        String expecting="begin\nend\n";
-        String result = t.render();
-        assertEquals(expecting, result);
-    }
-
-
 }

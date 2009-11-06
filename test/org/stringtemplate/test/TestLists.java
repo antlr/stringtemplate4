@@ -5,6 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.Misc;
+import org.stringtemplate.STErrorListener;
+
+import java.util.ArrayList;
 
 public class TestLists extends BaseTest {
 	@Test public void testJustCat() throws Exception {
@@ -119,5 +122,50 @@ public class TestLists extends BaseTest {
 		String expecting = "*Ter**Tom**1**2*";
 		String result = e.render();
 		assertEquals(expecting, result);
-	}    
+	}
+
+    public void testNullListGetsNoOutput() throws Exception {
+        STGroup group =
+                new STGroup("test");
+        STErrorListener errors = new ErrorBuffer();
+        group.setErrorListener(errors);
+        ST t = new ST(group,
+            "begin\n" +
+            "$users:{name: $it$}; separator=\", \"$\n" +
+            "end\n");
+        //t.setAttribute("users", new Duh());
+        String expecting="begin\nend\n";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
+
+    public void testEmptyListGetsNoOutput() throws Exception {
+        STGroup group =
+                new STGroup("test");
+        STErrorListener errors = new ErrorBuffer();
+        group.setErrorListener(errors);
+        ST t = new ST(group,
+            "begin\n" +
+            "$users:{name: $it$}; separator=\", \"$\n" +
+            "end\n");
+        t.add("users", new ArrayList());
+        String expecting="begin\nend\n";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
+
+    public void testEmptyListNoIteratorGetsNoOutput() throws Exception {
+        STGroup group =
+                new STGroup("test");
+        STErrorListener errors = new ErrorBuffer();
+        group.setErrorListener(errors);
+        ST t = new ST(group,
+            "begin\n" +
+            "$users; separator=\", \"$\n" +
+            "end\n");
+        t.add("users", new ArrayList());
+        String expecting="begin\nend\n";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }    
 }
