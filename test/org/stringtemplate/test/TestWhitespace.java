@@ -226,6 +226,25 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
+    @Test public void testIFWithIndentAndExprWithIndentOnMultipleLines() throws Exception {
+        STGroup group =
+                new STGroup("test");
+        STErrorListener errors = new ErrorBuffer();
+        group.setErrorListener(errors);
+        ST t = new ST(group,
+            "begin\n"+
+            "   <if(x)>\n" +
+            "     <x>\n" +
+            "   <else>\n" +
+            "     <y>\n" +
+            "   <endif>\n"+
+            "end\n");
+        t.add("y", "y");
+        String expecting="begin\n     y\nend";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
+
     @Test public void testNestedIFWithIndentOnMultipleLines() throws Exception {
         STGroup group =
                 new STGroup("test");
@@ -245,7 +264,6 @@ public class TestWhitespace extends BaseTest {
             "end\n");
         t.add("x", "x");
         t.add("y", "y");
-        t.code.dump();
         String expecting="begin\n      foo\nend"; // double indent
         String result = t.render();
         assertEquals(expecting, result);
