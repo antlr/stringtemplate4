@@ -124,7 +124,8 @@ public class STLexer implements TokenSource {
 			while ( c==' ' || c=='\t' ) { // scarf indent
 				consume();
 			}
-			return newToken(INDENT);
+            if ( c==delimiterStartChar ) return newToken(INDENT);
+            // if not indent before expr, let it fall thru and become TEXT
 		}
         if ( c==delimiterStartChar ) {
             consume();
@@ -307,9 +308,9 @@ public class STLexer implements TokenSource {
         while ( c==' ' || c=='\t' || c=='\n' || c=='\r' ) consume();
     }
     
-    boolean isIDStartLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z'; }
-	boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9'; }
-	boolean isWS(char c) { return c==' ' || c=='\t' || c=='\n' || c=='\r'; }
+    public static boolean isIDStartLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z'; }
+	public static boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9'; }
+	public static boolean isWS(char c) { return c==' ' || c=='\t' || c=='\n' || c=='\r'; }
 
     public Token newToken(int ttype) {
         MyToken t = new MyToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,

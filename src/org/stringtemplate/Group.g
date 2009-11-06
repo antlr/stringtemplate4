@@ -64,7 +64,6 @@ package org.stringtemplate;
 
 @members {
 protected STGroup group;
-public String strip(String s, int n) { return s.substring(n, s.length()-n); }
 }
 @lexer::members {
 protected STGroup group;
@@ -97,7 +96,7 @@ templateDef
 	    |	BIGSTRING  {template=$BIGSTRING.text; n=2;}
 	    )
 	    {
-	    template = strip(template, n);
+	    template = Misc.strip(template, n);
 	    try {
 		    group.defineTemplate($name.text, $formalArgs.args, template);
 		}
@@ -167,13 +166,13 @@ defaultValuePair[Map<String,Object> mapping]
 	;
 
 keyValuePair[Map<String,Object> mapping]
-	:	STRING ':' keyValue {mapping.put(strip($STRING.text, 1), $keyValue.value);}
+	:	STRING ':' keyValue {mapping.put(Misc.strip($STRING.text, 1), $keyValue.value);}
 	;
 
 keyValue returns [Object value]
-	:	BIGSTRING			{$value = new ST(group, strip($BIGSTRING.text,2));}
-	|	ANONYMOUS_TEMPLATE	{$value = new ST(group, strip($ANONYMOUS_TEMPLATE.text,1));}
-	|	STRING				{$value = strip($STRING.text, 1);}
+	:	BIGSTRING			{$value = new ST(group, Misc.strip($BIGSTRING.text,2));}
+	|	ANONYMOUS_TEMPLATE	{$value = new ST(group, Misc.strip($ANONYMOUS_TEMPLATE.text,1));}
+	|	STRING				{$value = Misc.strip($STRING.text, 1);}
 	|	{input.LT(1).getText().equals("key")}?=> ID
 							{$value = STGroup.DICT_KEY;}
 	|						{$value = null;}

@@ -176,7 +176,7 @@ public class STGroup {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
         Compiler c = new Compiler();
-		template = trimTemplate(template);
+		template = Misc.trimOneNewline(template);
 		CompiledST code = c.compile(template);
         code.name = name;
         code.formalArguments = args;
@@ -253,15 +253,6 @@ public class STGroup {
 	public void detect(int x) { tolerance.detect(x); }
 	public void ignore(int x) { tolerance.ignore(x); }
 
-	protected String trimTemplate(String template) {
-		// strip newline from front and back, but just one
-		if ( template.startsWith("\r\n") ) template = template.substring(2);
-		else if ( template.startsWith("\n") ) template = template.substring(1);
-		if ( template.endsWith("\r\n") ) template = template.substring(0,template.length()-2);
-		else if ( template.endsWith("\n") ) template = template.substring(0,template.length()-1);
-		return template;
-	}
-	
     // Temp / testing
     public static STGroup loadGroup(String filename) throws Exception {
         STGroup group = new STGroup(filename);

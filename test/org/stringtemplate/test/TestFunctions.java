@@ -278,19 +278,21 @@ public class TestFunctions extends BaseTest {
 
 	@Test public void testFirstWithListOfMaps2() throws Exception {
 		ST e = new ST(
-				"<first(maps):{ m | <m> }>"
+				"<first(maps):{ m | <m>!}>"
 			);
+        e.code.dump();
+        e.group.getInstanceOf("_sub1").code.dump();
 		final Map m1 = new HashMap();
 		final Map m2 = new HashMap();
 		m1.put("Ter", "x5707");
 		e.add("maps", m1);
 		m2.put("Tom", "x5332");
 		e.add("maps", m2);
-		String expecting = "x5707";
+		String expecting = "x5707!";
 		assertEquals(expecting, e.render());
 		List list = new ArrayList() {{add(m1); add(m2);}};
 		e.add("maps", list);
-		expecting = "x5707";
+		expecting = "x5707!";
 		assertEquals(expecting, e.render());
 	}
 

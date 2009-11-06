@@ -8,8 +8,9 @@ import org.stringtemplate.ST;
 public class TestWhitespace extends BaseTest {
     @Test public void testTrimmedSubtemplates() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "<names:{n | <n> }>!");
+        group.defineTemplate("test", "<names:{n |    <n> }>!");
         ST st = group.getInstanceOf("test");
+        group.getInstanceOf("_sub1").code.dump();
         st.add("names", "Ter");
         st.add("names", "Tom");
         st.add("names", "Sumana");

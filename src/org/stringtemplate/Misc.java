@@ -35,4 +35,26 @@ public class Misc {
         }
         return buf.toString();
     }
+
+    public static String strip(String s, int n) {
+        return s.substring(n, s.length()-n);
+    }
+
+    public static String trimOneNewline(String s) {
+        // strip newline from front and back, but just one
+        if ( s.startsWith("\r\n") ) s = s.substring(2);
+        else if ( s.startsWith("\n") ) s = s.substring(1);
+        if ( s.endsWith("\r\n") ) s = s.substring(0,s.length()-2);
+        else if ( s.endsWith("\n") ) s = s.substring(0,s.length()-1);
+        return s;
+    }
+
+    public static String trimRight(String s) {
+        if ( s==null || s.length()==0 ) return s;
+        int i = s.length()-1;
+        while ( i>=0 && STLexer.isWS(s.charAt(i)) ) {
+            i--;
+        }
+        return s.substring(0,i+1);
+    }
 }

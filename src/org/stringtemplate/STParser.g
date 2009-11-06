@@ -33,16 +33,6 @@ options {
 	tokenVocab=STLexer;
 }
 
-/*
-tokens {
-	IF='if('; ELSE='else'; ELSEIF='elseif('; ENDIF='endif'; SUPER='super.';
-	SEMI=';'; BANG='!'; ELLIPSIS='...'; EQUALS='='; COLON=':';
-	LPAREN='('; RPAREN=')'; LBRACK='['; RBRACK=']'; COMMA=','; DOT='.';
-	LCURLY='{'; RCURLY='}'; PIPE='|';
-	TEXT; LDELIM; RDELIM;
-}
-*/
-
 @header { package org.stringtemplate; }
 
 @members {
@@ -125,14 +115,19 @@ templateAndEOF
 	;
 
 template
-	:	(	options {backtrack=true;}
-		:	i=INDENT  {gen.emit(Bytecode.INSTR_INDENT, $i.getText());}
+	:	(	INDENT  {gen.emit(Bytecode.INSTR_INDENT, $INDENT.getText());}
 			exprTag {gen.emit(Bytecode.INSTR_DEDENT);}
 		|	exprTag
-		|	t=(TEXT|INDENT|NEWLINE)
+		|	(	{input.LA(2)==RCURLY}? t=TEXT
+				{$t.setText(Misc.trimRight($t.text));}
+			|	t=TEXT
+			|	t=NEWLINE
+			)
 			{
-			gen.emit(Bytecode.INSTR_LOAD_STR, $t.text);
-			gen.emit(Bytecode.INSTR_WRITE);
+			if ( $t.text.length()>0 ) {
+				gen.emit(Bytecode.INSTR_LOAD_STR, $t.text);
+				gen.emit(Bytecode.INSTR_WRITE);
+			}
 			}
 		|	ifstat
 		)*
@@ -148,9 +143,9 @@ exprTag
 
 subtemplate returns [String name]
 	:	'{' ( ids+=ID (',' ids+=ID)* '|' )?
-		{{ // force execution even when backtracking
+		{
 		$name = gen.compileAnonTemplate(input, $ids, state);
-        }}
+        }
         '}'
     ;
     
