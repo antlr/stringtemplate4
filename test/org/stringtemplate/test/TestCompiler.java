@@ -28,13 +28,17 @@
 package org.stringtemplate.test;
 
 import org.junit.Test;
+import org.junit.Before;
 import static org.junit.Assert.*;
-import org.stringtemplate.*;
 import org.stringtemplate.Compiler;
+import org.stringtemplate.*;
 
 import java.util.Arrays;
 
-public class TestCompiler {   
+public class TestCompiler extends BaseTest {
+    @Before
+    public void setUp() { Compiler.subtemplateCount = 0; }
+    
     @Test public void testAttr() throws Exception {
         String template = "hi <name>";
         CompiledST code = new Compiler().compile(template);
@@ -49,7 +53,19 @@ public class TestCompiler {
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
-    
+
+    @Test public void testInclude() throws Exception {
+        String template = "hi <foo()>";
+        CompiledST code = new Compiler().compile(template);
+        String asmExpected =
+            "load_str 0, write, new 1, write";
+        String asmResult = code.instrs();
+        assertEquals(asmExpected, asmResult);
+        String stringsExpected = "[hi , foo]";
+        String stringsResult = Arrays.toString(code.strings);
+        assertEquals(stringsExpected, stringsResult);
+    }
+
     @Test public void testProp() throws Exception {
         String template = "hi <a.b>";
         CompiledST code = new Compiler().compile(template);
@@ -61,7 +77,20 @@ public class TestCompiler {
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
-    
+
+    @Test public void testProp2() throws Exception {
+        String template = "<u.id>: <u.name>";
+        CompiledST code = new Compiler().compile(template);
+        String asmExpected =
+            "load_attr 0, load_prop 1, write, load_str 2, write, " +
+            "load_attr 0, load_prop 3, write";
+        String asmResult = code.instrs();
+        assertEquals(asmExpected, asmResult);
+        String stringsExpected = "[u, id, : , name]";
+        String stringsResult = Arrays.toString(code.strings);
+        assertEquals(stringsExpected, stringsResult);
+    }
+
     @Test public void testMap() throws Exception {
         String template = "hi <name:bold>";
         CompiledST code = new Compiler().compile(template);
@@ -76,7 +105,7 @@ public class TestCompiler {
 
     @Test public void testRepeatedMap() throws Exception {
         String template = "hi <name:bold:italics>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new org.stringtemplate.Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
             "write, " +
@@ -101,6 +130,18 @@ public class TestCompiler {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , name, bold, italics]";
+        String stringsResult = Arrays.toString(code.strings);
+        assertEquals(stringsExpected, stringsResult);
+    }
+
+    @Test public void testAnonMap() throws Exception {
+        String template = "hi <name:{n | <n>}>";
+        CompiledST code = new Compiler().compile(template);
+        String asmExpected =
+            "load_str 0, write, load_attr 1, load_str 2, map, write";
+        String asmResult = code.instrs();
+        assertEquals(asmExpected, asmResult);
+        String stringsExpected = "[hi , name, _sub1]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -180,6 +221,67 @@ public class TestCompiler {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[go: , name, hi, foo, user, a user, bye]";
+        String stringsResult = Arrays.toString(code.strings);
+        assertEquals(stringsExpected, stringsResult);
+    }
+    
+    @Test public void testOption() throws Exception {
+        String template = "hi <name; separator=\"x\">";
+        CompiledST code = new Compiler().compile(template);
+        String asmExpected =
+            "load_str 0, write, load_attr 1, options, load_str 2, store_option 3, write_opt";
+        String asmResult = code.instrs();
+        assertEquals(asmExpected, asmResult);
+        String stringsExpected = "[hi , name, x]";
+        String stringsResult = Arrays.toString(code.strings);
+        assertEquals(stringsExpected, stringsResult);
+    }
+
+    @Test public void testOptionAsTemplate() throws Exception {
+        String template = "hi <name; separator={, }>";
+        CompiledST code = new Compiler().compile(template);
+        String asmExpected =
+            "load_str 0, write, load_attr 1, options, new 2, store_option 3, write_opt";
+        String asmResult = code.instrs();
+        assertEquals(asmExpected, asmResult);
+        String stringsExpected = "[hi , name, _sub1]";
+        String stringsResult = Arrays.toString(code.strings);
+        assertEquals(stringsExpected, stringsResult);
+    }
+
+    @Test public void testOptions() throws Exception {
+        String template = "hi <name; anchor, wrap=foo(), separator=\", \">";
+        CompiledST code = new Compiler().compile(template);
+        String asmExpected =
+            "load_str 0, write, load_attr 1, options, load_str 2, " +
+            "store_option 0, new 3, store_option 4, load_str 4, " +
+            "store_option 3, write_opt";
+        String stringsExpected = // the ", , ," is the ", " separator string
+            "[hi , name, true, foo, , ]";
+        String stringsResult = Arrays.toString(code.strings);
+        assertEquals(stringsExpected, stringsResult);
+        String asmResult = code.instrs();
+        assertEquals(asmExpected, asmResult);
+    }
+
+    @Test public void testEmptyList() throws Exception {
+        String template = "<[]>";
+        CompiledST code = new Compiler().compile(template);
+        String asmExpected = "list, write";
+        String asmResult = code.instrs();
+        assertEquals(asmExpected, asmResult);
+        String stringsExpected = "[]";
+        String stringsResult = Arrays.toString(code.strings);
+        assertEquals(stringsExpected, stringsResult);
+    }
+
+    @Test public void testList() throws Exception {
+        String template = "<[a,b]>";
+        CompiledST code = new Compiler().compile(template);
+        String asmExpected = "list, load_attr 0, add, load_attr 1, add, write";
+        String asmResult = code.instrs();
+        assertEquals(asmExpected, asmResult);
+        String stringsExpected = "[a, b]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
