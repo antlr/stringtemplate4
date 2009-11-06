@@ -52,9 +52,9 @@ import java.util.List;
  */
 public class AutoIndentWriter implements STWriter {
 	/** stack of indents; use List as it's much faster than Stack. Grows
-	 *  from 0..n-1.  List<String>
+	 *  from 0..n-1.
 	 */
-	protected List indents = new ArrayList();
+	protected List<String> indents = new ArrayList<String>();
 
 	/** Stack of integer anchors (char positions in line); avoid Integer
 	 *  creation overhead.
