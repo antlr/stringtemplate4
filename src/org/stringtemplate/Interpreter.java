@@ -184,6 +184,15 @@ public class Interpreter {
                 o = operands[sp--];
                 if ( o!=null ) rot_map(self,o,templates);
                 break;
+            case Bytecode.INSTR_PAR_MAP :
+                name = (String)operands[sp--];
+                nmaps = getShort(code, ip);
+                ip += 2;
+                List<Object> exprs = new ArrayList<Object>();
+                for (int i=nmaps-1; i>=0; i--) exprs.add(operands[sp-i]);
+                sp -= nmaps;
+                operands[++sp] = par_map(self,exprs,name);
+                break;
             case Bytecode.INSTR_BR :
                 ip = getShort(code, ip);
                 break;
@@ -394,6 +403,106 @@ public class Interpreter {
         }
     }
 
+    // <names,phones:{n,p | ...}>
+    protected ST.AttributeList par_map(ST self, List<Object> exprs, String template) {
+        if ( exprs==null || template==null || exprs.size()==0 ) {
+            return null; // do not apply if missing templates or empty values
+        }
+        // make everything iterable
+        for (int i = 0; i < exprs.size(); i++) {
+            Object attr = exprs.get(i);
+            if ( attr!=null ) exprs.set(i, convertAnythingToIterator(attr));
+        }
+
+        // ensure arguments line up
+        int numAttributes = exprs.size();
+        CompiledST code = group.lookupTemplate(template);
+        Map formalArguments = code.formalArguments;
+        if ( formalArguments==null || formalArguments.size()==0 ) {
+            group.listener.error("missing formal arguments in anonymous"+
+                       " template in context "+self.getEnclosingInstanceStackString(),null);
+            return null;
+        }
+
+        Object[] formalArgumentNames = formalArguments.keySet().toArray();
+        if ( formalArgumentNames.length != numAttributes ) {
+            group.listener.error("number of arguments "+formalArguments.keySet()+
+                       " mismatch between attribute list and anonymous"+
+                       " template in context "+self.getEnclosingInstanceStackString(),null);
+            // truncate arg list to match smaller size
+            int shorterSize = Math.min(formalArgumentNames.length, numAttributes);
+            numAttributes = shorterSize;
+            Object[] newFormalArgumentNames = new Object[shorterSize];
+            System.arraycopy(formalArgumentNames, 0,
+                             newFormalArgumentNames, 0,
+                             shorterSize);
+            formalArgumentNames = newFormalArgumentNames;
+        }
+
+        // keep walking while at least one attribute has values
+
+        ST.AttributeList results = new ST.AttributeList();
+        int i = 0; // iteration number from 0
+        while ( true ) {
+            // get a value for each attribute in list; put into ST instance
+            int numEmpty = 0;
+            ST embedded = group.getEmbeddedInstanceOf(self, template);
+            embedded.rawSetAttribute("i0", i);
+            embedded.rawSetAttribute("i", i+1);
+            for (int a = 0; a < numAttributes; a++) {
+                Iterator it = (Iterator) exprs.get(a);
+                if ( it!=null && it.hasNext() ) {
+                    String argName = (String)formalArgumentNames[a];
+                    Object iteratedValue = it.next();
+                    embedded.rawSetAttribute(argName, iteratedValue);
+                }
+                else {
+                    numEmpty++;
+                }
+            }
+            if ( numEmpty==numAttributes ) break;
+            results.add(embedded);
+            i++;
+        }
+        return results;
+
+        /*
+        if ( attr instanceof Iterator ) {
+            List<ST> mapped = new ArrayList<ST>();
+            Iterator iter = (Iterator)attr;
+            int i0 = 0;
+            int i = 1;
+            int ti = 0;
+            while ( iter.hasNext() ) {
+                Object iterValue = iter.next();
+                if ( iterValue == null ) continue;
+                int templateIndex = ti % templates.size(); // rotate through
+                ti++;
+                String name = templates.get(templateIndex);
+                ST st = group.getEmbeddedInstanceOf(self, name);
+                for (FormalArgument arg : st.code.formalArguments.values()) {
+                    st.rawSetAttribute(arg.name, iterValue);
+                }
+                st.rawSetAttribute("i0", i0);
+                st.rawSetAttribute("i", i);
+                mapped.add(st);
+                i0++;
+                i++;
+            }
+            operands[++sp] = mapped;
+            //System.out.println("mapped="+mapped);
+        }
+        else { // if only single value, just apply first template to attribute
+            ST st = group.getInstanceOf(templates.get(0));
+            setSoleArgument(st, attr);
+            st.rawSetAttribute("i0", 0);
+            st.rawSetAttribute("i", 1);
+            operands[++sp] = st;
+//            map(self, attr, templates.get(1));
+        }
+        */
+    }
+
     protected void setSoleArgument(ST st, Object attr) {
         if ( st.code.formalArguments!=null ) {
             String arg = st.code.formalArguments.keySet().iterator().next();
@@ -591,6 +700,14 @@ public class Interpreter {
         return iter;
     }
 
+    protected static Iterator convertAnythingToIterator(Object o) {
+        o = convertAnythingIteratableToIterator(o);
+        if ( o instanceof Iterator ) return (Iterator)o;
+        List singleton = new ST.AttributeList(1);
+        singleton.add(o);
+        return singleton.iterator();
+    }
+    
     protected boolean testAttributeTrue(Object a) {
         if ( a==null ) return false;
         if ( a instanceof Boolean ) return ((Boolean)a).booleanValue();

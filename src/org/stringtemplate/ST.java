@@ -186,7 +186,7 @@ public class ST {
         return null;
     }
 
-    protected AttributeList convertToAttributeList(Object curvalue) {
+    protected static AttributeList convertToAttributeList(Object curvalue) {
         AttributeList multi;
         if ( curvalue == null ) {
             multi = new AttributeList(); // make list to hold multiple values

@@ -105,6 +105,7 @@ public class Compiler implements CodeGenerator {
 		}
 		catch (RecognitionException re) {
 			String msg = parser.getErrorMessage(re, parser.getTokenNames());
+            re.printStackTrace(System.err);
 			throw new STRecognitionException(msg, re);
 		}
 

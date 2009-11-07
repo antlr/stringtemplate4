@@ -185,6 +185,37 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
+    @Test public void testParallelMap() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "hi <names,phones:{n,p | <n>:<p>;}>");
+        ST st = group.getInstanceOf("test");
+        st.add("names", "Ter");
+        st.add("names", "Tom");
+        st.add("names", "Sumana");
+        st.add("phones", "x5001");
+        st.add("phones", "x5002");
+        st.add("phones", "x5003");
+        String expected =
+            "hi Ter:x5001;Tom:x5002;Sumana:x5003;";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testParallelMapWith3Versus2Elements() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "hi <names,phones:{n,p | <n>:<p>;}>");
+        ST st = group.getInstanceOf("test");
+        st.add("names", "Ter");
+        st.add("names", "Tom");
+        st.add("names", "Sumana");
+        st.add("phones", "x5001");
+        st.add("phones", "x5002");
+        String expected =
+            "hi Ter:x5001;Tom:x5002;Sumana:;";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
     @Test public void testMapIndexes() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("inc", "<i>:<it>");

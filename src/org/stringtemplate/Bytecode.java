@@ -65,31 +65,32 @@ public class Bytecode {
 	public static final short INSTR_WRITE_OPT       = 13;
     public static final short INSTR_MAP             = 14;  // <a:b()>, <a:b():c()>, <a:{...}>
     public static final short INSTR_ROT_MAP         = 15;  // <a:b(),c()>
-    public static final short INSTR_BR              = 16;
-    public static final short INSTR_BRF             = 17;
-    public static final short INSTR_OPTIONS         = 18;  // push options block
-    public static final short INSTR_LIST            = 19;
-    public static final short INSTR_ADD             = 20;
-    public static final short INSTR_TOSTR           = 21;
+    public static final short INSTR_PAR_MAP         = 16;  // <names,phones:{n,p | ...}>
+    public static final short INSTR_BR              = 17;
+    public static final short INSTR_BRF             = 18;
+    public static final short INSTR_OPTIONS         = 19;  // push options block
+    public static final short INSTR_LIST            = 20;
+    public static final short INSTR_ADD             = 21;
+    public static final short INSTR_TOSTR           = 22;
     // Predefined functions
-    public static final short INSTR_NOOP            = 22; // do nothing
-    public static final short INSTR_FIRST           = 23;
-    public static final short INSTR_LAST            = 24;
-    public static final short INSTR_REST            = 25;
-    public static final short INSTR_TRUNC           = 26;
-    public static final short INSTR_STRIP           = 27;
-    public static final short INSTR_TRIM            = 28;
-    public static final short INSTR_LENGTH          = 29;
-    public static final short INSTR_STRLEN          = 30;
-    public static final short INSTR_REVERSE         = 31;
+    public static final short INSTR_NOOP            = 23; // do nothing
+    public static final short INSTR_FIRST           = 24;
+    public static final short INSTR_LAST            = 25;
+    public static final short INSTR_REST            = 26;
+    public static final short INSTR_TRUNC           = 27;
+    public static final short INSTR_STRIP           = 28;
+    public static final short INSTR_TRIM            = 29;
+    public static final short INSTR_LENGTH          = 30;
+    public static final short INSTR_STRLEN          = 31;
+    public static final short INSTR_REVERSE         = 32;
 
-	public static final short INSTR_NOT             = 32;
-	public static final short INSTR_OR              = 33;
-	public static final short INSTR_AND             = 34;
+	public static final short INSTR_NOT             = 33;
+	public static final short INSTR_OR              = 34;
+	public static final short INSTR_AND             = 35;
 
-	public static final short INSTR_INDENT          = 35;
-    public static final short INSTR_DEDENT          = 36;
-    public static final short INSTR_NEWLINE         = 37;
+	public static final short INSTR_INDENT          = 36;
+    public static final short INSTR_DEDENT          = 37;
+    public static final short INSTR_NEWLINE         = 38;
 
     /** Used for assembly/disassembly; describes instruction set */
     // START: instr
@@ -110,6 +111,7 @@ public class Bytecode {
 		new Instruction("write_opt"),
         new Instruction("map"),
         new Instruction("rot_map", INT),
+        new Instruction("par_map", INT),
         new Instruction("br", ADDR),
         new Instruction("brf", ADDR),
         new Instruction("options"),

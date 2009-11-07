@@ -307,11 +307,12 @@ exprNoComma
 expr : mapExpr ;
 
 mapExpr
-@init {int n=1;}
-	:	memberExpr
+@init {int nt=1, ne=1;}
+	:	memberExpr (c=',' memberExpr {ne++;} )*
 		(	':' templateRef
-			(	(',' templateRef {n++;})+  {gen.emit(Bytecode.INSTR_ROT_MAP, n);}
-			|						    {gen.emit(Bytecode.INSTR_MAP);}
+			(	(',' templateRef {nt++;})+  {gen.emit(Bytecode.INSTR_ROT_MAP, nt);}
+			|	{if ( $c!=null ) gen.emit(Bytecode.INSTR_PAR_MAP, ne);
+				 else gen.emit(Bytecode.INSTR_MAP);}
 			)
 		)*
 	;
