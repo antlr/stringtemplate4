@@ -42,16 +42,16 @@ public class ST {
 
     public static final ST BLANK = new BlankST();
 
-    /** The group that was asked to create this instance.  This is
-     *  fixed once we call toString() on an ST.  I wish we could leave
-     *  this field out but people won't want to specify group to toString().
+    /** The group that holds this ST definition.  We use it to initiate
+     *  interpretation via ST.toString().  From there, it becomes group field
+     *  in interpreter and is fixed until rendering completes.
      */
-    public STGroup group = STGroup.defaultGroup;
+    //public STGroup nativeGroup = STGroup.defaultGroup;
     
     /** Map an attribute name to its value(s). */
     Map<String,Object> attributes;
 
-	public static class AddEvent {
+    public static class AddEvent {
 		String name;
 		Object value;
 		Throwable source;
@@ -89,7 +89,7 @@ public class ST {
     public ST() {;}
     
     public ST(String template) {
-        code = group.defineTemplate(UNKNOWN_NAME, template);
+        code = STGroup.defaultGroup.defineTemplate(UNKNOWN_NAME, template);
 /*
         try {
             code = group.defineTemplate(UNKNOWN_NAME, template);
@@ -101,13 +101,8 @@ public class ST {
          */
     }
 
-    public ST(STGroup group, String template) {
-        code = group.defineTemplate(UNKNOWN_NAME, template);
-    }
-
-    // TODO: who uses this?
-    public ST(String template, char delimiterStartChar, char delimiterStopChar) {
-        code = group.defineTemplate(UNKNOWN_NAME, template);
+    public ST(STGroup nativeGroup, String template) {
+        code = nativeGroup.defineTemplate(UNKNOWN_NAME, template);
     }
 
     public void add(String name, Object value) {
@@ -116,7 +111,7 @@ public class ST {
             throw new IllegalArgumentException("cannot have '.' in attribute names");
         }
 
-		if ( group.detects(ErrorTolerance.DETECT_ADD_ATTR) ) {
+		if ( code.nativeGroup.detects(ErrorTolerance.DETECT_ADD_ATTR) ) {
 			if ( addEvents == null ) addEvents = new ArrayList<AddEvent>();
 			addEvents.add(new AddEvent(name, value));
 		}
@@ -181,7 +176,7 @@ public class ST {
         }
         if ( code.formalArguments==null || code.formalArguments.get(name)==null ) {
             // if not hidden by formal args, return any dictionary
-            return group.dictionaries.get(name);
+            return code.nativeGroup.dictionaries.get(name);
         }
         return null;
     }
@@ -190,7 +185,7 @@ public class ST {
         AttributeList multi;
         if ( curvalue == null ) {
             multi = new AttributeList(); // make list to hold multiple values
-            multi.add(curvalue);         // add previous single-valued attribute            
+            multi.add(curvalue);         // add previous single-valued attribute
         }
         else if ( curvalue.getClass() == AttributeList.class ) { // already a list made by ST
             multi = (AttributeList)curvalue;
@@ -232,7 +227,7 @@ public class ST {
     }    
 
     public int write(STWriter out) throws IOException {
-        Interpreter interp = new Interpreter(group);
+        Interpreter interp = new Interpreter(code.nativeGroup);
         return interp.exec(out, this);
     }
 

@@ -43,6 +43,12 @@ public class CompiledST {
 
     List<CompiledST> compiledSubtemplates;
 
+    /** The group that holds this ST definition.  We use it to initiate
+     *  interpretation via ST.toString().  From there, it becomes field 'group'
+     *  in interpreter and is fixed until rendering completes.
+     */
+    public STGroup nativeGroup = STGroup.defaultGroup;    
+
     public String[] strings;
     public byte[] instrs;        // byte-addressable code memory.
     public int codeSize;

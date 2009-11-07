@@ -110,10 +110,12 @@ protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet f
     public String popIFIndentation() { return IFindents.remove(IFindents.size()-1); }
 
     public void indent(String indent) {
+/*
         if ( IFindents.size()>0 ) {
     	    String ifIndent = IFindents.get(IFindents.size()-1);
     	    if ( indent.startsWith(ifIndent) ) indent = indent.substring(ifIndent.length());
         }
+        */
     	gen.emit(Bytecode.INSTR_INDENT, indent);
     }
 }
@@ -146,13 +148,10 @@ template
 	;
 
 text
-	:	(	{input.LA(2)==RCURLY}? t=TEXT
-			{$t.setText(Misc.trimRight($t.text));}
-		|	t=TEXT
-		)
+	:	TEXT
 		{
-		if ( $t.text.length()>0 ) {
-			gen.emit(Bytecode.INSTR_LOAD_STR, $t.text);
+		if ( $TEXT.text.length()>0 ) {
+			gen.emit(Bytecode.INSTR_LOAD_STR, $TEXT.text);
 			gen.emit(Bytecode.INSTR_WRITE);
 		}
 		}

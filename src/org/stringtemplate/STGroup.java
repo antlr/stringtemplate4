@@ -86,10 +86,13 @@ public class STGroup {
 
 	public STGroup() { ; }
 
-    public STGroup(String groupFileOrDir) {
-        File f = new File(groupFileOrDir);
-        if ( f.isDirectory() ) dirName = groupFileOrDir;
-        else fileName = groupFileOrDir;
+    public STGroup(String groupNameOrFileOrDir) {
+        File f = new File(groupNameOrFileOrDir);
+        if ( f.isDirectory() ) dirName = groupNameOrFileOrDir;
+        else if ( groupNameOrFileOrDir.endsWith(".stg") ) {
+            fileName = groupNameOrFileOrDir;
+        }
+        else name = groupNameOrFileOrDir;
     }
 
     public void load() {
@@ -119,7 +122,7 @@ public class STGroup {
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
             ST instanceST = createStringTemplate();
-            instanceST.group = this;
+            //instanceST.group = this;  leave it as nativeGroup
             instanceST.name = name;
             instanceST.code = c;
             return instanceST;
@@ -176,10 +179,11 @@ public class STGroup {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
         Compiler c = new Compiler();
-		template = Misc.trimOneNewline(template);
+		//template = Misc.trimOneStartingWS(template);
 		CompiledST code = c.compile(template);
         code.name = name;
         code.formalArguments = args;
+        code.nativeGroup = this;
         templates.put(name, code);
         if ( args!=null ) { // compile any default args
             for (String a : args.keySet()) {

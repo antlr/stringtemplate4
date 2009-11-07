@@ -97,6 +97,9 @@ templateDef
 	    )
 	    {
 	    template = Misc.strip(template, n);
+   		if ( templateToken.getType()==BIGSTRING ) {
+   			template = Misc.trimOneStartingWS(template);
+   		}
 	    try {
 		    group.defineTemplate($name.text, $formalArgs.args, template);
 		}

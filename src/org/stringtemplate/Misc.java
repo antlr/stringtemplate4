@@ -40,7 +40,7 @@ public class Misc {
         return s.substring(n, s.length()-n);
     }
 
-    public static String trimOneNewline(String s) {
+    public static String trimOneStartingWS(String s) {
         // strip newline from front and back, but just one
         if ( s.startsWith("\r\n") ) s = s.substring(2);
         else if ( s.startsWith("\n") ) s = s.substring(1);
@@ -49,6 +49,7 @@ public class Misc {
         return s;
     }
 
+    /*
     public static String trimRight(String s) {
         if ( s==null || s.length()==0 ) return s;
         int i = s.length()-1;
@@ -57,4 +58,5 @@ public class Misc {
         }
         return s.substring(0,i+1);
     }
+    */
 }

@@ -9,12 +9,51 @@ import org.stringtemplate.STErrorListener;
 public class TestWhitespace extends BaseTest {
     @Test public void testTrimmedSubtemplates() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "<names:{n |    <n> }>!");
+        group.defineTemplate("test", "<names:{n | <n>}>!");
         ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
         st.add("names", "Sumana");
         String expected = "TerTomSumana!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testTrimJustOneWSInSubtemplates() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "<names:{n |  <n> }>!");
+        ST st = group.getInstanceOf("test");
+        st.add("names", "Ter");
+        st.add("names", "Tom");
+        st.add("names", "Sumana");
+        String expected = " Ter  Tom  Sumana !";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testTrimNewlineInSubtemplates() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "<names:{n |\n" +
+                                     "<n>}>!");
+        ST st = group.getInstanceOf("test");
+        st.add("names", "Ter");
+        st.add("names", "Tom");
+        st.add("names", "Sumana");
+        String expected = "TerTomSumana!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testLeaveNewlineOnEndInSubtemplates() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "<names:{n |\n" +
+                                     "<n>\n" +
+                                     "}>!");
+        ST st = group.getInstanceOf("test");
+        st.add("names", "Ter");
+        st.add("names", "Tom");
+        st.add("names", "Sumana");
+        String expected = "Ter\nTom\nSumana\n!";
         String result = st.render();
         assertEquals(expected, result);
     }
@@ -27,7 +66,7 @@ public class TestWhitespace extends BaseTest {
         ST t = new ST(group,
             "<users>\n" +
             "end\n");
-        String expecting="end";
+        String expecting="end\n";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -41,7 +80,7 @@ public class TestWhitespace extends BaseTest {
             "begin\n" +
             "    \n" +
             "end\n");
-        String expecting="begin\n\nend";
+        String expecting="begin\n\nend\n";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -57,7 +96,7 @@ public class TestWhitespace extends BaseTest {
             "<users>\n"+
             "<users>\n"+
             "end\n");
-        String expecting="begin\nend";
+        String expecting="begin\nend\n";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -73,7 +112,7 @@ public class TestWhitespace extends BaseTest {
             "	<users>\n"+
             "	<users>\n"+
             "end\n");
-        String expecting="begin\nend";
+        String expecting="begin\nend\n";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -88,7 +127,7 @@ public class TestWhitespace extends BaseTest {
             "  <name>\n"+
             "	<users><users>\n"+
             "end\n");
-        String expecting="begin\nend";
+        String expecting="begin\nend\n";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -102,7 +141,7 @@ public class TestWhitespace extends BaseTest {
             "begin\n"+
             "<if(x)><endif>\n"+
             "end\n");
-        String expecting="begin\nend";
+        String expecting="begin\nend\n";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -116,7 +155,7 @@ public class TestWhitespace extends BaseTest {
             "begin\n"+
             "    <if(x)><endif>\n"+
             "end\n");
-        String expecting="begin\nend";
+        String expecting="begin\nend\n";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -130,7 +169,7 @@ public class TestWhitespace extends BaseTest {
             "begin\n"+
             "<if(users)><else><endif>\n"+
             "end\n");
-        String expecting="begin\nend";
+        String expecting="begin\nend\n";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -148,7 +187,7 @@ public class TestWhitespace extends BaseTest {
             "bar\n" +
             "<endif>\n"+
             "end\n");
-        String expecting="begin\nbar\nend";
+        String expecting="begin\nbar\nend\n";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -169,7 +208,7 @@ public class TestWhitespace extends BaseTest {
             "<endif>\n"+
             "end\n");
         t.add("x", "x");
-        String expecting="begin\nbar\nend";
+        String expecting="begin\nbar\nend\n";
         String result = t.render();
         assertEquals(expecting, result);
     }

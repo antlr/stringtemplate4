@@ -166,8 +166,8 @@ public class STLexer implements TokenSource {
 				case '=' : consume(); return newToken(EQUALS);
 				case '!' : consume(); return newToken(BANG);
                 case '"' : return mSTRING();
-				case '&' : consume(); match('&'); return newToken(AND);
-				case '|' : consume(); match('|'); return newToken(OR);
+                case '&' : consume(); match('&'); return newToken(AND); // &&
+                case '|' : consume(); match('|'); return newToken(OR); // ||
 				case '{' : return subTemplate();
 				default:
 					if ( c==delimiterStopChar ) {
@@ -218,7 +218,7 @@ public class STLexer implements TokenSource {
         if ( c=='|' ) {
 			consume();
             argTokens.add( newSingleCharToken(PIPE) );
-			WS(); // ignore any whitespace after |
+            if ( isWS(c) ) consume(); // ignore a single whitespace after |
             //System.out.println("matched args: "+argTokens);
             for (Token t : argTokens) emit(t);
 			input.release(m);

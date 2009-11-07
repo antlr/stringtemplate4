@@ -96,7 +96,6 @@ public class TestIndentation extends BaseTest {
 		STErrorListener errors = new ErrorBuffer();
 		group.setErrorListener(errors);
 		ST t = group.getInstanceOf("list");
-		t.code.dump();
 		t.add("names", "Terence");
 		t.add("names", "Jim");
 		t.add("names", "Sriram");
@@ -165,11 +164,11 @@ public class TestIndentation extends BaseTest {
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
-            "begin\n"+
-            "    <if(x)>foo<endif>\n"+
-            "end\n");
+            "begin"+newline+
+            "    <if(x)>foo<endif>"+newline+
+            "end"+newline);
         t.add("x", "x");
-        String expecting="begin\n    foo\nend";
+        String expecting="begin"+newline+"    foo"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -180,15 +179,14 @@ public class TestIndentation extends BaseTest {
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
-            "begin\n"+
-            "   <if(x)>\n" +
-            "   foo\n" +
-            "   <else>\n" +
-            "   bar\n" +
-            "   <endif>\n"+
-            "end\n");
-        t.code.dump();
-        String expecting="begin\nbar\nend";
+            "begin"+newline+
+            "   <if(x)>"+newline+
+            "   foo"+newline+
+            "   <else>"+newline+
+            "   bar"+newline+
+            "   <endif>"+newline+
+            "end"+newline);
+        String expecting="begin"+newline+"   bar"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -199,15 +197,15 @@ public class TestIndentation extends BaseTest {
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
-            "begin\n"+
-            "   <if(x)>\n" +
-            "   <x>\n" +
-            "   <else>\n" +
-            "   <y>\n" +
-            "   <endif>\n"+
-            "end\n");
+            "begin"+newline+
+            "   <if(x)>"+newline+
+            "   <x>"+newline+
+            "   <else>"+newline+
+            "   <y>"+newline+
+            "   <endif>"+newline+
+            "end"+newline);
         t.add("y", "y");
-        String expecting="begin\ny\nend";
+        String expecting="begin"+newline+"   y"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -218,15 +216,15 @@ public class TestIndentation extends BaseTest {
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
-            "begin\n"+
-            "   <if(x)>\n" +
-            "     <x>\n" +
-            "   <else>\n" +
-            "     <y>\n" +
-            "   <endif>\n"+
-            "end\n");
+            "begin"+newline+
+            "   <if(x)>"+newline+
+            "     <x>"+newline+
+            "   <else>"+newline+
+            "     <y>"+newline+
+            "   <endif>"+newline+
+            "end"+newline);
         t.add("y", "y");
-        String expecting="begin\n  y\nend";
+        String expecting="begin"+newline+"     y"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -237,22 +235,41 @@ public class TestIndentation extends BaseTest {
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
-            "begin\n"+
-            "   <if(x)>\n" +
-            "      <if(y)>\n" +
-            "      foo\n" +
-            "      <endif>\n" +
-            "   <else>\n" +
-            "      <if(z)>\n" +
-            "      foo\n" +
-            "      <endif>\n" +
-            "   <endif>\n"+
-            "end\n");
+            "begin"+newline+
+            "   <if(x)>"+newline+
+            "      <if(y)>"+newline+
+            "      foo"+newline+
+            "      <endif>"+newline+
+            "   <else>"+newline+
+            "      <if(z)>"+newline+
+            "      foo"+newline+
+            "      <endif>"+newline+
+            "   <endif>"+newline+
+            "end"+newline);
         t.add("x", "x");
         t.add("y", "y");
-        t.code.dump();
-        String expecting="begin\nfoo\nend"; // no indent
+        String expecting="begin"+newline+"      foo"+newline+"end"+newline; // no indent
         String result = t.render();
         assertEquals(expecting, result);
     }
+
+    @Test public void testIFInSubtemplate() throws Exception {
+        STGroup group = new STGroup("test");
+        STErrorListener errors = new ErrorBuffer();
+        group.setErrorListener(errors);
+        ST t = new ST(group,
+            "<names:{n |"+newline+
+            "   <if(x)>"+newline+
+            "   <x>"+newline+
+            "   <else>"+newline+
+            "   <y>"+newline+
+            "   <endif>"+newline+
+            "}>"+newline);
+        t.add("names", "Ter");
+        t.add("y", "y");
+        String expecting="   y"+newline+newline;
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
+
 }
