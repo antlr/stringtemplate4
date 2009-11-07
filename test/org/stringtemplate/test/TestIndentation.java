@@ -187,7 +187,8 @@ public class TestIndentation extends BaseTest {
             "   bar\n" +
             "   <endif>\n"+
             "end\n");
-        String expecting="begin\n   bar\nend";
+        t.code.dump();
+        String expecting="begin\nbar\nend";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -206,7 +207,7 @@ public class TestIndentation extends BaseTest {
             "   <endif>\n"+
             "end\n");
         t.add("y", "y");
-        String expecting="begin\n   y\nend";
+        String expecting="begin\ny\nend";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -225,7 +226,7 @@ public class TestIndentation extends BaseTest {
             "   <endif>\n"+
             "end\n");
         t.add("y", "y");
-        String expecting="begin\n     y\nend";
+        String expecting="begin\n  y\nend";
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -249,7 +250,8 @@ public class TestIndentation extends BaseTest {
             "end\n");
         t.add("x", "x");
         t.add("y", "y");
-        String expecting="begin\n      foo\nend"; // double indent
+        t.code.dump();
+        String expecting="begin\nfoo\nend"; // no indent
         String result = t.render();
         assertEquals(expecting, result);
     }

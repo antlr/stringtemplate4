@@ -36,6 +36,7 @@ options {
 @header { package org.stringtemplate; }
 
 @members {
+List<String> IFindents = new ArrayList<String>();
 CodeGenerator gen = new CodeGenerator() {
 	public void emit(short opcode) {;}
 	public void emit(short opcode, int arg) {;}
@@ -103,6 +104,18 @@ protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet f
             gen.emit(funcBytecode);
         }
     }
+    
+    public void pushIFIndentation(String indent) { IFindents.add(indent); }
+
+    public String popIFIndentation() { return IFindents.remove(IFindents.size()-1); }
+
+    public void indent(String indent) {
+        if ( IFindents.size()>0 ) {
+    	    String ifIndent = IFindents.get(IFindents.size()-1);
+    	    if ( indent.startsWith(ifIndent) ) indent = indent.substring(ifIndent.length());
+        }
+    	gen.emit(Bytecode.INSTR_INDENT, indent);
+    }
 }
 
 @rulecatch {
@@ -115,16 +128,17 @@ templateAndEOF
 
 template
 	:	(	options {backtrack=true; k=2;}
-		:	i=INDENT         {gen.emit(Bytecode.INSTR_INDENT, $i.text);}
+		:	i=INDENT         {indent($i.text);}
 			ifOnOneLine      {gen.emit(Bytecode.INSTR_DEDENT);}
-		|	INDENT? ifOnMultiLines
-		|	i=INDENT         {gen.emit(Bytecode.INSTR_INDENT, $i.text);}
+		|	i=INDENT {pushIFIndentation($i.text);} ifOnMultiLines {popIFIndentation();}
+		|	ifOnMultiLines
+		|	i=INDENT       	 {indent($i.text);}
 			exprTag          {gen.emit(Bytecode.INSTR_DEDENT);}
 		|	exprTag
-		|	i=INDENT         {gen.emit(Bytecode.INSTR_INDENT, $i.text);}
+		|	i=INDENT         {indent($i.text);}
 			text             {gen.emit(Bytecode.INSTR_DEDENT);}
 		|	text
-		|	i=INDENT         {gen.emit(Bytecode.INSTR_INDENT, $i.text);}
+		|	i=INDENT         {indent($i.text);}
 		 	NEWLINE          {gen.emit(Bytecode.INSTR_NEWLINE);} 
 		 	                 {gen.emit(Bytecode.INSTR_DEDENT);}
 		|	NEWLINE          {gen.emit(Bytecode.INSTR_NEWLINE);}
