@@ -123,15 +123,18 @@ public class BytecodeDisassembler {
         StringBuffer buf = new StringBuffer();
         buf.append("#");
         buf.append(poolIndex);
-		String s = "<bad string index>";
-		if ( poolIndex<strings.length ) {
-			s = strings[poolIndex].toString();
-			if ( strings[poolIndex] instanceof String ) {
-				s = s.replaceAll("\n", "\\\\n");
-				s = s.replaceAll("\r", "\\\\r");
-				s = s.replaceAll("\t", "\\\\t");
-				s='"'+s+'"';
-			}
+        String s = "<bad string index>";
+        if ( poolIndex<strings.length ) {
+            if ( strings[poolIndex]==null ) s = "null";
+            else {
+                s = strings[poolIndex].toString();
+                if ( strings[poolIndex] instanceof String ) {
+                    s = s.replaceAll("\n", "\\\\n");
+                    s = s.replaceAll("\r", "\\\\r");
+                    s = s.replaceAll("\t", "\\\\t");
+                    s='"'+s+'"';
+                }
+            }
 		}
         buf.append(":");
         buf.append(s);

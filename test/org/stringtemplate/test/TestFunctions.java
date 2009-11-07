@@ -281,7 +281,6 @@ public class TestFunctions extends BaseTest {
 				"<first(maps):{ m | <m>!}>"
 			);
         e.code.dump();
-        e.group.getInstanceOf("_sub1").code.dump();
 		final Map m1 = new HashMap();
 		final Map m2 = new HashMap();
 		m1.put("Ter", "x5707");

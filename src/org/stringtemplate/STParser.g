@@ -36,8 +36,6 @@ options {
 @header { package org.stringtemplate; }
 
 @members {
-int ifLevel = 0;
-List<String> IFindents = new ArrayList<String>();
 CodeGenerator gen = new CodeGenerator() {
 	public void emit(short opcode) {;}
 	public void emit(short opcode, int arg) {;}
@@ -59,26 +57,6 @@ public STParser(TokenStream input, RecognizerSharedState state, CodeGenerator ge
 	this.state = state;
     if ( gen!=null ) this.gen = gen;
 }
-
-public void pushIFIndentation(String indent) {
-    StringBuilder buf = new StringBuilder();
-	for (String ind : IFindents) { buf.append(ind); }
-	String ifIndent = buf.toString();
-    if ( indent.startsWith(ifIndent) ) indent = indent.substring(ifIndent.length());
-    IFindents.add(indent);
-    gen.emit(Bytecode.INSTR_INDENT, indent);
-}
-
-public String popIFIndentation() { return IFindents.remove(IFindents.size()-1); }
-
-public void indent(String indent) {
-    StringBuilder buf = new StringBuilder();
-	for (String ind : IFindents) { buf.append(ind); }
-	String ifIndent = buf.toString();
-	if ( indent.startsWith(ifIndent) ) indent = indent.substring(ifIndent.length());
-	gen.emit(Bytecode.INSTR_INDENT, indent);
-}
-
 protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
 	throws RecognitionException
 {
@@ -136,20 +114,20 @@ templateAndEOF
 	;
 
 template
-	:	(	i=INDENT
-			{
-			pushIFIndentation($i.text);
-			}
-			ifstat                                   {gen.emit(Bytecode.INSTR_DEDENT);}
-			{popIFIndentation();}
-		|	ifstat
-		|	i=INDENT {indent($i.getText());} exprTag {gen.emit(Bytecode.INSTR_DEDENT);}
+	:	(	options {backtrack=true; k=2;}
+		:	i=INDENT         {gen.emit(Bytecode.INSTR_INDENT, $i.text);}
+			ifOnOneLine      {gen.emit(Bytecode.INSTR_DEDENT);}
+		|	INDENT? ifOnMultiLines
+		|	i=INDENT         {gen.emit(Bytecode.INSTR_INDENT, $i.text);}
+			exprTag          {gen.emit(Bytecode.INSTR_DEDENT);}
 		|	exprTag
-		|	i=INDENT {indent($i.getText());} text    {gen.emit(Bytecode.INSTR_DEDENT);}
+		|	i=INDENT         {gen.emit(Bytecode.INSTR_INDENT, $i.text);}
+			text             {gen.emit(Bytecode.INSTR_DEDENT);}
 		|	text
-		|	i=INDENT {indent($i.getText());} NEWLINE 
-			{gen.emit(Bytecode.INSTR_NEWLINE);}      {gen.emit(Bytecode.INSTR_DEDENT);}
-		|	NEWLINE {gen.emit(Bytecode.INSTR_NEWLINE);}
+		|	i=INDENT         {gen.emit(Bytecode.INSTR_INDENT, $i.text);}
+		 	NEWLINE          {gen.emit(Bytecode.INSTR_NEWLINE);} 
+		 	                 {gen.emit(Bytecode.INSTR_DEDENT);}
+		|	NEWLINE          {gen.emit(Bytecode.INSTR_NEWLINE);}
 		)*
 	;
 
@@ -189,7 +167,7 @@ subtemplate returns [String name]
  */
 addRcurlyToFollowOfTemplateRule : template '}' ;
 
-ifstat
+ifOnMultiLines
 @init {
     /** Tracks address of branch operand (in code block).  It's how
      *  we backpatch forward references when generating code for IFs.
@@ -199,16 +177,14 @@ ifstat
      *  We need to update them once we see the endif.
      */
     List<Integer> endRefs = new ArrayList<Integer>();
-    ifLevel++;
 }
-@after { ifLevel--; }
-	:	LDELIM i='if' '(' conditional ')' RDELIM
+	:	LDELIM 'if' '(' conditional ')' RDELIM
 		{
         prevBranchOperand = gen.address()+1;
         gen.emit(Bytecode.INSTR_BRF, -1); // write placeholder as branch target
 		}
 		template
-		(	INDENT? LDELIM i='elseif'
+		(	INDENT? LDELIM 'elseif'
 			{
 			endRefs.add(gen.address()+1);
 			gen.emit(Bytecode.INSTR_BR, -1); // br end
@@ -234,13 +210,71 @@ ifstat
 			template
 		)?
 		INDENT? endif=LDELIM 'endif' RDELIM
-		( {$endif.pos==0}? NEWLINE )? // kill \on for <endif> on line by itself
+		( {true}? NEWLINE )? // kill \on for <endif> on line by itself
 		{
 		if ( prevBranchOperand>=0 ) {
 			gen.write(prevBranchOperand, (short)gen.address());
 		}
         for (int opnd : endRefs) gen.write(opnd, (short)gen.address());
 		}
+	;
+
+// TODO: code dup but need to call elementsForIfOnOneLine not template inside :(
+ifOnOneLine
+@init {
+    /** Tracks address of branch operand (in code block).  It's how
+     *  we backpatch forward references when generating code for IFs.
+     */
+    int prevBranchOperand = -1;
+    /** Branch instruction operands that are forward refs to end of IF.
+     *  We need to update them once we see the endif.
+     */
+    List<Integer> endRefs = new ArrayList<Integer>();
+}
+	:	LDELIM 'if' '(' conditional ')' RDELIM
+		{
+        prevBranchOperand = gen.address()+1;
+        gen.emit(Bytecode.INSTR_BRF, -1); // write placeholder as branch target
+		}
+		elementsForIfOnOneLine*
+		(	LDELIM 'elseif'
+			{
+			endRefs.add(gen.address()+1);
+			gen.emit(Bytecode.INSTR_BR, -1); // br end
+			// update previous branch instruction
+			gen.write(prevBranchOperand, (short)gen.address());
+			prevBranchOperand = -1;
+			}
+			'(' conditional ')' RDELIM
+			{
+        	prevBranchOperand = gen.address()+1;
+        	gen.emit(Bytecode.INSTR_BRF, -1); // write placeholder as branch target
+			}
+			elementsForIfOnOneLine*
+		)*
+		(	LDELIM 'else' RDELIM
+			{
+			endRefs.add(gen.address()+1);
+			gen.emit(Bytecode.INSTR_BR, -1); // br end
+			// update previous branch instruction
+			gen.write(prevBranchOperand, (short)gen.address());
+			prevBranchOperand = -1;
+			}
+			elementsForIfOnOneLine*
+		)?
+		endif=LDELIM 'endif' RDELIM
+		{
+		if ( prevBranchOperand>=0 ) {
+			gen.write(prevBranchOperand, (short)gen.address());
+		}
+        for (int opnd : endRefs) gen.write(opnd, (short)gen.address());
+		}
+	;
+		
+elementsForIfOnOneLine
+	:	exprTag
+	|	text
+	|	ifOnOneLine
 	;
 	
 conditional
