@@ -12,7 +12,6 @@ import java.util.HashMap;
 public class TestDictionaries extends BaseTest {
     @Test public void testDict() throws Exception {
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
@@ -28,7 +27,6 @@ public class TestDictionaries extends BaseTest {
 
     @Test public void testDictValuesAreTemplates() throws Exception {
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"int\":{0<w>}, \"float\":{0.0<w>}] "+newline+
                 "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
@@ -46,7 +44,6 @@ public class TestDictionaries extends BaseTest {
     @Test public void testDictKeyLookupViaTemplate() throws Exception {
         // Make sure we try rendering stuff to string if not found as regular object
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"int\":{0<w>}, \"float\":{0.0<w>}] "+newline+
                 "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
@@ -64,7 +61,6 @@ public class TestDictionaries extends BaseTest {
     @Test public void testDictKeyLookupAsNonToStringableObject() throws Exception {
         // Make sure we try rendering stuff to string if not found as regular object
         String templates =
-                "group test;" +newline+
                 "foo(m,k) ::= \"<m.(k)>\""+newline
                 ;
         Misc.writeFile(tmpdir, "test.stg", templates);
@@ -83,7 +79,6 @@ public class TestDictionaries extends BaseTest {
 
     @Test public void testDictMissingDefaultValueIsEmpty() throws Exception {
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
@@ -100,7 +95,6 @@ public class TestDictionaries extends BaseTest {
 
     @Test public void testDictHiddenByFormalArg() throws Exception {
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "var(typeInit,type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
@@ -116,7 +110,6 @@ public class TestDictionaries extends BaseTest {
 
     @Test public void testDictEmptyValueAndAngleBracketStrings() throws Exception {
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"int\":\"0\", \"float\":, \"double\":<<0.0L>>] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
@@ -132,7 +125,6 @@ public class TestDictionaries extends BaseTest {
 
     @Test public void testDictDefaultValue() throws Exception {
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"int\":\"0\", default:\"null\"] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
@@ -148,7 +140,6 @@ public class TestDictionaries extends BaseTest {
 
     @Test public void testDictEmptyDefaultValue() throws Exception {
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"int\":\"0\", default:] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
@@ -164,7 +155,6 @@ public class TestDictionaries extends BaseTest {
 
     @Test public void testDictDefaultValueIsKey() throws Exception {
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"int\":\"0\", default:key] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
@@ -180,12 +170,9 @@ public class TestDictionaries extends BaseTest {
 
     /**
      * Test that a map can have only the default entry.
-     * <p>
-     * Bug ref: JIRA bug ST-15 (Fixed)
      */
     @Test public void testDictDefaultStringAsKey() throws Exception {
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"default\":\"foo\"] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
@@ -201,12 +188,9 @@ public class TestDictionaries extends BaseTest {
     
     /**
      * Test that a map can return a <b>string</b> with the word: default.
-     * <p>
-     * Bug ref: JIRA bug ST-15 (Fixed)
      */
     @Test public void testDictDefaultIsDefaultString() throws Exception {
         String templates =
-                "group test;" +newline+
                 "map ::= [default: \"default\"] "+newline+
                 "t() ::= << <map.(\"1\")> >>"+newline                
                 ;
@@ -220,7 +204,6 @@ public class TestDictionaries extends BaseTest {
 
     @Test public void testDictViaEnclosingTemplates() throws Exception {
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "intermediate(type,name) ::= \"<var(...)>\""+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -237,7 +220,6 @@ public class TestDictionaries extends BaseTest {
 
     @Test public void testDictViaEnclosingTemplates2() throws Exception {
         String templates =
-                "group test;" +newline+
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "intermediate(stuff) ::= \"<stuff>\""+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline

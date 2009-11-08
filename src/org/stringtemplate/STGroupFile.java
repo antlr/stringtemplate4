@@ -3,6 +3,8 @@ package org.stringtemplate;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 
+import java.io.File;
+
 public class STGroupFile extends STGroup {
     public String fileName = null;
 
@@ -10,9 +12,10 @@ public class STGroupFile extends STGroup {
         if ( !fileName.endsWith(".stg") ) {
             throw new IllegalArgumentException("Group file names must end in .stg: "+fileName);
         }
-        this.name = fileName.substring(0,fileName.lastIndexOf('.'));
         this.fileName = fileName;
     }
+
+    public String getName() { return new File(fileName).getName(); }
 
     public void load() {
         if ( alreadyLoaded ) return;

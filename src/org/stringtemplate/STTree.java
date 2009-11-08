@@ -12,4 +12,8 @@ package org.stringtemplate;
  *  TODO: how does this work with inheritance?  maybe think of just looking for templates in list of dirs/groupfiles?
  */
 public class STTree {
+    STGroup root;
+    String rootDir;
+
+    public STTree(String rootDir) { this.rootDir = rootDir; }
 }

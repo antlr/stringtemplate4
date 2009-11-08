@@ -58,7 +58,7 @@ public class STGroup {
         };
 
     /** What is the group name */
-    public String name;
+    //public String name; WHY name?
 
     public String supergroup;
 
@@ -91,9 +91,11 @@ public class STGroup {
 
     public STGroup() { ; }
 
+    /*
     public STGroup(String name) {
         this.name = name;
     }
+    */
 
     // TODO: for dirs, should this load everything in dir and below?
     public void load() { } // nothing to do unless it's a group file
@@ -204,15 +206,15 @@ public class STGroup {
         return st;
     }
 
+    public String getName() { return "<no name>;"; }
+
     public String toString() {
         return show();
     }
 
     public String show() {
         StringBuilder buf = new StringBuilder();
-        buf.append("group "+name);
         if ( supergroup!=null ) buf.append(" : "+supergroup);
-        buf.append(";"+Misc.newline);
         for (String name : templates.keySet()) {
 			if ( name.startsWith("_") ) continue;
             CompiledST c = templates.get(name);

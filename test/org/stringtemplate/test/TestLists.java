@@ -108,7 +108,6 @@ public class TestLists extends BaseTest {
 
     @Test public void testListAsTemplateArgument() throws Exception {
 		String templates =
-				"group test;" +newline+
 				"test(names,phones) ::= \"<foo([names,phones])>\""+newline+
 				"foo(items) ::= \"<items:{a | *<a>*}>\""+newline
 				;
@@ -126,7 +125,7 @@ public class TestLists extends BaseTest {
 
     public void testNullListGetsNoOutput() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -141,7 +140,7 @@ public class TestLists extends BaseTest {
 
     public void testEmptyListGetsNoOutput() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -156,7 +155,7 @@ public class TestLists extends BaseTest {
 
     public void testEmptyListNoIteratorGetsNoOutput() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,

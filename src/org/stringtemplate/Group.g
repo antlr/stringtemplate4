@@ -75,10 +75,9 @@ this.group = $group;
 GroupLexer lexer = (GroupLexer)input.getTokenSource();
 lexer.group = group;
 }
-	:	'group' name=ID {$group.name = $name.text;}
-		( ':' s=ID {$group.supergroup = $s.text;} )?
-	    ( 'implements' i+=ID (',' i+=ID )* {$group.interfaces=toStrings($i);} )?
-	    ';'
+	:	//'group' name=ID {$group.name = $name.text;}
+		//( ':' s=ID {$group.supergroup = $s.text;} )?
+	    //';'
 	    ( templateDef | dictDef )+
     ;
 

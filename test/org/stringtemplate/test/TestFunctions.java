@@ -80,7 +80,6 @@ public class TestFunctions extends BaseTest {
 
     @Test public void testReUseOfRestResult() throws Exception {
         String templates =
-            "group test;" +newline+
             "a(names) ::= \"<b(rest(names))>\""+newline+
             "b(x) ::= \"<x>, <x>\""+newline
             ;
@@ -135,7 +134,6 @@ public class TestFunctions extends BaseTest {
 
     @Test public void testReUseOfCat() throws Exception {
         String templates =
-            "group test;" +newline+
             "a(mine,yours) ::= \"<b([mine,yours])>\""+newline+
             "b(x) ::= \"<x>, <x>\""+newline
             ;

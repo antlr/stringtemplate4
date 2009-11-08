@@ -63,7 +63,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testEmptyExprAsFirstLineGetsNoOutput() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -76,7 +76,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testEmptyLineWithIndent() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -90,7 +90,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testSizeZeroOnLineByItselfGetsNoOutput() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -106,7 +106,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testSizeZeroOnLineWithIndentGetsNoOutput() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -122,7 +122,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testSizeZeroOnLineWithMultipleExpr() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -137,7 +137,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testIFExpr() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -151,7 +151,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testIndentedIFExpr() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -165,7 +165,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testIFElseExpr() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -179,7 +179,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testIFOnMultipleLines() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -197,7 +197,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testNestedIFOnMultipleLines() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,

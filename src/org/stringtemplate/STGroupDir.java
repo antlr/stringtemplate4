@@ -15,9 +15,10 @@ public class STGroupDir extends STGroup {
         if ( !f.isDirectory() ) {
             throw new IllegalArgumentException("No such directory: "+rootDirName);
         }
-        this.name = new File(rootDirName).getName();
         this.rootDirName = rootDirName;
     }
+
+    public String getName() { return new File(rootDirName).getName(); }
 
     public CompiledST lookupTemplate(String name) {
         String fileName = rootDirName + "/" + name + ".st";

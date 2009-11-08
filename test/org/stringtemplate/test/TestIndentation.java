@@ -12,7 +12,6 @@ public class TestIndentation extends BaseTest {
 			throws Exception
 	{
 		String templates =
-				"group test;" +newline+
 				"list(names) ::= <<" +
 				"  <names; separator=\"\\n\">"+newline+
 				">>"+newline;
@@ -36,7 +35,6 @@ public class TestIndentation extends BaseTest {
 			throws Exception
 	{
 		String templates =
-				"group test;" +newline+
 				"list(names) ::= <<" +
 				"  <names; separator=\"\n\">"+newline+
 				">>"+newline;
@@ -64,7 +62,6 @@ public class TestIndentation extends BaseTest {
 			throws Exception
 	{
 		String templates =
-				"group test;" +newline+
 				"list(names) ::= <<" +
 				"  <names>"+newline+
 				">>"+newline;
@@ -85,7 +82,6 @@ public class TestIndentation extends BaseTest {
 			throws Exception
 	{
 		String templates =
-				"group test;" +newline+
 				"list(names) ::= <<" +
 				"Before:"+newline +
 				"  <names; separator=\"\\n\">"+newline+
@@ -112,7 +108,6 @@ public class TestIndentation extends BaseTest {
 			throws Exception
 	{
 		String templates =
-				"group test;" +newline+
 				"method(name,stats) ::= <<" +
 				"void <name>() {"+newline +
 				"\t<stats; separator=\"\\n\">"+newline+
@@ -160,7 +155,7 @@ public class TestIndentation extends BaseTest {
 
     @Test public void testIndentedIFWithValueExpr() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -175,7 +170,7 @@ public class TestIndentation extends BaseTest {
 
     @Test public void testIFWithIndentOnMultipleLines() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -193,7 +188,7 @@ public class TestIndentation extends BaseTest {
 
     @Test public void testIFWithIndentAndExprOnMultipleLines() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -212,7 +207,7 @@ public class TestIndentation extends BaseTest {
 
     @Test public void testIFWithIndentAndExprWithIndentOnMultipleLines() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -231,7 +226,7 @@ public class TestIndentation extends BaseTest {
 
     @Test public void testNestedIFWithIndentOnMultipleLines() throws Exception {
         STGroup group =
-                new STGroup("test");
+                new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
@@ -254,7 +249,7 @@ public class TestIndentation extends BaseTest {
     }
 
     @Test public void testIFInSubtemplate() throws Exception {
-        STGroup group = new STGroup("test");
+        STGroup group = new STGroup();
         STErrorListener errors = new ErrorBuffer();
         group.setErrorListener(errors);
         ST t = new ST(group,
