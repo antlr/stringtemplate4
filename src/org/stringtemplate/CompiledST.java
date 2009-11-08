@@ -29,7 +29,6 @@ package org.stringtemplate;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ArrayList;
 
 public class CompiledST {
     protected String name;
@@ -47,7 +46,7 @@ public class CompiledST {
      *  interpretation via ST.toString().  From there, it becomes field 'group'
      *  in interpreter and is fixed until rendering completes.
      */
-    public STGroup nativeGroup = STGroup.defaultGroup;    
+    public STGroup nativeGroup = STGroup.defaultGroup;
 
     public String[] strings;
     public byte[] instrs;        // byte-addressable code memory.

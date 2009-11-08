@@ -5,9 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
 
-import java.util.List;
-import java.util.ArrayList;
-
 public class TestOptions extends BaseTest {
     @Test public void testSeparator() throws Exception {
         STGroup group = new STGroup();

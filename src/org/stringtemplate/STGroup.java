@@ -27,11 +27,18 @@
 */
 package org.stringtemplate;
 
-import org.antlr.runtime.*;
-
 import java.util.*;
-import java.io.File;
 
+/** A directory of .st template files and/or group files.  I think of a
+ *  group of templates as a node in the ST tree.  Individual template files
+ *  contain formal template definitions. In a sense, it's like a single group
+ *  file broken into multiple files, one for each template.
+ *  ST v3 had just the pure template inside, not the
+ *  template name and header.  Name inside must match filename (minus suffix).
+ *
+ *  Most people will use STTree. STGroup is just a node in a tree.  A node
+ *  is either a directory of .st files or a group file.
+ */
 public class STGroup {
     /** When we use key as a value in a dictionary, this is how we signify. */
     public static final String DICT_KEY = "key";
@@ -70,8 +77,6 @@ public class STGroup {
     protected Map<String, Map<String,Object>> dictionaries =
         new HashMap<String, Map<String,Object>>();
 
-    public String fileName = null; // !=null if loaded from file
-    public String dirName = null;  // !=null if rooted at a dir
     protected boolean alreadyLoaded = false;
     
     /** Where to report errors.  All string templates in this group
@@ -84,41 +89,19 @@ public class STGroup {
 
 	public static STGroup defaultGroup = new STGroup();
 
-	public STGroup() { ; }
+    public STGroup() { ; }
 
-    public STGroup(String groupNameOrFileOrDir) {
-        File f = new File(groupNameOrFileOrDir);
-        if ( f.isDirectory() ) dirName = groupNameOrFileOrDir;
-        else if ( groupNameOrFileOrDir.endsWith(".stg") ) {
-            fileName = groupNameOrFileOrDir;
-        }
-        else name = groupNameOrFileOrDir;
+    public STGroup(String name) {
+        this.name = name;
     }
 
-    public void load() {
-        if ( fileName==null ) return; // do nothing if no file or it's a dir
-        if ( alreadyLoaded ) return;
-
-        try {
-            ANTLRFileStream fs = new ANTLRFileStream(fileName);
-            GroupLexer lexer = new GroupLexer(fs);
-			//CommonTokenStream tokens = new CommonTokenStream(lexer);
-			UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
-            GroupParser parser = new GroupParser(tokens);
-            parser.group(this);
-
-            alreadyLoaded = true;
-        }
-        catch (Exception e) {
-            listener.error("can't load group file", e);
-        }
-    }
+    // TODO: for dirs, should this load everything in dir and below?
+    public void load() { } // nothing to do unless it's a group file
     
     /** The primary means of getting an instance of a template from this
      *  group.
      */
     public ST getInstanceOf(String name) {
-        if ( !alreadyLoaded ) load();
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
             ST instanceST = createStringTemplate();
@@ -141,7 +124,6 @@ public class STGroup {
     }
 
     public CompiledST lookupTemplate(String name) {
-        if ( !alreadyLoaded ) load();
         return templates.get(name);
     }
 
@@ -227,7 +209,6 @@ public class STGroup {
     }
 
     public String show() {
-        if ( !alreadyLoaded ) load();
         StringBuilder buf = new StringBuilder();
         buf.append("group "+name);
         if ( supergroup!=null ) buf.append(" : "+supergroup);
@@ -259,7 +240,7 @@ public class STGroup {
 
     // Temp / testing
     public static STGroup loadGroup(String filename) throws Exception {
-        STGroup group = new STGroup(filename);
+        STGroup group = new STGroupFile(filename);
         return group;
     }
 

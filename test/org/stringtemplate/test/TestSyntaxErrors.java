@@ -2,10 +2,7 @@ package org.stringtemplate.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.STGroup;
-import org.stringtemplate.STErrorListener;
-import org.stringtemplate.Misc;
-import org.stringtemplate.STException;
+import org.stringtemplate.*;
 import org.antlr.runtime.RecognitionException;
 
 public class TestSyntaxErrors extends BaseTest {
@@ -46,7 +43,7 @@ public class TestSyntaxErrors extends BaseTest {
         Misc.writeFile(tmpdir, "t.stg", templates);
 
 		STErrorListener errors = new ErrorBuffer();
-		STGroup group = new STGroup(tmpdir+"/"+"t.stg");
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.listener = errors;
 		group.load(); // force load
         String expected = "2:15: mismatched input '<' expecting EOF";
@@ -62,7 +59,7 @@ public class TestSyntaxErrors extends BaseTest {
 		Misc.writeFile(tmpdir, "t.stg", templates);
 
 		STErrorListener errors = new ErrorBuffer();
-		STGroup group = new STGroup(tmpdir+"/"+"t.stg");
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.listener = errors;
 		group.load(); // force load
 		String expected = "2:14: mismatched input '<' expecting EOF"; // TODO: terrible err message
@@ -78,7 +75,7 @@ public class TestSyntaxErrors extends BaseTest {
 
 		STGroup group = null;
 		STErrorListener errors = new ErrorBuffer();
-		group = new STGroup(tmpdir+"/"+"t.stg");
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.listener = errors;
 		group.load(); // force load
 		String expected = "2:29: no viable alternative at input '!'";
