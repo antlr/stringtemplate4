@@ -4,7 +4,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
 import org.stringtemplate.STErrorListener;
-import org.stringtemplate.Misc;
 import org.stringtemplate.STGroup;
 
 public class TestIndentation extends BaseTest {
@@ -16,7 +15,7 @@ public class TestIndentation extends BaseTest {
 				"  <names; separator=\"\\n\">"+newline+
 				">>"+newline;
 
-		Misc.writeFile(tmpdir, "t.stg", templates);
+		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
 		STErrorListener errors = new ErrorBuffer();
 		group.setErrorListener(errors);
@@ -38,7 +37,7 @@ public class TestIndentation extends BaseTest {
 				"list(names) ::= <<" +
 				"  <names; separator=\"\n\">"+newline+
 				">>"+newline;
-		Misc.writeFile(tmpdir, "t.stg", templates);
+		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
 		STErrorListener errors = new ErrorBuffer();
 		group.setErrorListener(errors);
@@ -65,7 +64,7 @@ public class TestIndentation extends BaseTest {
 				"list(names) ::= <<" +
 				"  <names>"+newline+
 				">>"+newline;
-		Misc.writeFile(tmpdir, "t.stg", templates);
+		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
 		STErrorListener errors = new ErrorBuffer();
 		group.setErrorListener(errors);
@@ -87,7 +86,7 @@ public class TestIndentation extends BaseTest {
 				"  <names; separator=\"\\n\">"+newline+
 				"after" +newline+
 				">>"+newline;
-		Misc.writeFile(tmpdir, "t.stg", templates);
+		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
 		STErrorListener errors = new ErrorBuffer();
 		group.setErrorListener(errors);
@@ -120,7 +119,7 @@ public class TestIndentation extends BaseTest {
 				">>"+newline +
 				"assign(lhs,expr) ::= <<<lhs>=<expr>;>>"+newline
 				;
-		Misc.writeFile(tmpdir, "t.stg", templates);
+		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
 		STErrorListener errors = new ErrorBuffer();
 		group.setErrorListener(errors);

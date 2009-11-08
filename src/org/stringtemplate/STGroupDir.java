@@ -4,7 +4,6 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 
 import java.io.File;
-import java.util.Arrays;
 
 // TODO: caching?
 
@@ -18,29 +17,23 @@ public class STGroupDir extends STGroup {
         }
     }
 
-    public String getName() { return dir.getName(); }
-
     public CompiledST lookupTemplate(String name) {
-        if ( name.startsWith("/") ) return root.lookupTemplate(name);
-        if ( name.indexOf('/')>=0 ) {
-            String[] names = name.split("/");
-            // look for a directory or group file called names[0]
-            STGroup sub = null;
-            File subF = new File(dir, names[0]);
-            if ( subF.isDirectory() ) {
-                sub = new STGroupDir(dir+"/"+names[0]);
-            }
-            else if ( new File(dir, names[0]+".stg").exists() ) {
-                try {
-                    sub = loadGroup(dir+"/"+names[0]+".stg");
-                }
-                catch (Exception e) {
-                    listener.error("can't load group file: "+ names[0]+".stg", e);
-                }
-            }
-            else listener.error("no such subgroup: "+names[0]);
-            return sub.lookupTemplate(Misc.join(names, "/", 1, names.length));
+        if ( name.startsWith("/") ) {
+            if ( root!=null ) return root.lookupTemplate(name);
+            // strip '/' and try again; we're root
+            //return lookupTemplate(name.substring(1));
+            name = name.substring(1);
         }
+        if ( name.indexOf('/')>=0 ) return lookupQualifiedTemplate(dir, name);
+
+        // else plain old template name, check if already here
+        CompiledST code = templates.get(name);
+        if ( code!=null ) return code;
+        return lookupTemplateFile(name);
+    }
+
+    public CompiledST lookupTemplateFile(String name) {
+        // not in templates list, load it from disk
         File f = new File(dir, "/" + name + ".st");
         if ( !f.exists() ) { // TODO: add tolerance check here
             throw new IllegalArgumentException("no such template: "+name);
@@ -52,11 +45,36 @@ public class STGroupDir extends STGroup {
             GroupParser parser = new GroupParser(tokens);
             parser.group = this;
             parser.templateDef();
-            alreadyLoaded = true;
+            return templates.get(name);
         }
         catch (Exception e) {
             listener.error("can't load template file: "+ f +"/"+name, e);
         }
-        return super.lookupTemplate(name);
-    }    
+        return null;
+    }
+
+    /** Look up template name with '/' anywhere but first char */
+    protected CompiledST lookupQualifiedTemplate(File dir, String name) {
+        String[] names = name.split("/");
+        // look for a directory or group file called names[0]
+        STGroup sub = null;
+        File subF = new File(dir, names[0]);
+        if ( subF.isDirectory() ) {
+            sub = new STGroupDir(dir+"/"+names[0]);
+        }
+        else if ( new File(dir, names[0]+".stg").exists() ) {
+            try {
+                sub = new STGroupFile(dir+"/"+names[0]+".stg");
+            }
+            catch (Exception e) {
+                listener.error("can't load group file: "+ names[0]+".stg", e);
+            }
+        }
+        else listener.error("no such subgroup: "+names[0]);
+        String allButFirstName = Misc.join(names, "/", 1, names.length);
+        return sub.lookupTemplate(allButFirstName);
+    }
+    
+    public String getName() { return dir.getName(); }
+
 }

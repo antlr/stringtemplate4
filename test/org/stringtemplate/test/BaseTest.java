@@ -3,10 +3,29 @@ package org.stringtemplate.test;
 import org.stringtemplate.Misc;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.IOException;
 
 public class BaseTest {
     public static final String tmpdir = System.getProperty("java.io.tmpdir");
     public static final String newline = Misc.newline;
+
+    public static void writeFile(String dir, String fileName, String content) {
+		try {
+			File f = new File(dir, fileName);
+            if ( !f.getParentFile().exists() ) f.getParentFile().mkdirs();
+			FileWriter w = new FileWriter(f);
+			BufferedWriter bw = new BufferedWriter(w);
+			bw.write(content);
+			bw.close();
+			w.close();
+		}
+		catch (IOException ioe) {
+			System.err.println("can't write file");
+			ioe.printStackTrace(System.err);
+		}
+	}
 
     public static class User {
         public int id;

@@ -16,6 +16,14 @@ public class STTree {
 
     public STTree(STGroup root) { this.root = root; }
 
+    public ST getInstanceOf(String name) {
+        return root.getInstanceOf(name.substring(1));
+    }
+
+    public ST getEmbeddedInstanceOf(ST enclosingInstance, String name) {
+        return root.getEmbeddedInstanceOf(enclosingInstance, name.substring(1));
+    }
+
     public CompiledST lookupTemplate(String fullyQualifiedName) {
         // /a/b/c etc...
         String[] names = fullyQualifiedName.split("/");

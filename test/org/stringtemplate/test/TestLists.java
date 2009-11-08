@@ -4,7 +4,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
-import org.stringtemplate.Misc;
 import org.stringtemplate.STErrorListener;
 
 import java.util.ArrayList;
@@ -111,7 +110,7 @@ public class TestLists extends BaseTest {
 				"test(names,phones) ::= \"<foo([names,phones])>\""+newline+
 				"foo(items) ::= \"<items:{a | *<a>*}>\""+newline
 				;
-        Misc.writeFile(tmpdir, "t.stg", templates);
+        writeFile(tmpdir, "t.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
 		ST e = group.getInstanceOf("test");
 		e.add("names", "Ter");

@@ -3,7 +3,6 @@ package org.stringtemplate.test;
 import org.junit.Test;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.ST;
-import org.stringtemplate.Misc;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
@@ -15,7 +14,7 @@ public class TestDictionaries extends BaseTest {
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("type", "int");
@@ -30,7 +29,7 @@ public class TestDictionaries extends BaseTest {
                 "typeInit ::= [\"int\":{0<w>}, \"float\":{0.0<w>}] "+newline+
                 "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("w", "L");
@@ -47,7 +46,7 @@ public class TestDictionaries extends BaseTest {
                 "typeInit ::= [\"int\":{0<w>}, \"float\":{0.0<w>}] "+newline+
                 "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("w", "L");
@@ -63,7 +62,7 @@ public class TestDictionaries extends BaseTest {
         String templates =
                 "foo(m,k) ::= \"<m.(k)>\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("foo");
         Map<HashableUser,String> m = new HashMap<HashableUser,String>();
@@ -82,7 +81,7 @@ public class TestDictionaries extends BaseTest {
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("w", "L");
@@ -98,7 +97,7 @@ public class TestDictionaries extends BaseTest {
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "var(typeInit,type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("type", "int");
@@ -113,7 +112,7 @@ public class TestDictionaries extends BaseTest {
                 "typeInit ::= [\"int\":\"0\", \"float\":, \"double\":<<0.0L>>] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("type", "float");
@@ -128,7 +127,7 @@ public class TestDictionaries extends BaseTest {
                 "typeInit ::= [\"int\":\"0\", default:\"null\"] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("type", "UserRecord");
@@ -143,7 +142,7 @@ public class TestDictionaries extends BaseTest {
                 "typeInit ::= [\"int\":\"0\", default:] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("type", "UserRecord");
@@ -158,7 +157,7 @@ public class TestDictionaries extends BaseTest {
                 "typeInit ::= [\"int\":\"0\", default:key] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("type", "UserRecord");
@@ -176,7 +175,7 @@ public class TestDictionaries extends BaseTest {
                 "typeInit ::= [\"default\":\"foo\"] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("type", "default");
@@ -194,7 +193,7 @@ public class TestDictionaries extends BaseTest {
                 "map ::= [default: \"default\"] "+newline+
                 "t() ::= << <map.(\"1\")> >>"+newline                
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("t");
         String expecting = " default ";
@@ -208,7 +207,7 @@ public class TestDictionaries extends BaseTest {
                 "intermediate(type,name) ::= \"<var(...)>\""+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("intermediate");
         st.add("type", "int");
@@ -224,7 +223,7 @@ public class TestDictionaries extends BaseTest {
                 "intermediate(stuff) ::= \"<stuff>\""+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
-        Misc.writeFile(tmpdir, "test.stg", templates);
+        writeFile(tmpdir, "test.stg", templates);
         STGroup group = STGroup.loadGroup(tmpdir+"/"+"test.stg");
         ST interm = group.getInstanceOf("intermediate");
         ST var = group.getInstanceOf("var");

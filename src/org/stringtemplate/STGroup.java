@@ -27,7 +27,11 @@
 */
 package org.stringtemplate;
 
+import org.antlr.runtime.ANTLRFileStream;
+import org.antlr.runtime.UnbufferedTokenStream;
+
 import java.util.*;
+import java.io.File;
 
 /** A directory of .st template files and/or group files.  I think of a
  *  group of templates as a node in the ST tree.  Individual template files
@@ -58,11 +62,12 @@ public class STGroup {
             }
         };
 
-    STTree root;
+    /** The topmost group of templates in the template tree.
+     *  If null, implies this is the root
+     */
+    public STGroup root;
 
-    List<STGroup> subgroups;
-    
-    public String supergroup;
+    //public String supergroup;
 
     public List<String> interfaces;
 
@@ -127,9 +132,7 @@ public class STGroup {
         return st;
     }
 
-    public CompiledST lookupTemplate(String name) {
-        return templates.get(name);
-    }
+    public CompiledST lookupTemplate(String name) { return templates.get(name); }
 
     // TODO: send in start/stop char or line/col so errors can be relative
     public CompiledST defineTemplate(String name, String template) {
@@ -216,7 +219,7 @@ public class STGroup {
 
     public String show() {
         StringBuilder buf = new StringBuilder();
-        if ( supergroup!=null ) buf.append(" : "+supergroup);
+        //if ( supergroup!=null ) buf.append(" : "+supergroup);
         for (String name : templates.keySet()) {
 			if ( name.startsWith("_") ) continue;
             CompiledST c = templates.get(name);

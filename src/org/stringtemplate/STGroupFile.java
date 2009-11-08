@@ -17,6 +17,26 @@ public class STGroupFile extends STGroup {
 
     public String getName() { return new File(fileName).getName(); }
 
+    public CompiledST lookupTemplate(String name) {
+        if ( name.startsWith("/") ) {
+            if ( root!=null ) return root.lookupTemplate(name);
+            // if no root, name must be "/groupfile/templatename"
+            String[] names = name.split("/");
+            String fname = new File(fileName).getName();
+            String base = fname.substring(0,fname.lastIndexOf('.'));
+            if ( names.length>2 || !names[0].equals(base) ) {
+                throw new IllegalArgumentException("name must be of form /"+base+"/templatename: "+name);
+            }
+        }
+        if ( name.indexOf('/')>=0 ) {
+            throw new IllegalArgumentException("can't use relative template name "+name);
+        }
+
+        // else plain old template name
+        if ( !alreadyLoaded ) load();
+        return templates.get(name);
+    }
+
     public void load() {
         if ( alreadyLoaded ) return;
         try {
@@ -30,11 +50,6 @@ public class STGroupFile extends STGroup {
         catch (Exception e) {
             listener.error("can't load group file: "+fileName, e);
         }
-    }
-
-    public CompiledST lookupTemplate(String name) {
-        if ( !alreadyLoaded ) load();
-        return super.lookupTemplate(name);
     }
 
     public String show() {

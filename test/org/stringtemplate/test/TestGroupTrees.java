@@ -2,21 +2,18 @@ package org.stringtemplate.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.Misc;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.STGroupDir;
 import org.stringtemplate.ST;
 
-import java.io.File;
-
-public class TestGroupDir extends BaseTest {
+public class TestGroupTrees extends BaseTest {
     @Test public void testSimpleGroup() throws Exception {
         String dir = getRandomDir();
         String a =
             "a(x) ::= <<"+newline+
             "foo"+newline+
             ">>"+newline;
-        Misc.writeFile(dir, "a.st", a);
+        writeFile(dir, "a.st", a);
         STGroup group = new STGroupDir(dir);
         ST st = group.getInstanceOf("a");
         String expected = "foo"+newline;
@@ -30,10 +27,10 @@ public class TestGroupDir extends BaseTest {
             "a(x) ::= <<"+newline+
             "foo"+newline+
             ">>"+newline;
-        Misc.writeFile(dir, "a.st", a);
+        writeFile(dir, "a.st", a);
         String b =
             "b() ::= \"bar\""+newline;
-        Misc.writeFile(dir, "b.st", b);
+        writeFile(dir, "b.st", b);
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");
         ST st2 = group.getInstanceOf("b");
@@ -49,10 +46,10 @@ public class TestGroupDir extends BaseTest {
             "a(x) ::= <<"+newline+
             "foo"+newline+
             ">>"+newline;
-        Misc.writeFile(dir, "a.st", a);
+        writeFile(dir, "a.st", a);
         String b =
             "b() ::= \"bar\""+newline;
-        Misc.writeFile(dir+"/subdir", "b.st", b);
+        writeFile(dir+"/subdir", "b.st", b);
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");
         ST st2 = group.getInstanceOf("subdir/b");
@@ -68,11 +65,11 @@ public class TestGroupDir extends BaseTest {
             "a(x) ::= <<\n"+
             "foo\n"+
             ">>\n";
-        Misc.writeFile(dir, "a.st", a);
+        writeFile(dir, "a.st", a);
         String groupFile =
             "b() ::= \"bar\"\n"+
             "c() ::= \"duh\"\n";
-        Misc.writeFile(dir, "group.stg", groupFile);
+        writeFile(dir, "group.stg", groupFile);
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");
         ST st2 = group.getInstanceOf("group/b");
@@ -89,10 +86,10 @@ public class TestGroupDir extends BaseTest {
             "a(x) ::= <<"+newline+
             "foo"+newline+
             ">>"+newline;
-        Misc.writeFile(dir, "a.st", a);
+        writeFile(dir, "a.st", a);
         String b =
             "b() ::= \"bar\""+newline;
-        Misc.writeFile(dir+"/sub1/sub2", "b.st", b);
+        writeFile(dir+"/sub1/sub2", "b.st", b);
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");
         ST st2 = group.getInstanceOf("sub1/sub2/b");
@@ -108,11 +105,11 @@ public class TestGroupDir extends BaseTest {
             "a(x) ::= <<\n"+
             "foo\n"+
             ">>\n";
-        Misc.writeFile(dir, "a.st", a);
+        writeFile(dir, "a.st", a);
         String groupFile =
             "b() ::= \"bar\"\n"+
             "c() ::= \"duh\"\n";
-        Misc.writeFile(dir, "subdir/group.stg", groupFile);
+        writeFile(dir, "subdir/group.stg", groupFile);
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");
         ST st2 = group.getInstanceOf("subdir/group/b");

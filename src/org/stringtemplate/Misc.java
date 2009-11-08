@@ -10,22 +10,6 @@ import java.util.Arrays;
 public class Misc {
     public static final String newline = System.getProperty("line.separator");
 
-    public static void writeFile(String dir, String fileName, String content) {
-		try {
-			File f = new File(dir, fileName);
-            if ( !f.getParentFile().exists() ) f.getParentFile().mkdirs();
-			FileWriter w = new FileWriter(f);
-			BufferedWriter bw = new BufferedWriter(w);
-			bw.write(content);
-			bw.close();
-			w.close();
-		}
-		catch (IOException ioe) {
-			System.err.println("can't write file");
-			ioe.printStackTrace(System.err);
-		}
-	}
-
     // Seriously: why isn't this built in to java?
     public static String join(Iterator iter, String separator) {
         StringBuilder buf = new StringBuilder();

@@ -40,7 +40,7 @@ public class TestSyntaxErrors extends BaseTest {
         String templates =
             "group t;\n" +
             "foo() ::= <<hi <.> mom>>\n";
-        Misc.writeFile(tmpdir, "t.stg", templates);
+        writeFile(tmpdir, "t.stg", templates);
 
 		STErrorListener errors = new ErrorBuffer();
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
@@ -56,7 +56,7 @@ public class TestSyntaxErrors extends BaseTest {
 			"group t;\n" +
 				"foo() ::= \"hi <\n" +
 				".> mom\"\n";
-		Misc.writeFile(tmpdir, "t.stg", templates);
+		writeFile(tmpdir, "t.stg", templates);
 
 		STErrorListener errors = new ErrorBuffer();
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
@@ -71,7 +71,7 @@ public class TestSyntaxErrors extends BaseTest {
         String templates =
             "group t;\n" +
             "foo() ::= \"hi <name:{[<aaa.bb!>]}> mom\"\n";
-        Misc.writeFile(tmpdir, "t.stg", templates);
+        writeFile(tmpdir, "t.stg", templates);
 
 		STGroup group = null;
 		STErrorListener errors = new ErrorBuffer();
