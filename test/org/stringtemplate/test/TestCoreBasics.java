@@ -31,9 +31,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
+import org.stringtemplate.AutoIndentWriter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.StringWriter;
 
 public class TestCoreBasics extends BaseTest {
     @Test public void testNullAttr() throws Exception {
@@ -386,6 +388,54 @@ public class TestCoreBasics extends BaseTest {
         String expected = "";
         String result = st.render();
         assertEquals(expected, result);
+    }
+
+    @Test public void testCharLiterals() throws Exception {
+        ST st = new ST(
+                "Foo <\\n><\\n><\\t> bar\n"
+                );
+        StringWriter sw = new StringWriter();
+        st.write(new AutoIndentWriter(sw,"\n")); // force \n as newline
+        String result = sw.toString();
+        String expecting ="Foo \n\n\t bar\n";     // expect \n in output
+        assertEquals(expecting, result);
+
+        st = new ST(
+                "Foo <\\n><\\t> bar" +newline);
+        sw = new StringWriter();
+        st.write(new AutoIndentWriter(sw,"\n")); // force \n as newline
+        expecting ="Foo \n\t bar\n";     // expect \n in output
+        result = sw.toString();
+        assertEquals(expecting, result);
+
+        st = new ST(
+                "Foo<\\ >bar<\\n>");
+        sw = new StringWriter();
+        st.write(new AutoIndentWriter(sw,"\n")); // force \n as newline
+        result = sw.toString();
+        expecting ="Foo bar\n"; // forced \n
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testUnicodeLiterals() throws Exception {
+        ST st = new ST(
+                "Foo <\\uFEA5><\\n><\\u00C2> bar\n"
+                );
+        String expecting ="Foo \ufea5"+newline+"\u00C2 bar"+newline;
+        String result = st.render();
+        assertEquals(expecting, result);
+
+        st = new ST(
+                "Foo <\\uFEA5><\\n><\\u00C2> bar" +newline);
+        expecting ="Foo \ufea5"+newline+"\u00C2 bar"+newline;
+        result = st.render();
+        assertEquals(expecting, result);
+
+        st = new ST(
+                "Foo<\\ >bar<\\n>");
+        expecting ="Foo bar"+newline;
+        result = st.render();
+        assertEquals(expecting, result);
     }
 
 }

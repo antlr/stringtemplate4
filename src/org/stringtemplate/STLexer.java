@@ -9,12 +9,12 @@ public class STLexer implements TokenSource {
     public static final char EOF = (char)-1;            // EOF char
     public static final int EOF_TYPE = CharStream.EOF;  // EOF token type
 
-	public static class MyToken extends CommonToken {
-        public MyToken(CharStream input, int type, int channel, int start, int stop) {
+    public static class STToken extends CommonToken {
+        public STToken(CharStream input, int type, int channel, int start, int stop) {
             super(input, type, channel, start, stop);
         }
 
-        public MyToken(int type, String text) { super(type, text); }
+        public STToken(int type, String text) { super(type, text); }
 
         public String toString() {
             String channelStr = "";
@@ -33,6 +33,8 @@ public class STLexer implements TokenSource {
             return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+STParser.tokenNames[type]+">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
         }
     }
+
+    public static final Token SKIP = new STToken(-1, "<skip>");
 
     // pasted from STParser
     public static final int RBRACK=17;
@@ -110,37 +112,39 @@ public class STLexer implements TokenSource {
 
     public Token _nextToken() {
 		//System.out.println("nextToken: c="+(char)c+"@"+input.index());
-        startCharIndex = input.index();
-        startLine = input.getLine();
-        startCharPositionInLine = input.getCharPositionInLine();
+        while ( true ) { // lets us avoid recursion when skipping stuff
+            startCharIndex = input.index();
+            startLine = input.getLine();
+            startCharPositionInLine = input.getCharPositionInLine();
 
-        if ( c==EOF ) return newToken(EOF_TYPE);
-        if ( scanningInsideExpr ) return inside();
-        return outside();
+            if ( c==EOF ) return newToken(EOF_TYPE);
+            Token t = null;
+            if ( scanningInsideExpr ) t = inside();
+            else t = outside();
+            if ( t!=SKIP ) return t;
+        }
     }
 
     protected Token outside() {
-		if ( input.getCharPositionInLine()==0 && (c==' '||c=='\t') ) {
-			while ( c==' ' || c=='\t' ) { // scarf indent
-				consume();
-			}
-            //if ( c==delimiterStartChar ) return newToken(INDENT);
-            // if not indent before expr, let it fall thru and become TEXT
+        if ( input.getCharPositionInLine()==0 && (c==' '||c=='\t') ) {
+            while ( c==' ' || c=='\t' ) consume(); // scarf indent
             return newToken(INDENT);
-		}
+        }
         if ( c==delimiterStartChar ) {
             consume();
+            if ( c=='!' ) { COMMENT(); return SKIP; }
+            if ( c=='\\' ) return ESCAPE(); // <\\> <\uFFFF> <\n> etc...
             scanningInsideExpr = true;
             return newToken(LDELIM);
         }
-		if ( c=='\r' ) { consume(); consume(); return newToken(NEWLINE); }
-		if ( c=='\n') {	consume(); return newToken(NEWLINE); }
-		if ( c=='}' && subtemplateDepth>0 ) {
-			scanningInsideExpr = true;
-			subtemplateDepth--;
-			consume();
-			return newSingleCharToken(RCURLY);
-		}
+        if ( c=='\r' ) { consume(); consume(); return newToken(NEWLINE); }
+        if ( c=='\n') {	consume(); return newToken(NEWLINE); }
+        if ( c=='}' && subtemplateDepth>0 ) {
+            scanningInsideExpr = true;
+            subtemplateDepth--;
+            consume();
+            return newTokenFromPreviousChar(RCURLY);
+        }
         return mTEXT();
     }
 
@@ -203,13 +207,13 @@ public class STLexer implements TokenSource {
         int curlyPos = startCharPositionInLine;
         List<Token> argTokens = new ArrayList<Token>();
         consume();
-		Token curly = newSingleCharToken(LCURLY);
+		Token curly = newTokenFromPreviousChar(LCURLY);
         WS();
         argTokens.add( mID() );
         WS();
         while ( c==',' ) {
 			consume();
-            argTokens.add( newSingleCharToken(COMMA) );
+            argTokens.add( newTokenFromPreviousChar(COMMA) );
             WS();
             argTokens.add( mID() );
             WS();
@@ -217,7 +221,7 @@ public class STLexer implements TokenSource {
         WS();
         if ( c=='|' ) {
 			consume();
-            argTokens.add( newSingleCharToken(PIPE) );
+            argTokens.add( newTokenFromPreviousChar(PIPE) );
             if ( isWS(c) ) consume(); // ignore a single whitespace after |
             //System.out.println("matched args: "+argTokens);
             for (Token t : argTokens) emit(t);
@@ -236,6 +240,48 @@ public class STLexer implements TokenSource {
 		consume();
 		scanningInsideExpr = false;
         return curly;
+    }
+
+    Token ESCAPE() {
+        consume(); // kill \\
+        Token t = null;
+        switch ( c ) {
+            case '\\' : LINEBREAK(); return SKIP;
+            case 'n'  :
+                t = newToken(TEXT, "\n", input.getCharPositionInLine()-2);
+                break;
+            case 't'  :
+                t = newToken(TEXT, "\t", input.getCharPositionInLine()-2);
+                break;
+            case ' '  :
+                t = newToken(TEXT, " ", input.getCharPositionInLine()-2);
+                break;
+            case 'u' : t = UNICODE(); break;
+            default :
+                System.err.println("bad \\ char");
+        }
+        consume();
+        match(delimiterStopChar);
+        return t;
+    }
+
+    Token UNICODE() {
+        consume();
+        char[] chars = new char[4];
+        if ( !isUnicodeLetter(c) ) System.err.println("bad unicode char: "+c);
+        chars[0] = c;
+        consume();
+        if ( !isUnicodeLetter(c) ) System.err.println("bad unicode char: "+c);
+        chars[1] = c;
+        consume();
+        if ( !isUnicodeLetter(c) ) System.err.println("bad unicode char: "+c);
+        chars[2] = c;
+        consume();
+        if ( !isUnicodeLetter(c) ) System.err.println("bad unicode char: "+c);
+        chars[3] = c;
+        // ESCAPE kills final char and >
+        char uc = (char)Integer.parseInt(new String(chars), 16);
+        return newToken(TEXT, String.valueOf(uc), input.getCharPositionInLine()-6);
     }
 
     Token mTEXT() {
@@ -308,31 +354,55 @@ public class STLexer implements TokenSource {
     void WS() {
         while ( c==' ' || c=='\t' || c=='\n' || c=='\r' ) consume();
     }
+
+    void COMMENT() {
+        match('!');
+        while ( !(c=='!' && input.LA(2)==delimiterStopChar) ) consume();
+        consume(); consume(); // kill !>
+    }
+
+    void LINEBREAK() {
+        match('\\'); // only kill 2nd \ as outside() kills first one
+        match(delimiterStopChar);
+        while ( c==' ' || c=='\t' ) consume(); // scarf WS after <\\>
+        if ( c=='\r' ) consume();
+        match('\n');
+        while ( c==' ' || c=='\t' ) consume(); // scarf any indent
+        return;
+    }
     
     public static boolean isIDStartLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z'; }
 	public static boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9'; }
-	public static boolean isWS(char c) { return c==' ' || c=='\t' || c=='\n' || c=='\r'; }
+    public static boolean isWS(char c) { return c==' ' || c=='\t' || c=='\n' || c=='\r'; }
+    public static boolean isUnicodeLetter(char c) { return c>='a'&&c<='f' || c>='A'&&c<='F' || c>='0'&&c<='9'; }
 
     public Token newToken(int ttype) {
-        MyToken t = new MyToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
+        STToken t = new STToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
                 startCharIndex, input.index()-1);
         t.setLine(startLine);
         t.setCharPositionInLine(startCharPositionInLine);
 		return t;
 	}
 
-	public Token newSingleCharToken(int ttype) {
-		MyToken t =
-			new MyToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
-				input.index()-1, input.index()-1);
-		t.setStartIndex(input.index()-1);
-		t.setLine(input.getLine());
-		t.setCharPositionInLine(input.getCharPositionInLine()-1);
-		return t;
-	}
+    public Token newTokenFromPreviousChar(int ttype) {
+        STToken t =
+            new STToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
+                input.index()-1, input.index()-1);
+        t.setStartIndex(input.index()-1);
+        t.setLine(input.getLine());
+        t.setCharPositionInLine(input.getCharPositionInLine()-1);
+        return t;
+    }
+
+    public Token newToken(int ttype, String text, int pos) {
+        STToken t = new STToken(ttype, text);
+        t.setLine(input.getLine());
+        t.setCharPositionInLine(pos);
+        return t;
+    }
 
 	public Token newToken(int ttype, String text) {
-		MyToken t = new MyToken(ttype, text);
+		STToken t = new STToken(ttype, text);
 		t.setStartIndex(startCharIndex);
 		t.setLine(startLine);
 		t.setCharPositionInLine(startCharPositionInLine);

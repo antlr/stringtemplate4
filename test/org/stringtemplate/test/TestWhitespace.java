@@ -5,6 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.ST;
 import org.stringtemplate.STErrorListener;
+import org.stringtemplate.AutoIndentWriter;
+
+import java.io.StringWriter;
 
 public class TestWhitespace extends BaseTest {
     @Test public void testTrimmedSubtemplates() throws Exception {
@@ -213,5 +216,76 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
+    @Test public void testLineBreak() throws Exception {
+        ST st = new ST(
+                "Foo <\\\\>"+newline+
+                "  \t  bar" +newline
+                );
+        StringWriter sw = new StringWriter();
+        st.write(new AutoIndentWriter(sw,"\n")); // force \n as newline
+        String result = sw.toString();
+        String expecting ="Foo bar\n";     // expect \n in output
+        assertEquals(expecting, result);
+    }
 
+    @Test public void testLineBreak2() throws Exception {
+        ST st = new ST(
+                "Foo <\\\\>       "+newline+
+                "  \t  bar" +newline
+                );
+        StringWriter sw = new StringWriter();
+        st.write(new AutoIndentWriter(sw,"\n")); // force \n as newline
+        String result = sw.toString();
+        String expecting ="Foo bar\n";
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testLineBreakNoWhiteSpace() throws Exception {
+        ST st = new ST(
+                "Foo <\\\\>"+newline+
+                "bar\n"
+                );
+        StringWriter sw = new StringWriter();
+        st.write(new AutoIndentWriter(sw,"\n")); // force \n as newline
+        String result = sw.toString();
+        String expecting ="Foo bar\n";
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testNewlineNormalizationInTemplateString() throws Exception {
+        ST st = new ST(
+                "Foo\r\n"+
+                "Bar\n"
+                );
+        StringWriter sw = new StringWriter();
+        st.write(new AutoIndentWriter(sw,"\n")); // force \n as newline
+        String result = sw.toString();
+        String expecting ="Foo\nBar\n";     // expect \n in output
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testNewlineNormalizationInTemplateStringPC() throws Exception {
+        ST st = new ST(
+                "Foo\r\n"+
+                "Bar\n"
+                );
+        StringWriter sw = new StringWriter();
+        st.write(new AutoIndentWriter(sw,"\r\n")); // force \r\n as newline
+        String result = sw.toString();
+        String expecting ="Foo\r\nBar\r\n";     // expect \r\n in output
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testNewlineNormalizationInAttribute() throws Exception {
+        ST st = new ST(
+                "Foo\r\n"+
+                "<name>\n"
+                );
+        st.add("name", "a\nb\r\nc");
+        StringWriter sw = new StringWriter();
+        st.write(new AutoIndentWriter(sw,"\n")); // force \n as newline
+        String result = sw.toString();
+        String expecting ="Foo\na\nb\nc\n";     // expect \n in output
+        assertEquals(expecting, result);
+    }
 }
