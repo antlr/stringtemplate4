@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Arrays;
 
 public class Misc {
     public static final String newline = System.getProperty("line.separator");
@@ -12,6 +13,7 @@ public class Misc {
     public static void writeFile(String dir, String fileName, String content) {
 		try {
 			File f = new File(dir, fileName);
+            if ( !f.getParentFile().exists() ) f.getParentFile().mkdirs();
 			FileWriter w = new FileWriter(f);
 			BufferedWriter bw = new BufferedWriter(w);
 			bw.write(content);
@@ -32,6 +34,15 @@ public class Misc {
             if ( iter.hasNext() ) {
                 buf.append(separator);
             }
+        }
+        return buf.toString();
+    }
+
+    public static String join(Object[] a, String separator, int start, int stop) {
+        StringBuilder buf = new StringBuilder();
+        for (int i = start; i < stop; i++) {
+            if ( i>start ) buf.append(separator);
+            buf.append(a[i].toString());
         }
         return buf.toString();
     }

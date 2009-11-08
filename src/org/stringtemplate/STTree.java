@@ -13,7 +13,12 @@ package org.stringtemplate;
  */
 public class STTree {
     STGroup root;
-    String rootDir;
 
-    public STTree(String rootDir) { this.rootDir = rootDir; }
+    public STTree(STGroup root) { this.root = root; }
+
+    public CompiledST lookupTemplate(String fullyQualifiedName) {
+        // /a/b/c etc...
+        String[] names = fullyQualifiedName.split("/");
+        return root.lookupTemplate(names[0]);
+    }
 }

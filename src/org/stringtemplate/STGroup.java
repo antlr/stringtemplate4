@@ -46,6 +46,7 @@ public class STGroup {
 
     public static STErrorListener DEFAULT_ERROR_LISTENER =
         new STErrorListener() {
+            public void error(String s) { error(s, null); }
             public void error(String s, Throwable e) {
                 System.err.println(s);
                 if ( e!=null ) {
@@ -57,9 +58,10 @@ public class STGroup {
             }
         };
 
-    /** What is the group name */
-    //public String name; WHY name?
+    STTree root;
 
+    List<STGroup> subgroups;
+    
     public String supergroup;
 
     public List<String> interfaces;
@@ -240,7 +242,7 @@ public class STGroup {
 	public void detect(int x) { tolerance.detect(x); }
 	public void ignore(int x) { tolerance.ignore(x); }
 
-    // Temp / testing
+    // Temp / testing TODO: move to testing?
     public static STGroup loadGroup(String filename) throws Exception {
         STGroup group = new STGroupFile(filename);
         return group;

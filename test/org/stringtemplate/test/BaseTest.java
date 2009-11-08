@@ -2,6 +2,8 @@ package org.stringtemplate.test;
 
 import org.stringtemplate.Misc;
 
+import java.io.File;
+
 public class BaseTest {
     public static final String tmpdir = System.getProperty("java.io.tmpdir");
     public static final String newline = Misc.newline;
@@ -27,4 +29,11 @@ public class BaseTest {
             return false;
         }
 	}
+    
+    protected String getRandomDir() {
+        String randomDir = tmpdir+"/dir"+String.valueOf((int)(Math.random()*100000));
+        File f = new File(randomDir);
+        f.mkdirs();
+        return randomDir;
+    }
 }
