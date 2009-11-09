@@ -244,11 +244,4 @@ public class STGroup {
 	public boolean detects(int x) { return tolerance.detects(x); }
 	public void detect(int x) { tolerance.detect(x); }
 	public void ignore(int x) { tolerance.ignore(x); }
-
-    // Temp / testing TODO: move to testing?
-    public static STGroup loadGroup(String filename) throws Exception {
-        STGroup group = new STGroupFile(filename);
-        return group;
-    }
-
 }

@@ -4,6 +4,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
+import org.stringtemplate.STGroupFile;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -83,7 +84,7 @@ public class TestFunctions extends BaseTest {
             "b(x) ::= \"<x>, <x>\""+newline
             ;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         ST e = group.getInstanceOf("a");
         List names = new ArrayList();
         names.add("Ter");
@@ -137,7 +138,7 @@ public class TestFunctions extends BaseTest {
             "b(x) ::= \"<x>, <x>\""+newline
             ;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         ST e = group.getInstanceOf("a");
         List mine = new ArrayList();
         mine.add("Ter");

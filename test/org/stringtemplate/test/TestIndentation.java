@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
 import org.stringtemplate.STErrorListener;
 import org.stringtemplate.STGroup;
+import org.stringtemplate.STGroupFile;
 
 public class TestIndentation extends BaseTest {
 	@Test public void testSimpleIndentOfAttributeList()
@@ -16,7 +17,7 @@ public class TestIndentation extends BaseTest {
 				">>"+newline;
 
 		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		STErrorListener errors = new ErrorBuffer();
 		group.setErrorListener(errors);
 		ST t = group.getInstanceOf("list");
@@ -38,7 +39,7 @@ public class TestIndentation extends BaseTest {
 				"  <names; separator=\"\n\">"+newline+
 				">>"+newline;
 		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		STErrorListener errors = new ErrorBuffer();
 		group.setErrorListener(errors);
 		ST t = group.getInstanceOf("list");
@@ -65,7 +66,7 @@ public class TestIndentation extends BaseTest {
 				"  <names>"+newline+
 				">>"+newline;
 		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		STErrorListener errors = new ErrorBuffer();
 		group.setErrorListener(errors);
 		ST t = group.getInstanceOf("list");
@@ -87,7 +88,7 @@ public class TestIndentation extends BaseTest {
 				"after" +newline+
 				">>"+newline;
 		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		STErrorListener errors = new ErrorBuffer();
 		group.setErrorListener(errors);
 		ST t = group.getInstanceOf("list");
@@ -120,7 +121,7 @@ public class TestIndentation extends BaseTest {
 				"assign(lhs,expr) ::= <<<lhs>=<expr>;>>"+newline
 				;
 		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = STGroup.loadGroup(tmpdir+"/"+"t.stg");
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		STErrorListener errors = new ErrorBuffer();
 		group.setErrorListener(errors);
 

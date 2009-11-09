@@ -39,7 +39,12 @@ public class STGroupDir extends STGroup {
 
     /** Look up template name with '/' anywhere but first char */
     protected CompiledST lookupQualifiedTemplate(File dir, String name) {
+        // TODO: slow to load a template!
         String[] names = name.split("/");
+        File templateFile = new File(dir+"/"+names[0]+".st");
+        if ( templates.get(names[0])!=null || templateFile.exists() ) {
+            throw new IllegalArgumentException(names[0]+" is a template not a dir or group file");
+        }
         // look for a directory or group file called names[0]
         STGroup sub = null;
         File subF = new File(dir, names[0]);
@@ -54,7 +59,9 @@ public class STGroupDir extends STGroup {
                 listener.error("can't load group file: "+ names[0]+".stg", e);
             }
         }
-        else listener.error("no such subgroup: "+names[0]);
+        else {
+            throw new IllegalArgumentException("no such subgroup: "+names[0]);
+        }
         String allButFirstName = Misc.join(names, "/", 1, names.length);
         return sub.lookupTemplate(allButFirstName);
     }
