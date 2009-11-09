@@ -27,11 +27,7 @@
 */
 package org.stringtemplate;
 
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.UnbufferedTokenStream;
-
 import java.util.*;
-import java.io.File;
 
 /** A directory of .st template files and/or group files.  I think of a
  *  group of templates as a node in the ST tree.  Individual template files
@@ -66,6 +62,9 @@ public class STGroup {
      *  If null, implies this is the root
      */
     public STGroup root;
+
+    /** Load files using what encoding? */
+    public String encoding;
 
     //public String supergroup;
 

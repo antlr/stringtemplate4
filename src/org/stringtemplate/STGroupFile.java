@@ -6,7 +6,8 @@ import org.antlr.runtime.UnbufferedTokenStream;
 import java.io.File;
 
 public class STGroupFile extends STGroup {
-    public String fileName = null;
+    public String fileName;
+    public String encoding;
 
     public STGroupFile(String fileName) {
         if ( !fileName.endsWith(".stg") ) {
@@ -18,6 +19,11 @@ public class STGroupFile extends STGroup {
     public STGroupFile(STGroup root, String fileName) {
         this(fileName);
         this.root = root;
+    }
+
+    public STGroupFile(STGroup root, String fileName, String encoding) {
+        this(root, fileName);
+        this.encoding = encoding;
     }
 
     public String getName() { return new File(fileName).getName(); }
@@ -45,7 +51,7 @@ public class STGroupFile extends STGroup {
     public void load() {
         if ( alreadyLoaded ) return;
         try {
-            ANTLRFileStream fs = new ANTLRFileStream(fileName);
+            ANTLRFileStream fs = new ANTLRFileStream(fileName, encoding);
             GroupLexer lexer = new GroupLexer(fs);
 			UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
             GroupParser parser = new GroupParser(tokens);

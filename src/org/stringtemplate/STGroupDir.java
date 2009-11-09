@@ -22,12 +22,21 @@ public class STGroupDir extends STGroup {
         this.root = root;
     }
 
+    public STGroupDir(STGroup root, String dirName, String encoding) {
+        this(root, dirName);
+        this.encoding = encoding;
+    }
+
     public CompiledST lookupTemplate(String name) {
         if ( name.startsWith("/") ) {
             if ( root!=null ) return root.lookupTemplate(name);
             // strip '/' and try again; we're root
             //return lookupTemplate(name.substring(1));
             name = name.substring(1);
+            String[] names = name.split("/");
+            if ( !names[0].equals(dir.getName()) ) {
+                throw new IllegalArgumentException(names[0]+" doesn't match directory name "+dir.getName());
+            }
         }
         if ( name.indexOf('/')>=0 ) return lookupQualifiedTemplate(dir, name);
 
@@ -73,7 +82,7 @@ public class STGroupDir extends STGroup {
             throw new IllegalArgumentException("no such template: "+name);
         }
         try {
-            ANTLRFileStream fs = new ANTLRFileStream(f.toString());
+            ANTLRFileStream fs = new ANTLRFileStream(f.toString(), encoding);
             GroupLexer lexer = new GroupLexer(fs);
 			UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
             GroupParser parser = new GroupParser(tokens);

@@ -191,4 +191,22 @@ public class TestGroups extends BaseTest {
         String result = error;
         assertEquals(expected, result);
     }
+
+    @Test public void testAttemptToAccessSubDirWithWrongRootName() throws Exception {
+        String dir = getRandomDir();
+        String a =
+            "a(x) ::= <<foo>>\n";
+        writeFile(dir+"/subdir", "a.st", a);
+        STGroup group = new STGroupDir(dir+"/subdir");
+        String error = null;
+        try {
+            group.getInstanceOf("/x/b"); // name is subdir not x
+        }
+        catch (IllegalArgumentException iae) {
+            error = iae.getMessage();
+        }
+        String expected = "x doesn't match directory name subdir";
+        String result = error;
+        assertEquals(expected, result);
+    }
 }
