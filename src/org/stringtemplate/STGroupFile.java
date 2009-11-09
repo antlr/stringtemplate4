@@ -15,6 +15,11 @@ public class STGroupFile extends STGroup {
         this.fileName = fileName;
     }
 
+    public STGroupFile(STGroup root, String fileName) {
+        this(fileName);
+        this.root = root;
+    }
+
     public String getName() { return new File(fileName).getName(); }
 
     public CompiledST lookupTemplate(String name) {

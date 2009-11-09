@@ -6,7 +6,7 @@ import org.stringtemplate.STGroup;
 import org.stringtemplate.STGroupDir;
 import org.stringtemplate.ST;
 
-public class TestGroupTrees extends BaseTest {
+public class TestGroups extends BaseTest {
     @Test public void testSimpleGroup() throws Exception {
         String dir = getRandomDir();
         String a =

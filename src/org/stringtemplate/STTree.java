@@ -9,7 +9,7 @@ package org.stringtemplate;
  *  Then, a reference like </a()> loads /tmp/a.st file.  </a/b()> loads
  *  /tmp/a/b.st where 'a' can be a dir or group file, and so on.
  *
- *  TODO: how does this work with inheritance?  maybe think of just looking for templates in list of dirs/groupfiles?
+ *  TODO: NOT NEEDED?
  */
 public class STTree {
     STGroup root;

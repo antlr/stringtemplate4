@@ -17,6 +17,11 @@ public class STGroupDir extends STGroup {
         }
     }
 
+    public STGroupDir(STGroup root, String dirName) {
+        this(dirName);
+        this.root = root;
+    }
+
     public CompiledST lookupTemplate(String name) {
         if ( name.startsWith("/") ) {
             if ( root!=null ) return root.lookupTemplate(name);
@@ -30,6 +35,28 @@ public class STGroupDir extends STGroup {
         CompiledST code = templates.get(name);
         if ( code!=null ) return code;
         return lookupTemplateFile(name);
+    }
+
+    /** Look up template name with '/' anywhere but first char */
+    protected CompiledST lookupQualifiedTemplate(File dir, String name) {
+        String[] names = name.split("/");
+        // look for a directory or group file called names[0]
+        STGroup sub = null;
+        File subF = new File(dir, names[0]);
+        if ( subF.isDirectory() ) {
+            sub = new STGroupDir(root, dir+"/"+names[0]);
+        }
+        else if ( new File(dir, names[0]+".stg").exists() ) {
+            try {
+                sub = new STGroupFile(dir+"/"+names[0]+".stg");
+            }
+            catch (Exception e) {
+                listener.error("can't load group file: "+ names[0]+".stg", e);
+            }
+        }
+        else listener.error("no such subgroup: "+names[0]);
+        String allButFirstName = Misc.join(names, "/", 1, names.length);
+        return sub.lookupTemplate(allButFirstName);
     }
 
     public CompiledST lookupTemplateFile(String name) {
@@ -53,28 +80,6 @@ public class STGroupDir extends STGroup {
         return null;
     }
 
-    /** Look up template name with '/' anywhere but first char */
-    protected CompiledST lookupQualifiedTemplate(File dir, String name) {
-        String[] names = name.split("/");
-        // look for a directory or group file called names[0]
-        STGroup sub = null;
-        File subF = new File(dir, names[0]);
-        if ( subF.isDirectory() ) {
-            sub = new STGroupDir(dir+"/"+names[0]);
-        }
-        else if ( new File(dir, names[0]+".stg").exists() ) {
-            try {
-                sub = new STGroupFile(dir+"/"+names[0]+".stg");
-            }
-            catch (Exception e) {
-                listener.error("can't load group file: "+ names[0]+".stg", e);
-            }
-        }
-        else listener.error("no such subgroup: "+names[0]);
-        String allButFirstName = Misc.join(names, "/", 1, names.length);
-        return sub.lookupTemplate(allButFirstName);
-    }
-    
     public String getName() { return dir.getName(); }
 
 }
