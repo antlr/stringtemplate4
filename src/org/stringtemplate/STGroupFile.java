@@ -9,28 +9,36 @@ public class STGroupFile extends STGroup {
     public String fileName;
     public String encoding;
 
-    public STGroupFile(String fileName) {
-        if ( !fileName.endsWith(".stg") ) {
-            throw new IllegalArgumentException("Group file names must end in .stg: "+fileName);
+    public STGroupFile(String fullyQualifiedFileName) {
+        if ( !fullyQualifiedFileName.endsWith(".stg") ) {
+            throw new IllegalArgumentException("Group file names must end in .stg: "+fullyQualifiedFileName);
+        }
+        File f = new File(fullyQualifiedFileName);
+        this.fileName = f.getName();
+        this.parent = null;
+        this.root = this;
+        this.fullyQualifiedRootDirName = f.getParent();
+    }
+
+    public STGroupFile(STGroupDir parent, String fileName) {
+        if ( parent==null ) {
+            throw new IllegalArgumentException("Relative dir "+fileName+" can't have null parent");            
         }
         this.fileName = fileName;
+        this.parent = parent;
+        this.root = parent.root; // cache root ptr        
     }
 
-    public STGroupFile(STGroup root, String fileName) {
-        this(fileName);
-        this.root = root;
-    }
-
-    public STGroupFile(STGroup root, String fileName, String encoding) {
-        this(root, fileName);
+    public STGroupFile(STGroupDir parent, String fileName, String encoding) {
+        this(parent, fileName);
         this.encoding = encoding;
     }
 
-    public String getName() { return new File(fileName).getName(); }
-
+    public String getName() { return fileName.substring(0,fileName.lastIndexOf('.')); }
+    
     public CompiledST lookupTemplate(String name) {
         if ( name.startsWith("/") ) {
-            if ( root!=null ) return root.lookupTemplate(name);
+            if ( this!=root ) return root.lookupTemplate(name);
             // if no root, name must be "/groupfile/templatename"
             String[] names = name.split("/");
             String fname = new File(fileName).getName();
@@ -50,8 +58,9 @@ public class STGroupFile extends STGroup {
 
     public void load() {
         if ( alreadyLoaded ) return;
+        String fullFileName = getPathFromRoot()+".stg";
         try {
-            ANTLRFileStream fs = new ANTLRFileStream(fileName, encoding);
+            ANTLRFileStream fs = new ANTLRFileStream(fullFileName, encoding);
             GroupLexer lexer = new GroupLexer(fs);
 			UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
             GroupParser parser = new GroupParser(tokens);
@@ -59,7 +68,7 @@ public class STGroupFile extends STGroup {
             alreadyLoaded = true;
         }
         catch (Exception e) {
-            listener.error("can't load group file: "+fileName, e);
+            listener.error("can't load group file: "+fullFileName, e);
         }
     }
 

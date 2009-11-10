@@ -164,12 +164,12 @@ public class TestGroups extends BaseTest {
         STGroup group = new STGroupFile(dir+"/group.stg");
         String error = null;
         try {
-            group.getInstanceOf("/gropu/b/b"); // can't have sub under group file
+            group.getInstanceOf("/group/b/b"); // can't have sub under group file
         }
         catch (IllegalArgumentException iae) {
             error = iae.getMessage();
         }
-        String expected = "name must be of form /group/templatename: /gropu/b/b";
+        String expected = "name must be of form /group/templatename: /group/b/b";
         String result = error;
         assertEquals(expected, result);
     }
@@ -205,8 +205,37 @@ public class TestGroups extends BaseTest {
         catch (IllegalArgumentException iae) {
             error = iae.getMessage();
         }
-        String expected = "x doesn't match directory name subdir";
+        String expected = "no such subdirectory or group file: x";
         String result = error;
         assertEquals(expected, result);
     }
+
+    @Test public void testRefToAnotherTemplateInSameGroup() throws Exception {
+        String dir = getRandomDir();
+        String a = "a() ::= << <b()> >>\n";
+        String b = "b() ::= <<bar>>\n";
+        writeFile(dir, "a.st", a);
+        writeFile(dir, "b.st", b);
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("a");
+        String expected = " bar ";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testRefToAnotherTemplateInSameSubdir() throws Exception {
+        // /randomdir/a and /randomdir/subdir/b
+        String dir = getRandomDir();
+        String a = "a() ::= << <b()> >>\n";
+        String b = "b() ::= <<bar>>\n";
+        writeFile(dir+"/subdir", "a.st", a);
+        writeFile(dir+"/subdir", "b.st", b);
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("subdir/a");
+        String expected = " bar ";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+
 }

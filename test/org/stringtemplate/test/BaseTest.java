@@ -50,7 +50,7 @@ public class BaseTest {
 	}
     
     protected String getRandomDir() {
-        String randomDir = tmpdir+"/dir"+String.valueOf((int)(Math.random()*100000));
+        String randomDir = tmpdir+"dir"+String.valueOf((int)(Math.random()*100000));
         File f = new File(randomDir);
         f.mkdirs();
         return randomDir;

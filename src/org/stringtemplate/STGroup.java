@@ -59,16 +59,19 @@ public class STGroup {
         };
 
     /** The topmost group of templates in the template tree.
-     *  If null, implies this is the root
+     *  Point to yourself if group is root; but parent will be null.
      */
     public STGroup root;
+
+    public STGroupDir parent; // Are we a subdir or group file in dir?
+
+    public String fullyQualifiedRootDirName; // if we're root    
 
     /** Load files using what encoding? */
     public String encoding;
 
-    //public String supergroup;
-
-    public List<String> interfaces;
+    // only in root
+    public List<STGroup> imports; // OR, supergroups;???
 
     public char delimiterStartChar = '<'; // Use <expr> by default
     public char delimiterStopChar = '>';
@@ -97,12 +100,6 @@ public class STGroup {
 
     public STGroup() { ; }
 
-    /*
-    public STGroup(String name) {
-        this.name = name;
-    }
-    */
-
     // TODO: for dirs, should this load everything in dir and below?
     public void load() { } // nothing to do unless it's a group file
     
@@ -110,6 +107,7 @@ public class STGroup {
      *  group.
      */
     public ST getInstanceOf(String name) {
+        System.out.println("getInstanceOf("+name+") resolves to "+ getAbsoluteTemplatePath()+"/"+name);
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
             ST instanceST = createStringTemplate();
@@ -167,7 +165,6 @@ public class STGroup {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
         Compiler c = new Compiler();
-		//template = Misc.trimOneStartingWS(template);
 		CompiledST code = c.compile(template);
         code.name = name;
         code.formalArguments = args;
@@ -212,8 +209,32 @@ public class STGroup {
 
     public String getName() { return "<no name>;"; }
 
+    public String getPathFromRoot() {
+        return root.fullyQualifiedRootDirName + getAbsoluteTemplatePath();
+    }
+
+    /** Get string that would navigate from root group down to this group.
+     *  If we're root, return "/"
+     *  If we're one level down, return "/subdir"
+     *  If we're two levels down, return "/subdir/subsubdir"
+     */
+    public String getAbsoluteTemplatePath() {
+        System.out.print("getTemplatePathFromRoot root="+
+                         (root!=null?root.getName():null)+" this="+this.getName());
+        List<String> elems = new LinkedList<String>();
+        STGroup p = this;
+        while ( p!=root ) {
+            elems.add(0, p.getName());
+            p = p.parent;
+        }
+        String s = "/" + Misc.join(elems.iterator(), "/");
+        System.out.println("; template path="+s);
+        return s;
+    }    
+
     public String toString() {
-        return show();
+       // return show();
+        return getName();
     }
 
     public String show() {
