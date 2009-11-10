@@ -237,5 +237,24 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
+    @Test public void testImportTemplate() throws Exception {
+        String dir1 = getRandomDir();
+        String a = "a() ::= <<dir1 a>>\n";
+        String b = "b() ::= <<dir1 b>>\n";
+        writeFile(dir1, "a.st", a);
+        writeFile(dir1, "b.st", b);
+        String dir2 = getRandomDir();
+        a = "a() ::= <<dir2 a>>\n";
+        writeFile(dir2, "a.st", a);
+
+        STGroup group1 = new STGroupDir(dir1);
+        STGroup group2 = new STGroupDir(dir2);
+        group2.importTemplates(group1);
+        ST st = group2.getInstanceOf("b");
+        String expected = "dir1 b";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
 
 }

@@ -65,13 +65,13 @@ public class STGroup {
 
     public STGroupDir parent; // Are we a subdir or group file in dir?
 
-    public String fullyQualifiedRootDirName; // if we're root    
+    public String fullyQualifiedRootDirName; // if we're root
 
     /** Load files using what encoding? */
     public String encoding;
 
     // only in root
-    public List<STGroup> imports; // OR, supergroups;???
+    protected List<STGroup> imports; // OR, supergroups;???
 
     public char delimiterStartChar = '<'; // Use <expr> by default
     public char delimiterStopChar = '>';
@@ -201,6 +201,14 @@ public class STGroup {
         dictionaries.put(name, mapping);
     }
 
+    public void importTemplates(STGroup g) {
+        if ( parent!=null || g.parent!=null ) {
+            throw new IllegalArgumentException("can only import templates into/from root groups");
+        }
+        if ( imports==null ) imports = new ArrayList<STGroup>();
+        imports.add(g);
+    }
+
     /** StringTemplate object factory; each group can have its own. */
     public ST createStringTemplate() {
         ST st = new ST();
@@ -209,9 +217,11 @@ public class STGroup {
 
     public String getName() { return "<no name>;"; }
 
+    /*
     public String getPathFromRoot() {
         return root.fullyQualifiedRootDirName + getAbsoluteTemplatePath();
     }
+    */
 
     /** Get string that would navigate from root group down to this group.
      *  If we're root, return "/"

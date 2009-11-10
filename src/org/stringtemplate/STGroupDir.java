@@ -4,16 +4,20 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 
 import java.io.File;
+import java.util.List;
+import java.util.ArrayList;
 
 // TODO: caching?
 
 public class STGroupDir extends STGroup {
     public String dirName;
+    public List<STGroup> children;
 
     public STGroupDir(String fullyQualifiedRootDirName) {
         this.parent = null;
         this.root = this;
         this.fullyQualifiedRootDirName = fullyQualifiedRootDirName;
+        this.dirName = "/"; // it's the root
         File dir = new File(fullyQualifiedRootDirName);
         if ( !dir.isDirectory() ) {
             throw new IllegalArgumentException("No such directory: "+
@@ -21,16 +25,21 @@ public class STGroupDir extends STGroup {
         }
     }
 
-    public STGroupDir(STGroupDir parent, String dirName) {
+    public STGroupDir(STGroupDir parent, String relativeDirName) {
         if ( parent==null ) {
-            throw new IllegalArgumentException("Relative dir "+dirName+" can't have null parent");            
+            throw new IllegalArgumentException("Relative dir "+relativeDirName+" can't have null parent");
         }
+        // doubly-link this node; we point at parent and it has us as child
         this.parent = parent;
+        parent.addChild(this);
         this.root = parent.root; // cache root ptr
-        this.dirName = dirName;
-        File dir = new File(getPathFromRoot());
+        this.dirName = relativeDirName;
+
+        String absoluteDirName = root.fullyQualifiedRootDirName+
+                                 getAbsoluteTemplatePath();
+        File dir = new File(absoluteDirName);
         if ( !dir.isDirectory() ) {
-            throw new IllegalArgumentException("No such directory: "+ dir);
+            throw new IllegalArgumentException("No such directory: "+ absoluteDirName);
         }
     }
 
@@ -50,28 +59,44 @@ public class STGroupDir extends STGroup {
         // else plain old template name, check if already here
         CompiledST code = templates.get(name);
         if ( code!=null ) return code;
-        return lookupTemplateFile(name); // try to load then
+        code = lookupTemplateFile(name); // try to load then
+        if ( code==null ) {
+            System.out.println("look for "+name+" in "+imports);
+            for (STGroup g : imports) {
+                code = g.lookupTemplate(getAbsoluteTemplatePath()+"/"+name);
+            }
+            if ( code==null ) {
+                throw new IllegalArgumentException("no such template: /"+
+                                                   getAbsoluteTemplatePath()+"/"+name);
+            }
+        }
+        return code;
     }
 
     /** Look up template name with '/' anywhere but first char */
     protected CompiledST lookupQualifiedTemplate(String name) {
         // TODO: slow to load a template!
-        String d = getPathFromRoot();
+        String absoluteDirName = root.fullyQualifiedRootDirName+
+                                 getAbsoluteTemplatePath();
 
         String[] names = name.split("/");
-        File templateFile = new File(d, names[0]+".st");
+        File templateFile = new File(absoluteDirName, names[0]+".st");
         if ( templates.get(names[0])!=null || templateFile.exists() ) {
             throw new IllegalArgumentException(names[0]+" is a template not a dir or group file");
         }
         // look for a directory or group file called names[0]
         STGroup sub = null;
-        File group = new File(d, names[0]);
+        File group = new File(absoluteDirName, names[0]);
         if ( group.exists() && group.isDirectory() ) {
             sub = new STGroupDir(this, names[0]);
+            if ( children==null ) children = new ArrayList<STGroup>();
+            children.add(sub);
         }
-        else if ( new File(d, names[0]+".stg").exists() ) {
+        else if ( new File(absoluteDirName, names[0]+".stg").exists() ) {
             try {
                 sub = new STGroupFile(this, names[0]+".stg");
+                if ( children==null ) children = new ArrayList<STGroup>();
+                children.add(sub);
             }
             catch (Exception e) {
                 listener.error("can't load group file: "+ names[0]+".stg", e);
@@ -89,10 +114,11 @@ public class STGroupDir extends STGroup {
     }
 
     public CompiledST lookupTemplateFile(String name) { // load from disk
-        String d = getPathFromRoot();
-        File f = new File(d, name + ".st");
+        String absoluteDirName = root.fullyQualifiedRootDirName+
+                                 getAbsoluteTemplatePath();
+        File f = new File(absoluteDirName, name + ".st");
         if ( !f.exists() ) { // TODO: add tolerance check here
-            throw new IllegalArgumentException("no such template: /"+ getAbsoluteTemplatePath()+"/"+name);
+            return null;
         }
         try {
             ANTLRFileStream fs = new ANTLRFileStream(f.toString(), encoding);
@@ -109,6 +135,11 @@ public class STGroupDir extends STGroup {
         return null;
     }
 
+    public void addChild(STGroup g) {
+        if ( children==null ) children = new ArrayList<STGroup>();
+        children.add(g);        
+    }
+    
     public String getName() {
         if ( parent==null ) return "/";
         return dirName;
