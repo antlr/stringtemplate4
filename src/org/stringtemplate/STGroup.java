@@ -107,7 +107,7 @@ public class STGroup {
      *  group.
      */
     public ST getInstanceOf(String name) {
-        System.out.println("getInstanceOf("+name+") resolves to "+ getAbsoluteTemplatePath()+"/"+name);
+        //System.out.println("getInstanceOf("+name+") resolves to "+ getAbsoluteTemplatePath()+"/"+name);
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
             ST instanceST = createStringTemplate();
@@ -219,8 +219,10 @@ public class STGroup {
      *  If we're two levels down, return "/subdir/subsubdir"
      */
     public String getAbsoluteTemplatePath() {
+        /*
         System.out.print("getTemplatePathFromRoot root="+
                          (root!=null?root.getName():null)+" this="+this.getName());
+         */
         List<String> elems = new LinkedList<String>();
         STGroup p = this;
         while ( p!=root ) {
@@ -228,7 +230,7 @@ public class STGroup {
             p = p.parent;
         }
         String s = "/" + Misc.join(elems.iterator(), "/");
-        System.out.println("; template path="+s);
+        //System.out.println("; template path="+s);
         return s;
     }    
 
