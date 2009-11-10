@@ -4,13 +4,10 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 
 import java.io.File;
-import java.util.List;
-import java.util.LinkedList;
 
 public class STGroupFile extends STGroup {
     public String fileName;
     public String encoding;
-    //public String fullyQualifiedFileName;
 
     public STGroupFile(String fullyQualifiedFileName) {
         if ( !fullyQualifiedFileName.endsWith(".stg") ) {
@@ -43,7 +40,6 @@ public class STGroupFile extends STGroup {
 
     /* /group if this is root else /dir1/dir2/group if in subdir of STGroupDir */
     public String getAbsoluteTemplatePath() {
-        if ( this==root ) return "/"+getName();
         return super.getAbsoluteTemplatePath();
     }
 
@@ -51,11 +47,11 @@ public class STGroupFile extends STGroup {
         if ( name.startsWith("/") ) {
             if ( this!=root ) return root.lookupTemplate(name);
             // if no root, name must be "/groupfile/templatename"
-            String[] names = name.split("/");
-            if ( names.length>2 || !names[0].equals(getName()) ) {
-                throw new IllegalArgumentException("name must be of form /"+getName()+"/templatename: "+name);
+            String[] names = name.substring(1).split("/");
+            if ( names.length>1 ) {
+                throw new IllegalArgumentException("name must be of form /templatename: "+name);
             }
-            name = names[1]; // toss out group part; just get template name
+            name = names[0];
         }
         if ( name.indexOf('/')>=0 ) {
             throw new IllegalArgumentException("can't use relative template name "+name);
@@ -63,18 +59,28 @@ public class STGroupFile extends STGroup {
 
         // else plain old template name
         if ( !alreadyLoaded ) load();
-        return templates.get(name);
+        CompiledST code = templates.get(name);
+        if ( code==null ) {
+            code = lookupImportedTemplate(name);
+            if ( code==null ) { // TODO: tolerance?
+                throw new IllegalArgumentException("no such template: /"+
+                                                   getAbsoluteTemplateName(name));
+            }
+        }
+        return code;
     }
 
     public void load() {
         if ( alreadyLoaded ) return;
-        String absoluteFileName = root.fullyQualifiedRootDirName+
-                                  getAbsoluteTemplatePath()+
-                                  ".stg";
+        String absoluteFileName = root.fullyQualifiedRootDirName+"/"+fileName;
+        if ( this!=root ) {
+            absoluteFileName = root.fullyQualifiedRootDirName+
+                               getAbsoluteTemplatePath()+".stg";
+        }
         try {
             ANTLRFileStream fs = new ANTLRFileStream(absoluteFileName, encoding);
             GroupLexer lexer = new GroupLexer(fs);
-			UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+            UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
             GroupParser parser = new GroupParser(tokens);
             parser.group(this);
             alreadyLoaded = true;

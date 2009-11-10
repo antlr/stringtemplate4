@@ -61,13 +61,10 @@ public class STGroupDir extends STGroup {
         if ( code!=null ) return code;
         code = lookupTemplateFile(name); // try to load then
         if ( code==null ) {
-            System.out.println("look for "+name+" in "+imports);
-            for (STGroup g : imports) {
-                code = g.lookupTemplate(getAbsoluteTemplatePath()+"/"+name);
-            }
-            if ( code==null ) {
+            code = lookupImportedTemplate(name);
+            if ( code==null ) { // TODO: tolerance?
                 throw new IllegalArgumentException("no such template: /"+
-                                                   getAbsoluteTemplatePath()+"/"+name);
+                                                   getAbsoluteTemplateName(name));
             }
         }
         return code;
@@ -106,11 +103,7 @@ public class STGroupDir extends STGroup {
             throw new IllegalArgumentException("no such subdirectory or group file: "+names[0]);
         }
         String allButFirstName = Misc.join(names, "/", 1, names.length);
-        CompiledST st = sub.lookupTemplate(allButFirstName);
-        if ( st==null ) { // try list of imports at root
-            System.out.println("look for "+name+" in "+imports);
-        }
-        return st;
+        return sub.lookupTemplate(allButFirstName);
     }
 
     public CompiledST lookupTemplateFile(String name) { // load from disk
@@ -133,6 +126,29 @@ public class STGroupDir extends STGroup {
             listener.error("can't load template file: "+ f.getAbsolutePath() +"/"+name, e);
         }
         return null;
+    }
+
+    /** Make this group import templates/dictionaries from g.
+     *  If this group has children, make them import stuff from g's
+     *  children (if any).
+     */
+    public void importTemplates(STGroup g) {
+        if ( g==null ) return;
+        if ( imports==null ) imports = new ArrayList<STGroup>();
+        imports.add(g);
+        // now, hook up children. If this has group called x, then look
+        // for x in g's children.  If found, then make our x import from
+        // g's x.
+        /*
+        if ( g instanceof STGroupDir ) {
+            STGroupDir gDir = (STGroupDir)g;
+            for (STGroup child : children) {
+                CompiledST importedST = gDir.lookupTemplate(child.getName());
+                int i = gDir.children.indexOf(child);
+                if ( i>=0 ) child.importTemplates(gDir.children.get(i));
+            }
+        }
+        */
     }
 
     public void addChild(STGroup g) {

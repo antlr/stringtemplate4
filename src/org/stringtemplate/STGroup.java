@@ -70,8 +70,8 @@ public class STGroup {
     /** Load files using what encoding? */
     public String encoding;
 
-    // only in root
-    protected List<STGroup> imports; // OR, supergroups;???
+    /** Every group can import templates/dictionaries from other groups */
+    protected List<STGroup> imports;
 
     public char delimiterStartChar = '<'; // Use <expr> by default
     public char delimiterStopChar = '>';
@@ -130,6 +130,20 @@ public class STGroup {
     }
 
     public CompiledST lookupTemplate(String name) { return templates.get(name); }
+
+    protected CompiledST lookupImportedTemplate(String name) {
+        System.out.println("look for "+name+" in "+imports);
+        if ( this!=root ) { // look for absolute template name from root
+            return root.lookupImportedTemplate(getAbsoluteTemplateName(name));
+        }
+        // if we're at the root, look for name in imports
+        if ( imports==null ) return null;
+        for (STGroup g : imports) {
+            CompiledST code = g.lookupTemplate(name);
+            if ( code!=null ) return code;
+        }
+        return null;
+    }
 
     // TODO: send in start/stop char or line/col so errors can be relative
     public CompiledST defineTemplate(String name, String template) {
@@ -201,10 +215,9 @@ public class STGroup {
         dictionaries.put(name, mapping);
     }
 
+    /** Make this group import templates/dictionaries from g. */
     public void importTemplates(STGroup g) {
-        if ( parent!=null || g.parent!=null ) {
-            throw new IllegalArgumentException("can only import templates into/from root groups");
-        }
+        if ( g==null ) return;
         if ( imports==null ) imports = new ArrayList<STGroup>();
         imports.add(g);
     }
@@ -216,12 +229,6 @@ public class STGroup {
     }
 
     public String getName() { return "<no name>;"; }
-
-    /*
-    public String getPathFromRoot() {
-        return root.fullyQualifiedRootDirName + getAbsoluteTemplatePath();
-    }
-    */
 
     /** Get string that would navigate from root group down to this group.
      *  If we're root, return "/"
@@ -242,7 +249,13 @@ public class STGroup {
         String s = "/" + Misc.join(elems.iterator(), "/");
         //System.out.println("; template path="+s);
         return s;
-    }    
+    }
+
+    public String getAbsoluteTemplateName(String name) {
+        String p = getAbsoluteTemplatePath();
+        if ( p.equals("/") ) return "/"+name;
+        return p+"/"+name;
+    }
 
     public String toString() {
        // return show();
@@ -266,6 +279,15 @@ public class STGroup {
             buf.append(">>"+Misc.newline);
         }
         return buf.toString();
+    }
+
+    @Override
+    public int hashCode() { return getName().hashCode(); }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( obj instanceof STGroup ) return getName().equals(obj);
+        return false;
     }
 
     public void setErrorListener(STErrorListener listener) {
