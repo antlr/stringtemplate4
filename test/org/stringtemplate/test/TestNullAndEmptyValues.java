@@ -61,8 +61,6 @@ public class TestNullAndEmptyValues extends BaseTest {
 
     @Test public void testSizeZeroButNonNullListGetsNoOutput() throws Exception {
         STGroup group = new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
         group.defineTemplate("test",
             "begin\n" +
             "<users>\n" +
@@ -76,8 +74,6 @@ public class TestNullAndEmptyValues extends BaseTest {
 
     @Test public void testNullListGetsNoOutput() throws Exception {
         STGroup group = new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
         group.defineTemplate("test",
             "begin\n" +
             "<users:{name: <it>}; separator=\", \">\n" +
@@ -91,8 +87,6 @@ public class TestNullAndEmptyValues extends BaseTest {
 
     @Test public void testEmptyListGetsNoOutput() throws Exception {
         STGroup group = new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
         group.defineTemplate("test",
             "begin\n" +
             "<users:{name: <it>}; separator=\", \">\n" +

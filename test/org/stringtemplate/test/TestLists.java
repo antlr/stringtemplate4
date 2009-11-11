@@ -124,11 +124,7 @@ public class TestLists extends BaseTest {
 	}
 
     public void testNullListGetsNoOutput() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n" +
             "$users:{name: $it$}; separator=\", \"$\n" +
             "end\n");
@@ -139,11 +135,7 @@ public class TestLists extends BaseTest {
     }
 
     public void testEmptyListGetsNoOutput() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n" +
             "$users:{name: $it$}; separator=\", \"$\n" +
             "end\n");
@@ -154,11 +146,7 @@ public class TestLists extends BaseTest {
     }
 
     public void testEmptyListNoIteratorGetsNoOutput() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n" +
             "$users; separator=\", \"$\n" +
             "end\n");

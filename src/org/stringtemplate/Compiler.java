@@ -79,9 +79,14 @@ public class Compiler implements CodeGenerator {
     int ip = 0;
     CompiledST code = new CompiledST();
 
+    // subdir context -- template reference prefix
+    String prefix;
+
     public static int subtemplateCount = 0; // public for testing access
 
-	public Compiler() {;}
+    public Compiler() { this("/"); }
+
+    public Compiler(String prefix) { this.prefix = prefix; }
 
     public CompiledST compile(String template) {
         return compile(template, '<', '>');
@@ -162,15 +167,17 @@ public class Compiler implements CodeGenerator {
 
 	public int address() { return ip; }
 
-	public String compileAnonTemplate(TokenStream input,
-							   List<Token> ids,
-							   RecognizerSharedState state) {
-		subtemplateCount++;
-		String name = "_sub"+subtemplateCount;
-		Compiler c = new Compiler();
-		CompiledST sub = c.compile(input, state);
-		sub.name = name;
-		if ( ids!=null ) {
+    public String templateReferencePrefix() { return prefix; }
+
+    public String compileAnonTemplate(TokenStream input,
+                                      List<Token> ids,
+                                      RecognizerSharedState state) {
+        subtemplateCount++;
+        String name = prefix+"_sub"+subtemplateCount;
+        Compiler c = new Compiler(prefix);
+        CompiledST sub = c.compile(input, state);
+        sub.name = name;
+        if ( ids!=null ) {
 			sub.formalArguments = new LinkedHashMap<String,FormalArgument>();
 			for (Token arg : ids) {
 				String argName = arg.getText();

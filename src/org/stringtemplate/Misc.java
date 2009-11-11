@@ -35,6 +35,10 @@ public class Misc {
         return s.substring(n, s.length()-n);
     }
 
+    public static String stripRight(String s, int n) {
+        return s.substring(0, s.length()-n);
+    }
+
     public static String trimOneStartingWS(String s) {
         // strip newline from front and back, but just one
         if ( s.startsWith("\r\n") ) s = s.substring(2);
@@ -44,6 +48,10 @@ public class Misc {
         else if ( s.endsWith("\n") ) s = s.substring(0,s.length()-1);
          */
         return s;
+    }
+
+    public static String getFileNameNoSuffix(String f) {
+        return f.substring(0,f.lastIndexOf('.'));
     }
 
     /*

@@ -43,6 +43,7 @@ CodeGenerator gen = new CodeGenerator() {
 	public void emit(short opcode, String s) {;}
 	public void write(int addr, short value) {;}
 	public int address() { return 0; }
+    public String templateReferencePrefix() { return null; }
 	public String compileAnonTemplate(TokenStream input, List<Token> ids, RecognizerSharedState state) {
 		Compiler c = new Compiler();
 		c.compile(input, state);
@@ -64,8 +65,11 @@ protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet f
 	throw new MismatchedTokenException(ttype, input);
 }
 
-    public String strip(String s, int n) { return s.substring(n, s.length()-n); }
-
+public String prefixedName(String t) {
+	if ( t!=null && t.charAt(0)=='/' ) return gen.templateReferencePrefix()+t.substring(1);
+	return gen.templateReferencePrefix()+t;
+}
+ 
     public void refAttr(Token id) {
         String name = id.getText();
         if ( Interpreter.predefinedAttributes.contains(name) ) {
@@ -341,7 +345,7 @@ callExpr
 options {k=2;} // prevent full LL(*) which fails, falling back on k=1; need k=2
 	:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
 		ID '(' expr ')' {func($ID);}
-	|	ID {gen.emit(Bytecode.INSTR_NEW, $ID.text);} '(' args? ')'
+	|	ID {gen.emit(Bytecode.INSTR_NEW, prefixedName($ID.text));} '(' args? ')'
 	|	primary
 	;
 	
@@ -352,7 +356,7 @@ primary
 		|	'.' '(' mapExpr ')' {gen.emit(Bytecode.INSTR_LOAD_PROP_IND);}
 		)*
 		*/
-	|	STRING    {gen.emit(Bytecode.INSTR_LOAD_STR, strip($STRING.text,1));}
+	|	STRING    {gen.emit(Bytecode.INSTR_LOAD_STR, Misc.strip($STRING.text,1));}
 	|	list
 	|	'(' expr ')' {gen.emit(Bytecode.INSTR_TOSTR);}
 		( {gen.emit(Bytecode.INSTR_NEW_IND);} '(' args? ')' )? // indirect call
@@ -366,8 +370,8 @@ arg :	ID '=' exprNoComma {gen.emit(Bytecode.INSTR_STORE_ATTR, $ID.text);}
 	;
 
 templateRef
-	:	ID			{gen.emit(Bytecode.INSTR_LOAD_STR, $ID.text);}
-	|	subtemplate {gen.emit(Bytecode.INSTR_LOAD_STR, $subtemplate.name);}
+	:	ID			{gen.emit(Bytecode.INSTR_LOAD_STR, prefixedName($ID.text));}
+	|	subtemplate {gen.emit(Bytecode.INSTR_LOAD_STR, prefixedName($subtemplate.name));}
 	|	'(' mapExpr ')' {gen.emit(Bytecode.INSTR_TOSTR);}
 	;
 	

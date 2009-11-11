@@ -69,19 +69,15 @@ protected STGroup group;
 protected STGroup group;
 }
 
-group[STGroup group]
+group[STGroup group, String prefix]
 @init {
-this.group = $group;
 GroupLexer lexer = (GroupLexer)input.getTokenSource();
-lexer.group = group;
+this.group = lexer.group = $group;
 }
-	:	//'group' name=ID {$group.name = $name.text;}
-		//( ':' s=ID {$group.supergroup = $s.text;} )?
-	    //';'
-	    ( templateDef | dictDef )+
+	:	( templateDef[prefix] | dictDef )+
     ;
 
-templateDef
+templateDef[String prefix]
 @init {
     String template=null;
     int n=0; // num char to strip from left, right of template def
@@ -100,7 +96,7 @@ templateDef
    			template = Misc.trimOneStartingWS(template);
    		}
 	    try {
-		    group.defineTemplate($name.text, $formalArgs.args, template);
+		    group.defineTemplate(prefix, $name.text, $formalArgs.args, template);
 		}
         catch (STRecognitionException e) {
         	RecognitionException re = (RecognitionException)e.getCause();
@@ -172,8 +168,8 @@ keyValuePair[Map<String,Object> mapping]
 	;
 
 keyValue returns [Object value]
-	:	BIGSTRING			{$value = new ST(group, Misc.strip($BIGSTRING.text,2));}
-	|	ANONYMOUS_TEMPLATE	{$value = new ST(group, Misc.strip($ANONYMOUS_TEMPLATE.text,1));}
+	:	BIGSTRING			{$value = new ST(Misc.strip($BIGSTRING.text,2));}
+	|	ANONYMOUS_TEMPLATE	{$value = new ST(Misc.strip($ANONYMOUS_TEMPLATE.text,1));}
 	|	STRING				{$value = Misc.strip($STRING.text, 1);}
 	|	{input.LT(1).getText().equals("key")}?=> ID
 							{$value = STGroup.DICT_KEY;}

@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 public class ErrorBuffer implements STErrorListener {
     StringBuffer errorOutput = new StringBuffer(500);
     int n = 0;
-    public void error(String msg) { error(msg); }
+    public void error(String msg) { error(msg, null); }
     public void error(String msg, Throwable e) {
         n++;
         if ( n>1 ) {

@@ -13,6 +13,11 @@ public interface CodeGenerator {
 	void write(int addr, short value);
 	/** Return address where next instruction will be written */
 	int address();
+
+    /** If we're compiling templates in subdir or group file under root,
+     *  what's the prefix to add?
+     */
+    String templateReferencePrefix();
 	String compileAnonTemplate(TokenStream input,
 							   List<Token> ids,
 							   RecognizerSharedState state);	

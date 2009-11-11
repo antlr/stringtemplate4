@@ -18,8 +18,6 @@ public class TestIndentation extends BaseTest {
 
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		STErrorListener errors = new ErrorBuffer();
-		group.setErrorListener(errors);
 		ST t = group.getInstanceOf("list");
 		t.add("names", "Terence");
 		t.add("names", "Jim");
@@ -40,8 +38,6 @@ public class TestIndentation extends BaseTest {
 				">>"+newline;
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		STErrorListener errors = new ErrorBuffer();
-		group.setErrorListener(errors);
 		ST t = group.getInstanceOf("list");
 		t.add("names", "Terence\nis\na\nmaniac");
 		t.add("names", "Jim");
@@ -67,8 +63,6 @@ public class TestIndentation extends BaseTest {
 				">>"+newline;
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		STErrorListener errors = new ErrorBuffer();
-		group.setErrorListener(errors);
 		ST t = group.getInstanceOf("list");
 		t.add("names", "Terence\n\nis a maniac");
 		String expecting =
@@ -89,8 +83,6 @@ public class TestIndentation extends BaseTest {
 				">>"+newline;
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		STErrorListener errors = new ErrorBuffer();
-		group.setErrorListener(errors);
 		ST t = group.getInstanceOf("list");
 		t.add("names", "Terence");
 		t.add("names", "Jim");
@@ -122,9 +114,6 @@ public class TestIndentation extends BaseTest {
 				;
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		STErrorListener errors = new ErrorBuffer();
-		group.setErrorListener(errors);
-
 		ST t = group.getInstanceOf("method");
 		t.add("name", "foo");
 		ST s1 = group.getInstanceOf("assign");
@@ -154,11 +143,7 @@ public class TestIndentation extends BaseTest {
 	}	
 
     @Test public void testIndentedIFWithValueExpr() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin"+newline+
             "    <if(x)>foo<endif>"+newline+
             "end"+newline);
@@ -169,11 +154,7 @@ public class TestIndentation extends BaseTest {
     }
 
     @Test public void testIFWithIndentOnMultipleLines() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin"+newline+
             "   <if(x)>"+newline+
             "   foo"+newline+
@@ -187,11 +168,7 @@ public class TestIndentation extends BaseTest {
     }
 
     @Test public void testIFWithIndentAndExprOnMultipleLines() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin"+newline+
             "   <if(x)>"+newline+
             "   <x>"+newline+
@@ -206,11 +183,7 @@ public class TestIndentation extends BaseTest {
     }
 
     @Test public void testIFWithIndentAndExprWithIndentOnMultipleLines() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin"+newline+
             "   <if(x)>"+newline+
             "     <x>"+newline+
@@ -225,11 +198,7 @@ public class TestIndentation extends BaseTest {
     }
 
     @Test public void testNestedIFWithIndentOnMultipleLines() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin"+newline+
             "   <if(x)>"+newline+
             "      <if(y)>"+newline+
@@ -249,10 +218,7 @@ public class TestIndentation extends BaseTest {
     }
 
     @Test public void testIFInSubtemplate() throws Exception {
-        STGroup group = new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "<names:{n |"+newline+
             "   <if(x)>"+newline+
             "   <x>"+newline+

@@ -38,16 +38,19 @@ public class ST {
     /** The code to interpret; it pulls from attributes and this template's
      *  group of templates to evaluate to string.
      */
-    public CompiledST code; // TODO: is this the right name?
+    public CompiledST code; // TODO: is this the right name?\
+
+    /** Created as instance of which group? We need this to init interpreter
+     *  via render.  So, we create st and then it needs to know which
+     *  group created it for sake of polymorphism:
+     *
+     *  st = skin1.getInstanceOf("searchbox");
+     *  result = st.render(); // knows skin1 created it
+     */
+    public STGroup groupThatCreatedThisInstance;
 
     public static final ST BLANK = new BlankST();
 
-    /** The group that holds this ST definition.  We use it to initiate
-     *  interpretation via ST.toString().  From there, it becomes group field
-     *  in interpreter and is fixed until rendering completes.
-     */
-    //public STGroup nativeGroup = STGroup.defaultGroup;
-    
     /** Map an attribute name to its value(s). */
     Map<String,Object> attributes;
 
@@ -89,20 +92,12 @@ public class ST {
     public ST() {;}
     
     public ST(String template) {
-        code = STGroup.defaultGroup.defineTemplate(UNKNOWN_NAME, template);
-/*
-        try {
-            code = group.defineTemplate(UNKNOWN_NAME, template);
-        }
-        catch (STRecognitionException e) {
-            int i = group.getCharPositionInLine(null, e);
-	        group.listener.error(e.msg, null);
-        }
-         */
+        this(STGroup.defaultGroup, template);
     }
 
     public ST(STGroup nativeGroup, String template) {
         code = nativeGroup.defineTemplate(UNKNOWN_NAME, template);
+        groupThatCreatedThisInstance = nativeGroup;
     }
 
     public void add(String name, Object value) {
@@ -227,7 +222,7 @@ public class ST {
     }    
 
     public int write(STWriter out) throws IOException {
-        Interpreter interp = new Interpreter(code.nativeGroup);
+        Interpreter interp = new Interpreter(groupThatCreatedThisInstance);
         return interp.exec(out, this);
     }
 

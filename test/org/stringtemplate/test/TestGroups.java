@@ -59,6 +59,24 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
+    @Test public void testAbsoluteTemplateRef() throws Exception {
+        // /randomdir/a and /randomdir/subdir/b
+        String dir = getRandomDir();
+        String a =
+            "a(x) ::= << </subdir/b()> >>\n";
+        writeFile(dir, "a.st", a);
+        String b =
+            "b() ::= <<bar>>\n";
+        writeFile(dir+"/subdir", "b.st", b);
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("a");
+        st.code.dump();
+        String expected = " bar ";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+
     @Test public void testGroupFileInDir() throws Exception {
         // /randomdir/a and /randomdir/group.stg with b and c templates
         String dir = getRandomDir();
@@ -120,96 +138,6 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAttemptToAccessTemplateUnderGroupFile() throws Exception {
-        String dir = getRandomDir();
-        String groupFile =
-            "a() ::= \"bar\"\n";
-        writeFile(dir, "group.stg", groupFile);
-        STGroup group = new STGroupFile(dir+"/group.stg");
-        String error = null;
-        try {
-            group.getInstanceOf("sub/b"); // can't have sub under group file
-        }
-        catch (IllegalArgumentException iae) {
-            error = iae.getMessage();
-        }
-        String expected = "can't use relative template name sub/b";
-        String result = error;
-        assertEquals(expected, result);
-    }
-
-    @Test public void testAttemptToUseWrongGroupFileNameFromRoot() throws Exception {
-        String dir = getRandomDir();
-        String groupFile =
-            "a() ::= \"bar\"\n";
-        writeFile(dir, "group.stg", groupFile);
-        STGroup group = new STGroupFile(dir+"/group.stg");
-        String error = null;
-        try {
-            group.getInstanceOf("/sub/a"); // can't have sub under group file
-        }
-        catch (IllegalArgumentException iae) {
-            error = iae.getMessage();
-        }
-        String expected = "name must be of form /templatename: /sub/a";
-        String result = error;
-        assertEquals(expected, result);
-    }
-
-    @Test public void testAttemptToGoTooDeepUsingGroupFileNameFromRoot() throws Exception {
-        String dir = getRandomDir();
-        String groupFile =
-            "a() ::= \"bar\"\n";
-        writeFile(dir, "group.stg", groupFile);
-        STGroup group = new STGroupFile(dir+"/group.stg");
-        String error = null;
-        try {
-            group.getInstanceOf("/group/b/b"); // can't have sub under group file
-        }
-        catch (IllegalArgumentException iae) {
-            error = iae.getMessage();
-        }
-        String expected = "name must be of form /templatename: /group/b/b";
-        String result = error;
-        assertEquals(expected, result);
-    }
-
-    @Test public void testAttemptToAccessDirWithSameNameAsTemplate() throws Exception {
-        String dir = getRandomDir();
-        String a =
-            "a(x) ::= <<foo>>\n";
-        writeFile(dir, "a.st", a);
-        STGroup group = new STGroupDir(dir);
-        String error = null;
-        try {
-            group.getInstanceOf("a/b"); // 'a' is a template 
-        }
-        catch (IllegalArgumentException iae) {
-            error = iae.getMessage();
-        }
-        String expected = "a is a template not a dir or group file";
-        String result = error;
-        assertEquals(expected, result);
-    }
-
-    @Test public void testAttemptToAccessSubDirWithWrongRootName() throws Exception {
-        String dir = getRandomDir();
-        String a =
-            "a(x) ::= <<foo>>\n";
-        writeFile(dir+"/subdir", "a.st", a);
-        STGroup group = new STGroupDir(dir+"/subdir");
-        String error = null;
-        try {
-            group.getInstanceOf("/x/b"); // name is subdir not x
-        }
-        catch (IllegalArgumentException iae) {
-            error = iae.getMessage();
-        }
-        String expected = "no such subdirectory or group file: x";
-        String result = error;
-        assertEquals(expected, result);
-    }
-
     @Test public void testRefToAnotherTemplateInSameGroup() throws Exception {
         String dir = getRandomDir();
         String a = "a() ::= << <b()> >>\n";
@@ -232,6 +160,7 @@ public class TestGroups extends BaseTest {
         writeFile(dir+"/subdir", "b.st", b);
         STGroup group = new STGroupDir(dir);
         ST st = group.getInstanceOf("subdir/a");
+        st.code.dump();
         String expected = " bar ";
         String result = st.render();
         assertEquals(expected, result);
@@ -265,17 +194,18 @@ public class TestGroups extends BaseTest {
     @Test public void testImportTemplateInGroupFileFromDir() throws Exception {
         String dir = getRandomDir();
         String a = "a() ::= << <b()> >>\n";
-        writeFile(dir, "a.st", a);
+        writeFile(dir, "x/a.st", a);
 
         String groupFile =
             "b() ::= \"group file b\"\n"+
             "c() ::= \"group file c\"\n";
-        writeFile(dir, "group.stg", groupFile);
+        writeFile(dir, "y/group.stg", groupFile);
 
-        STGroup group1 = new STGroupDir(dir);
-        STGroup group2 = new STGroupFile(dir+"/group.stg");
+        STGroup group1 = new STGroupDir(dir+"/x");
+        STGroup group2 = new STGroupFile(dir+"/y/group.stg");
         group1.importTemplates(group2);
-        ST st = group1.getInstanceOf("a");
+        ST st = group1.getInstanceOf("/a");
+        st.code.dump();
         String expected = " group file b ";
         String result = st.render();
         assertEquals(expected, result);
@@ -284,7 +214,7 @@ public class TestGroups extends BaseTest {
     @Test public void testImportTemplateInDirFromGroupFile() throws Exception {
         String dir = getRandomDir();
         String a = "a() ::= <<dir1 a>>\n";
-        writeFile(dir, "a.st", a);
+        writeFile(dir, "group/a.st", a);
 
         String groupFile =
             "b() ::= \"<a()>\"\n";
@@ -293,7 +223,7 @@ public class TestGroups extends BaseTest {
         STGroup group1 = new STGroupDir(dir);
         STGroup group2 = new STGroupFile(dir+"/group.stg");
         group2.importTemplates(group1);
-        ST st = group2.getInstanceOf("b");
+        ST st = group2.getInstanceOf("/group/b");
         String expected = "dir1 a";
         String result = st.render();
         assertEquals(expected, result);
@@ -304,17 +234,17 @@ public class TestGroups extends BaseTest {
         String groupFile =
             "a() ::= \"g1 a\"\n"+
             "b() ::= \"<c()>\"\n";
-        writeFile(dir, "group1.stg", groupFile);
+        writeFile(dir, "x/group.stg", groupFile);
 
         groupFile =
             "b() ::= \"g2 b\"\n"+
             "c() ::= \"g2 c\"\n";
-        writeFile(dir, "group2.stg", groupFile);
+        writeFile(dir, "y/group.stg", groupFile);
 
-        STGroup group1 = new STGroupFile(dir+"/group1.stg");
-        STGroup group2 = new STGroupFile(dir+"/group2.stg");
+        STGroup group1 = new STGroupFile(dir+"/x/group.stg");
+        STGroup group2 = new STGroupFile(dir+"/y/group.stg");
         group1.importTemplates(group2);
-        ST st = group1.getInstanceOf("b");
+        ST st = group1.getInstanceOf("/b");
         String expected = "g2 c";
         String result = st.render();
         assertEquals(expected, result);
@@ -356,5 +286,33 @@ public class TestGroups extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
     }
+
+    @Test public void testPolymorphicTemplateReference() throws Exception {
+        String dir1 = getRandomDir();
+        String b = "b() ::= <<dir1 b>>\n";
+        writeFile(dir1, "b.st", b);
+        String dir2 = getRandomDir();
+        String a = "a() ::= << <b()> >>\n";
+        b = "b() ::= <<dir2 b>>\n";
+        writeFile(dir2, "a.st", a);
+        writeFile(dir2, "b.st", b);
+
+        STGroup group1 = new STGroupDir(dir1);
+        STGroup group2 = new STGroupDir(dir2);
+        group1.importTemplates(group2);
+
+        // normal lookup; a created from dir2 calls dir2.b
+        ST st = group2.getInstanceOf("a");
+        String expected = " dir2 b ";
+        String result = st.render();
+        assertEquals(expected, result);
+
+        // polymorphic lookup; a created from dir1 calls dir2.a which calls dir1.b
+        st = group1.getInstanceOf("a");
+        expected = " dir1 b ";
+        result = st.render();
+        assertEquals(expected, result);
+    }
+
 
 }

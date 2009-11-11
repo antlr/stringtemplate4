@@ -62,11 +62,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testEmptyExprAsFirstLineGetsNoOutput() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "<users>\n" +
             "end\n");
         String expecting="end\n";
@@ -75,11 +71,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testEmptyLineWithIndent() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n" +
             "    \n" +
             "end\n");
@@ -89,11 +81,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testSizeZeroOnLineByItselfGetsNoOutput() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n"+
             "<name>\n"+
             "<users>\n"+
@@ -105,11 +93,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testSizeZeroOnLineWithIndentGetsNoOutput() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n"+
             "  <name>\n"+
             "	<users>\n"+
@@ -121,11 +105,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testSizeZeroOnLineWithMultipleExpr() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n"+
             "  <name>\n"+
             "	<users><users>\n"+
@@ -136,11 +116,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testIFExpr() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n"+
             "<if(x)><endif>\n"+
             "end\n");
@@ -150,11 +126,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testIndentedIFExpr() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n"+
             "    <if(x)><endif>\n"+
             "end\n");
@@ -164,11 +136,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testIFElseExpr() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n"+
             "<if(users)><else><endif>\n"+
             "end\n");
@@ -178,11 +146,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testIFOnMultipleLines() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n"+
             "<if(users)>\n" +
             "foo\n" +
@@ -196,11 +160,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testNestedIFOnMultipleLines() throws Exception {
-        STGroup group =
-                new STGroup();
-        STErrorListener errors = new ErrorBuffer();
-        group.setErrorListener(errors);
-        ST t = new ST(group,
+        ST t = new ST(
             "begin\n"+
             "<if(x)>\n" +
             "<if(y)>\n" +

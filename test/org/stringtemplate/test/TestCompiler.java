@@ -61,7 +61,7 @@ public class TestCompiler extends BaseTest {
             "load_str 0, write, new 1, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , foo]";
+        String stringsExpected = "[hi , /foo]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -98,7 +98,7 @@ public class TestCompiler extends BaseTest {
             "load_str 0, write, load_attr 1, load_str 2, map, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, bold]";
+        String stringsExpected = "[hi , name, /bold]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -117,7 +117,7 @@ public class TestCompiler extends BaseTest {
             "write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, bold, italics]";
+        String stringsExpected = "[hi , name, /bold, /italics]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -129,7 +129,7 @@ public class TestCompiler extends BaseTest {
             "load_str 0, write, load_attr 1, load_str 2, load_str 3, rot_map 2, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, bold, italics]";
+        String stringsExpected = "[hi , name, /bold, /italics]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -141,7 +141,7 @@ public class TestCompiler extends BaseTest {
             "load_str 0, write, load_attr 1, load_str 2, map, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, _sub1]";
+        String stringsExpected = "[hi , name, /_sub1]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -244,7 +244,7 @@ public class TestCompiler extends BaseTest {
             "load_str 0, write, load_attr 1, options, new 2, store_option 3, write_opt";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, _sub1]";
+        String stringsExpected = "[hi , name, /_sub1]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -257,7 +257,7 @@ public class TestCompiler extends BaseTest {
             "store_option 0, new 3, store_option 4, load_str 4, " +
             "store_option 3, write_opt";
         String stringsExpected = // the ", , ," is the ", " separator string
-            "[hi , name, true, foo, , ]";
+            "[hi , name, true, /foo, , ]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
         String asmResult = code.instrs();

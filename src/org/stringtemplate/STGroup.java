@@ -27,7 +27,11 @@
 */
 package org.stringtemplate;
 
+import org.antlr.runtime.ANTLRFileStream;
+import org.antlr.runtime.UnbufferedTokenStream;
+
 import java.util.*;
+import java.io.File;
 
 /** A directory of .st template files and/or group files.  I think of a
  *  group of templates as a node in the ST tree.  Individual template files
@@ -61,9 +65,9 @@ public class STGroup {
     /** The topmost group of templates in the template tree.
      *  Point to yourself if group is root; but parent will be null.
      */
-    public STGroup root;
+    //public STGroup root;
 
-    public STGroupDir parent; // Are we a subdir or group file in dir?
+//    public STGroupDir parent; // Are we a subdir or group file in dir?
 
     public String fullyQualifiedRootDirName; // if we're root
 
@@ -100,18 +104,26 @@ public class STGroup {
 
     public STGroup() { ; }
 
-    // TODO: for dirs, should this load everything in dir and below?
-    public void load() { } // nothing to do unless it's a group file
-    
+    /*
+    public STGroup(String fullyQualifiedRootDirName) {
+        this.fullyQualifiedRootDirName = fullyQualifiedRootDirName;
+        File dir = new File(fullyQualifiedRootDirName);
+        if ( !dir.isDirectory() ) {
+            throw new IllegalArgumentException("No such directory: "+
+                                               fullyQualifiedRootDirName);
+        }
+    }
+*/
     /** The primary means of getting an instance of a template from this
-     *  group.
+     *  group. Must be absolute name like /a/b
      */
     public ST getInstanceOf(String name) {
-        //System.out.println("getInstanceOf("+name+") resolves to "+ getAbsoluteTemplatePath()+"/"+name);
+        if ( name.charAt(0)!='/' ) name = "/"+name;
+        System.out.println("getInstanceOf("+name+")");
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
             ST instanceST = createStringTemplate();
-            //instanceST.group = this;  leave it as nativeGroup
+            instanceST.groupThatCreatedThisInstance = this;
             instanceST.name = name;
             instanceST.code = c;
             return instanceST;
@@ -129,14 +141,15 @@ public class STGroup {
         return st;
     }
 
-    public CompiledST lookupTemplate(String name) { return templates.get(name); }
+    public CompiledST lookupTemplate(String name) {
+        if ( !alreadyLoaded ) load();
+        CompiledST code = templates.get(name);
+        if ( code==null ) code = lookupImportedTemplate(name);
+        return code;
+    }
 
     protected CompiledST lookupImportedTemplate(String name) {
         System.out.println("look for "+name+" in "+imports);
-        if ( this!=root ) { // look for absolute template name from root
-            return root.lookupImportedTemplate(getAbsoluteTemplateName(name));
-        }
-        // if we're at the root, look for name in imports
         if ( imports==null ) return null;
         for (STGroup g : imports) {
             CompiledST code = g.lookupTemplate(name);
@@ -147,7 +160,7 @@ public class STGroup {
 
     // TODO: send in start/stop char or line/col so errors can be relative
     public CompiledST defineTemplate(String name, String template) {
-        return defineTemplate(name, (LinkedHashMap<String,FormalArgument>)null, template);
+        return defineTemplate("/", name, (LinkedHashMap<String,FormalArgument>)null, template);
     }
 
     public CompiledST defineTemplate(String name,
@@ -157,7 +170,7 @@ public class STGroup {
         LinkedHashMap<String,FormalArgument> margs =
             new LinkedHashMap<String,FormalArgument>();
         for (String a : args) margs.put(a, new FormalArgument(a));
-        return defineTemplate(name, margs, template);
+        return defineTemplate("/", name, margs, template);
     }
 
     public CompiledST defineTemplate(String name,
@@ -167,28 +180,29 @@ public class STGroup {
         LinkedHashMap<String,FormalArgument> margs =
             new LinkedHashMap<String,FormalArgument>();
         for (String a : args) margs.put(a, new FormalArgument(a));
-        return defineTemplate(name, margs, template);
+        return defineTemplate("/", name, margs, template);
     }
 
 	// can't trap recog errors here; don't know where in file template is defined
-    public CompiledST defineTemplate(String name,
+    public CompiledST defineTemplate(String prefix,
+                                     String name,
                                      LinkedHashMap<String,FormalArgument> args,
                                      String template)
     {
         if ( name!=null && (name.length()==0 || name.indexOf('.')>=0) ) {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
-        Compiler c = new Compiler();
+        Compiler c = new Compiler(prefix);
 		CompiledST code = c.compile(template);
         code.name = name;
         code.formalArguments = args;
         code.nativeGroup = this;
-        templates.put(name, code);
+        templates.put(prefix+name, code);
         if ( args!=null ) { // compile any default args
             for (String a : args.keySet()) {
                 FormalArgument fa = args.get(a);
                 if ( fa.defaultValue!=null ) {
-                    Compiler c2 = new Compiler();
+                    Compiler c2 = new Compiler(prefix);
                     fa.compiledDefaultValue = c2.compile(template);
                 }
             }
@@ -222,6 +236,65 @@ public class STGroup {
         imports.add(g);
     }
 
+    public void load() { ; }
+
+    public void loadGroupFile(String prefix, String fileName) {
+        String absoluteFileName = fullyQualifiedRootDirName+"/"+fileName;
+        System.out.println("load group file "+absoluteFileName);
+        try {
+            ANTLRFileStream fs = new ANTLRFileStream(absoluteFileName, encoding);
+            GroupLexer lexer = new GroupLexer(fs);
+            UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+            GroupParser parser = new GroupParser(tokens);
+            parser.group(this, prefix);
+        }
+        catch (Exception e) {
+            listener.error("can't load group file: "+absoluteFileName, e);
+        }
+    }
+
+
+    /*
+    protected void _load(String prefix) {
+        // walk dir and all subdir to load templates, group files
+        File dir = new File(fullyQualifiedRootDirName+"/"+prefix);
+        System.out.println("load dir '"+prefix+"' under "+fullyQualifiedRootDirName);
+        File[] filesAndDirs = dir.listFiles();
+        for (File f : filesAndDirs) {
+            if ( f.isDirectory() ) _load(prefix+f.getName()+"/");
+            // otherwise, load template or group file
+            if ( f.getName().endsWith(".st") ) {
+                loadTemplateFile(prefix, f.getName());
+            }
+            else if ( f.getName().endsWith(".stg") ) {
+                loadGroupFile(prefix+Misc.getFileNameNoSuffix(f.getName())+"/");
+            }
+        }
+    }
+
+    public CompiledST loadTemplateFile(String prefix, String fileName) { // load from disk
+        String absoluteFileName = fullyQualifiedRootDirName + "/" + prefix + "/" + fileName;
+        System.out.println("load "+absoluteFileName);
+        File f = new File(absoluteFileName);
+        if ( !f.exists() ) { // TODO: add tolerance check here
+            return null;
+        }
+        try {
+            ANTLRFileStream fs = new ANTLRFileStream(f.toString(), encoding);
+            GroupLexer lexer = new GroupLexer(fs);
+			UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+            GroupParser parser = new GroupParser(tokens);
+            parser.group = this;
+            parser.templateDef(prefix);
+            return templates.get("/"+prefix+Misc.getFileNameNoSuffix(fileName));            
+        }
+        catch (Exception e) {
+            System.err.println("can't load template file: "+absoluteFileName);
+            e.printStackTrace(System.err);
+        }
+        return null;
+    }        
+     */
     /** StringTemplate object factory; each group can have its own. */
     public ST createStringTemplate() {
         ST st = new ST();
@@ -229,33 +302,6 @@ public class STGroup {
     }
 
     public String getName() { return "<no name>;"; }
-
-    /** Get string that would navigate from root group down to this group.
-     *  If we're root, return "/"
-     *  If we're one level down, return "/subdir"
-     *  If we're two levels down, return "/subdir/subsubdir"
-     */
-    public String getAbsoluteTemplatePath() {
-        /*
-        System.out.print("getTemplatePathFromRoot root="+
-                         (root!=null?root.getName():null)+" this="+this.getName());
-         */
-        List<String> elems = new LinkedList<String>();
-        STGroup p = this;
-        while ( p!=root ) {
-            elems.add(0, p.getName());
-            p = p.parent;
-        }
-        String s = "/" + Misc.join(elems.iterator(), "/");
-        //System.out.println("; template path="+s);
-        return s;
-    }
-
-    public String getAbsoluteTemplateName(String name) {
-        String p = getAbsoluteTemplatePath();
-        if ( p.equals("/") ) return "/"+name;
-        return p+"/"+name;
-    }
 
     public String toString() {
        // return show();
@@ -266,8 +312,10 @@ public class STGroup {
         StringBuilder buf = new StringBuilder();
         //if ( supergroup!=null ) buf.append(" : "+supergroup);
         for (String name : templates.keySet()) {
-			if ( name.startsWith("_") ) continue;
+			if ( name.startsWith("/_sub") ) continue;
             CompiledST c = templates.get(name);
+            int slash = name.lastIndexOf('/');
+            name = name.substring(slash+1, name.length());
             buf.append(name);
             buf.append('(');
             if ( c.formalArguments!=null ) {
