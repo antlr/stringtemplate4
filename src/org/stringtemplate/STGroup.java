@@ -62,13 +62,6 @@ public class STGroup {
             }
         };
 
-    /** The topmost group of templates in the template tree.
-     *  Point to yourself if group is root; but parent will be null.
-     */
-    //public STGroup root;
-
-//    public STGroupDir parent; // Are we a subdir or group file in dir?
-
     public String fullyQualifiedRootDirName; // if we're root
 
     /** Load files using what encoding? */
@@ -104,22 +97,12 @@ public class STGroup {
 
     public STGroup() { ; }
 
-    /*
-    public STGroup(String fullyQualifiedRootDirName) {
-        this.fullyQualifiedRootDirName = fullyQualifiedRootDirName;
-        File dir = new File(fullyQualifiedRootDirName);
-        if ( !dir.isDirectory() ) {
-            throw new IllegalArgumentException("No such directory: "+
-                                               fullyQualifiedRootDirName);
-        }
-    }
-*/
     /** The primary means of getting an instance of a template from this
      *  group. Must be absolute name like /a/b
      */
     public ST getInstanceOf(String name) {
         if ( name.charAt(0)!='/' ) name = "/"+name;
-        System.out.println("getInstanceOf("+name+")");
+        //System.out.println("getInstanceOf("+name+")");
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
             ST instanceST = createStringTemplate();
@@ -149,7 +132,7 @@ public class STGroup {
     }
 
     protected CompiledST lookupImportedTemplate(String name) {
-        System.out.println("look for "+name+" in "+imports);
+        //System.out.println("look for "+name+" in "+imports);
         if ( imports==null ) return null;
         for (STGroup g : imports) {
             CompiledST code = g.lookupTemplate(name);
@@ -240,7 +223,7 @@ public class STGroup {
 
     public void loadGroupFile(String prefix, String fileName) {
         String absoluteFileName = fullyQualifiedRootDirName+"/"+fileName;
-        System.out.println("load group file "+absoluteFileName);
+        //System.out.println("load group file "+absoluteFileName);
         try {
             ANTLRFileStream fs = new ANTLRFileStream(absoluteFileName, encoding);
             GroupLexer lexer = new GroupLexer(fs);
@@ -253,48 +236,6 @@ public class STGroup {
         }
     }
 
-
-    /*
-    protected void _load(String prefix) {
-        // walk dir and all subdir to load templates, group files
-        File dir = new File(fullyQualifiedRootDirName+"/"+prefix);
-        System.out.println("load dir '"+prefix+"' under "+fullyQualifiedRootDirName);
-        File[] filesAndDirs = dir.listFiles();
-        for (File f : filesAndDirs) {
-            if ( f.isDirectory() ) _load(prefix+f.getName()+"/");
-            // otherwise, load template or group file
-            if ( f.getName().endsWith(".st") ) {
-                loadTemplateFile(prefix, f.getName());
-            }
-            else if ( f.getName().endsWith(".stg") ) {
-                loadGroupFile(prefix+Misc.getFileNameNoSuffix(f.getName())+"/");
-            }
-        }
-    }
-
-    public CompiledST loadTemplateFile(String prefix, String fileName) { // load from disk
-        String absoluteFileName = fullyQualifiedRootDirName + "/" + prefix + "/" + fileName;
-        System.out.println("load "+absoluteFileName);
-        File f = new File(absoluteFileName);
-        if ( !f.exists() ) { // TODO: add tolerance check here
-            return null;
-        }
-        try {
-            ANTLRFileStream fs = new ANTLRFileStream(f.toString(), encoding);
-            GroupLexer lexer = new GroupLexer(fs);
-			UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
-            GroupParser parser = new GroupParser(tokens);
-            parser.group = this;
-            parser.templateDef(prefix);
-            return templates.get("/"+prefix+Misc.getFileNameNoSuffix(fileName));            
-        }
-        catch (Exception e) {
-            System.err.println("can't load template file: "+absoluteFileName);
-            e.printStackTrace(System.err);
-        }
-        return null;
-    }        
-     */
     /** StringTemplate object factory; each group can have its own. */
     public ST createStringTemplate() {
         ST st = new ST();
@@ -303,12 +244,10 @@ public class STGroup {
 
     public String getName() { return "<no name>;"; }
 
-    public String toString() {
-       // return show();
-        return getName();
-    }
+    public String toString() { return getName(); }
 
     public String show() {
+        if ( !alreadyLoaded ) load();
         StringBuilder buf = new StringBuilder();
         //if ( supergroup!=null ) buf.append(" : "+supergroup);
         for (String name : templates.keySet()) {
@@ -327,15 +266,6 @@ public class STGroup {
             buf.append(">>"+Misc.newline);
         }
         return buf.toString();
-    }
-
-    @Override
-    public int hashCode() { return getName().hashCode(); }
-
-    @Override
-    public boolean equals(Object obj) {
-        if ( obj instanceof STGroup ) return getName().equals(obj);
-        return false;
     }
 
     public void setErrorListener(STErrorListener listener) {
