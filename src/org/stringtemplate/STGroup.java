@@ -31,7 +31,6 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 
 import java.util.*;
-import java.io.File;
 
 /** A directory of .st template files and/or group files.  I think of a
  *  group of templates as a node in the ST tree.  Individual template files
@@ -62,7 +61,7 @@ public class STGroup {
             }
         };
 
-    public String fullyQualifiedRootDirName; // if we're root
+    public String fullyQualifiedRootDirName;
 
     /** Load files using what encoding? */
     public String encoding;
@@ -82,6 +81,16 @@ public class STGroup {
      */
     protected Map<String, Map<String,Object>> dictionaries =
         new HashMap<String, Map<String,Object>>();
+
+    /** A dictionary that allows people to register a renderer for
+     *  a particular kind of object for any template evaluated relative to this
+     *  group.  For example, a date should be formatted differently depending
+     *  on the locale.  You can set Date.class to an object whose
+     *  toString(Object) method properly formats a Date attribute
+     *  according to locale.  Or you can have a different renderer object
+     *  for each locale.
+     */
+    protected Map<Class,AttributeRenderer> renderers;
 
     protected boolean alreadyLoaded = false;
     
@@ -236,6 +245,21 @@ public class STGroup {
         }
     }
 
+    /** Register a renderer for all objects of a particular type for all
+     *  templates evaluated relative to this group.
+     */
+    public void registerRenderer(Class attributeType, AttributeRenderer r) {
+        if ( renderers ==null ) {
+            renderers = new HashMap<Class,AttributeRenderer>();
+        }
+        renderers.put(attributeType, r);
+    }
+
+    public AttributeRenderer getAttributeRenderer(Class attributeType) {
+        if ( renderers==null ) return null;
+        return renderers.get(attributeType);
+    }
+    
     /** StringTemplate object factory; each group can have its own. */
     public ST createStringTemplate() {
         ST st = new ST();

@@ -161,7 +161,7 @@ public class Interpreter {
                 break;
             case Bytecode.INSTR_WRITE :
                 o = operands[sp--];
-                nw = writeObject(out, self, o, null);
+                nw = writeObject(out, self, o, (String[])null);
                 n += nw;
                 break;
 			case Bytecode.INSTR_WRITE_OPT :
@@ -312,9 +312,9 @@ public class Interpreter {
         int n = 0;
         if ( o == null ) {
             if ( options!=null && options[OPTION_NULL]!=null ) {
-                try { n = out.write(options[OPTION_NULL]); }
+                try { n = writePOJO(out, options[OPTION_NULL], options); }
                 catch (IOException ioe) {
-                    System.err.println("can't write "+o);
+                    System.err.println("can't write null option "+options[OPTION_NULL]);
                 }
             }
             return n;
@@ -327,7 +327,7 @@ public class Interpreter {
         o = convertAnythingIteratableToIterator(o); // normalize
         try {
             if ( o instanceof Iterator) n = writeIterator(out, self, o, options);
-            else n = out.write(o.toString());
+            else n = writePOJO(out, o, options);
         }
         catch (IOException ioe) {
             System.err.println("can't write "+o);
@@ -357,6 +357,21 @@ public class Interpreter {
             i++;
         }
         return n;
+    }
+
+    protected int writePOJO(STWriter out, Object o, String[] options) throws IOException {
+        String formatString = null;
+        if ( options!=null ) formatString = options[OPTION_FORMAT];
+        AttributeRenderer r = group.getAttributeRenderer(o.getClass());
+        String v = null;
+        if ( r!=null ) {
+            if ( formatString != null ) v = r.toString(o, formatString);
+            else v = r.toString(o);
+        }
+        else {
+            v = o.toString();
+        }
+        return out.write(v);
     }
 
     protected void map(ST self, Object attr, final String name) {

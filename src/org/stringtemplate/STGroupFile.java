@@ -13,7 +13,8 @@ public class STGroupFile extends STGroup {
             throw new IllegalArgumentException("Group file names must end in .stg: "+fullyQualifiedFileName);
         }
         File f = new File(fullyQualifiedFileName);
-        this.fullyQualifiedRootDirName = f.getParent();
+        File absF = f.getAbsoluteFile();
+        this.fullyQualifiedRootDirName = absF.getParent();
         this.fileName = f.getName();
     }
 
