@@ -312,12 +312,9 @@ public class Interpreter {
         int n = 0;
         if ( o == null ) {
             if ( options!=null && options[OPTION_NULL]!=null ) {
-                try { n = writePOJO(out, options[OPTION_NULL], options); }
-                catch (IOException ioe) {
-                    System.err.println("can't write null option "+options[OPTION_NULL]);
-                }
+                o = options[OPTION_NULL];
             }
-            return n;
+            else return 0;
         }
         if ( o instanceof ST ) {
             ((ST)o).enclosingInstance = self;
