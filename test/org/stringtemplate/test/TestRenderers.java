@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.io.StringReader;
 
 public class TestRenderers extends BaseTest {
+    /*
     public class DateRenderer implements AttributeRenderer {
         public String toString(Object o) {
             SimpleDateFormat f = new SimpleDateFormat ("yyyy.MM.dd");
@@ -42,6 +43,7 @@ public class TestRenderers extends BaseTest {
             return f.format(((Calendar)o).getTime());
         }
     }
+    */
 
     public class StringRenderer implements AttributeRenderer {
         public String toString(Object o) {
@@ -63,7 +65,7 @@ public class TestRenderers extends BaseTest {
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
-        String expecting = "date: 2005.07.05";
+        String expecting = "date: 7/5/05 12:00 AM";
         String result = st.render();
         assertEquals(expecting, result);
     }
@@ -73,7 +75,7 @@ public class TestRenderers extends BaseTest {
                 "dateThing(created) ::= << date: <created; format=\"yyyy.MM.dd\"> >>\n";
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer3());
+        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = " date: 2005.07.05 ";
