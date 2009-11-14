@@ -56,10 +56,15 @@ public class Interpreter {
      */
     STGroup group;
     
+    Locale locale;
+    
     public boolean trace = false;
 
-    public Interpreter(STGroup group) {
+    public Interpreter(STGroup group) { this(group,Locale.getDefault()); }
+    
+    public Interpreter(STGroup group, Locale locale) {
         this.group = group;
+        this.locale = locale;
     }
 
     public int exec(STWriter out, ST self) {
@@ -361,13 +366,8 @@ public class Interpreter {
         if ( options!=null ) formatString = options[OPTION_FORMAT];
         AttributeRenderer r = group.getAttributeRenderer(o.getClass());
         String v = null;
-        if ( r!=null ) {
-            if ( formatString != null ) v = r.toString(o, formatString);
-            else v = r.toString(o);
-        }
-        else {
-            v = o.toString();
-        }
+        if ( r!=null ) v = r.toString(o, formatString, locale);
+        else v = o.toString();
         return out.write(v);
     }
 
@@ -477,42 +477,6 @@ public class Interpreter {
             i++;
         }
         return results;
-
-        /*
-        if ( attr instanceof Iterator ) {
-            List<ST> mapped = new ArrayList<ST>();
-            Iterator iter = (Iterator)attr;
-            int i0 = 0;
-            int i = 1;
-            int ti = 0;
-            while ( iter.hasNext() ) {
-                Object iterValue = iter.next();
-                if ( iterValue == null ) continue;
-                int templateIndex = ti % templates.size(); // rotate through
-                ti++;
-                String name = templates.get(templateIndex);
-                ST st = group.getEmbeddedInstanceOf(self, name);
-                for (FormalArgument arg : st.code.formalArguments.values()) {
-                    st.rawSetAttribute(arg.name, iterValue);
-                }
-                st.rawSetAttribute("i0", i0);
-                st.rawSetAttribute("i", i);
-                mapped.add(st);
-                i0++;
-                i++;
-            }
-            operands[++sp] = mapped;
-            //System.out.println("mapped="+mapped);
-        }
-        else { // if only single value, just apply first template to attribute
-            ST st = group.getInstanceOf(templates.get(0));
-            setSoleArgument(st, attr);
-            st.rawSetAttribute("i0", 0);
-            st.rawSetAttribute("i", 1);
-            operands[++sp] = st;
-//            map(self, attr, templates.get(1));
-        }
-        */
     }
 
     protected void setSoleArgument(ST st, Object attr) {
@@ -840,8 +804,8 @@ public class Interpreter {
                                                             self.code.strings);
         StringBuilder buf = new StringBuilder();
         dis.disassembleInstruction(buf,ip);
-        String name = self.name+":";
-        if ( self.name==ST.UNKNOWN_NAME) name = "";
+        String name = self.code.name+":";
+        if ( self.code.name==ST.UNKNOWN_NAME) name = "";
         System.out.printf("%-40s",name+buf);
         System.out.print("\tstack=[");
         for (int i = 0; i <= sp; i++) {
@@ -856,7 +820,7 @@ public class Interpreter {
 
     protected void printForTrace(Object o) {
         if ( o instanceof ST ) {
-            System.out.print(" "+((ST)o).name+"()");
+            System.out.print(" "+((ST)o).code.name+"()");
             return;
         }
         o = convertAnythingIteratableToIterator(o);

@@ -116,7 +116,6 @@ public class STGroup {
         if ( c!=null ) {
             ST instanceST = createStringTemplate();
             instanceST.groupThatCreatedThisInstance = this;
-            instanceST.name = name;
             instanceST.code = c;
             return instanceST;
         }

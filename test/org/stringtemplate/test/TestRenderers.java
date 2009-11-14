@@ -5,67 +5,19 @@ import static org.junit.Assert.assertEquals;
 import org.stringtemplate.*;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.io.StringReader;
 
 public class TestRenderers extends BaseTest {
-    /*
-    public class DateRenderer implements AttributeRenderer {
-        public String toString(Object o) {
-            SimpleDateFormat f = new SimpleDateFormat ("yyyy.MM.dd");
-            return f.format(((Calendar)o).getTime());
-        }
-        public String toString(Object o, String formatString) {
-            return toString(o);
-        }
-    }
-
-    public class DateRenderer2 implements AttributeRenderer {
-        public String toString(Object o) {
-            SimpleDateFormat f = new SimpleDateFormat ("MM/dd/yyyy");
-            return f.format(((Calendar)o).getTime());
-        }
-        public String toString(Object o, String formatString) {
-            return toString(o);
-        }
-    }
-
-    public class DateRenderer3 implements AttributeRenderer {
-        public String toString(Object o) {
-            SimpleDateFormat f = new SimpleDateFormat ("MM/dd/yyyy");
-            return f.format(((Calendar)o).getTime());
-        }
-        public String toString(Object o, String formatString) {
-            SimpleDateFormat f = new SimpleDateFormat (formatString);
-            return f.format(((Calendar)o).getTime());
-        }
-    }
-    */
-
-    public class StringRenderer implements AttributeRenderer {
-        public String toString(Object o) {
-            return (String)o;
-        }
-        public String toString(Object o, String formatString) {
-            if ( formatString.equals("upper") ) {
-                return ((String)o).toUpperCase();
-            }
-            return toString(o);
-        }
-    }
-
     @Test public void testRendererForGroup() throws Exception {
         String templates =
-                "dateThing(created) ::= \"date: <created>\"\n";
+                "dateThing(created) ::= \"datetime: <created>\"\n";
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
-        String expecting = "date: 7/5/05 12:00 AM";
+        String expecting = "datetime: 7/5/05 12:00 AM";
         String result = st.render();
         assertEquals(expecting, result);
     }
@@ -80,6 +32,107 @@ public class TestRenderers extends BaseTest {
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = " date: 2005.07.05 ";
         String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testRendererWithPredefinedFormat() throws Exception {
+        String templates =
+                "dateThing(created) ::= << datetime: <created; format=\"short\"> >>\n";
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+        ST st = group.getInstanceOf("dateThing");
+        st.add("created", new GregorianCalendar(2005, 07-1, 05));
+        String expecting = " datetime: 7/5/05 12:00 AM ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testRendererWithPredefinedFormat2() throws Exception {
+        String templates =
+                "dateThing(created) ::= << datetime: <created; format=\"full\"> >>\n";
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+        ST st = group.getInstanceOf("dateThing");
+        st.add("created", new GregorianCalendar(2005, 07-1, 05));
+        String expecting = " datetime: Tuesday, July 5, 2005 12:00:00 AM PDT ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testRendererWithPredefinedFormat3() throws Exception {
+        String templates =
+                "dateThing(created) ::= << date: <created; format=\"date:medium\"> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+        ST st = group.getInstanceOf("dateThing");
+        st.add("created", new GregorianCalendar(2005, 07-1, 05));
+        String expecting = " date: Jul 5, 2005 ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testRendererWithPredefinedFormat4() throws Exception {
+        String templates =
+                "dateThing(created) ::= << time: <created; format=\"time:medium\"> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+        ST st = group.getInstanceOf("dateThing");
+        st.add("created", new GregorianCalendar(2005, 07-1, 05));
+        String expecting = " time: 12:00:00 AM ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testStringRendererWithPrintfFormat() throws Exception {
+        String templates =
+                "foo(x) ::= << <x; format=\"%6s\"> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(String.class, new StringRenderer());
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "hi");
+        String expecting = "     hi ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testNumberRendererWithPrintfFormat() throws Exception {
+        String templates =
+                "foo(x,y) ::= << <x; format=\"%d\"> <y; format=\"%2.3f\"> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(Integer.class, new NumberRenderer());
+        group.registerRenderer(Double.class, new NumberRenderer());
+        ST st = group.getInstanceOf("foo");
+        st.add("x", -2100);
+        st.add("y", 3.14159);
+        String expecting = " -2100 3.142 ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testLocaleWithNumberRenderer() throws Exception {
+        String templates =
+                "foo(x,y) ::= << <x; format=\"%,d\"> <y; format=\"%,2.3f\"> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(Integer.class, new NumberRenderer());
+        group.registerRenderer(Double.class, new NumberRenderer());
+        ST st = group.getInstanceOf("foo");
+        st.add("x", -2100);
+        st.add("y", 3.14159);
+        // Polish uses ' ' for ',' and ',' for '.'
+        String expecting = " -2Ê100 3,142 ";
+        String result = st.render(new Locale("pl"));
         assertEquals(expecting, result);
     }
 

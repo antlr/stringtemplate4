@@ -33,12 +33,20 @@ import java.io.IOException;
 
 public class ST {
     public static final String UNKNOWN_NAME = "unknown";
-    public String name = UNKNOWN_NAME;
+    public static final ST BLANK = new BlankST();
     
     /** The code to interpret; it pulls from attributes and this template's
      *  group of templates to evaluate to string.
      */
-    public CompiledST code; // TODO: is this the right name?\
+    public CompiledST code; // TODO: is this the right name?
+
+    /** Map an attribute name to its value(s). */
+    Map<String,Object> attributes;
+
+    /** Enclosing instance if I'm embedded within another template.
+     *  IF-subtemplates are considered embedded as well.
+     */
+    ST enclosingInstance; // who's your daddy?
 
     /** Created as instance of which group? We need this to init interpreter
      *  via render.  So, we create st and then it needs to know which
@@ -49,25 +57,6 @@ public class ST {
      */
     public STGroup groupThatCreatedThisInstance;
 
-    public static final ST BLANK = new BlankST();
-
-    /** Map an attribute name to its value(s). */
-    Map<String,Object> attributes;
-
-    public static class AddEvent {
-		String name;
-		Object value;
-		Throwable source;
-		public AddEvent(String name, Object value) {
-			this.name = name;
-			this.value = value;
-			this.source = new Throwable();
-		}
-	}
-
-	/** Track add attribute "events"; used for ST user-level debugging */
-	List<AddEvent> addEvents;
-
     /** Normally, formal parameters hide any attributes inherited from the
      *  enclosing template with the same name.  This is normally what you
      *  want, but makes it hard to invoke another template passing in all
@@ -75,11 +64,6 @@ public class ST {
      *  all data".  Works great.  Can also say <otherTemplate(foo="xxx",...)>
      */
     protected boolean passThroughAttributes = false;    
-
-    /** Enclosing instance if I'm embedded within another template.
-     *  IF-subtemplates are considered embedded as well.
-     */
-    ST enclosingInstance; // who's your daddy?
 
 	/** Just an alias for ArrayList, but this way I can track whether a
      *  list is something ST created or it's an incoming list.
@@ -106,11 +90,6 @@ public class ST {
             throw new IllegalArgumentException("cannot have '.' in attribute names");
         }
 
-		if ( code.nativeGroup.detects(ErrorTolerance.DETECT_ADD_ATTR) ) {
-			if ( addEvents == null ) addEvents = new ArrayList<AddEvent>();
-			addEvents.add(new AddEvent(name, value));
-		}
-		
         if ( value instanceof ST ) ((ST)value).enclosingInstance = this;
 
         Object curvalue = null;
@@ -214,7 +193,7 @@ public class ST {
         List<String> names = new LinkedList<String>();
         ST p = this;
         while ( p!=null ) {
-            String name = p.name;
+            String name = p.code.name;
             names.add(0,name);
             p = p.enclosingInstance;
         }
@@ -226,11 +205,20 @@ public class ST {
         return interp.exec(out, this);
     }
 
+    public int write(STWriter out, Locale locale) throws IOException {
+        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
+        return interp.exec(out, this);
+    }
+
     public String render() {
+        return render(Locale.getDefault());
+    }
+
+    public String render(Locale locale) {
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         try {
-            write(wr);
+            write(wr, locale);
             /*
             System.err.println("template size = "+code.template.length()+
                                ", code size = "+code.instrs.length+", ratio = "+
@@ -244,6 +232,6 @@ public class ST {
     }
 
     public String toString() {
-        return name+"()";
+        return code.name+"()";
     }
 }

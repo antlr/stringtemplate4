@@ -2,10 +2,7 @@ package org.stringtemplate;
 
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.Calendar;
+import java.util.*;
 
 public class DateRenderer implements AttributeRenderer {
     public static final Map<String,Integer> formatToInt =
@@ -28,11 +25,10 @@ public class DateRenderer implements AttributeRenderer {
             }
         };
 
-    public String toString(Object o) { return toString(o, "short"); }
-
-    public String toString(Object o, String formatString) {
+    public String toString(Object o, String formatString, Locale locale) {
         Date d = null;
-        if ( o instanceof Calendar ) d = ((Calendar)o).getTime(); 
+        if ( formatString==null ) formatString = "short";
+        if ( o instanceof Calendar ) d = ((Calendar)o).getTime();
         else d = (Date)o;
         Integer styleI = formatToInt.get(formatString);
         DateFormat f = null;
