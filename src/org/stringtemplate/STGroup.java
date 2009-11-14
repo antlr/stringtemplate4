@@ -151,7 +151,7 @@ public class STGroup {
 
     // TODO: send in start/stop char or line/col so errors can be relative
     public CompiledST defineTemplate(String name, String template) {
-        return defineTemplate("/", name, (LinkedHashMap<String,FormalArgument>)null, template);
+        return defineTemplate("/", name, null, template);
     }
 
     public CompiledST defineTemplate(String name,
@@ -184,7 +184,7 @@ public class STGroup {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
         Compiler c = new Compiler(prefix);
-		CompiledST code = c.compile(template);
+        CompiledST code = c.compile(template);
         code.name = name;
         code.formalArguments = args;
         code.nativeGroup = this;
@@ -204,7 +204,7 @@ public class STGroup {
         return code;
     }
 
-	public void defineAnonSubtemplates(CompiledST code) {
+	protected void defineAnonSubtemplates(CompiledST code) {
         if ( code.compiledSubtemplates!=null ) {
             for (CompiledST sub : code.compiledSubtemplates) {
                 templates.put(sub.name, sub);
@@ -223,12 +223,13 @@ public class STGroup {
     /** Make this group import templates/dictionaries from g. */
     public void importTemplates(STGroup g) {
         if ( g==null ) return;
-        if ( imports==null ) imports = new ArrayList<STGroup>();
+        if ( imports==null ) imports = Collections.synchronizedList(new ArrayList<STGroup>());
         imports.add(g);
     }
 
     public void load() { ; }
 
+    // TODO: make this happen in background then flip ptr to new list of templates/dictionaries?
     public void loadGroupFile(String prefix, String fileName) {
         String absoluteFileName = fullyQualifiedRootDirName+"/"+fileName;
         //System.out.println("load group file "+absoluteFileName);
@@ -249,7 +250,7 @@ public class STGroup {
      */
     public void registerRenderer(Class attributeType, AttributeRenderer r) {
         if ( renderers ==null ) {
-            renderers = new HashMap<Class,AttributeRenderer>();
+            renderers = Collections.synchronizedMap(new HashMap<Class,AttributeRenderer>());
         }
         renderers.put(attributeType, r);
     }
@@ -291,9 +292,7 @@ public class STGroup {
         return buf.toString();
     }
 
-    public void setErrorListener(STErrorListener listener) {
-        this.listener = listener;
-    }
+    public void setErrorListener(STErrorListener listener) { this.listener = listener; }
 
 	public void setErrorTolerance(ErrorTolerance errors) { this.tolerance = errors; }
 	public boolean detects(int x) { return tolerance.detects(x); }
