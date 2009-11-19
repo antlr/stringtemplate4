@@ -49,6 +49,8 @@ public class Bytecode {
         }
     }
 
+    // TODO: try an enum here
+
     // INSTRUCTION BYTECODES (byte is signed; use a short to keep 0..255)
     public static final short INSTR_LOAD_STR        = 1;
     public static final short INSTR_LOAD_ATTR       = 2;

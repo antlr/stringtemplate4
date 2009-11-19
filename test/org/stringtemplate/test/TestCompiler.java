@@ -41,7 +41,7 @@ public class TestCompiler extends BaseTest {
     
     @Test public void testAttr() throws Exception {
         String template = "hi <name>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, " +
             "write, " +
@@ -56,7 +56,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testInclude() throws Exception {
         String template = "hi <foo()>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, write, new 1, write";
         String asmResult = code.instrs();
@@ -68,7 +68,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testProp() throws Exception {
         String template = "hi <a.b>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, write, load_attr 1, load_prop 2, write";
         String asmResult = code.instrs();
@@ -80,7 +80,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testProp2() throws Exception {
         String template = "<u.id>: <u.name>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_attr 0, load_prop 1, write, load_str 2, write, " +
             "load_attr 0, load_prop 3, write";
@@ -93,7 +93,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testMap() throws Exception {
         String template = "hi <name:bold>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, write, load_attr 1, load_str 2, map, write";
         String asmResult = code.instrs();
@@ -105,7 +105,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testRepeatedMap() throws Exception {
         String template = "hi <name:bold:italics>";
-        CompiledST code = new org.stringtemplate.Compiler().compile(template);
+        CompiledST code = new org.stringtemplate.Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, " +
             "write, " +
@@ -124,7 +124,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testRotMap() throws Exception {
         String template = "hi <name:bold,italics>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, write, load_attr 1, load_str 2, load_str 3, rot_map 2, write";
         String asmResult = code.instrs();
@@ -136,7 +136,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testAnonMap() throws Exception {
         String template = "hi <name:{n | <n>}>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, write, load_attr 1, load_str 2, map, write";
         String asmResult = code.instrs();
@@ -148,7 +148,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testIf() throws Exception {
         String template = "go: <if(name)>hi, foo<endif>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, write, load_attr 1, brf 14, load_str 2, write";
         String asmResult = code.instrs();
@@ -160,7 +160,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testIfElse() throws Exception {
         String template = "go: <if(name)>hi, foo<else>bye<endif>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, " +
             "write, " +
@@ -180,7 +180,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testElseIf() throws Exception {
         String template = "go: <if(name)>hi, foo<elseif(user)>a user<endif>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, " +
             "write, " +
@@ -202,7 +202,7 @@ public class TestCompiler extends BaseTest {
     
     @Test public void testElseIfElse() throws Exception {
         String template = "go: <if(name)>hi, foo<elseif(user)>a user<else>bye<endif>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, " +
             "write, " +
@@ -227,7 +227,7 @@ public class TestCompiler extends BaseTest {
     
     @Test public void testOption() throws Exception {
         String template = "hi <name; separator=\"x\">";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, write, load_attr 1, options, load_str 2, store_option 3, write_opt";
         String asmResult = code.instrs();
@@ -239,7 +239,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testOptionAsTemplate() throws Exception {
         String template = "hi <name; separator={, }>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, write, load_attr 1, options, new 2, store_option 3, write_opt";
         String asmResult = code.instrs();
@@ -251,7 +251,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testOptions() throws Exception {
         String template = "hi <name; anchor, wrap=foo(), separator=\", \">";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected =
             "load_str 0, write, load_attr 1, options, load_str 2, " +
             "store_option 0, new 3, store_option 4, load_str 4, " +
@@ -266,7 +266,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testEmptyList() throws Exception {
         String template = "<[]>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected = "list, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
@@ -277,7 +277,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testList() throws Exception {
         String template = "<[a,b]>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new Compiler().compile(null, template);
         String asmExpected = "list, load_attr 0, add, load_attr 1, add, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);

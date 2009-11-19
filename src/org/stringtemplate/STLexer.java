@@ -65,7 +65,9 @@ public class STLexer implements TokenSource {
 	public static final int OR=29;
 	public static final int AND=30;
 	public static final int INDENT=31;
-	public static final int NEWLINE=32;
+    public static final int NEWLINE=32;
+    public static final int AT=33;
+    public static final int REGION_END=34;
 
     char delimiterStartChar = '<';
     char delimiterStopChar = '>';
@@ -168,7 +170,14 @@ public class STLexer implements TokenSource {
                 case '[' : consume(); return newToken(LBRACK);
                 case ']' : consume(); return newToken(RBRACK);
 				case '=' : consume(); return newToken(EQUALS);
-				case '!' : consume(); return newToken(BANG);
+                case '!' : consume(); return newToken(BANG);
+                case '@' :
+                    consume();
+                    if ( c=='e' && input.LA(2)=='n' && input.LA(3)=='d' ) {
+                        consume(); consume(); consume();
+                        return newToken(REGION_END);
+                    }
+                    return newToken(AT);
                 case '"' : return mSTRING();
                 case '&' : consume(); match('&'); return newToken(AND); // &&
                 case '|' : consume(); match('|'); return newToken(OR); // ||
@@ -186,7 +195,7 @@ public class STLexer implements TokenSource {
 						else if ( name.equals("endif") ) return newToken(ENDIF);
 						else if ( name.equals("else") ) return newToken(ELSE);
 						else if ( name.equals("elseif") ) return newToken(ELSEIF);
-						else if ( name.equals("super") ) return newToken(SUPER);
+                        else if ( name.equals("super") ) return newToken(SUPER);
 						return id;
 					}
 					RecognitionException re = new NoViableAltException("", 0, 0, input);

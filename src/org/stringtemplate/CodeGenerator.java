@@ -6,6 +6,7 @@ import org.antlr.runtime.Token;
 
 import java.util.List;
 
+// TODO: maybe rename; more than code gen now; break into two interfaces?
 public interface CodeGenerator {
 	void emit(short opcode);
 	void emit(short opcode, int arg);
@@ -18,7 +19,15 @@ public interface CodeGenerator {
      *  what's the prefix to add?
      */
     String templateReferencePrefix();
-	String compileAnonTemplate(TokenStream input,
-							   List<Token> ids,
-							   RecognizerSharedState state);	
+
+    /** Compile a subtemplate. It's the '...' in this <names:{p | ...}> */
+    String compileAnonTemplate(String enclosingTemplateName,
+                               TokenStream input,
+                               List<Token> ids,
+                               RecognizerSharedState state);
+
+    void compileRegion(String enclosingTemplateName,
+                       String regionName,
+                       TokenStream input,
+                       RecognizerSharedState state);
 }

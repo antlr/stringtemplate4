@@ -66,6 +66,7 @@ package org.stringtemplate;
 protected STGroup group;
 }
 @lexer::members {
+protected String enclosingTemplateName;
 protected STGroup group;
 }
 
@@ -97,6 +98,8 @@ templateDef[String prefix]
    		}
 	    try {
 		    group.defineTemplate(prefix, $name.text, $formalArgs.args, template);
+		    GroupLexer lexer = (GroupLexer)input.getTokenSource();
+			lexer.enclosingTemplateName = $name.text;
 		}
         catch (STRecognitionException e) {
         	RecognitionException re = (RecognitionException)e.getCause();
@@ -201,7 +204,7 @@ ANONYMOUS_TEMPLATE
 		lexer.subtemplateDepth = 1;
 		//CommonTokenStream tokens = new CommonTokenStream(lexer);
 		UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
-        STParser parser = new STParser(tokens, (CodeGenerator)null);
+        STParser parser = new STParser(tokens, (CodeGenerator)null, enclosingTemplateName);
 		parser.template();
 		}
     	// don't match '}' here; subparser matches it to terminate

@@ -32,6 +32,9 @@ import java.io.StringWriter;
 import java.io.IOException;
 
 public class ST {
+    /** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
+    public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT };    
+
     public static final String UNKNOWN_NAME = "unknown";
     public static final ST BLANK = new BlankST();
     

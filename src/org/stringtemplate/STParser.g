@@ -37,6 +37,8 @@ options {
 
 @members {
 List<String> IFindents = new ArrayList<String>();
+/** Is this template a subtemplate or region of an enclosing template? */
+String enclosingTemplateName;
 CodeGenerator gen = new CodeGenerator() {
 	public void emit(short opcode) {;}
 	public void emit(short opcode, int arg) {;}
@@ -44,20 +46,29 @@ CodeGenerator gen = new CodeGenerator() {
 	public void write(int addr, short value) {;}
 	public int address() { return 0; }
     public String templateReferencePrefix() { return null; }
-	public String compileAnonTemplate(TokenStream input, List<Token> ids, RecognizerSharedState state) {
+	public String compileAnonTemplate(String enclosingTemplateName,
+                                      TokenStream input,
+                                      List<Token> ids,
+                                      RecognizerSharedState state)
+    {
 		Compiler c = new Compiler();
-		c.compile(input, state);
+		c.compile(null, input, state);
 		return null;
 	}
+    public void compileRegion(String enclosingTemplateName,
+                              String regionName,
+                              TokenStream input,
+                              RecognizerSharedState state) {;}
 };
-public STParser(TokenStream input, CodeGenerator gen) {
-    this(input, new RecognizerSharedState(), gen);
+public STParser(TokenStream input, CodeGenerator gen, String enclosingTemplateName) {
+    this(input, new RecognizerSharedState(), gen, enclosingTemplateName);
 }
-public STParser(TokenStream input, RecognizerSharedState state, CodeGenerator gen) {
+public STParser(TokenStream input, RecognizerSharedState state, CodeGenerator gen, String enclosingTemplateName) {
     super(null,null); // overcome bug in ANTLR 3.2
 	this.input = input;
 	this.state = state;
     if ( gen!=null ) this.gen = gen;
+    this.enclosingTemplateName = enclosingTemplateName;
 }
 protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
 	throws RecognitionException
@@ -132,6 +143,7 @@ templateAndEOF
 	:	template EOF
 	;
 
+// TODO: remove backtracking
 template
 	:	(	options {backtrack=true; k=2;}
 		:	i=INDENT         {indent($i.text);}
@@ -144,6 +156,7 @@ template
 		|	i=INDENT         {indent($i.text);}
 			text             {gen.emit(Bytecode.INSTR_DEDENT);}
 		|	text
+		|   (i=INDENT {indent($i.text);})? region
 		|	i=INDENT         {indent($i.text);}
 		 	NEWLINE          {gen.emit(Bytecode.INSTR_NEWLINE);} 
 		 	                 {gen.emit(Bytecode.INSTR_DEDENT);}
@@ -169,10 +182,18 @@ exprTag
 		RDELIM
 	;
 
+region // match $@foo$...$@end$
+	:	'@' ID 
+		{{ // force exec even when backtracking
+		gen.compileRegion(enclosingTemplateName, $ID.text, input, state);
+        }}
+		'@end'
+	;
+	
 subtemplate returns [String name]
 	:	'{' ( ids+=ID (',' ids+=ID)* '|' )?
 		{{ // force exec even when backtracking
-		$name = gen.compileAnonTemplate(input, $ids, state);
+		$name = gen.compileAnonTemplate(enclosingTemplateName, input, $ids, state);
         }}
         '}'
     ;
@@ -373,6 +394,11 @@ templateRef
 	:	ID			{gen.emit(Bytecode.INSTR_LOAD_STR, prefixedName($ID.text));}
 	|	subtemplate {gen.emit(Bytecode.INSTR_LOAD_STR, prefixedName($subtemplate.name));}
 	|	'(' mapExpr ')' {gen.emit(Bytecode.INSTR_TOSTR);}
+	|	'@' ID '(' ')'	// convert <@r()> to <region__enclosingTemplate__r()>
+		{
+		String mangled = STGroup.getMangledRegionName(enclosingTemplateName, $ID.text);
+		gen.emit(Bytecode.INSTR_LOAD_STR, prefixedName(mangled));
+		}
 	;
 	
 list:	{gen.emit(Bytecode.INSTR_LIST);} '[' listElement (',' listElement)* ']'

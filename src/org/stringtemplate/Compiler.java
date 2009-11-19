@@ -88,11 +88,12 @@ public class Compiler implements CodeGenerator {
 
     public Compiler(String prefix) { this.prefix = prefix; }
 
-    public CompiledST compile(String template) {
-        return compile(template, '<', '>');
+    public CompiledST compile(String enclosingTemplateName, String template) {
+        return compile(enclosingTemplateName, template, '<', '>');
     }
 
-	public CompiledST compile(String template,
+	public CompiledST compile(String enclosingTemplateName,
+                              String template,
 							  char delimiterStartChar,
 							  char delimiterStopChar)
 	{
@@ -104,7 +105,7 @@ public class Compiler implements CodeGenerator {
 			new STLexer(new ANTLRStringStream(template), delimiterStartChar, delimiterStopChar);
 		//CommonTokenStream tokens = new CommonTokenStream(lexer);
 		UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
-		STParser parser = new STParser(tokens, this);
+		STParser parser = new STParser(tokens, this, enclosingTemplateName);
 		try {
 			parser.templateAndEOF(); // parse, trigger compile actions for single expr
 		}
@@ -120,9 +121,12 @@ public class Compiler implements CodeGenerator {
 		return code;
 	}
 
-	public CompiledST compile(TokenStream tokens, RecognizerSharedState state) {
+	public CompiledST compile(String enclosingTemplateName,
+                              TokenStream tokens,
+                              RecognizerSharedState state)
+    {
 		instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
-		STParser parser = new STParser(tokens, state, this);
+		STParser parser = new STParser(tokens, state, this, enclosingTemplateName);
 		try {
 			parser.template(); // parse, trigger compile actions for single expr
 		}
@@ -169,13 +173,18 @@ public class Compiler implements CodeGenerator {
 
     public String templateReferencePrefix() { return prefix; }
 
-    public String compileAnonTemplate(TokenStream input,
+    public String compileAnonTemplate(String enclosingTemplateName,
+                                      TokenStream input,
                                       List<Token> ids,
                                       RecognizerSharedState state) {
         subtemplateCount++;
         String name = prefix+"_sub"+subtemplateCount;
         Compiler c = new Compiler(prefix);
-        CompiledST sub = c.compile(input, state);
+        CompiledST sub = c.compile(enclosingTemplateName, input, state);
+        if ( code.implicitlyDefinedTemplates == null ) {
+            code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();
+        }
+        code.implicitlyDefinedTemplates.add(sub);
         sub.name = name;
         if ( ids!=null ) {
 			sub.formalArguments = new LinkedHashMap<String,FormalArgument>();
@@ -184,12 +193,22 @@ public class Compiler implements CodeGenerator {
 				sub.formalArguments.put(argName, new FormalArgument(argName));
 			}
 		}
-		if ( code.compiledSubtemplates==null ) {
-			code.compiledSubtemplates = new ArrayList<CompiledST>();
-		}
-		code.compiledSubtemplates.add(sub);
 		return name;
-	}
+    }
+
+    public void compileRegion(String enclosingTemplateName,
+                              String regionName,
+                              TokenStream input,
+                              RecognizerSharedState state)
+    {
+        Compiler c = new Compiler(prefix);
+        CompiledST sub = c.compile(enclosingTemplateName, input, state);
+        sub.name = regionName;
+        if ( code.implicitlyDefinedTemplates == null ) {
+            code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();
+        }
+        code.implicitlyDefinedTemplates.add(sub);
+    }
 
     protected void ensureCapacity() {
         if ( (ip+3) >= instrs.length ) { // ensure room for full instruction

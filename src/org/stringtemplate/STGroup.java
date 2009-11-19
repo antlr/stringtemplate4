@@ -184,7 +184,7 @@ public class STGroup {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
         Compiler c = new Compiler(prefix);
-        CompiledST code = c.compile(template);
+        CompiledST code = c.compile(name, template);
         code.name = name;
         code.formalArguments = args;
         code.nativeGroup = this;
@@ -194,7 +194,7 @@ public class STGroup {
                 FormalArgument fa = args.get(a);
                 if ( fa.defaultValue!=null ) {
                     Compiler c2 = new Compiler(prefix);
-                    fa.compiledDefaultValue = c2.compile(template);
+                    fa.compiledDefaultValue = c2.compile(null, template);
                 }
             }
         }
@@ -205,14 +205,42 @@ public class STGroup {
     }
 
 	protected void defineAnonSubtemplates(CompiledST code) {
-        if ( code.compiledSubtemplates!=null ) {
-            for (CompiledST sub : code.compiledSubtemplates) {
+        if ( code.implicitlyDefinedTemplates !=null ) {
+            for (CompiledST sub : code.implicitlyDefinedTemplates) {
                 templates.put(sub.name, sub);
                 defineAnonSubtemplates(sub);
             }
         }
     }
-    
+
+    /** Track all references to regions <@foo>...<@end> or <@foo()>.  */
+    public CompiledST defineRegionTemplate(String enclosingTemplateName,
+                                           String regionName,
+                                           String template,
+                                           ST.RegionType type)
+    {
+        String mangledName =
+            getMangledRegionName(enclosingTemplateName,regionName);
+        CompiledST regionST = defineTemplate(mangledName, template);
+        regionST.isRegion = true;
+        regionST.regionDefType = type;
+        return regionST;
+    }
+
+    /** The "foo" of t() ::= "<@foo()>" is mangled to "region#t#foo" */
+    public static String getMangledRegionName(String enclosingTemplateName,
+                                              String name)
+    {
+        return "region__"+enclosingTemplateName+"__"+name;
+    }
+
+    /** Return "t" from "region__t__foo" */
+    public static String getUnMangledTemplateName(String mangledName)
+    {
+        return mangledName.substring("region__".length(),
+            mangledName.lastIndexOf("__"));
+    }
+
     /** Define a map for this group; not thread safe...do not keep adding
      *  these while you reference them.
      */
