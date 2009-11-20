@@ -27,12 +27,12 @@
 */
 package org.stringtemplate;
 
-import java.util.*;
-
 import org.antlr.runtime.*;
 
+import java.util.*;
+
+/** A compiler for a single template */
 public class Compiler implements CodeGenerator {
-    public static final String ATTR_NAME_REGEX = "[a-zA-Z/][a-zA-Z0-9_/]*";
     /** Given a template of length n, how much code will result?
      *  For now, let's assume n/5. Later, we can test in practice.
      */
@@ -79,21 +79,32 @@ public class Compiler implements CodeGenerator {
     int ip = 0;
     CompiledST code = new CompiledST();
 
-    // subdir context -- template reference prefix
-    String prefix;
+    /** subdir context.  If we're compiling templates in subdir a/b/c, then
+     *  /a/b/c is the path prefix to add to all ID refs; it fully qualifies them.
+     *  It's like resolving x to this.x in Java for field x. 
+     */
+    String templatePathPrefix;
+
+    String nameOrEnclosingTemplateName;
 
     public static int subtemplateCount = 0; // public for testing access
 
-    public Compiler() { this("/"); }
+    public Compiler() { this("/", "<unknown>"); }
 
-    public Compiler(String prefix) { this.prefix = prefix; }
-
-    public CompiledST compile(String enclosingTemplateName, String template) {
-        return compile(enclosingTemplateName, template, '<', '>');
+    /** To compile a template, we need to know what directory level it's at
+     *  (if any; most web apps do this but code gen apps don't) and what
+     *  its name is.
+     */
+    public Compiler(String templatePathPrefix, String enclosingTemplateName) {
+        this.templatePathPrefix = templatePathPrefix;
+        this.nameOrEnclosingTemplateName = enclosingTemplateName;
     }
 
-	public CompiledST compile(String enclosingTemplateName,
-                              String template,
+    public CompiledST compile(String template) {
+        return compile(template, '<', '>');
+    }
+
+	public CompiledST compile(String template,
 							  char delimiterStartChar,
 							  char delimiterStopChar)
 	{
@@ -103,9 +114,8 @@ public class Compiler implements CodeGenerator {
 
 		STLexer lexer =
 			new STLexer(new ANTLRStringStream(template), delimiterStartChar, delimiterStopChar);
-		//CommonTokenStream tokens = new CommonTokenStream(lexer);
 		UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
-		STParser parser = new STParser(tokens, this, enclosingTemplateName);
+		STParser parser = new STParser(tokens, this, nameOrEnclosingTemplateName);
 		try {
 			parser.templateAndEOF(); // parse, trigger compile actions for single expr
 		}
@@ -121,12 +131,11 @@ public class Compiler implements CodeGenerator {
 		return code;
 	}
 
-	public CompiledST compile(String enclosingTemplateName,
-                              TokenStream tokens,
+	public CompiledST compile(TokenStream tokens,
                               RecognizerSharedState state)
     {
 		instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
-		STParser parser = new STParser(tokens, state, this, enclosingTemplateName);
+		STParser parser = new STParser(tokens, state, this, nameOrEnclosingTemplateName);
 		try {
 			parser.template(); // parse, trigger compile actions for single expr
 		}
@@ -171,16 +180,16 @@ public class Compiler implements CodeGenerator {
 
 	public int address() { return ip; }
 
-    public String templateReferencePrefix() { return prefix; }
+    public String templateReferencePrefix() { return templatePathPrefix; }
 
     public String compileAnonTemplate(String enclosingTemplateName,
                                       TokenStream input,
                                       List<Token> ids,
                                       RecognizerSharedState state) {
         subtemplateCount++;
-        String name = prefix+"_sub"+subtemplateCount;
-        Compiler c = new Compiler(prefix);
-        CompiledST sub = c.compile(enclosingTemplateName, input, state);
+        String name = templatePathPrefix +"_sub"+subtemplateCount;
+        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
+        CompiledST sub = c.compile(input, state);
         if ( code.implicitlyDefinedTemplates == null ) {
             code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();
         }
@@ -201,8 +210,8 @@ public class Compiler implements CodeGenerator {
                               TokenStream input,
                               RecognizerSharedState state)
     {
-        Compiler c = new Compiler(prefix);
-        CompiledST sub = c.compile(enclosingTemplateName, input, state);
+        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
+        CompiledST sub = c.compile(input, state);
         sub.name = regionName;
         if ( code.implicitlyDefinedTemplates == null ) {
             code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();

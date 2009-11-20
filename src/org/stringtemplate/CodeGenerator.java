@@ -16,7 +16,7 @@ public interface CodeGenerator {
 	int address();
 
     /** If we're compiling templates in subdir or group file under root,
-     *  what's the prefix to add?
+     *  what's the templatePathPrefix to add?
      */
     String templateReferencePrefix();
 

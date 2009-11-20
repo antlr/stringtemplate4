@@ -40,13 +40,28 @@ public class CompiledST {
 
     protected LinkedHashMap<String,FormalArgument> formalArguments;
 
-    List<CompiledST> compiledSubtemplates;
+    List<CompiledST> implicitlyDefinedTemplates;
 
     /** The group that holds this ST definition.  We use it to initiate
      *  interpretation via ST.toString().  From there, it becomes field 'group'
      *  in interpreter and is fixed until rendering completes.
      */
     public STGroup nativeGroup = STGroup.defaultGroup;
+
+    /** Does this template come from a <@region>...<@end> embedded in
+     *  another template?
+     */
+    protected boolean isRegion;    
+
+    /** If someone refs <@r()> in template t, an implicit
+     *
+     *   @t.r() ::= ""
+     *
+     *  is defined, but you can overwrite this def by defining your
+     *  own.  We need to prevent more than one manual def though.  Between
+     *  this var and isEmbeddedRegion we can determine these cases.
+     */
+    protected ST.RegionType regionDefType;
 
     public String[] strings;
     public byte[] instrs;        // byte-addressable code memory.

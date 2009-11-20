@@ -36,8 +36,10 @@ options {
 @header { package org.stringtemplate; }
 
 @members {
-List<String> IFindents = new ArrayList<String>();
-/** Is this template a subtemplate or region of an enclosing template? */
+/** The name of the template we are compiling or the name of the
+ *  enclosing template.  This template could be a subtemplate or region of
+ *  an enclosing template.
+ */
 String enclosingTemplateName;
 CodeGenerator gen = new CodeGenerator() {
 	public void emit(short opcode) {;}
@@ -52,7 +54,7 @@ CodeGenerator gen = new CodeGenerator() {
                                       RecognizerSharedState state)
     {
 		Compiler c = new Compiler();
-		c.compile(null, input, state);
+		c.compile(input, state);
 		return null;
 	}
     public void compileRegion(String enclosingTemplateName,
@@ -120,19 +122,7 @@ public String prefixedName(String t) {
         }
     }
     
-    public void pushIFIndentation(String indent) { IFindents.add(indent); }
-
-    public String popIFIndentation() { return IFindents.remove(IFindents.size()-1); }
-
-    public void indent(String indent) {
-/*
-        if ( IFindents.size()>0 ) {
-    	    String ifIndent = IFindents.get(IFindents.size()-1);
-    	    if ( indent.startsWith(ifIndent) ) indent = indent.substring(ifIndent.length());
-        }
-        */
-    	gen.emit(Bytecode.INSTR_INDENT, indent);
-    }
+    public void indent(String indent) {	gen.emit(Bytecode.INSTR_INDENT, indent); }
 }
 
 @rulecatch {
@@ -148,7 +138,7 @@ template
 	:	(	options {backtrack=true; k=2;}
 		:	i=INDENT         {indent($i.text);}
 			ifOnOneLine      {gen.emit(Bytecode.INSTR_DEDENT);}
-		|	i=INDENT {pushIFIndentation($i.text);} ifOnMultiLines {popIFIndentation();}
+		|	i=INDENT ifOnMultiLines
 		|	ifOnMultiLines
 		|	i=INDENT       	 {indent($i.text);}
 			exprTag          {gen.emit(Bytecode.INSTR_DEDENT);}

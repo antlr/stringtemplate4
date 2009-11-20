@@ -183,8 +183,8 @@ public class STGroup {
         if ( name!=null && (name.length()==0 || name.indexOf('.')>=0) ) {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
-        Compiler c = new Compiler(prefix);
-        CompiledST code = c.compile(name, template);
+        Compiler c = new Compiler(prefix, name);
+        CompiledST code = c.compile(template);
         code.name = name;
         code.formalArguments = args;
         code.nativeGroup = this;
@@ -193,8 +193,8 @@ public class STGroup {
             for (String a : args.keySet()) {
                 FormalArgument fa = args.get(a);
                 if ( fa.defaultValue!=null ) {
-                    Compiler c2 = new Compiler(prefix);
-                    fa.compiledDefaultValue = c2.compile(null, template);
+                    Compiler c2 = new Compiler(prefix, name);
+                    fa.compiledDefaultValue = c2.compile(template);
                 }
             }
         }
