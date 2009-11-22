@@ -181,6 +181,7 @@ public class STGroup {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
         CompiledST code = compile(prefix, name, template);
+        code.name = name;
         code.formalArguments = args;
         rawDefineTemplate(prefix+name, code);
         if ( args!=null ) { // compile any default args
@@ -203,11 +204,11 @@ public class STGroup {
                                    String name,
                                    String template)
     {
-        CompiledST code = compile(prefix, name, template);
+        CompiledST code = compile(prefix, enclosingTemplateName, template);
+        code.name = prefix+getMangledRegionName(enclosingTemplateName, name);
         code.isRegion = true;
         code.regionDefType = ST.RegionType.EXPLICIT;
-        rawDefineTemplate(prefix+getMangledRegionName(enclosingTemplateName, name),
-                          code);
+        rawDefineTemplate(code.name, code);
         return code;
     }
 
@@ -239,10 +240,9 @@ public class STGroup {
         templates.put(name, code);
     }
 
-    protected CompiledST compile(String prefix, String name, String template) {
-        Compiler c = new Compiler(prefix, name);
+    protected CompiledST compile(String prefix, String enclosingTemplateName, String template) {
+        Compiler c = new Compiler(prefix, enclosingTemplateName);
         CompiledST code = c.compile(template);
-        code.name = name;
         code.nativeGroup = this;
         return code;
     }
@@ -310,6 +310,7 @@ public class STGroup {
     
     /** StringTemplate object factory; each group can have its own. */
     public ST createStringTemplate() {
+        // TODO: try making a mem pool
         ST st = new ST();
         return st;
     }

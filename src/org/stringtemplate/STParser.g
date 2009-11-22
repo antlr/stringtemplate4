@@ -377,22 +377,23 @@ memberExpr
 	;
 	
 callExpr
-options {k=2;} // prevent full LL(*) which fails, falling back on k=1; need k=2
+options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
 	:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
 		ID '(' expr ')' {func($ID);}
-	|	ID {gen.emit(Bytecode.INSTR_NEW, prefixedName($ID.text));} '(' args? ')'
-	|	'@' ID '(' ')'	// convert <@r()> to <region__enclosingTemplate__r()>
+	|	(s='super' '.')? ID
+		{gen.emit($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW, prefixedName($ID.text));}
+		'(' args? ')'
+	|	'@' (s='super' '.')? ID '(' ')'	// convert <@r()> to <region__enclosingTemplate__r()>
 		{
 		String mangled = STGroup.getMangledRegionName(enclosingTemplateName, $ID.text);
 		gen.defineBlankRegion(prefixedName(mangled));
-		gen.emit(Bytecode.INSTR_NEW, prefixedName(mangled));
+		gen.emit($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW, prefixedName(mangled));
 		}
 	|	primary
 	;
 	
 primary
-	:	'super'
-	|	o=ID	  {refAttr($o);}
+	:	o=ID	  {refAttr($o);}
 /*		(	'.' p=ID {gen.emit(Bytecode.INSTR_LOAD_PROP, $p.text);}
 		|	'.' '(' mapExpr ')' {gen.emit(Bytecode.INSTR_LOAD_PROP_IND);}
 		)*

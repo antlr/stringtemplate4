@@ -36,6 +36,7 @@ public class STLexer implements TokenSource {
 
     public static final Token SKIP = new STToken(-1, "<skip>");
 
+    // TODO: enum?
     // pasted from STParser
     public static final int RBRACK=17;
     public static final int LBRACK=16;

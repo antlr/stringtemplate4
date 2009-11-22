@@ -85,7 +85,7 @@ public class Compiler implements CodeGenerator {
      */
     String templatePathPrefix;
 
-    String nameOrEnclosingTemplateName;
+    String enclosingTemplateName;
 
     public static int subtemplateCount = 0; // public for testing access
 
@@ -97,7 +97,7 @@ public class Compiler implements CodeGenerator {
      */
     public Compiler(String templatePathPrefix, String enclosingTemplateName) {
         this.templatePathPrefix = templatePathPrefix;
-        this.nameOrEnclosingTemplateName = enclosingTemplateName;
+        this.enclosingTemplateName = enclosingTemplateName;
     }
 
     public CompiledST compile(String template) {
@@ -115,7 +115,7 @@ public class Compiler implements CodeGenerator {
         STLexer lexer =
             new STLexer(new ANTLRStringStream(template), delimiterStartChar, delimiterStopChar);
         UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
-        STParser parser = new STParser(tokens, this, nameOrEnclosingTemplateName);
+        STParser parser = new STParser(tokens, this, enclosingTemplateName);
         try {
             parser.templateAndEOF(); // parse, trigger compile actions for single expr
         }
@@ -135,7 +135,7 @@ public class Compiler implements CodeGenerator {
                               RecognizerSharedState state)
     {
         instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
-        STParser parser = new STParser(tokens, state, this, nameOrEnclosingTemplateName);
+        STParser parser = new STParser(tokens, state, this, enclosingTemplateName);
         try {
             parser.template(); // parse, trigger compile actions for single expr
         }

@@ -128,6 +128,22 @@ public class Interpreter {
                 if ( st == null ) System.err.println("no such template "+name);
                 operands[++sp] = st;
                 break;
+            case Bytecode.INSTR_SUPER_NEW :
+                nameIndex = getShort(code, ip);
+                ip += 2;
+                name = self.code.strings[nameIndex];
+                CompiledST imported = group.lookupImportedTemplate(name);
+                if ( imported==null ) {
+                    group.listener.error("no imported template for "+name);
+                    operands[++sp] = new BlankST();
+                    break;
+                }
+                // TODO: factor into STGroup
+                st = imported.nativeGroup.createStringTemplate();
+                st.groupThatCreatedThisInstance = group;
+                st.code = imported;
+                operands[++sp] = st;
+                break;
             case Bytecode.INSTR_STORE_ATTR:
                 nameIndex = getShort(code, ip);
                 name = self.code.strings[nameIndex];
