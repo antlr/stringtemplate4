@@ -91,7 +91,7 @@ public class BytecodeDisassembler {
         buf.append( String.format("%04d:\t%-14s", ip, instrName) );
         ip++;
         if ( I.n==0 ) {
-            buf.append( String.format("  ") );
+            buf.append("  ");
             return ip;
         }
         List<String> operands = new ArrayList<String>();
@@ -112,9 +112,9 @@ public class BytecodeDisassembler {
             }
         }
         for (int i = 0; i < operands.size(); i++) {
-            String s = (String) operands.get(i);
+            String s = operands.get(i);
             if ( i>0 ) buf.append(", ");
-            buf.append( String.format(s) );
+            buf.append( s );
         }
         return ip;
     }

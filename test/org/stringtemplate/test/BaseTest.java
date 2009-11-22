@@ -3,7 +3,9 @@ package org.stringtemplate.test;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.UnbufferedTokenStream;
+import org.junit.Before;
 import org.stringtemplate.Misc;
+import org.stringtemplate.STGroup;
 import org.stringtemplate.STLexer;
 
 import java.io.File;
@@ -17,6 +19,9 @@ public class BaseTest {
     public static final String tmpdir = System.getProperty("java.io.tmpdir");
     public static final String newline = Misc.newline;
 
+    @Before
+        public void setUp() { STGroup.defaultGroup = new STGroup(); }
+    
     public static void writeFile(String dir, String fileName, String content) {
 		try {
 			File f = new File(dir, fileName);

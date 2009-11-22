@@ -28,6 +28,7 @@
 package org.stringtemplate.test;
 
 import org.junit.Test;
+import org.junit.Before;
 import static org.junit.Assert.*;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;

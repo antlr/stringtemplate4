@@ -161,4 +161,21 @@ public class TestLexer extends BaseTest {
 			"[@20,47:47='>',<RDELIM>,1:47]]";
 		checkTokens(template, expected);
 	}
+
+    @Test public void testEmbeddedRegion() throws Exception {
+        String template = "<@r>foo<@end>";
+        String expected =
+            "[[@0,0:0='<',<LDELIM>,1:0], [@1,1:1='@',<AT>,1:1], [@2,2:2='r',<ID>,1:2], " +
+            "[@3,3:3='>',<RDELIM>,1:3], [@4,4:6='foo',<TEXT>,1:4], [@5,7:7='<',<LDELIM>,1:7], " +
+            "[@6,8:11='@end',<END>,1:8], [@7,12:12='>',<RDELIM>,1:12]]";
+		checkTokens(template, expected);
+    }
+
+    @Test public void testRegion() throws Exception {
+        String template = "<@r()>";
+        String expected =
+            "[[@0,0:0='<',<LDELIM>,1:0], [@1,1:1='@',<AT>,1:1], [@2,2:2='r',<ID>,1:2], " +
+             "[@3,3:3='(',<LPAREN>,1:3], [@4,4:4=')',<RPAREN>,1:4], [@5,5:5='>',<RDELIM>,1:5]]";
+		checkTokens(template, expected);
+    }
 }

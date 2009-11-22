@@ -41,7 +41,8 @@ options {
  *  an enclosing template.
  */
 String enclosingTemplateName;
-CodeGenerator gen = new CodeGenerator() {
+/** used to parse w/o compilation side-effects */
+public static final CodeGenerator NOOP_GEN = new CodeGenerator() { 
 	public void emit(short opcode) {;}
 	public void emit(short opcode, int arg) {;}
 	public void emit(short opcode, String s) {;}
@@ -57,11 +58,20 @@ CodeGenerator gen = new CodeGenerator() {
 		c.compile(input, state);
 		return null;
 	}
-    public void compileRegion(String enclosingTemplateName,
-                              String regionName,
-                              TokenStream input,
-                              RecognizerSharedState state) {;}
+    public String compileRegion(String enclosingTemplateName,
+                                String regionName,
+                                TokenStream input,
+                                RecognizerSharedState state)
+    {
+    	Compiler c = new Compiler();
+		c.compile(input, state);
+		return null;
+    }
+    public void defineBlankRegion(String fullyQualifiedName) {;}
 };
+
+CodeGenerator gen = NOOP_GEN;
+
 public STParser(TokenStream input, CodeGenerator gen, String enclosingTemplateName) {
     this(input, new RecognizerSharedState(), gen, enclosingTemplateName);
 }
@@ -147,6 +157,10 @@ template
 			text             {gen.emit(Bytecode.INSTR_DEDENT);}
 		|	text
 		|   (i=INDENT {indent($i.text);})? region
+							 {
+							 gen.emit(Bytecode.INSTR_NEW, $region.name);
+							 gen.emit(Bytecode.INSTR_WRITE);
+							 }
 		|	i=INDENT         {indent($i.text);}
 		 	NEWLINE          {gen.emit(Bytecode.INSTR_NEWLINE);} 
 		 	                 {gen.emit(Bytecode.INSTR_DEDENT);}
@@ -172,18 +186,28 @@ exprTag
 		RDELIM
 	;
 
-region // match $@foo$...$@end$
-	:	'@' ID 
+region returns [String name] // match $@foo$...$@end$
+	:	LDELIM '@' ID RDELIM
 		{{ // force exec even when backtracking
-		gen.compileRegion(enclosingTemplateName, $ID.text, input, state);
+   	    if ( state.backtracking==0 ) {
+			$name = gen.compileRegion(enclosingTemplateName, $ID.text, input, state);
+		}
+		else {
+			$name = NOOP_GEN.compileRegion(enclosingTemplateName, $ID.text, input, state);
+		}
         }}
-		'@end'
+		LDELIM '@end' RDELIM
 	;
 	
 subtemplate returns [String name]
 	:	'{' ( ids+=ID (',' ids+=ID)* '|' )?
 		{{ // force exec even when backtracking
-		$name = gen.compileAnonTemplate(enclosingTemplateName, input, $ids, state);
+   	    if ( state.backtracking==0 ) {
+			$name = gen.compileAnonTemplate(enclosingTemplateName, input, $ids, state);
+		}
+		else {
+			$name = NOOP_GEN.compileAnonTemplate(enclosingTemplateName, input, $ids, state);
+		}
         }}
         '}'
     ;
@@ -193,7 +217,7 @@ subtemplate returns [String name]
  *  syntax errors upon '}' in rule templatee, we force '}' into FOLLOW set.
  *  I hope to make ANTLR ignore FOLLOW set for (...)* in future.
  */
-addRcurlyToFollowOfTemplateRule : template '}' ;
+addTemplateEndTokensToFollowOfTemplateRule : template ('}'|LDELIM '@end') ;
 
 ifOnMultiLines
 @init {
@@ -357,6 +381,12 @@ options {k=2;} // prevent full LL(*) which fails, falling back on k=1; need k=2
 	:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
 		ID '(' expr ')' {func($ID);}
 	|	ID {gen.emit(Bytecode.INSTR_NEW, prefixedName($ID.text));} '(' args? ')'
+	|	'@' ID '(' ')'	// convert <@r()> to <region__enclosingTemplate__r()>
+		{
+		String mangled = STGroup.getMangledRegionName(enclosingTemplateName, $ID.text);
+		gen.defineBlankRegion(prefixedName(mangled));
+		gen.emit(Bytecode.INSTR_NEW, prefixedName(mangled));
+		}
 	|	primary
 	;
 	
@@ -384,11 +414,6 @@ templateRef
 	:	ID			{gen.emit(Bytecode.INSTR_LOAD_STR, prefixedName($ID.text));}
 	|	subtemplate {gen.emit(Bytecode.INSTR_LOAD_STR, prefixedName($subtemplate.name));}
 	|	'(' mapExpr ')' {gen.emit(Bytecode.INSTR_TOSTR);}
-	|	'@' ID '(' ')'	// convert <@r()> to <region__enclosingTemplate__r()>
-		{
-		String mangled = STGroup.getMangledRegionName(enclosingTemplateName, $ID.text);
-		gen.emit(Bytecode.INSTR_LOAD_STR, prefixedName(mangled));
-		}
 	;
 	
 list:	{gen.emit(Bytecode.INSTR_LIST);} '[' listElement (',' listElement)* ']'

@@ -35,7 +35,7 @@ public class STGroupDir extends STGroup {
 
     protected void _load(String prefix) {
         File dir = new File(fullyQualifiedRootDirName+"/"+prefix);
-        System.out.println("load dir '"+prefix+"' under "+fullyQualifiedRootDirName);
+        //System.out.println("load dir '"+prefix+"' under "+fullyQualifiedRootDirName);
         File[] filesAndDirs = dir.listFiles();
         for (File f : filesAndDirs) {
             if ( f.isDirectory() ) _load(prefix+f.getName()+"/");
@@ -51,7 +51,7 @@ public class STGroupDir extends STGroup {
 
     public CompiledST loadTemplateFile(String prefix, String fileName) { // load from disk
         String absoluteFileName = fullyQualifiedRootDirName + "/" + prefix + "/" + fileName;
-        System.out.println("load "+absoluteFileName);
+        //System.out.println("load "+absoluteFileName);
         File f = new File(absoluteFileName);
         if ( !f.exists() ) { // TODO: add tolerance check here
             return null;

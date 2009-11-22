@@ -32,15 +32,11 @@ import org.antlr.runtime.UnbufferedTokenStream;
 
 import java.util.*;
 
-/** A directory of .st template files and/or group files.  I think of a
- *  group of templates as a node in the ST tree.  Individual template files
- *  contain formal template definitions. In a sense, it's like a single group
- *  file broken into multiple files, one for each template.
- *  ST v3 had just the pure template inside, not the
- *  template name and header.  Name inside must match filename (minus suffix).
- *
- *  Most people will use STTree. STGroup is just a node in a tree.  A node
- *  is either a directory of .st files or a group file.
+/** A directory or directory tree of .st template files and/or group files.
+ *  Individual template files contain formal template definitions. In a sense,
+ *  it's like a single group file broken into multiple files, one for each template.
+ *  ST v3 had just the pure template inside, not the template name and header.
+ *  Name inside must match filename (minus suffix).
  */
 public class STGroup {
     /** When we use key as a value in a dictionary, this is how we signify. */
@@ -103,6 +99,7 @@ public class STGroup {
 	public ErrorTolerance tolerance = DEFAULT_ERROR_TOLERANCE;
 
 	public static STGroup defaultGroup = new STGroup();
+
 
     public STGroup() { ; }
 
@@ -183,12 +180,9 @@ public class STGroup {
         if ( name!=null && (name.length()==0 || name.indexOf('.')>=0) ) {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
-        Compiler c = new Compiler(prefix, name);
-        CompiledST code = c.compile(template);
-        code.name = name;
+        CompiledST code = compile(prefix, name, template);
         code.formalArguments = args;
-        code.nativeGroup = this;
-        templates.put(prefix+name, code);
+        rawDefineTemplate(prefix+name, code);
         if ( args!=null ) { // compile any default args
             for (String a : args.keySet()) {
                 FormalArgument fa = args.get(a);
@@ -199,32 +193,58 @@ public class STGroup {
             }
         }
         // define any anonymous subtemplates
-        defineAnonSubtemplates(code);
+        defineImplicitlyDefinedTemplates(code);
 
         return code;
     }
 
-	protected void defineAnonSubtemplates(CompiledST code) {
+    public CompiledST defineRegion(String prefix,
+                                   String enclosingTemplateName,
+                                   String name,
+                                   String template)
+    {
+        CompiledST code = compile(prefix, name, template);
+        code.isRegion = true;
+        code.regionDefType = ST.RegionType.EXPLICIT;
+        rawDefineTemplate(prefix+getMangledRegionName(enclosingTemplateName, name),
+                          code);
+        return code;
+    }
+
+	protected void defineImplicitlyDefinedTemplates(CompiledST code) {
         if ( code.implicitlyDefinedTemplates !=null ) {
             for (CompiledST sub : code.implicitlyDefinedTemplates) {
-                templates.put(sub.name, sub);
-                defineAnonSubtemplates(sub);
+                rawDefineTemplate(sub.name, sub);
+                defineImplicitlyDefinedTemplates(sub);
             }
         }
     }
 
-    /** Track all references to regions <@foo>...<@end> or <@foo()>.  */
-    public CompiledST defineRegionTemplate(String enclosingTemplateName,
-                                           String regionName,
-                                           String template,
-                                           ST.RegionType type)
-    {
-        String mangledName =
-            getMangledRegionName(enclosingTemplateName,regionName);
-        CompiledST regionST = defineTemplate(mangledName, template);
-        regionST.isRegion = true;
-        regionST.regionDefType = type;
-        return regionST;
+    protected void rawDefineTemplate(String name, CompiledST code) {
+        CompiledST prev = templates.get(name);
+        if ( prev!=null ) {
+            if ( !prev.isRegion ) {
+                listener.error("redefinition of "+name);
+                return;
+            }
+            if ( prev.isRegion && prev.regionDefType==ST.RegionType.EMBEDDED ) {
+                listener.error("can't redefine embedded region "+name);
+                return;
+            }
+            else if ( prev.isRegion && prev.regionDefType==ST.RegionType.EXPLICIT ) {
+                listener.error("can't redefine region in same group: "+name);
+                return;
+            }
+        }
+        templates.put(name, code);
+    }
+
+    protected CompiledST compile(String prefix, String name, String template) {
+        Compiler c = new Compiler(prefix, name);
+        CompiledST code = c.compile(template);
+        code.name = name;
+        code.nativeGroup = this;
+        return code;
     }
 
     /** The "foo" of t() ::= "<@foo()>" is mangled to "region#t#foo" */
@@ -296,12 +316,16 @@ public class STGroup {
 
     public String getName() { return "<no name>;"; }
 
+    public LinkedHashMap<String, CompiledST> getTemplates() {
+        return templates;
+    }
+
     public String toString() { return getName(); }
 
     public String show() {
         if ( !alreadyLoaded ) load();
         StringBuilder buf = new StringBuilder();
-        //if ( supergroup!=null ) buf.append(" : "+supergroup);
+        if ( imports!=null ) buf.append(" : "+imports);
         for (String name : templates.keySet()) {
 			if ( name.startsWith("/_sub") ) continue;
             CompiledST c = templates.get(name);

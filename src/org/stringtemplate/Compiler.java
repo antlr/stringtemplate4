@@ -37,28 +37,28 @@ public class Compiler implements CodeGenerator {
      *  For now, let's assume n/5. Later, we can test in practice.
      */
     public static final double CODE_SIZE_FACTOR = 5.0;
-	public static final int SUBTEMPLATE_INITIAL_CODE_SIZE = 15;
+    public static final int SUBTEMPLATE_INITIAL_CODE_SIZE = 15;
 
     public static final Map<String, Integer> supportedOptions =
         new HashMap<String, Integer>() {
-        {
-            put("anchor",       Interpreter.OPTION_ANCHOR);
-            put("format",       Interpreter.OPTION_FORMAT);
-            put("null",         Interpreter.OPTION_NULL);
-            put("separator",    Interpreter.OPTION_SEPARATOR);
-            put("wrap",         Interpreter.OPTION_WRAP);
-        }
-    };
+            {
+                put("anchor",       Interpreter.OPTION_ANCHOR);
+                put("format",       Interpreter.OPTION_FORMAT);
+                put("null",         Interpreter.OPTION_NULL);
+                put("separator",    Interpreter.OPTION_SEPARATOR);
+                put("wrap",         Interpreter.OPTION_WRAP);
+            }
+        };
 
     public static final int NUM_OPTIONS = supportedOptions.size();
 
     public static final Map<String,String> defaultOptionValues =
         new HashMap<String,String>() {
-        {
-            put("anchor", "true");
-            put("wrap",   "\n");
-        }
-    };
+            {
+                put("anchor", "true");
+                put("wrap",   "\n");
+            }
+        };
 
     public static Map<String, Short> funcs = new HashMap<String, Short>() {
         {
@@ -104,52 +104,52 @@ public class Compiler implements CodeGenerator {
         return compile(template, '<', '>');
     }
 
-	public CompiledST compile(String template,
-							  char delimiterStartChar,
-							  char delimiterStopChar)
-	{
-		int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
-		instrs = new byte[initialSize];
-		code.template = template;
+    public CompiledST compile(String template,
+                              char delimiterStartChar,
+                              char delimiterStopChar)
+    {
+        int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
+        instrs = new byte[initialSize];
+        code.template = template;
 
-		STLexer lexer =
-			new STLexer(new ANTLRStringStream(template), delimiterStartChar, delimiterStopChar);
-		UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
-		STParser parser = new STParser(tokens, this, nameOrEnclosingTemplateName);
-		try {
-			parser.templateAndEOF(); // parse, trigger compile actions for single expr
-		}
-		catch (RecognitionException re) {
-			String msg = parser.getErrorMessage(re, parser.getTokenNames());
+        STLexer lexer =
+            new STLexer(new ANTLRStringStream(template), delimiterStartChar, delimiterStopChar);
+        UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+        STParser parser = new STParser(tokens, this, nameOrEnclosingTemplateName);
+        try {
+            parser.templateAndEOF(); // parse, trigger compile actions for single expr
+        }
+        catch (RecognitionException re) {
+            String msg = parser.getErrorMessage(re, parser.getTokenNames());
             re.printStackTrace(System.err);
-			throw new STRecognitionException(msg, re);
-		}
+            throw new STRecognitionException(msg, re);
+        }
 
-		if ( strings!=null ) code.strings = strings.toArray();
-		code.instrs = instrs;
-		code.codeSize = ip;
-		return code;
-	}
+        if ( strings!=null ) code.strings = strings.toArray();
+        code.instrs = instrs;
+        code.codeSize = ip;
+        return code;
+    }
 
-	public CompiledST compile(TokenStream tokens,
+    public CompiledST compile(TokenStream tokens,
                               RecognizerSharedState state)
     {
-		instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
-		STParser parser = new STParser(tokens, state, this, nameOrEnclosingTemplateName);
-		try {
-			parser.template(); // parse, trigger compile actions for single expr
-		}
-		catch (RecognitionException re) {
-			String msg = parser.getErrorMessage(re, parser.getTokenNames());
+        instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
+        STParser parser = new STParser(tokens, state, this, nameOrEnclosingTemplateName);
+        try {
+            parser.template(); // parse, trigger compile actions for single expr
+        }
+        catch (RecognitionException re) {
+            String msg = parser.getErrorMessage(re, parser.getTokenNames());
             re.printStackTrace(System.err);
-			throw new STRecognitionException(msg, re);
-		}
+            throw new STRecognitionException(msg, re);
+        }
 
-		if ( strings!=null ) code.strings = strings.toArray();
-		code.instrs = instrs;
-		code.codeSize = ip;
-		return code;
-	}
+        if ( strings!=null ) code.strings = strings.toArray();
+        code.instrs = instrs;
+        code.codeSize = ip;
+        return code;
+    }
 
     public int defineString(String s) {
         return strings.add(s);
@@ -174,17 +174,17 @@ public class Compiler implements CodeGenerator {
         emit(opcode, i);
     }
 
-	public void write(int addr, short value) {
-		writeShort(instrs, addr, value);
-	}
+    public void write(int addr, short value) {
+        writeShort(instrs, addr, value);
+    }
 
-	public int address() { return ip; }
+    public int address() { return ip; }
 
     public String templateReferencePrefix() { return templatePathPrefix; }
 
     public String compileAnonTemplate(String enclosingTemplateName,
                                       TokenStream input,
-                                      List<Token> ids,
+                                      List<Token> argIDs,
                                       RecognizerSharedState state) {
         subtemplateCount++;
         String name = templatePathPrefix +"_sub"+subtemplateCount;
@@ -195,28 +195,44 @@ public class Compiler implements CodeGenerator {
         }
         code.implicitlyDefinedTemplates.add(sub);
         sub.name = name;
-        if ( ids!=null ) {
-			sub.formalArguments = new LinkedHashMap<String,FormalArgument>();
-			for (Token arg : ids) {
-				String argName = arg.getText();
-				sub.formalArguments.put(argName, new FormalArgument(argName));
-			}
-		}
-		return name;
+        if ( argIDs!=null ) {
+            sub.formalArguments = new LinkedHashMap<String,FormalArgument>();
+            for (Token arg : argIDs) {
+                String argName = arg.getText();
+                sub.formalArguments.put(argName, new FormalArgument(argName));
+            }
+        }
+        return name;
     }
 
-    public void compileRegion(String enclosingTemplateName,
-                              String regionName,
-                              TokenStream input,
-                              RecognizerSharedState state)
+    public String compileRegion(String enclosingTemplateName,
+                                String regionName,
+                                TokenStream input,
+                                RecognizerSharedState state)
     {
         Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
         CompiledST sub = c.compile(input, state);
-        sub.name = regionName;
+        String fullName =
+            templatePathPrefix+
+            STGroup.getMangledRegionName(enclosingTemplateName, regionName);
+        sub.name = fullName;
         if ( code.implicitlyDefinedTemplates == null ) {
             code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();
         }
         code.implicitlyDefinedTemplates.add(sub);
+        return fullName;
+    }
+
+    public void defineBlankRegion(String fullyQualifiedName) {
+        // TODO: combine with above method
+        CompiledST blank = new CompiledST();
+        blank.isRegion = true;
+        blank.regionDefType = ST.RegionType.IMPLICIT;
+        blank.name = fullyQualifiedName;
+        if ( code.implicitlyDefinedTemplates == null ) {
+            code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();
+        }
+        code.implicitlyDefinedTemplates.add(blank);
     }
 
     protected void ensureCapacity() {

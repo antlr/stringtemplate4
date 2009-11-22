@@ -80,13 +80,14 @@ this.group = lexer.group = $group;
 
 templateDef[String prefix]
 @init {
-    String template=null;
+    String template=null, fullName=null;
     int n=0; // num char to strip from left, right of template def
 }
-	:	(	'@' ID '.' region=ID
-		|	name=ID 
+	:	(	'@' enclosing=ID '.' region=ID '(' ')'
+			{fullName = STGroup.getMangledRegionName($enclosing.text, $region.text);}
+		|	name=ID '(' formalArgs? ')' {fullName = $name.text;}
 		)
-	    '(' formalArgs? ')' '::='
+	    '::='
 	    {Token templateToken = input.LT(1);}
 	    (	STRING     {template=$STRING.text; n=1;}
 	    |	BIGSTRING  {template=$BIGSTRING.text; n=2;}
@@ -97,9 +98,15 @@ templateDef[String prefix]
    			template = Misc.trimOneStartingWS(template);
    		}
 	    try {
-		    group.defineTemplate(prefix, $name.text, $formalArgs.args, template);
+		    CompiledST st = null;
+		    if ( $enclosing!=null ) {
+			    st = group.defineRegion(prefix, $enclosing.text, $region.text, template);
+		    }
+		    else {
+		    	st = group.defineTemplate(prefix, $name.text, $formalArgs.args, template);
+		    }
 		    GroupLexer lexer = (GroupLexer)input.getTokenSource();
-			lexer.enclosingTemplateName = $name.text;
+			lexer.enclosingTemplateName = fullName;
 		}
         catch (STRecognitionException e) {
         	RecognitionException re = (RecognitionException)e.getCause();
