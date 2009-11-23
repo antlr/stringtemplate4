@@ -356,7 +356,11 @@ exprNoComma
 	|	subtemplate {gen.emit(Bytecode.INSTR_NEW, $subtemplate.name);}
 	;
 
-expr : mapExpr ;
+expr:	mapExpr
+	|	// <{...}>
+		subtemplate
+		{gen.emit(Bytecode.INSTR_NEW, prefixedName($subtemplate.name));}
+	;
 
 mapExpr
 @init {int nt=1, ne=1;}
@@ -394,10 +398,6 @@ options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
 	
 primary
 	:	o=ID	  {refAttr($o);}
-/*		(	'.' p=ID {gen.emit(Bytecode.INSTR_LOAD_PROP, $p.text);}
-		|	'.' '(' mapExpr ')' {gen.emit(Bytecode.INSTR_LOAD_PROP_IND);}
-		)*
-		*/
 	|	STRING    {gen.emit(Bytecode.INSTR_LOAD_STR, Misc.strip($STRING.text,1));}
 	|	list
 	|	'(' expr ')' {gen.emit(Bytecode.INSTR_TOSTR);}

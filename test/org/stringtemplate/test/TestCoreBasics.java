@@ -439,4 +439,13 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expecting, result);
     }
 
+    @Test public void testSubtemplateExpr() throws Exception {
+        String template = "<{name\n}>";
+        ST st = new ST(template);
+        String expected =
+            "name"+newline;
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
 }
