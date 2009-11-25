@@ -129,9 +129,7 @@ public class BytecodeDisassembler {
             else {
                 s = strings[poolIndex].toString();
                 if ( strings[poolIndex] instanceof String ) {
-                    s = s.replaceAll("\n", "\\\\n");
-                    s = s.replaceAll("\r", "\\\\r");
-                    s = s.replaceAll("\t", "\\\\t");
+                    s = Misc.replaceEscapes(s);
                     s='"'+s+'"';
                 }
             }
@@ -140,7 +138,7 @@ public class BytecodeDisassembler {
         buf.append(s);
         return buf.toString();
     }
-    
+
     public static int getShort(byte[] memory, int index) {
         int b1 = memory[index++]&0xFF; // mask off sign-extended bits
         int b2 = memory[index++]&0xFF;
@@ -154,9 +152,7 @@ public class BytecodeDisassembler {
         for (Object o : strings) {
             if ( o instanceof String ) {
 				String s = (String)o;
-				s = s.replaceAll("\n", "\\\\n");
-				s = s.replaceAll("\r", "\\\\r");
-				s = s.replaceAll("\t", "\\\\t");
+                s = Misc.replaceEscapes(s);
                 buf.append( String.format("%04d: \"%s\"\n", addr, s) );
             }
             else {

@@ -31,7 +31,6 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 
 import java.util.*;
-import java.io.Writer;
 
 /** A directory or directory tree of .st template files and/or group files.
  *  Individual template files contain formal template definitions. In a sense,
@@ -188,7 +187,7 @@ public class STGroup {
         if ( args!=null ) { // compile any default args
             for (String a : args.keySet()) {
                 FormalArgument fa = args.get(a);
-                if ( fa.defaultValue!=null ) {
+                if ( fa.defaultValueToken !=null ) {
                     Compiler c2 = new Compiler(prefix, name);
                     fa.compiledDefaultValue = c2.compile(template);
                 }

@@ -124,10 +124,10 @@ formalArgs returns[LinkedHashMap<String,FormalArgument> args]
 formalArg[LinkedHashMap<String,FormalArgument> args]
 @init {String defvalue = null;}
 	:	ID
-		(	'=' STRING				{defvalue = $STRING.text;}
-		|	'=' ANONYMOUS_TEMPLATE	{defvalue = $ANONYMOUS_TEMPLATE.text;}
+		(	'=' a=STRING			
+		|	'=' a=ANONYMOUS_TEMPLATE
 		)?
-		{$args.put($ID.text, new FormalArgument($ID.text, defvalue));}
+		{$args.put($ID.text, new FormalArgument($ID.text, $a));}
     ;
 
 /*
@@ -170,13 +170,13 @@ defaultValuePair[Map<String,Object> mapping]
 	;
 
 keyValuePair[Map<String,Object> mapping]
-	:	STRING ':' keyValue {mapping.put(Misc.strip($STRING.text, 1), $keyValue.value);}
+	:	STRING ':' keyValue {mapping.put(Misc.replaceEscapes(Misc.strip($STRING.text, 1)), $keyValue.value);}
 	;
 
 keyValue returns [Object value]
 	:	BIGSTRING			{$value = new ST(Misc.strip($BIGSTRING.text,2));}
 	|	ANONYMOUS_TEMPLATE	{$value = new ST(Misc.strip($ANONYMOUS_TEMPLATE.text,1));}
-	|	STRING				{$value = Misc.strip($STRING.text, 1);}
+	|	STRING				{$value = Misc.replaceEscapes(Misc.strip($STRING.text, 1));}
 	|	{input.LT(1).getText().equals("key")}?=> ID
 							{$value = STGroup.DICT_KEY;}
 	|						{$value = null;}

@@ -22,14 +22,8 @@ public class STLexer implements TokenSource {
                 channelStr=",channel="+channel;
             }
             String txt = getText();
-            if ( txt!=null ) {
-                txt = txt.replaceAll("\n","\\\\n");
-                txt = txt.replaceAll("\r","\\\\r");
-                txt = txt.replaceAll("\t","\\\\t");
-            }
-            else {
-                txt = "<no text>";
-            }
+            if ( txt!=null ) txt = Misc.replaceEscapes(txt);
+            else txt = "<no text>";
             return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+STParser.tokenNames[type]+">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
         }
     }

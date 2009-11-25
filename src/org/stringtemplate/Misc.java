@@ -64,4 +64,11 @@ public class Misc {
         return s.substring(0,i+1);
     }
     */
+
+    public static String replaceEscapes(String s) {
+        s = s.replaceAll("\n", "\\\\n");
+        s = s.replaceAll("\r", "\\\\r");
+        s = s.replaceAll("\t", "\\\\t");
+        return s;
+    }
 }

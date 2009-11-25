@@ -1,5 +1,7 @@
 package org.stringtemplate;
 
+import org.antlr.runtime.Token;
+
 /** Represents the name of a formal argument
  *  defined in a template:
  *
@@ -38,16 +40,16 @@ public class FormalArgument {
     //protected int cardinality = REQUIRED;
 
 	/** If they specified name="value", store the template here */
-	public String defaultValue;
+	public Token defaultValueToken;
     public CompiledST compiledDefaultValue;
 
     public FormalArgument(String name) {
 		this.name = name;
 	}
 
-	public FormalArgument(String name, String defaultValue) {
+	public FormalArgument(String name, Token defaultValueToken) {
 		this.name = name;
-		this.defaultValue = defaultValue;
+		this.defaultValueToken = defaultValueToken;
 	}
 
     /*
@@ -63,7 +65,7 @@ public class FormalArgument {
     */
 
     public int hashCode() {
-        return name.hashCode() + defaultValue.hashCode();
+        return name.hashCode() + defaultValueToken.hashCode();
     }
 
     public boolean equals(Object o) {
@@ -75,17 +77,15 @@ public class FormalArgument {
 			return false;
 		}
 		// only check if there is a default value; that's all
-		if ( (this.defaultValue !=null && other.defaultValue ==null) ||
-			 (this.defaultValue ==null && other.defaultValue !=null) ) {
+		if ( (this.defaultValueToken !=null && other.defaultValueToken ==null) ||
+			 (this.defaultValueToken ==null && other.defaultValueToken !=null) ) {
 			return false;
 		}
 		return true;
 	}
 
     public String toString() {
-		if ( defaultValue !=null ) {
-			return name+"="+ defaultValue;
-		}
+		if ( defaultValueToken!=null ) return name+"="+defaultValueToken.getText();
         return name;
     }
 }
