@@ -337,19 +337,34 @@ public class Interpreter {
             }
             else return 0;
         }
+        if ( options!=null && options[OPTION_ANCHOR]!=null ) out.pushAnchorPoint();
+        out.pushIndentation(null);
         if ( o instanceof ST ) {
             ((ST)o).enclosingInstance = self;
+            if ( options!=null && options[OPTION_WRAP]!=null ) {
+                // if we have a wrap string, then inform writer it
+                // might need to wrap
+                try {
+                    out.writeWrapSeparator(options[OPTION_WRAP]);
+                }
+                catch (IOException ioe) {
+                    group.listener.error("Can't write wrap string");
+                }
+            }
             n = exec(out, (ST)o);
-            return n;
         }
-        o = convertAnythingIteratableToIterator(o); // normalize
-        try {
-            if ( o instanceof Iterator) n = writeIterator(out, self, o, options);
-            else n = writePOJO(out, o, options);
+        else {
+            o = convertAnythingIteratableToIterator(o); // normalize
+            try {
+                if ( o instanceof Iterator) n = writeIterator(out, self, o, options);
+                else n = writePOJO(out, o, options);
+            }
+            catch (IOException ioe) {
+                System.err.println("can't write "+o);
+            }
         }
-        catch (IOException ioe) {
-            System.err.println("can't write "+o);
-        }
+        if ( options!=null && options[OPTION_ANCHOR]!=null ) out.popAnchorPoint();
+        out.popIndentation();
         return n;
     }
 
@@ -384,7 +399,14 @@ public class Interpreter {
         String v = null;
         if ( r!=null ) v = r.toString(o, formatString, locale);
         else v = o.toString();
-        return out.write(v);
+        int n = 0;
+        if ( options!=null && options[OPTION_WRAP]!=null ) {
+            n = out.write(v, options[OPTION_WRAP]);
+        }
+        else {
+            n = out.write(v);
+        }
+        return n;
     }
 
     protected void map(ST self, Object attr, final String name) {

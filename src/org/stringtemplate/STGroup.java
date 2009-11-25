@@ -31,6 +31,7 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 
 import java.util.*;
+import java.io.Writer;
 
 /** A directory or directory tree of .st template files and/or group files.
  *  Individual template files contain formal template definitions. In a sense,
@@ -313,6 +314,10 @@ public class STGroup {
         // TODO: try making a mem pool
         ST st = new ST();
         return st;
+    }
+
+    public STWriter getStringTemplateWriter(Writer w) {
+        return new AutoIndentWriter(w);
     }
 
     public String getName() { return "<no name>;"; }

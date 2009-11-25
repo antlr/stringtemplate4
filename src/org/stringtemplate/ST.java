@@ -213,13 +213,16 @@ public class ST {
         return interp.exec(out, this);
     }
 
-    public String render() {
-        return render(Locale.getDefault());
-    }
+    public String render() { return render(Locale.getDefault()); }
 
-    public String render(Locale locale) {
+    public String render(int lineWidth) { return render(Locale.getDefault(), lineWidth); }
+
+    public String render(Locale locale) { return render(locale, STWriter.NO_WRAP); }
+
+    public String render(Locale locale, int lineWidth) {
         StringWriter out = new StringWriter();
-        STWriter wr = new AutoIndentWriter(out);
+        STWriter wr = groupThatCreatedThisInstance.getStringTemplateWriter(out);
+        wr.setLineWidth(lineWidth);
         try {
             write(wr, locale);
             /*
