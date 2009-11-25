@@ -221,7 +221,7 @@ public class ST {
 
     public String render(Locale locale, int lineWidth) {
         StringWriter out = new StringWriter();
-        STWriter wr = groupThatCreatedThisInstance.getStringTemplateWriter(out);
+        STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
         try {
             write(wr, locale);

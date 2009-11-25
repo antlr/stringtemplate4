@@ -182,13 +182,13 @@ public class Interpreter {
                 break;
             case Bytecode.INSTR_WRITE :
                 o = operands[sp--];
-                nw = writeObject(out, self, o, (String[])null);
+                nw = writeObjectNoOptions(out, self, o);
                 n += nw;
                 break;
 			case Bytecode.INSTR_WRITE_OPT :
 				options = (Object[])operands[sp--]; // get options
 				o = operands[sp--];                 // get option to write
-				nw = writeObject(out, self, o, options);
+				nw = writeObjectWithOptions(out, self, o, options);
                 n += nw;
 				break;
             case Bytecode.INSTR_MAP :
@@ -317,7 +317,7 @@ public class Interpreter {
         return n;
     }
 
-    protected int writeObject(STWriter out, ST self, Object o, Object[] options) {
+    protected int writeObjectWithOptions(STWriter out, ST self, Object o, Object[] options) {
         // precompute all option values (render all the way to strings) 
         String[] optionStrings = null;
         if ( options!=null ) {
@@ -326,7 +326,20 @@ public class Interpreter {
                 optionStrings[i] = toString(self, options[i]);
             }
         }
-        return writeObject(out, self, o, optionStrings);
+        if ( options!=null && options[OPTION_ANCHOR]!=null ) {
+            out.pushAnchorPoint();
+        }
+
+        int n = writeObject(out, self, o, optionStrings);
+        
+        if ( options!=null && options[OPTION_ANCHOR]!=null ) {
+            out.popAnchorPoint();
+        }
+        return n;
+    }
+
+    protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
+        return writeObject(out, self, o, (String[])null);
     }
 
     protected int writeObject(STWriter out, ST self, Object o, String[] options) {
@@ -337,15 +350,13 @@ public class Interpreter {
             }
             else return 0;
         }
-        if ( options!=null && options[OPTION_ANCHOR]!=null ) out.pushAnchorPoint();
-        out.pushIndentation(null);
         if ( o instanceof ST ) {
             ((ST)o).enclosingInstance = self;
             if ( options!=null && options[OPTION_WRAP]!=null ) {
                 // if we have a wrap string, then inform writer it
                 // might need to wrap
                 try {
-                    out.writeWrapSeparator(options[OPTION_WRAP]);
+                    out.writeWrap(options[OPTION_WRAP]);
                 }
                 catch (IOException ioe) {
                     group.listener.error("Can't write wrap string");
@@ -363,8 +374,6 @@ public class Interpreter {
                 System.err.println("can't write "+o);
             }
         }
-        if ( options!=null && options[OPTION_ANCHOR]!=null ) out.popAnchorPoint();
-        out.popIndentation();
         return n;
     }
 
@@ -375,7 +384,6 @@ public class Interpreter {
         String separator = null;
         if ( options!=null ) separator = options[OPTION_SEPARATOR];
         boolean seenAValue = false;
-        int i = 0;
         while ( it.hasNext() ) {
             Object iterValue = it.next();
             // Emit separator if we're beyond first value
@@ -387,7 +395,6 @@ public class Interpreter {
             int nw = writeObject(out, self, iterValue, options);
             if ( nw > 0 ) seenAValue = true;
             n += nw;
-            i++;
         }
         return n;
     }

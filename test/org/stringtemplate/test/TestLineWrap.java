@@ -8,27 +8,9 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class TestLineWrap extends BaseTest {
-    @Test public void testLineWrap() throws Exception {
-        String templates =
-            "array(values) ::= <<int[] a = { <values; wrap=\"\\n\", separator=\",\"> };>>"+newline;
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        ST a = group.getInstanceOf("array");
-        a.add("values",
-					   new int[] {3,9,20,2,1,4,6,32,5,6,77,888,2,1,6,32,5,6,77,
-						4,9,20,2,1,4,63,9,20,2,1,4,6,32,5,6,77,6,32,5,6,77,
-					    3,9,20,2,1,4,6,32,5,6,77,888,1,6,32,5});
-		String expecting =
-			"int[] a = { 3,9,20,2,1,4,6,32,5,6,77,888,\n" +
-			"2,1,6,32,5,6,77,4,9,20,2,1,4,63,9,20,2,1,\n" +
-			"4,6,32,5,6,77,6,32,5,6,77,3,9,20,2,1,4,6,\n" +
-			"32,5,6,77,888,1,6,32,5 };";
-		assertEquals(expecting,a.render(40));
-	}
-
-	@Test public void testLineWrapWithNormalizedNewlines() throws Exception {
+	@Test public void testLineWrap() throws Exception {
 		String templates =
-				"array(values) ::= <<int[] a = { <values; wrap=\"\\r\\n\", separator=\",\"> };>>"+newline;
+				"array(values) ::= <<int[] a = { <values; wrap=\"\\n\", separator=\",\"> };>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 
@@ -38,7 +20,7 @@ public class TestLineWrap extends BaseTest {
 						4,9,20,2,1,4,63,9,20,2,1,4,6,32,5,6,77,6,32,5,6,77,
 					    3,9,20,2,1,4,6,32,5,6,77,888,1,6,32,5});
 		String expecting =
-			"int[] a = { 3,9,20,2,1,4,6,32,5,6,77,888,\n" + // wrap is \r\n, normalize to \n
+			"int[] a = { 3,9,20,2,1,4,6,32,5,6,77,888,\n" +
 			"2,1,6,32,5,6,77,4,9,20,2,1,4,63,9,20,2,1,\n" +
 			"4,6,32,5,6,77,6,32,5,6,77,3,9,20,2,1,4,6,\n" +
 			"32,5,6,77,888,1,6,32,5 };";
@@ -53,15 +35,15 @@ public class TestLineWrap extends BaseTest {
 
 	@Test public void testLineWrapAnchored() throws Exception {
 		String templates =
-				"array(values) ::= <<int[] a = { <values; anchor, wrap=\"\\n\", separator=\",\"> };>>"+newline;
+            "array(values) ::= <<int[] a = { <values; anchor, wrap, separator=\",\"> };>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 
 		ST a = group.getInstanceOf("array");
 		a.add("values",
-					   new int[] {3,9,20,2,1,4,6,32,5,6,77,888,2,1,6,32,5,6,77,
-						4,9,20,2,1,4,63,9,20,2,1,4,6,32,5,6,77,6,32,5,6,77,
-					    3,9,20,2,1,4,6,32,5,6,77,888,1,6,32,5});
+            new int[] {3,9,20,2,1,4,6,32,5,6,77,888,2,1,6,32,5,6,77,
+            4,9,20,2,1,4,63,9,20,2,1,4,6,32,5,6,77,6,32,5,6,77,
+            3,9,20,2,1,4,6,32,5,6,77,888,1,6,32,5});
 		String expecting =
 			"int[] a = { 3,9,20,2,1,4,6,32,5,6,77,888,\n" +
 			"            2,1,6,32,5,6,77,4,9,20,2,1,4,\n" +
@@ -176,20 +158,35 @@ public class TestLineWrap extends BaseTest {
 		assertEquals(expecting, a.render(3));
 	}
 
-	@Test public void testLineWrapForAnonTemplate() throws Exception {
-		String templates =
-				"duh(data) ::= <<!<data:{v|[<v>]}; wrap>!>>"+newline;
+    @Test public void testLineWrapForList() throws Exception {
+        String templates =
+                "duh(data) ::= <<!<data; wrap>!>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("duh");
-		a.add("data", new int[] {1,2,3,4,5,6,7,8,9});
-		String expecting =
-			"![1][2][3]\n" + // width=9 is the 3 char; don't break til after ]
-			"[4][5][6]\n" +
-			"[7][8][9]!";
-		assertEquals(expecting,a.render(9));
-	}
+        ST a = group.getInstanceOf("duh");
+        a.add("data", new int[] {1,2,3,4,5,6,7,8,9});
+        String expecting =
+            "!123\n" +
+            "4567\n" +
+            "89!";
+        assertEquals(expecting,a.render(4));
+    }
+
+    @Test public void testLineWrapForAnonTemplate() throws Exception {
+        String templates =
+                "duh(data) ::= <<!<data:{v|[<v>]}; wrap>!>>"+newline;
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+
+        ST a = group.getInstanceOf("duh");
+        a.add("data", new int[] {1,2,3,4,5,6,7,8,9});
+        String expecting =
+            "![1][2][3]\n" + // width=9 is the 3 char; don't break til after ]
+            "[4][5][6]\n" +
+            "[7][8][9]!";
+        assertEquals(expecting,a.render(9));
+    }
 
 	@Test public void testLineWrapForAnonTemplateAnchored() throws Exception {
 		String templates =

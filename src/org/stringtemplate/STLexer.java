@@ -140,7 +140,7 @@ public class STLexer implements TokenSource {
             scanningInsideExpr = true;
             return newToken(LDELIM);
         }
-        if ( c=='\r' ) { consume(); consume(); return newToken(NEWLINE); }
+        if ( c=='\r' ) { consume(); consume(); return newToken(NEWLINE); } // \r\n -> \n
         if ( c=='\n') {	consume(); return newToken(NEWLINE); }
         if ( c=='}' && subtemplateDepth>0 ) {
             scanningInsideExpr = true;

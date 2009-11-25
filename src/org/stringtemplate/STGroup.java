@@ -316,10 +316,6 @@ public class STGroup {
         return st;
     }
 
-    public STWriter getStringTemplateWriter(Writer w) {
-        return new AutoIndentWriter(w);
-    }
-
     public String getName() { return "<no name>;"; }
 
     public LinkedHashMap<String, CompiledST> getTemplates() {

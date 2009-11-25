@@ -197,6 +197,10 @@ BIGSTRING
 		|	~'\\'
 		)*
         '>>'
+        {
+        String txt = getText().replaceAll("\\\\>",">");;
+		setText(txt);
+		}
 	;
 
 ANONYMOUS_TEMPLATE

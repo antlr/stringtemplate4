@@ -102,8 +102,9 @@ public class AutoIndentWriter implements STWriter {
      *  This prevents a check later to deal with anchors when starting new line.
      */
     public void pushIndentation(String indent) {
-        int lastAnchor = 0;
+        /*
         int indentWidth = getIndentationWidth();
+        int lastAnchor = 0;
         // If current anchor is beyond current indent width, add in difference
         if ( anchors_sp>=0 && anchors[anchors_sp]>indentWidth ) {
             lastAnchor = anchors[anchors_sp];
@@ -112,6 +113,7 @@ public class AutoIndentWriter implements STWriter {
             indents.add(buf.toString());
             return;
         }
+        */
         indents.add(indent);        
     }
 
@@ -150,16 +152,13 @@ public class AutoIndentWriter implements STWriter {
 		for (int i=0; i<str.length(); i++) {
 			char c = str.charAt(i);
 			// found \n or \r\n newline?
-			if ( c=='\r' || c=='\n' ) {
+			if ( c=='\r' ) continue;
+            if ( c=='\n' ) {
 				atStartOfLine = true;
 				charPosition = -1; // set so the write below sets to 0
 				n += newline.length();
 				out.write(newline);
 				charPosition += n; // wrote n more char 
-				// skip an extra char upon \r\n
-				if ( (c=='\r' && (i+1)<str.length() && str.charAt(i+1)=='\n') ) {
-					i++; // loop iteration i++ takes care of skipping 2nd char
-				}
 				continue;
 			}
 			// normal character
@@ -186,11 +185,11 @@ public class AutoIndentWriter implements STWriter {
 	 *  before spitting out this str.
 	 */
 	public int write(String str, String wrap) throws IOException {
-		int n = writeWrapSeparator(wrap);
+		int n = writeWrap(wrap);
 		return n + write(str);
 	}
 
-	public int writeWrapSeparator(String wrap) throws IOException {
+	public int writeWrap(String wrap) throws IOException {
 		int n = 0;
 		// if want wrap and not already at start of line (last char was \n)
 		// and we have hit or exceeded the threshold
@@ -204,10 +203,10 @@ public class AutoIndentWriter implements STWriter {
 			for (int i=0; i<wrap.length(); i++) {
 				char c = wrap.charAt(i);
 				if ( c=='\n' ) {
-					n++;
-					out.write(c);
+					out.write(newline);
+                    n += newline.length();
 					charPosition = 0;
-                    n+=indent();
+                    n += indent();
 					// continue writing any chars out
 				}
 				else {  // write A or B part
@@ -229,16 +228,18 @@ public class AutoIndentWriter implements STWriter {
 				out.write(ind);
 			}
 		}
-		charPosition += n;
-		return n;
-	}
 
-	public int indent(int spaces) throws IOException {
-		for (int i=1; i<=spaces; i++) {
-			out.write(' ');
-		}
-		charPosition += spaces;
-		return spaces;
+        // If current anchor is beyond current indent width, indent to anchor
+        // *after* doing indents (might tabs in there or whatever)
+        int indentWidth = n;
+        if ( anchors_sp>=0 && anchors[anchors_sp]>indentWidth ) {
+            int remainder = anchors[anchors_sp]-indentWidth;
+            for (int i=1; i<=remainder; i++) out.write(' ');
+            n += remainder;
+        }
+
+        charPosition += n;
+		return n;
 	}
 
     protected StringBuffer getIndentString(int spaces) {
