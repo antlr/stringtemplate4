@@ -28,6 +28,7 @@
 package org.stringtemplate;
 
 public class Bytecode {
+    public static final int MAX_OPNDS = 3;
     public static final int OPND_SIZE_IN_BYTES = 2;
     public static final int STRING = 1;
     public static final int ADDR   = 2;
@@ -35,7 +36,7 @@ public class Bytecode {
 
     public static class Instruction {
         String name; // E.g., "load_str", "new"
-        int[] type = new int[3];
+        int[] type = new int[MAX_OPNDS];
         int n = 0;
         public Instruction(String name) { this(name,0,0,0); n=0; }
         public Instruction(String name, int a) { this(name,a,0,0); n=1; }
@@ -45,7 +46,7 @@ public class Bytecode {
             type[0] = a;
             type[1] = b;
             type[2] = c;
-            n = 3;
+            n = MAX_OPNDS;
         }
     }
 
@@ -111,8 +112,8 @@ public class Bytecode {
         new Instruction("new",STRING),
         new Instruction("new_ind"),
         new Instruction("super_new",STRING),
-        new Instruction("write"),
-		new Instruction("write_opt"),
+        new Instruction("write", INT, INT), // write delimiter-start-in-template, stop
+		new Instruction("write_opt", INT, INT),
         new Instruction("map"),
         new Instruction("rot_map", INT),
         new Instruction("par_map", INT),

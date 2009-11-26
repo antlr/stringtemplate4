@@ -72,10 +72,15 @@ public interface STWriter {
      *
      *  method.  Can't pass to exec(). 
 	 */
-	public int writeWrap(String wrap) throws IOException;
+	int writeWrap(String wrap) throws IOException;
 
 	/** Write a separator.  Same as write() except that a \n cannot
 	 *  be inserted before emitting a separator.
 	 */
 	int writeSeparator(String str) throws IOException;
+
+    /** Return the absolute char index into the output of the last char
+     *  we wrote.  Returns -1 if no char written.
+     */
+    int index();
 }

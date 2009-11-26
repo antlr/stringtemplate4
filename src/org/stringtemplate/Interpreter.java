@@ -35,11 +35,62 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 public class Interpreter {
+    // TODO: enum?
     public static final int OPTION_ANCHOR       = 0;
     public static final int OPTION_FORMAT       = 1;
     public static final int OPTION_NULL         = 2;
     public static final int OPTION_SEPARATOR    = 3;
     public static final int OPTION_WRAP         = 4;
+
+    public class DebugEvent {
+        ST self;
+        int start, stop; // output location
+        public DebugEvent(ST self, int start, int stop) {
+            this.self = self;
+            this.start = start;
+            this.stop = stop;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName()+"{" +
+                   "self=" + self +
+                   ", attr=" + self.attributes +
+                   ", start=" + start +
+                   ", stop=" + stop +
+                   '}';
+        }
+    }
+    public class EvalTemplateEvent extends DebugEvent {
+        public EvalTemplateEvent(ST self, int start, int stop) {
+            super(self, start, stop);
+        }
+    }
+    public class EvalExprEvent extends DebugEvent {
+        int exprStart, exprStop; // template pattern location
+        String expr;
+        public EvalExprEvent(ST self, int start, int stop,
+                             int exprStart, int exprStop)
+        {
+            super(self, start, stop);
+            this.exprStart = exprStart;
+            this.exprStop = exprStop;
+            expr = self.code.template.substring(exprStart, exprStop+1);
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName()+"{" +
+                   "self=" + self +
+                   ", attr=" + self.attributes +
+                   ", start=" + start +
+                   ", stop=" + stop +
+                   ", expr=" + expr +
+                   '}';
+        }
+    }
+
+    protected List<DebugEvent> events;
 
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
@@ -50,7 +101,9 @@ public class Interpreter {
     Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
     int sp = -1;  // stack pointer register
     int nw = 0;   // how many char written on this template line so far? ("number written" register)
-    
+
+    STWriter out;
+
     /** Exec st with respect to this group. Once set in ST.toString(),
      *  it should be fixed.  ST has group also.
      */
@@ -59,15 +112,20 @@ public class Interpreter {
     Locale locale;
     
     public boolean trace = false;
+    public boolean debug = false;
 
-    public Interpreter(STGroup group) { this(group,Locale.getDefault()); }
+    public Interpreter(STGroup group, STWriter out) {
+        this(group,out,Locale.getDefault());
+    }
     
-    public Interpreter(STGroup group, Locale locale) {
+    public Interpreter(STGroup group, STWriter out, Locale locale) {
         this.group = group;
+        this.out = out;
         this.locale = locale;
     }
 
-    public int exec(STWriter out, ST self) {
+    public int exec(ST self) {
+        int start = out.index() + 1; // track char we're about to write
         int prevOpcode = 0;
         int n = 0; // how many char we write out
         int nameIndex = 0;
@@ -181,14 +239,22 @@ public class Interpreter {
                 options[optionIndex] = o; // store value into options on stack
                 break;
             case Bytecode.INSTR_WRITE :
+                int exprStart = getShort(code, ip);
+                ip += 2;
+                int exprStop = getShort(code, ip);
+                ip += 2;
                 o = operands[sp--];
-                nw = writeObjectNoOptions(out, self, o);
+                nw = writeObjectNoOptions(self, o, exprStart, exprStop);
                 n += nw;
                 break;
 			case Bytecode.INSTR_WRITE_OPT :
+                exprStart = getShort(code, ip);
+                ip += 2;
+                exprStop = getShort(code, ip);
+                ip += 2;
 				options = (Object[])operands[sp--]; // get options
 				o = operands[sp--];                 // get option to write
-				nw = writeObjectWithOptions(out, self, o, options);
+				nw = writeObjectWithOptions(self, o, options, exprStart, exprStop);
                 n += nw;
 				break;
             case Bytecode.INSTR_MAP :
@@ -314,11 +380,26 @@ public class Interpreter {
             }
             prevOpcode = opcode;            
         }
+        if ( debug ) {
+            events.add( new EvalTemplateEvent(self, start, out.index()) );
+        }
         return n;
     }
 
-    protected int writeObjectWithOptions(STWriter out, ST self, Object o, Object[] options) {
-        // precompute all option values (render all the way to strings) 
+    protected int writeObjectNoOptions(ST self, Object o, int exprStart, int exprStop) {
+        int start = out.index() + 1; // track char we're about to write
+        int n = writeObject(out, self, o, (String[])null);
+        if ( debug ) {
+            events.add( new EvalExprEvent(self, start, out.index(), exprStart, exprStop) );
+        }
+        return n;
+    }
+
+    protected int writeObjectWithOptions(ST self, Object o, Object[] options,
+                                         int exprStart, int exprStop)
+    {
+        int start = out.index() + 1; // track char we're about to write
+        // precompute all option values (render all the way to strings)
         String[] optionStrings = null;
         if ( options!=null ) {
             optionStrings = new String[options.length];
@@ -335,11 +416,10 @@ public class Interpreter {
         if ( options!=null && options[OPTION_ANCHOR]!=null ) {
             out.popAnchorPoint();
         }
+        if ( debug ) {
+            events.add( new EvalTemplateEvent(self, start, out.index()) );
+        }
         return n;
-    }
-
-    protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
-        return writeObject(out, self, o, (String[])null);
     }
 
     protected int writeObject(STWriter out, ST self, Object o, String[] options) {
@@ -362,7 +442,7 @@ public class Interpreter {
                     group.listener.error("Can't write wrap string");
                 }
             }
-            n = exec(out, (ST)o);
+            n = exec((ST)o);
         }
         else {
             o = convertAnythingIteratableToIterator(o); // normalize
@@ -694,17 +774,24 @@ public class Interpreter {
     }
 
     public Object strlen(Object v) {
-        return null;
+        //return null;
+        // TODO: impl
+        throw new UnsupportedOperationException();
     }
 
+    public List<DebugEvent> getEvents() { return events; }
+
+    public void setDebug(boolean b) { debug = b; events = new ArrayList<DebugEvent>(); }
+    
     protected String toString(ST self, Object value) {
         if ( value!=null ) {
             if ( value.getClass()==String.class ) return (String)value;
             // if ST, make sure it evaluates with enclosing template as self
-            if ( value.getClass()==ST.class ) ((ST)value).enclosingInstance = self;
+            if ( value instanceof ST ) ((ST)value).enclosingInstance = self;
             // if not string already, must evaluate it
             StringWriter sw = new StringWriter();
-            writeObject(new NoIndentWriter(sw), self, value, null);
+            Interpreter interp = new Interpreter(group, new NoIndentWriter(sw), locale);
+            interp.writeObjectNoOptions(self, value, -1, -1);
             return sw.toString();
         }
         return null;
@@ -898,5 +985,6 @@ public class Interpreter {
         int word = b1<<(8*1) | b2;
         return word;
     }
+
 }
 

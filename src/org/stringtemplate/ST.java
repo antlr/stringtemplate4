@@ -204,13 +204,13 @@ public class ST {
     }    
 
     public int write(STWriter out) throws IOException {
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance);
-        return interp.exec(out, this);
+        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, out);
+        return interp.exec(this);
     }
 
     public int write(STWriter out, Locale locale) throws IOException {
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
-        return interp.exec(out, this);
+        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, out, locale);
+        return interp.exec(this);
     }
 
     public String render() { return render(Locale.getDefault()); }
@@ -225,11 +225,6 @@ public class ST {
         wr.setLineWidth(lineWidth);
         try {
             write(wr, locale);
-            /*
-            System.err.println("template size = "+code.template.length()+
-                               ", code size = "+code.instrs.length+", ratio = "+
-                               ((float)code.instrs.length/code.template.length()));
-                               */
         }
         catch (IOException io) {
             System.err.println("Got IOException writing to writer");

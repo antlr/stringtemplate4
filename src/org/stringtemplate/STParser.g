@@ -31,6 +31,7 @@ parser grammar STParser;
 
 options {
 	tokenVocab=STLexer;
+	TokenLabelType = CommonToken;
 }
 
 @header { package org.stringtemplate; }
@@ -46,7 +47,8 @@ public static final CodeGenerator NOOP_GEN = new CodeGenerator() {
 	public void emit(short opcode) {;}
 	public void emit(short opcode, int arg) {;}
 	public void emit(short opcode, String s) {;}
-	public void write(int addr, short value) {;}
+    public void emit(short opcode, int arg1, int arg2) {;}
+    public void write(int addr, short value) {;}
 	public int address() { return 0; }
     public String templateReferencePrefix() { return null; }
 	public String compileAnonTemplate(String enclosingTemplateName,
@@ -161,7 +163,9 @@ options {backtrack=true; k=2;}
 	|   (i=INDENT {indent($i.text);})? region
 						 {
 						 gen.emit(Bytecode.INSTR_NEW, $region.name);
-						 gen.emit(Bytecode.INSTR_WRITE);
+						 gen.emit(Bytecode.INSTR_WRITE,
+						          $region.start.getStartIndex(),
+						          $region.stop.getStartIndex());
 						 }
 	|	i=INDENT         {indent($i.text);}
 	 	NEWLINE          {gen.emit(Bytecode.INSTR_NEWLINE);} 
@@ -174,15 +178,17 @@ text
 		{
 		if ( $TEXT.text.length()>0 ) {
 			gen.emit(Bytecode.INSTR_LOAD_STR, $TEXT.text);
-			gen.emit(Bytecode.INSTR_WRITE);
+			gen.emit(Bytecode.INSTR_WRITE,$TEXT.getStartIndex(),$TEXT.getStopIndex());
 		}
 		}
 	;
 
 exprTag
-	:	LDELIM expr
-		(	';' exprOptions {gen.emit(Bytecode.INSTR_WRITE_OPT);}
-		|	                {gen.emit(Bytecode.INSTR_WRITE);}
+	:	LDELIM
+		expr
+		(	';' exprOptions
+			{gen.emit(Bytecode.INSTR_WRITE_OPT,$LDELIM.getStartIndex(),((CommonToken)input.LT(1)).getStartIndex());}
+		|	{gen.emit(Bytecode.INSTR_WRITE,$LDELIM.getStartIndex(),((CommonToken)input.LT(1)).getStartIndex());}
 		)
 		RDELIM
 	;

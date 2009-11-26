@@ -36,11 +36,11 @@ public class CompiledST {
     /** The original, immutable pattern (not really used again after
      *  initial "compilation"). Useful for debugging.
      */
-    protected String template;
+    public String template;
 
     protected LinkedHashMap<String,FormalArgument> formalArguments;
 
-    List<CompiledST> implicitlyDefinedTemplates;
+    protected List<CompiledST> implicitlyDefinedTemplates;
 
     /** The group that holds this ST definition.  We use it to initiate
      *  interpretation via ST.toString().  From there, it becomes field 'group'

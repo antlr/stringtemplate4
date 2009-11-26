@@ -158,14 +158,21 @@ public class Compiler implements CodeGenerator {
     // CodeGenerator interface impl.
 
     public void emit(short opcode) {
-        ensureCapacity();
+        ensureCapacity(1);
         instrs[ip++] = (byte)opcode;
     }
 
     public void emit(short opcode, int arg) {
-        ensureCapacity();
-        instrs[ip++] = (byte)opcode;
+        emit(opcode);
+        ensureCapacity(2);
         writeShort(instrs, ip, (short)arg);
+        ip += 2;
+    }
+
+    public void emit(short opcode, int arg1, int arg2) {
+        emit(opcode, arg1);
+        ensureCapacity(2);
+        writeShort(instrs, ip, (short)arg2);
         ip += 2;
     }
 
@@ -235,8 +242,8 @@ public class Compiler implements CodeGenerator {
         code.implicitlyDefinedTemplates.add(blank);
     }
 
-    protected void ensureCapacity() {
-        if ( (ip+3) >= instrs.length ) { // ensure room for full instruction
+    protected void ensureCapacity(int n) {
+        if ( (ip+n) >= instrs.length ) { // ensure room for full instruction
             byte[] c = new byte[instrs.length*2];
             System.arraycopy(instrs, 0, c, 0, instrs.length);
             instrs = c;

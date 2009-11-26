@@ -73,7 +73,11 @@ public class AutoIndentWriter implements STWriter {
 	 *  This is the position we are *about* to write not the position
 	 *  last written to.
 	 */
-	protected int charPosition = 0;
+    protected int charPosition = 0;
+
+    /** The absolute char index into the output of the last char written. */
+    protected int charIndex = -1;
+    
 	protected int lineWidth = NO_WRAP;
 
 	protected int charPositionOfStartOfExpr = 0;
@@ -92,29 +96,8 @@ public class AutoIndentWriter implements STWriter {
 		this.lineWidth = lineWidth;
 	}
 
-	/** Push even blank (null) indents as they are like scopes; must
-     *  be able to pop them back off stack.
-     *
-     *  To deal with combined anchors and indentation, force indents to
-     *  include any current anchor point.  If current anchor is beyond
-     *  current indent width, add the difference to the indent to be added.
-     *
-     *  This prevents a check later to deal with anchors when starting new line.
-     */
     public void pushIndentation(String indent) {
-        /*
-        int indentWidth = getIndentationWidth();
-        int lastAnchor = 0;
-        // If current anchor is beyond current indent width, add in difference
-        if ( anchors_sp>=0 && anchors[anchors_sp]>indentWidth ) {
-            lastAnchor = anchors[anchors_sp];
-            StringBuffer buf = getIndentString(lastAnchor-indentWidth);
-            if ( indent!=null ) buf.append(indent); // don't add if null
-            indents.add(buf.toString());
-            return;
-        }
-        */
-        indents.add(indent);        
+        indents.add(indent);
     }
 
     public String popIndentation() {
@@ -146,6 +129,8 @@ public class AutoIndentWriter implements STWriter {
 		return n;
 	}
 
+    public int index() { return charIndex; }
+    
 	/** Write out a string literal or attribute expression or expression element.*/
 	public int write(String str) throws IOException {
 		int n = 0;
@@ -158,7 +143,8 @@ public class AutoIndentWriter implements STWriter {
 				charPosition = -1; // set so the write below sets to 0
 				n += newline.length();
 				out.write(newline);
-				charPosition += n; // wrote n more char 
+				charPosition += n; // wrote n more char
+                charIndex += n;
 				continue;
 			}
 			// normal character
@@ -170,6 +156,7 @@ public class AutoIndentWriter implements STWriter {
 			n++;
 			out.write(c);
 			charPosition++;
+            charIndex++;
 		}
 		return n;
 	}
@@ -206,6 +193,7 @@ public class AutoIndentWriter implements STWriter {
 					out.write(newline);
                     n += newline.length();
 					charPosition = 0;
+                    charIndex += newline.length();
                     n += indent();
 					// continue writing any chars out
 				}
@@ -213,6 +201,7 @@ public class AutoIndentWriter implements STWriter {
 					n++;
 					out.write(c);
 					charPosition++;
+                    charIndex++;
 				}
 			}
 		}
@@ -239,6 +228,7 @@ public class AutoIndentWriter implements STWriter {
         }
 
         charPosition += n;
+        charIndex += n;
 		return n;
 	}
 
