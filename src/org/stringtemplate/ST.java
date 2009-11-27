@@ -44,7 +44,7 @@ public class ST {
     public CompiledST code; // TODO: is this the right name?
 
     /** Map an attribute name to its value(s). */
-    Map<String,Object> attributes;
+    protected Map<String,Object> attributes;
 
     /** Enclosing instance if I'm embedded within another template.
      *  IF-subtemplates are considered embedded as well.
@@ -158,6 +158,10 @@ public class ST {
         return null;
     }
 
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
     protected static AttributeList convertToAttributeList(Object curvalue) {
         AttributeList multi;
         if ( curvalue == null ) {
@@ -193,15 +197,28 @@ public class ST {
      *  here that would be "[z y x]".
      */
     public String getEnclosingInstanceStackString() {
-        List<String> names = new LinkedList<String>();
+        List<ST> templates = getEnclosingInstanceStack();
+        StringBuilder buf = new StringBuilder();
+        int i = 0;
+        for (ST st : templates) {
+            if ( i>0 ) buf.append(", ");
+            buf.append(st.getName());
+            i++;
+        }
+        return buf.toString();
+    }
+
+    public List<ST> getEnclosingInstanceStack() {
+        List<ST> stack = new LinkedList<ST>();
         ST p = this;
         while ( p!=null ) {
-            String name = p.code.name;
-            names.add(0,name);
+            stack.add(0,p);
             p = p.enclosingInstance;
         }
-        return names.toString().replaceAll(",","");
-    }    
+        return stack;
+    }
+
+    public String getName() { return code.name; }
 
     public int write(STWriter out) throws IOException {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance, out);
