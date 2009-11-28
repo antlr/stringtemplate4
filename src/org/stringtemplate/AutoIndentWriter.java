@@ -75,9 +75,9 @@ public class AutoIndentWriter implements STWriter {
 	 */
     protected int charPosition = 0;
 
-    /** The absolute char index into the output of the last char written. */
-    protected int charIndex = -1;
-    
+    /** The absolute char index into the output of the next char to be written. */
+    protected int charIndex = 0;
+
 	protected int lineWidth = NO_WRAP;
 
 	protected int charPositionOfStartOfExpr = 0;
@@ -101,7 +101,7 @@ public class AutoIndentWriter implements STWriter {
     }
 
     public String popIndentation() {
-        return (String)indents.remove(indents.size()-1);
+        return indents.remove(indents.size()-1);
     }
 
 	public void pushAnchorPoint() {
@@ -141,10 +141,10 @@ public class AutoIndentWriter implements STWriter {
             if ( c=='\n' ) {
 				atStartOfLine = true;
 				charPosition = -1; // set so the write below sets to 0
-				n += newline.length();
 				out.write(newline);
+				n += newline.length();
+				charIndex += newline.length();
 				charPosition += n; // wrote n more char
-                charIndex += n;
 				continue;
 			}
 			// normal character
@@ -156,7 +156,7 @@ public class AutoIndentWriter implements STWriter {
 			n++;
 			out.write(c);
 			charPosition++;
-            charIndex++;
+			charIndex++;
 		}
 		return n;
 	}
@@ -211,7 +211,7 @@ public class AutoIndentWriter implements STWriter {
 	public int indent() throws IOException {
 		int n = 0;
 		for (int i=0; i<indents.size(); i++) {
-			String ind = (String)indents.get(i);
+			String ind = indents.get(i);
 			if ( ind!=null ) {
 				n+=ind.length();
 				out.write(ind);

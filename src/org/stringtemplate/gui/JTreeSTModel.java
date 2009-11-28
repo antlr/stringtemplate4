@@ -8,27 +8,47 @@ import javax.swing.event.TreeModelListener;
 
 public class JTreeSTModel implements TreeModel {
     ST root;
+
+	public static class Wrapper {
+		public ST st;
+		public Wrapper(ST st) { this.st = st; }
+
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			Wrapper wrapper = (Wrapper) o;
+			if (st != null ? !st.equals(wrapper.st) : wrapper.st != null) return false;
+			return true;
+		}
+		public int hashCode() { return st != null ? st.hashCode() : 0; }
+		public String toString() {
+			if ( st.isSubtemplate() ) return "{...}";
+			return st.toString();
+		}
+	}
+	
     public JTreeSTModel(ST root) { this.root = root; }
 
     public int getChildCount(Object parent) {
-        ST st = (ST)parent;
+		ST st = getST(parent);
         return st.events.size();
     }
 
     public int getIndexOfChild(Object parent, Object child){
         if ( parent==null ) return -1;
-        ST st = (ST)parent;
+		ST parentST = getST(parent);
+		ST childST = getST(child);
         int i = 0;
-        for (Interpreter.DebugEvent e : st.events) {
-            if ( e.self == child ) return i;
+        for (Interpreter.DebugEvent e : parentST.events) {
+            if ( e.self == childST ) return i;
             i++;
         }
         return -1;
     }
 
     public Object getChild(Object parent, int index){
-        ST st = (ST)parent;
-        return st.events.get(index).self;
+		ST st = getST(parent);
+        return new Wrapper(st.events.get(index).self);
     }
 
     public boolean isLeaf(Object node) {
@@ -47,4 +67,9 @@ public class JTreeSTModel implements TreeModel {
 
     public void removeTreeModelListener(TreeModelListener treeModelListener) {
     }
+
+	public static ST getST(Object o) {
+		if ( o instanceof Wrapper ) return ((Wrapper)o).st;
+		else return (ST)o;
+	}
 }

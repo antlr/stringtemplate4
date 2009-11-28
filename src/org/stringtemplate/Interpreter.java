@@ -125,7 +125,7 @@ public class Interpreter {
     }
 
     public int exec(ST self) {
-        int start = out.index() + 1; // track char we're about to write
+        int start = out.index(); // track char we're about to write
         int prevOpcode = 0;
         int n = 0; // how many char we write out
         int nameIndex = 0;
@@ -381,19 +381,22 @@ public class Interpreter {
             prevOpcode = opcode;            
         }
         if ( debug ) {
-            events.add( new EvalTemplateEvent(self, start, out.index()) );
+			int stop = out.index() - 1;
+			EvalTemplateEvent e = new EvalTemplateEvent(self, start, stop);
+			System.out.println(e);
+			events.add(e);
             if ( self.enclosingInstance!=null ) {
-                self.enclosingInstance.events.add( new EvalTemplateEvent(self, start, out.index()) );
+                self.enclosingInstance.events.add(e);
             }
         }
         return n;
     }
 
     protected int writeObjectNoOptions(ST self, Object o, int exprStart, int exprStop) {
-        int start = out.index() + 1; // track char we're about to write
-        int n = writeObject(out, self, o, (String[])null);
+        int start = out.index(); // track char we're about to write
+        int n = writeObject(out, self, o, null);
         if ( debug ) {
-            events.add( new EvalExprEvent(self, start, out.index(), exprStart, exprStop) );
+            events.add( new EvalExprEvent(self, start, out.index()-1, exprStart, exprStop) );
             //self.events.add( new EvalExprEvent(self, start, out.index(), exprStart, exprStop) );
         }
         return n;
@@ -402,7 +405,7 @@ public class Interpreter {
     protected int writeObjectWithOptions(ST self, Object o, Object[] options,
                                          int exprStart, int exprStop)
     {
-        int start = out.index() + 1; // track char we're about to write
+        int start = out.index(); // track char we're about to write
         // precompute all option values (render all the way to strings)
         String[] optionStrings = null;
         if ( options!=null ) {
@@ -421,7 +424,7 @@ public class Interpreter {
             out.popAnchorPoint();
         }
         if ( debug ) {
-            events.add( new EvalTemplateEvent(self, start, out.index()) );
+            events.add( new EvalTemplateEvent(self, start, out.index()-1) );
             //self.events.add( new EvalTemplateEvent(self, start, out.index()) );
         }
         return n;

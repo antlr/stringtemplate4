@@ -36,7 +36,7 @@ public class CompiledST {
     /** The original, immutable pattern (not really used again after
      *  initial "compilation"). Useful for debugging.
      */
-    protected String template;
+    public String template;
 
     public int embeddedStart=-1, embeddedStop=-1; // if subtemplate
 
@@ -69,10 +69,13 @@ public class CompiledST {
     public byte[] instrs;        // byte-addressable code memory.
     public int codeSize;
 
-    public String getTemplate() {
-        if ( embeddedStart>=0 ) return template.substring(embeddedStart, embeddedStop); 
+    public String getTemplate() { return template; }
+/*        if ( embeddedStart>=0 ) return template.substring(embeddedStart, embeddedStop);
         return template;
     }
+    */
+
+	public boolean isSubtemplate() { return name.startsWith("/"+ST.SUBTEMPLATE_PREFIX); } 
 
     public String instrs() {
         BytecodeDisassembler dis = new BytecodeDisassembler(instrs,

@@ -329,8 +329,8 @@ public class STGroup {
         StringBuilder buf = new StringBuilder();
         if ( imports!=null ) buf.append(" : "+imports);
         for (String name : templates.keySet()) {
-			if ( name.startsWith("/_sub") ) continue;
-            CompiledST c = templates.get(name);
+			CompiledST c = templates.get(name);
+			if ( c.isSubtemplate() ) continue;
             int slash = name.lastIndexOf('/');
             name = name.substring(slash+1, name.length());
             buf.append(name);

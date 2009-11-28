@@ -79,8 +79,8 @@ public interface STWriter {
 	 */
 	int writeSeparator(String str) throws IOException;
 
-    /** Return the absolute char index into the output of the last char
-     *  we wrote.  Returns -1 if no char written.
+    /** Return the absolute char index into the output of the char
+     *  we're about to write.  Returns 0 if no char written yet.
      */
     int index();
 }

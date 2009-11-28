@@ -32,7 +32,9 @@ import java.io.StringWriter;
 import java.io.IOException;
 
 public class ST {
-    /** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
+	public static final String SUBTEMPLATE_PREFIX = "_sub";
+
+	/** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
     public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT };    
 
     public static final String UNKNOWN_NAME = "unknown";
@@ -223,6 +225,8 @@ public class ST {
     }
 
     public String getName() { return code.name; }
+
+	public boolean isSubtemplate() { return code.isSubtemplate(); }
 
     public int write(STWriter out) throws IOException {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance, out);

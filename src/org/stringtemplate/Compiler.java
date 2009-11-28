@@ -194,7 +194,7 @@ public class Compiler implements CodeGenerator {
                                       List<Token> argIDs,
                                       RecognizerSharedState state) {
         subtemplateCount++;
-        String name = templatePathPrefix +"_sub"+subtemplateCount;
+        String name = templatePathPrefix+ST.SUBTEMPLATE_PREFIX+subtemplateCount;
         TokenSource tokenSource = input.getTokenSource();
         STLexer lexer = null;
         int start=-1, stop=-1;
