@@ -197,18 +197,21 @@ public class Compiler implements CodeGenerator {
         String name = templatePathPrefix +"_sub"+subtemplateCount;
         TokenSource tokenSource = input.getTokenSource();
         STLexer lexer = null;
-        int startCharIndex = -1;
+        int start=-1, stop=-1;
         if ( tokenSource instanceof STLexer ) {
-            lexer = (STLexer)tokenSource;
-            startCharIndex = lexer.input.index();
+            lexer = (STLexer) tokenSource;
+            start = lexer.input.index();
         }
         Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
         CompiledST sub = c.compile(input, state);
         sub.name = name;
-        if ( lexer!=null ) {
-            int stopCharIndex = lexer.input.index();
-            //sub.template = lexer.input.substring(startCharIndex, stopCharIndex);
-            sub.template = lexer.input.toString();
+        if ( tokenSource instanceof STLexer ) {
+            stop = lexer.input.index();
+            // sub.template = lexer.input.substring(start,stop-2);
+            System.out.println(start+".."+stop);
+            sub.embeddedStart = start;
+            sub.embeddedStop = stop-1;
+            sub.template = lexer.input.substring(0, lexer.input.size()-1);
         }
         if ( code.implicitlyDefinedTemplates == null ) {
             code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();

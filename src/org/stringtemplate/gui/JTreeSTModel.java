@@ -16,6 +16,7 @@ public class JTreeSTModel implements TreeModel {
     }
 
     public int getIndexOfChild(Object parent, Object child){
+        if ( parent==null ) return -1;
         ST st = (ST)parent;
         int i = 0;
         for (Interpreter.DebugEvent e : st.events) {

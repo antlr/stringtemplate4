@@ -52,7 +52,7 @@ public class ST {
     /** Enclosing instance if I'm embedded within another template.
      *  IF-subtemplates are considered embedded as well.
      */
-    ST enclosingInstance; // who's your daddy?
+    public ST enclosingInstance; // who's your daddy?
 
     /** Created as instance of which group? We need this to init interpreter
      *  via render.  So, we create st and then it needs to know which
@@ -200,7 +200,7 @@ public class ST {
      *  here that would be "[z y x]".
      */
     public String getEnclosingInstanceStackString() {
-        List<ST> templates = getEnclosingInstanceStack();
+        List<ST> templates = getEnclosingInstanceStack(true);
         StringBuilder buf = new StringBuilder();
         int i = 0;
         for (ST st : templates) {
@@ -211,11 +211,12 @@ public class ST {
         return buf.toString();
     }
 
-    public List<ST> getEnclosingInstanceStack() {
+    public List<ST> getEnclosingInstanceStack(boolean topdown) {
         List<ST> stack = new LinkedList<ST>();
         ST p = this;
         while ( p!=null ) {
-            stack.add(0,p);
+            if ( topdown ) stack.add(0,p);
+            else stack.add(p);
             p = p.enclosingInstance;
         }
         return stack;
