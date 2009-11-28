@@ -26,6 +26,8 @@ public class STViewFrame extends JFrame {
 		menuItem2 = new JMenuItem();
 		scrollPane1 = new JScrollPane();
 		output = new JTextPane();
+		scrollPane5 = new JScrollPane();
+		tree = new JTree();
 		scrollPane3 = new JScrollPane();
 		stack = new JList();
 		scrollPane4 = new JScrollPane();
@@ -38,8 +40,8 @@ public class STViewFrame extends JFrame {
 		setTitle("Testing");
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new FormLayout(
-			"2*(default, $lcgap), 308dlu",
-			"default, $lgap, 210dlu, $lgap, 104dlu"));
+			"[50dlu,default,200dlu], $lcgap, [50dlu,min], $lcgap, 308dlu:grow",
+			"$ugap, $lgap, 210dlu:grow, $lgap, 104dlu"));
 
 		//======== menuBar1 ========
 		{
@@ -73,7 +75,13 @@ public class STViewFrame extends JFrame {
 			output.setText("void ");
 			scrollPane1.setViewportView(output);
 		}
-		contentPane.add(scrollPane1, cc.xywh(1, 1, 5, 3));
+		contentPane.add(scrollPane1, cc.xywh(3, 2, 3, 2));
+
+		//======== scrollPane5 ========
+		{
+			scrollPane5.setViewportView(tree);
+		}
+		contentPane.add(scrollPane5, cc.xywh(1, 2, 1, 2));
 
 		//======== scrollPane3 ========
 		{
@@ -108,6 +116,8 @@ public class STViewFrame extends JFrame {
 	protected JMenuItem menuItem2;
 	protected JScrollPane scrollPane1;
 	protected JTextPane output;
+	private JScrollPane scrollPane5;
+	protected JTree tree;
 	protected JScrollPane scrollPane3;
 	protected JList stack;
 	protected JScrollPane scrollPane4;

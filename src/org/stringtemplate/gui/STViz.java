@@ -15,16 +15,33 @@ import java.util.Map;
 public class STViz {
     public static void main(String[] args) throws IOException {
         String templates =
-            "t(x) ::= <<[<u()>]>>\n"+
-            "u() ::= << <x> >>\n";
+            "method(type,name,args,stats) ::= <<\n" +
+            "public <type> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
+            "    <stats;separator=\"\\n\">\n" +
+            "}\n" +
+            ">>\n"+
+            "assign(a,b) ::= \"<a> = <b>;\"\n"+
+            "return(x) ::= <<return <x>;>>\n";
 
         String tmpdir = System.getProperty("java.io.tmpdir");
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        ST st = group.getInstanceOf("t");
+        ST st = group.getInstanceOf("method");
         st.code.dump();
-        st.add("x", "foo");
-        st.add("y", "bar");
+        st.add("type", "float");
+        st.add("name", "foo");
+        st.add("args", new String[] {"x", "y", "z"});
+        ST s1 = group.getInstanceOf("assign");
+        s1.add("a", "x");
+        s1.add("b", "y");
+        ST s2 = group.getInstanceOf("assign");
+        s2.add("a", "y");
+        s2.add("b", "z");
+        ST s3 = group.getInstanceOf("return");
+        s3.add("x", "3.14159");
+        st.add("stats", s1);
+        st.add("stats", s2);
+        st.add("stats", s3);
 
         StringWriter sw = new StringWriter();
         Interpreter interp = new Interpreter(group, new AutoIndentWriter(sw));
@@ -52,6 +69,10 @@ public class STViz {
         }
         m.attributes.setModel(attrModel);
 
+
+        JTreeSTModel tmodel = new JTreeSTModel(st);
+        m.tree.setModel(tmodel);
+        
         m.output.setText(sw.toString());
         m.template.setText(st.code.template);
         m.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

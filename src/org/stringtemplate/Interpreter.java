@@ -43,8 +43,8 @@ public class Interpreter {
     public static final int OPTION_WRAP         = 4;
 
     public class DebugEvent {
-        ST self;
-        int start, stop; // output location
+        public ST self;
+        public int start, stop; // output location
         public DebugEvent(ST self, int start, int stop) {
             this.self = self;
             this.start = start;
@@ -382,6 +382,9 @@ public class Interpreter {
         }
         if ( debug ) {
             events.add( new EvalTemplateEvent(self, start, out.index()) );
+            if ( self.enclosingInstance!=null ) {
+                self.enclosingInstance.events.add( new EvalTemplateEvent(self, start, out.index()) );
+            }
         }
         return n;
     }
@@ -391,6 +394,7 @@ public class Interpreter {
         int n = writeObject(out, self, o, (String[])null);
         if ( debug ) {
             events.add( new EvalExprEvent(self, start, out.index(), exprStart, exprStop) );
+            //self.events.add( new EvalExprEvent(self, start, out.index(), exprStart, exprStop) );
         }
         return n;
     }
@@ -418,6 +422,7 @@ public class Interpreter {
         }
         if ( debug ) {
             events.add( new EvalTemplateEvent(self, start, out.index()) );
+            //self.events.add( new EvalTemplateEvent(self, start, out.index()) );
         }
         return n;
     }

@@ -244,6 +244,7 @@ public class STGroup {
         Compiler c = new Compiler(prefix, enclosingTemplateName);
         CompiledST code = c.compile(template);
         code.nativeGroup = this;
+        code.template = template;
         return code;
     }
 

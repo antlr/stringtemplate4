@@ -195,13 +195,25 @@ public class Compiler implements CodeGenerator {
                                       RecognizerSharedState state) {
         subtemplateCount++;
         String name = templatePathPrefix +"_sub"+subtemplateCount;
+        TokenSource tokenSource = input.getTokenSource();
+        STLexer lexer = null;
+        int startCharIndex = -1;
+        if ( tokenSource instanceof STLexer ) {
+            lexer = (STLexer)tokenSource;
+            startCharIndex = lexer.input.index();
+        }
         Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
         CompiledST sub = c.compile(input, state);
+        sub.name = name;
+        if ( lexer!=null ) {
+            int stopCharIndex = lexer.input.index();
+            //sub.template = lexer.input.substring(startCharIndex, stopCharIndex);
+            sub.template = lexer.input.toString();
+        }
         if ( code.implicitlyDefinedTemplates == null ) {
             code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();
         }
         code.implicitlyDefinedTemplates.add(sub);
-        sub.name = name;
         if ( argIDs!=null ) {
             sub.formalArguments = new LinkedHashMap<String,FormalArgument>();
             for (Token arg : argIDs) {

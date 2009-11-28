@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<java version="1.6.0_15" class="java.beans.XMLDecoder"> 
+<java version="1.6.0_07" class="java.beans.XMLDecoder"> 
  <object class="com.jformdesigner.model.FormModel"> 
   <void property="contentType"> 
    <string>form/swing</string> 
@@ -13,11 +13,11 @@
        <class>com.jgoodies.forms.layout.FormLayout</class> 
        <void method="setProperty"> 
         <string>$columnSpecs</string> 
-        <string>default, labelcompgap, default, labelcompgap, 308dlu</string> 
+        <string>(50dlu&lt;default&lt;200dlu), labelcompgap, max(min;50dlu), labelcompgap, 308dlu:grow</string> 
        </void> 
        <void method="setProperty"> 
         <string>$rowSpecs</string> 
-        <string>default, linegap, 210dlu, linegap, 104dlu</string> 
+        <string>unrelgap, linegap, 210dlu:grow, linegap, 104dlu</string> 
        </void> 
       </object> 
       <void method="setProperty"> 
@@ -68,11 +68,55 @@
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridWidth</string> 
-         <int>5</int> 
+         <int>3</int> 
         </void> 
         <void method="setProperty"> 
          <string>gridHeight</string> 
+         <int>2</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridX</string> 
          <int>3</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridY</string> 
+         <int>2</int> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormContainer"> 
+        <string>javax.swing.JScrollPane</string> 
+        <object class="com.jformdesigner.model.FormLayoutManager"> 
+         <class>javax.swing.JScrollPane</class> 
+        </object> 
+        <void property="name"> 
+         <string>scrollPane5</string> 
+        </void> 
+        <void method="add"> 
+         <object class="com.jformdesigner.model.FormComponent"> 
+          <string>javax.swing.JTree</string> 
+          <void property="name"> 
+           <string>tree</string> 
+          </void> 
+          <void method="auxiliary"> 
+           <void method="setProperty"> 
+            <string>JavaCodeGenerator.variableModifiers</string> 
+            <int>4</int> 
+           </void> 
+          </void> 
+         </object> 
+        </void> 
+       </object> 
+       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+        <class>com.jgoodies.forms.layout.CellConstraints</class> 
+        <void method="setProperty"> 
+         <string>gridY</string> 
+         <int>2</int> 
+        </void> 
+        <void method="setProperty"> 
+         <string>gridHeight</string> 
+         <int>2</int> 
         </void> 
        </object> 
       </void> 

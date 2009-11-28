@@ -46,6 +46,9 @@ public class ST {
     /** Map an attribute name to its value(s). */
     protected Map<String,Object> attributes;
 
+    // TEMPORARY! TODO move to DebugST
+    public List<Interpreter.DebugEvent> events = new ArrayList<Interpreter.DebugEvent>();    
+
     /** Enclosing instance if I'm embedded within another template.
      *  IF-subtemplates are considered embedded as well.
      */

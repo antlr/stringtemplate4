@@ -44,4 +44,24 @@ public class TestDebugEvents extends BaseTest {
         String result = events.toString();
         assertEquals(expected, result);
     }
+
+    @Test public void testTemplateCall() throws Exception {
+        String templates =
+            "t(x) ::= <<[<u()>]>>\n" +
+            "u() ::= << <x> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        ST st = group.getInstanceOf("t");
+        st.code.dump();
+        st.add("x", "foo");
+        StringWriter sw = new StringWriter();
+        Interpreter interp = new Interpreter(group, new AutoIndentWriter(sw));
+        interp.setDebug(true);
+        interp.exec(st);
+        String expected = "";
+        List<Interpreter.DebugEvent> events = interp.getEvents();
+        String result = events.toString();
+        assertEquals(expected, result);
+    }
 }
