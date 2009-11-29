@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.awt.*;
 
 /** */
 public class STViz {
@@ -82,9 +83,13 @@ public class STViz {
 			}
 		);
 
+
 		m.output.setText(sw.toString());
 
 		m.template.setText(st.code.getTemplate());
+        m.bytecode.setText(st.code.disasm());
+
+        updateStack(st, m);
 
 		CaretListener caretListenerLabel = new CaretListener() {
 			public void caretUpdate(CaretEvent e) {
@@ -100,12 +105,21 @@ public class STViz {
 
 		m.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		m.pack();
+        m.setSize(800,600);
+        m.topSplitPane.setBorder(null);
+        //m.topSplitPane.setResizeWeight(0.15);
+        m.bottomSplitPane.setBorder(null);
+        //m.bottomSplitPane.setResizeWeight(0.15);
+        m.treeScrollPane.setPreferredSize(new Dimension(120,400));
+        m.bottomSplitPane.setPreferredSize(new Dimension(120,200));
 		m.setVisible(true);
 	}
 
 	private static void update(STViewFrame m) {
 		updateStack(currentST, m);
 		updateAttributes(currentST, m);
+        m.bytecode.setText(currentST.code.disasm());
+
 
 		List<ST> pathST = currentST.getEnclosingInstanceStack(true);
 		Object[] path = new Object[pathST.size()];
@@ -184,8 +198,6 @@ public class STViz {
 					for (int i = minIndex; i <= maxIndex; i++) {
 						if (m.attributes.isSelectedIndex(i)) {
 							//System.out.println("index="+i);
-							String name = (String)((Pair)attrModel.elementAt(i)).a;
-							System.out.println(st.addEvents.get(name));
 						}
 					}
 				}

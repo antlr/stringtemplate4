@@ -29,6 +29,9 @@ package org.stringtemplate;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.io.Writer;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class CompiledST {
     protected String name;
@@ -91,5 +94,18 @@ public class CompiledST {
         System.out.println(dis.disassemble());
         System.out.println("Strings:");
         System.out.println(dis.strings());
+    }
+
+    public String disasm() {
+        BytecodeDisassembler dis = new BytecodeDisassembler(instrs,
+                                                            codeSize,
+                                                            strings);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        pw.println(dis.disassemble());
+        pw.println("Strings:");
+        pw.println(dis.strings());
+        pw.close();
+        return sw.toString();
     }
 }
