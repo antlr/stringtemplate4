@@ -1,6 +1,7 @@
 package org.stringtemplate.gui;
 
 import org.stringtemplate.*;
+import org.stringtemplate.misc.Misc;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-import java.awt.*;
 
 /** */
 public class STViz {
@@ -149,18 +149,53 @@ public class STViz {
 		}
 	}
 
-	protected static void updateAttributes(ST st, STViewFrame m) {
-		DefaultListModel attrModel = new DefaultListModel();
-		Map<String,Object> attrs = st.getAttributes();
+	protected static void updateAttributes(final ST st, final STViewFrame m) {
+		System.out.println("add events="+st.addEvents);
+		final DefaultListModel attrModel = new DefaultListModel();
+		final Map<String,Object> attrs = st.getAttributes();
+		class Pair {
+			public Object a, b;
+			public Pair(Object a, Object b) {this.a=a; this.b=b;}
+			public String toString() { return a.toString()+" = "+b; }
+		}
 		for (String a : attrs.keySet()) {
-			attrModel.addElement(a+" = "+attrs.get(a));
+			if ( st.addEvents!=null ) {
+				List<ST.AddAttributeEvent> events = st.addEvents.get(a);
+				StringBuilder locations = new StringBuilder();
+				int i = 0;
+				for (ST.AddAttributeEvent ae : events) {
+					if ( i>0 ) locations.append(", ");
+					locations.append(ae.getFileName()+":"+ae.getLine());
+					i++;
+				}
+				attrModel.addElement(a+" = "+attrs.get(a)+" @ "+locations.toString());
+			}
+			else {
+				attrModel.addElement(a+" = "+attrs.get(a));
+			}
+			//attrModel.addElement(new Pair(a, attrs.get(a)));
 		}
 		m.attributes.setModel(attrModel);
+		m.attributes.addListSelectionListener(
+			new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent e) {
+					int minIndex = m.attributes.getMinSelectionIndex();
+					int maxIndex = m.attributes.getMaxSelectionIndex();
+					for (int i = minIndex; i <= maxIndex; i++) {
+						if (m.attributes.isSelectedIndex(i)) {
+							//System.out.println("index="+i);
+							String name = (String)((Pair)attrModel.elementAt(i)).a;
+							System.out.println(st.addEvents.get(name));
+						}
+					}
+				}
+			}
+		);
 	}
 
 	protected static void updateStack(ST st, STViewFrame m) {
 		List<ST> stack = st.getEnclosingInstanceStack(true);
-		m.setTitle("STViz - ["+Misc.join(stack.iterator()," ")+"]");
+		m.setTitle("STViz - ["+ Misc.join(stack.iterator()," ")+"]");
 	}
 
 	public static Interpreter.DebugEvent findEventAtOutputLocation(List<Interpreter.DebugEvent> events,

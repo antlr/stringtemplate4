@@ -1,4 +1,4 @@
-package org.stringtemplate;
+package org.stringtemplate.misc;
 
 import java.io.File;
 import java.io.FileWriter;

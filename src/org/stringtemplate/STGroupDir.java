@@ -2,10 +2,9 @@ package org.stringtemplate;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
+import org.stringtemplate.misc.Misc;
 
 import java.io.File;
-import java.util.List;
-import java.util.ArrayList;
 
 // TODO: caching?
 
@@ -63,7 +62,7 @@ public class STGroupDir extends STGroup {
             GroupParser parser = new GroupParser(tokens);
             parser.group = this;
             parser.templateDef(prefix);
-            return templates.get("/"+prefix+Misc.getFileNameNoSuffix(fileName));
+            return templates.get("/"+prefix+ Misc.getFileNameNoSuffix(fileName));
         }
         catch (Exception e) {
             System.err.println("can't load template file: "+absoluteFileName);

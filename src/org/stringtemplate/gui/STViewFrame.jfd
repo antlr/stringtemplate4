@@ -13,7 +13,7 @@
        <class>com.jgoodies.forms.layout.FormLayout</class> 
        <void method="setProperty"> 
         <string>$columnSpecs</string> 
-        <string>max(min;50dlu), 1dlu, 308dlu:grow</string> 
+        <string>max(min;75dlu), 1dlu, 308dlu:grow</string> 
        </void> 
        <void method="setProperty"> 
         <string>$rowSpecs</string> 

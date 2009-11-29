@@ -27,6 +27,8 @@
 */
 package org.stringtemplate;
 
+import org.stringtemplate.misc.Misc;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;

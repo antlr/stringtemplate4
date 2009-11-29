@@ -28,6 +28,7 @@
 package org.stringtemplate;
 
 import org.stringtemplate.Bytecode;
+import org.stringtemplate.misc.Misc;
 
 import java.util.List;
 import java.util.ArrayList;

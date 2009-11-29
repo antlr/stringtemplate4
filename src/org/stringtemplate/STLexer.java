@@ -1,6 +1,7 @@
 package org.stringtemplate;
 
 import org.antlr.runtime.*;
+import org.stringtemplate.misc.Misc;
 
 import java.util.ArrayList;
 import java.util.List;

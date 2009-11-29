@@ -29,6 +29,7 @@ package org.stringtemplate;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
+import org.stringtemplate.misc.Misc;
 
 import java.util.*;
 
@@ -340,7 +341,7 @@ public class STGroup {
             }
             buf.append(')');
             buf.append(" ::= <<"+Misc.newline);
-            buf.append(c.template+Misc.newline);
+            buf.append(c.template+ Misc.newline);
             buf.append(">>"+Misc.newline);
         }
         return buf.toString();

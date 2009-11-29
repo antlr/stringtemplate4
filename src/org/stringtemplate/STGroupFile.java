@@ -1,7 +1,6 @@
 package org.stringtemplate;
 
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.UnbufferedTokenStream;
+import org.stringtemplate.misc.Misc;
 
 import java.io.File;
 

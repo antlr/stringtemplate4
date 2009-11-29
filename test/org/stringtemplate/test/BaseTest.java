@@ -4,7 +4,7 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.UnbufferedTokenStream;
 import org.junit.Before;
-import org.stringtemplate.Misc;
+import org.stringtemplate.misc.Misc;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.STLexer;
 

@@ -27,6 +27,9 @@
 */
 package org.stringtemplate;
 
+import org.stringtemplate.debug.Event;
+import org.stringtemplate.misc.MultiMap;
+
 import java.util.*;
 import java.io.StringWriter;
 import java.io.IOException;
@@ -50,6 +53,32 @@ public class ST {
 
     // TEMPORARY! TODO move to DebugST
     public List<Interpreter.DebugEvent> events = new ArrayList<Interpreter.DebugEvent>();    
+
+	public static class AddAttributeEvent extends Event {
+		ST self;
+		String name;
+		Object value;
+		public AddAttributeEvent(ST self, String name, Object value) {
+			this.self =self;
+			this.name = name;
+			this.value = value;
+		}
+
+		public String toString() {
+			return "addEvent{" +
+				"self=" + self +
+				", name='" + name + '\'' +
+				", value=" + value +
+				", location=" + getFileName()+":"+getLine()+
+				'}';
+		}
+	}
+
+	/** Track add attribute "events"; used for ST user-level debugging;
+	 *  Avoid polluting ST with this field when not debugging.
+	 */
+	public MultiMap<String,AddAttributeEvent> addEvents;
+	//public List<AddAttributeEvent> addEvents;
 
     /** Enclosing instance if I'm embedded within another template.
      *  IF-subtemplates are considered embedded as well.
@@ -99,6 +128,11 @@ public class ST {
         }
 
         if ( value instanceof ST ) ((ST)value).enclosingInstance = this;
+
+		if ( true ) {
+			if ( addEvents == null ) addEvents = new MultiMap<String,AddAttributeEvent>();
+			addEvents.map(name, new AddAttributeEvent(this, name, value));
+		}
 
         Object curvalue = null;
         if ( attributes==null || !attributes.containsKey(name) ) { // new attribute

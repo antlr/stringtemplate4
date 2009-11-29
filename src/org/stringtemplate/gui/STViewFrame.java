@@ -38,7 +38,7 @@ public class STViewFrame extends JFrame {
 		setTitle("Testing");
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new FormLayout(
-			"[50dlu,min], 1dlu, 308dlu:grow",
+			"[75dlu,min], 1dlu, 308dlu:grow",
 			"$lgap, 210dlu:grow, $lgap, 104dlu"));
 
 		//======== menuBar1 ========

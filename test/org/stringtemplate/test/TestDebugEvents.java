@@ -3,6 +3,7 @@ package org.stringtemplate.test;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.*;
+import org.stringtemplate.misc.Misc;
 
 import java.io.StringWriter;
 import java.util.List;
