@@ -1,118 +1,122 @@
+/*
+ * Created by JFormDesigner on Sun Nov 29 12:38:59 PST 2009
+ */
+
 package org.stringtemplate.gui;
 
 import java.awt.*;
 import javax.swing.*;
-import com.jgoodies.forms.layout.*;
-/*
- * Created by JFormDesigner on Fri Nov 27 13:25:07 PST 2009
- */
-
-
 
 /**
- * @author Jean Bovet
+ * @author Terence Parr
  */
 public class STViewFrame extends JFrame {
-	public STViewFrame() {
-		initComponents();
-	}
+    public STViewFrame() {
+        initComponents();
+    }
 
-	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		menuBar1 = new JMenuBar();
-		menu1 = new JMenu();
-		menuItem1 = new JMenuItem();
-		menu2 = new JMenu();
-		menuItem2 = new JMenuItem();
-		scrollPane1 = new JScrollPane();
-		output = new JTextPane();
-		scrollPane5 = new JScrollPane();
-		tree = new JTree();
-		scrollPane4 = new JScrollPane();
-		attributes = new JList();
-		scrollPane2 = new JScrollPane();
-		template = new JTextPane();
-		CellConstraints cc = new CellConstraints();
+    private void initComponents() {
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner non-commercial license
+        topSplitPane = new JSplitPane();
+        treeScrollPane = new JScrollPane();
+        tree = new JTree();
+        scrollPane7 = new JScrollPane();
+        output = new JTextPane();
+        bottomSplitPane = new JSplitPane();
+        attributeScrollPane = new JScrollPane();
+        attributes = new JList();
+        tabbedPane1 = new JTabbedPane();
+        scrollPane13 = new JScrollPane();
+        template = new JTextPane();
+        scrollPane14 = new JScrollPane();
+        stacktrace = new JTextPane();
+        scrollPane15 = new JScrollPane();
+        bytecode = new JTextPane();
 
-		//======== this ========
-		setTitle("Testing");
-		Container contentPane = getContentPane();
-		contentPane.setLayout(new FormLayout(
-			"[75dlu,min], 1dlu, 308dlu:grow",
-			"$lgap, 210dlu:grow, $lgap, 104dlu"));
+        //======== this ========
+        Container contentPane = getContentPane();
+        contentPane.setLayout(new GridLayout(2, 0, 0, 10));
 
-		//======== menuBar1 ========
-		{
+        //======== topSplitPane ========
+        {
+            topSplitPane.setContinuousLayout(true);
+            topSplitPane.setResizeWeight(0.15);
 
-			//======== menu1 ========
-			{
-				menu1.setText("File");
+            //======== treeScrollPane ========
+            {
+                treeScrollPane.setViewportView(tree);
+            }
+            topSplitPane.setLeftComponent(treeScrollPane);
 
-				//---- menuItem1 ----
-				menuItem1.setText("Save");
-				menu1.add(menuItem1);
-			}
-			menuBar1.add(menu1);
+            //======== scrollPane7 ========
+            {
+                scrollPane7.setViewportView(output);
+            }
+            topSplitPane.setRightComponent(scrollPane7);
+        }
+        contentPane.add(topSplitPane);
 
-			//======== menu2 ========
-			{
-				menu2.setText("Edit");
+        //======== bottomSplitPane ========
+        {
+            bottomSplitPane.setResizeWeight(0.15);
+            bottomSplitPane.setOneTouchExpandable(true);
+            bottomSplitPane.setContinuousLayout(true);
 
-				//---- menuItem2 ----
-				menuItem2.setText("copy");
-				menu2.add(menuItem2);
-			}
-			menuBar1.add(menu2);
-		}
-		setJMenuBar(menuBar1);
+            //======== attributeScrollPane ========
+            {
+                attributeScrollPane.setViewportView(attributes);
+            }
+            bottomSplitPane.setLeftComponent(attributeScrollPane);
 
-		//======== scrollPane1 ========
-		{
+            //======== tabbedPane1 ========
+            {
 
-			//---- output ----
-			output.setText("void ");
-			scrollPane1.setViewportView(output);
-		}
-		contentPane.add(scrollPane1, cc.xywh(3, 1, 1, 2));
+                //======== scrollPane13 ========
+                {
+                    scrollPane13.setViewportView(template);
+                }
+                tabbedPane1.addTab("template", scrollPane13);
 
-		//======== scrollPane5 ========
-		{
-			scrollPane5.setViewportView(tree);
-		}
-		contentPane.add(scrollPane5, cc.xywh(1, 1, 1, 2));
 
-		//======== scrollPane4 ========
-		{
-			scrollPane4.setViewportView(attributes);
-		}
-		contentPane.add(scrollPane4, cc.xywh(1, 3, 1, 2));
+                //======== scrollPane14 ========
+                {
+                    scrollPane14.setViewportView(stacktrace);
+                }
+                tabbedPane1.addTab("stack trace", scrollPane14);
 
-		//======== scrollPane2 ========
-		{
 
-			//---- template ----
-			template.setText("tests");
-			scrollPane2.setViewportView(template);
-		}
-		contentPane.add(scrollPane2, cc.xywh(3, 3, 1, 2));
-		pack();
-		setLocationRelativeTo(getOwner());
-		// JFormDesigner - End of component initialization  //GEN-END:initComponents
-	}
+                //======== scrollPane15 ========
+                {
+                    scrollPane15.setViewportView(bytecode);
+                }
+                tabbedPane1.addTab("bytecode", scrollPane15);
 
-	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	protected JMenuBar menuBar1;
-	protected JMenu menu1;
-	protected JMenuItem menuItem1;
-	protected JMenu menu2;
-	protected JMenuItem menuItem2;
-	protected JScrollPane scrollPane1;
-	protected JTextPane output;
-	private JScrollPane scrollPane5;
-	protected JTree tree;
-	protected JScrollPane scrollPane4;
-	protected JList attributes;
-	protected JScrollPane scrollPane2;
-	protected JTextPane template;
-	// JFormDesigner - End of variables declaration  //GEN-END:variables
+            }
+            bottomSplitPane.setRightComponent(tabbedPane1);
+        }
+        contentPane.add(bottomSplitPane);
+        pack();
+        setLocationRelativeTo(getOwner());
+        // JFormDesigner - End of component initialization  //GEN-END:initComponents
+    }
+
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner non-commercial license
+    protected JSplitPane topSplitPane;
+    protected JScrollPane treeScrollPane;
+    protected JTree tree;
+    protected JScrollPane scrollPane7;
+    protected JTextPane output;
+    protected JSplitPane bottomSplitPane;
+    protected JScrollPane attributeScrollPane;
+    protected JList attributes;
+    protected JTabbedPane tabbedPane1;
+    protected JScrollPane scrollPane13;
+    protected JTextPane template;
+    protected JScrollPane scrollPane14;
+    protected JTextPane stacktrace;
+    protected JScrollPane scrollPane15;
+    protected JTextPane bytecode;
+    // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
