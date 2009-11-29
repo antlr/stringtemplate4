@@ -13,11 +13,11 @@
        <class>com.jgoodies.forms.layout.FormLayout</class> 
        <void method="setProperty"> 
         <string>$columnSpecs</string> 
-        <string>(50dlu&lt;default&lt;200dlu), labelcompgap, max(min;50dlu), labelcompgap, 308dlu:grow</string> 
+        <string>max(min;50dlu), 1dlu, 308dlu:grow</string> 
        </void> 
        <void method="setProperty"> 
         <string>$rowSpecs</string> 
-        <string>unrelgap, linegap, 210dlu:grow, linegap, 104dlu</string> 
+        <string>linegap, 210dlu:grow, linegap, 104dlu</string> 
        </void> 
       </object> 
       <void method="setProperty"> 
@@ -67,20 +67,12 @@
        <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
-         <string>gridWidth</string> 
-         <int>3</int> 
-        </void> 
-        <void method="setProperty"> 
          <string>gridHeight</string> 
          <int>2</int> 
         </void> 
         <void method="setProperty"> 
          <string>gridX</string> 
          <int>3</int> 
-        </void> 
-        <void method="setProperty"> 
-         <string>gridY</string> 
-         <int>2</int> 
         </void> 
        </object> 
       </void> 
@@ -110,52 +102,6 @@
        </object> 
        <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
-        <void method="setProperty"> 
-         <string>gridY</string> 
-         <int>2</int> 
-        </void> 
-        <void method="setProperty"> 
-         <string>gridHeight</string> 
-         <int>2</int> 
-        </void> 
-       </object> 
-      </void> 
-      <void method="add"> 
-       <object class="com.jformdesigner.model.FormContainer"> 
-        <string>javax.swing.JScrollPane</string> 
-        <object class="com.jformdesigner.model.FormLayoutManager"> 
-         <class>javax.swing.JScrollPane</class> 
-        </object> 
-        <void method="auxiliary"> 
-         <void method="setProperty"> 
-          <string>JavaCodeGenerator.variableModifiers</string> 
-          <int>4</int> 
-         </void> 
-        </void> 
-        <void property="name"> 
-         <string>scrollPane3</string> 
-        </void> 
-        <void method="add"> 
-         <object class="com.jformdesigner.model.FormComponent"> 
-          <string>javax.swing.JList</string> 
-          <void property="name"> 
-           <string>stack</string> 
-          </void> 
-          <void method="auxiliary"> 
-           <void method="setProperty"> 
-            <string>JavaCodeGenerator.variableModifiers</string> 
-            <int>4</int> 
-           </void> 
-          </void> 
-         </object> 
-        </void> 
-       </object> 
-       <object class="com.jformdesigner.model.FormLayoutConstraints"> 
-        <class>com.jgoodies.forms.layout.CellConstraints</class> 
-        <void method="setProperty"> 
-         <string>gridY</string> 
-         <int>4</int> 
-        </void> 
         <void method="setProperty"> 
          <string>gridHeight</string> 
          <int>2</int> 
@@ -195,12 +141,8 @@
        <object class="com.jformdesigner.model.FormLayoutConstraints"> 
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
-         <string>gridX</string> 
-         <int>3</int> 
-        </void> 
-        <void method="setProperty"> 
          <string>gridY</string> 
-         <int>4</int> 
+         <int>3</int> 
         </void> 
         <void method="setProperty"> 
          <string>gridHeight</string> 
@@ -246,11 +188,11 @@
         <class>com.jgoodies.forms.layout.CellConstraints</class> 
         <void method="setProperty"> 
          <string>gridX</string> 
-         <int>5</int> 
+         <int>3</int> 
         </void> 
         <void method="setProperty"> 
          <string>gridY</string> 
-         <int>4</int> 
+         <int>3</int> 
         </void> 
         <void method="setProperty"> 
          <string>gridHeight</string> 

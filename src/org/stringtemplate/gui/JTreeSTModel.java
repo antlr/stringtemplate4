@@ -7,7 +7,7 @@ import javax.swing.tree.*;
 import javax.swing.event.TreeModelListener;
 
 public class JTreeSTModel implements TreeModel {
-    ST root;
+    Wrapper root;
 
 	public static class Wrapper {
 		public ST st;
@@ -27,7 +27,7 @@ public class JTreeSTModel implements TreeModel {
 		}
 	}
 	
-    public JTreeSTModel(ST root) { this.root = root; }
+    public JTreeSTModel(ST root) { this.root = new Wrapper(root); }
 
     public int getChildCount(Object parent) {
 		ST st = getST(parent);

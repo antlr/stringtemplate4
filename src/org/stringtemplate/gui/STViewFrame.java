@@ -28,8 +28,6 @@ public class STViewFrame extends JFrame {
 		output = new JTextPane();
 		scrollPane5 = new JScrollPane();
 		tree = new JTree();
-		scrollPane3 = new JScrollPane();
-		stack = new JList();
 		scrollPane4 = new JScrollPane();
 		attributes = new JList();
 		scrollPane2 = new JScrollPane();
@@ -40,8 +38,8 @@ public class STViewFrame extends JFrame {
 		setTitle("Testing");
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new FormLayout(
-			"[50dlu,default,200dlu], $lcgap, [50dlu,min], $lcgap, 308dlu:grow",
-			"$ugap, $lgap, 210dlu:grow, $lgap, 104dlu"));
+			"[50dlu,min], 1dlu, 308dlu:grow",
+			"$lgap, 210dlu:grow, $lgap, 104dlu"));
 
 		//======== menuBar1 ========
 		{
@@ -75,25 +73,19 @@ public class STViewFrame extends JFrame {
 			output.setText("void ");
 			scrollPane1.setViewportView(output);
 		}
-		contentPane.add(scrollPane1, cc.xywh(3, 2, 3, 2));
+		contentPane.add(scrollPane1, cc.xywh(3, 1, 1, 2));
 
 		//======== scrollPane5 ========
 		{
 			scrollPane5.setViewportView(tree);
 		}
-		contentPane.add(scrollPane5, cc.xywh(1, 2, 1, 2));
-
-		//======== scrollPane3 ========
-		{
-			scrollPane3.setViewportView(stack);
-		}
-		contentPane.add(scrollPane3, cc.xywh(1, 4, 1, 2));
+		contentPane.add(scrollPane5, cc.xywh(1, 1, 1, 2));
 
 		//======== scrollPane4 ========
 		{
 			scrollPane4.setViewportView(attributes);
 		}
-		contentPane.add(scrollPane4, cc.xywh(3, 4, 1, 2));
+		contentPane.add(scrollPane4, cc.xywh(1, 3, 1, 2));
 
 		//======== scrollPane2 ========
 		{
@@ -102,7 +94,7 @@ public class STViewFrame extends JFrame {
 			template.setText("tests");
 			scrollPane2.setViewportView(template);
 		}
-		contentPane.add(scrollPane2, cc.xywh(5, 4, 1, 2));
+		contentPane.add(scrollPane2, cc.xywh(3, 3, 1, 2));
 		pack();
 		setLocationRelativeTo(getOwner());
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents
@@ -118,8 +110,6 @@ public class STViewFrame extends JFrame {
 	protected JTextPane output;
 	private JScrollPane scrollPane5;
 	protected JTree tree;
-	protected JScrollPane scrollPane3;
-	protected JList stack;
 	protected JScrollPane scrollPane4;
 	protected JList attributes;
 	protected JScrollPane scrollPane2;

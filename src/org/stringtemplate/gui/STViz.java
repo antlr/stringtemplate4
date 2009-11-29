@@ -28,11 +28,13 @@ public class STViz {
 		String templates =
 			"method(type,name,args,stats) ::= <<\n" +
 				"public <type> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
+				"    <if(locals)>int locals[<locals>];<endif>\n"+
 				"    <stats;separator=\"\\n\">\n" +
 				"}\n" +
 				">>\n"+
 				"assign(a,b) ::= \"<a> = <b>;\"\n"+
-				"return(x) ::= <<return <x>;>>\n";
+				"return(x) ::= <<return <x>;>>\n" +
+				"paren(x) ::= \"(<x>)\"\n";
 
 		String tmpdir = System.getProperty("java.io.tmpdir");
 		writeFile(tmpdir, "t.stg", templates);
@@ -41,9 +43,12 @@ public class STViz {
 		st.code.dump();
 		st.add("type", "float");
 		st.add("name", "foo");
+		st.add("locals", 3);
 		st.add("args", new String[] {"x", "y", "z"});
 		ST s1 = group.getInstanceOf("assign");
-		s1.add("a", "x");
+		ST paren = group.getInstanceOf("paren");
+		paren.add("x", "x");
+		s1.add("a", paren);
 		s1.add("b", "y");
 		ST s2 = group.getInstanceOf("assign");
 		s2.add("a", "y");
@@ -84,28 +89,10 @@ public class STViz {
 		CaretListener caretListenerLabel = new CaretListener() {
 			public void caretUpdate(CaretEvent e) {
 				int dot = e.getDot();
-				int mark = e.getMark();
 				Interpreter.DebugEvent de = findEventAtOutputLocation(allEvents, dot);
-				System.out.println("hit "+de);
-				currentST = de.self;
+				if ( de==null ) currentST = tmodel.root.st;
+				else currentST = de.self;
 				update(m);
-				if (dot == mark) {  // no selection
-					try {
-						Rectangle caretCoords = m.output.modelToView(dot);
-						//Convert it to view coordinates
-						System.out.println("caret: text position: " + dot +
-							", view location = [" +
-							caretCoords.x + ", " + caretCoords.y + "]\n");
-					} catch (BadLocationException ble) {
-						System.out.println("caret: text position: " + dot);
-					}
-				}
-				else if (dot < mark) {
-					System.out.println("selection from: " + dot + " to " + mark);
-				}
-				else {
-					System.out.println("selection from: " + mark + " to " + dot);
-				}
 			}
 		};
 
@@ -123,10 +110,7 @@ public class STViz {
 		List<ST> pathST = currentST.getEnclosingInstanceStack(true);
 		Object[] path = new Object[pathST.size()];
 		int j = 0;
-		for (ST s : pathST) {
-			if ( j==0 ) path[j++] = s;
-			else path[j++] = new JTreeSTModel.Wrapper(s);
-		}
+		for (ST s : pathST) path[j++] = new JTreeSTModel.Wrapper(s);
 
 		m.tree.setSelectionPath(new TreePath(path));
 
@@ -175,17 +159,8 @@ public class STViz {
 	}
 
 	protected static void updateStack(ST st, STViewFrame m) {
-		DefaultListModel stackModel = new DefaultListModel();
-		List<ST> stack = st.getEnclosingInstanceStack(false);
-		for (ST s : stack) stackModel.addElement(s.getName());
-		m.stack.setModel(stackModel);
-		m.stack.addListSelectionListener(
-			new ListSelectionListener() {
-				public void valueChanged(ListSelectionEvent e) {
-					System.out.println("touched "+e.getFirstIndex());
-				}
-			}
-		);
+		List<ST> stack = st.getEnclosingInstanceStack(true);
+		m.setTitle("STViz - ["+Misc.join(stack.iterator()," ")+"]");
 	}
 
 	public static Interpreter.DebugEvent findEventAtOutputLocation(List<Interpreter.DebugEvent> events,
