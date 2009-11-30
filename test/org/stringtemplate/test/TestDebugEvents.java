@@ -3,6 +3,7 @@ package org.stringtemplate.test;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.*;
+import org.stringtemplate.debug.InterpEvent;
 import org.stringtemplate.misc.Misc;
 
 import java.io.StringWriter;
@@ -15,14 +16,14 @@ public class TestDebugEvents extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        group.setDebug(true);
         ST st = group.getInstanceOf("t");
         st.code.dump();
         StringWriter sw = new StringWriter();
         Interpreter interp = new Interpreter(group, new AutoIndentWriter(sw));
-        interp.setDebug(true);
         interp.exec(st);
         String expected = "";
-        List<Interpreter.DebugEvent> events = interp.getEvents();
+        List<InterpEvent> events = interp.getEvents();
         String result = events.toString();
         assertEquals(expected, result);
     }
@@ -33,15 +34,15 @@ public class TestDebugEvents extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        group.setDebug(true);
         ST st = group.getInstanceOf("t");
         st.code.dump();
         st.add("x", "foo");
         StringWriter sw = new StringWriter();
         Interpreter interp = new Interpreter(group, new AutoIndentWriter(sw));
-        interp.setDebug(true);
         interp.exec(st);
         String expected = "";
-        List<Interpreter.DebugEvent> events = interp.getEvents();
+        List<InterpEvent> events = interp.getEvents();
         String result = events.toString();
         assertEquals(expected, result);
     }
@@ -53,15 +54,15 @@ public class TestDebugEvents extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        group.setDebug(true);
         ST st = group.getInstanceOf("t");
         st.code.dump();
         st.add("x", "foo");
         StringWriter sw = new StringWriter();
         Interpreter interp = new Interpreter(group, new AutoIndentWriter(sw));
-        interp.setDebug(true);
         interp.exec(st);
         String expected = "";
-        List<Interpreter.DebugEvent> events = interp.getEvents();
+        List<InterpEvent> events = interp.getEvents();
         String result = events.toString();
         assertEquals(expected, result);
     }

@@ -28,6 +28,10 @@
 package org.stringtemplate;
 
 import org.stringtemplate.misc.Misc;
+import org.stringtemplate.debug.InterpEvent;
+import org.stringtemplate.debug.STDebugInfo;
+import org.stringtemplate.debug.EvalTemplateEvent;
+import org.stringtemplate.debug.EvalExprEvent;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -44,55 +48,8 @@ public class Interpreter {
     public static final int OPTION_SEPARATOR    = 3;
     public static final int OPTION_WRAP         = 4;
 
-    public class DebugEvent {
-        public ST self;
-        public int start, stop; // output location
-        public DebugEvent(ST self, int start, int stop) {
-            this.self = self;
-            this.start = start;
-            this.stop = stop;
-        }
-
-        @Override
-        public String toString() {
-            return getClass().getSimpleName()+"{" +
-                   "self=" + self +
-                   ", attr=" + self.attributes +
-                   ", start=" + start +
-                   ", stop=" + stop +
-                   '}';
-        }
-    }
-    public class EvalTemplateEvent extends DebugEvent {
-        public EvalTemplateEvent(ST self, int start, int stop) {
-            super(self, start, stop);
-        }
-    }
-    public class EvalExprEvent extends DebugEvent {
-        int exprStart, exprStop; // template pattern location
-        String expr;
-        public EvalExprEvent(ST self, int start, int stop,
-                             int exprStart, int exprStop)
-        {
-            super(self, start, stop);
-            this.exprStart = exprStart;
-            this.exprStop = exprStop;
-            expr = self.code.template.substring(exprStart, exprStop+1);
-        }
-
-        @Override
-        public String toString() {
-            return getClass().getSimpleName()+"{" +
-                   "self=" + self +
-                   ", attr=" + self.attributes +
-                   ", start=" + start +
-                   ", stop=" + stop +
-                   ", expr=" + expr +
-                   '}';
-        }
-    }
-
-    protected List<DebugEvent> events;
+    /** Track everything happening in interp if debug */
+    protected List<InterpEvent> events;
 
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
@@ -114,7 +71,6 @@ public class Interpreter {
     Locale locale;
     
     public boolean trace = false;
-    public boolean debug = false;
 
     public Interpreter(STGroup group, STWriter out) {
         this(group,out,Locale.getDefault());
@@ -124,6 +80,14 @@ public class Interpreter {
         this.group = group;
         this.out = out;
         this.locale = locale;
+        if ( group.debug ) {
+            events = new ArrayList<InterpEvent>();
+            if ( group.debugInfoMap!=null ) {
+                for (STDebugInfo info : group.debugInfoMap.values()) {
+                    info.interpEvents = new ArrayList<InterpEvent>();
+                }
+            }
+        }
     }
 
     public int exec(ST self) {
@@ -382,32 +346,36 @@ public class Interpreter {
             }
             prevOpcode = opcode;            
         }
-        if ( debug ) {
+        if ( group.debug ) {
 			int stop = out.index() - 1;
 			EvalTemplateEvent e = new EvalTemplateEvent(self, start, stop);
 			System.out.println(e);
-			events.add(e);
+            events.add(e);
             if ( self.enclosingInstance!=null ) {
-                self.enclosingInstance.events.add(e);
+                STDebugInfo info = self.enclosingInstance.getDebugInfo();
+                info.interpEvents.add(e);
             }
         }
         return n;
     }
 
     protected int writeObjectNoOptions(ST self, Object o, int exprStart, int exprStop) {
-        int start = out.index(); // track char we're about to write
+        //int start = out.index(); // track char we're about to write
         int n = writeObject(out, self, o, null);
-        if ( debug ) {
+        /*
+        if ( group.debug ) {
+            STDebugInfo info = self.getDebugInfo();
             events.add( new EvalExprEvent(self, start, out.index()-1, exprStart, exprStop) );
-            //self.events.add( new EvalExprEvent(self, start, out.index(), exprStart, exprStop) );
+            info.interpEvents.add( new EvalExprEvent(self, start, out.index(), exprStart, exprStop) );
         }
+        */
         return n;
     }
 
     protected int writeObjectWithOptions(ST self, Object o, Object[] options,
                                          int exprStart, int exprStop)
     {
-        int start = out.index(); // track char we're about to write
+        //int start = out.index(); // track char we're about to write
         // precompute all option values (render all the way to strings)
         String[] optionStrings = null;
         if ( options!=null ) {
@@ -425,10 +393,13 @@ public class Interpreter {
         if ( options!=null && options[OPTION_ANCHOR]!=null ) {
             out.popAnchorPoint();
         }
-        if ( debug ) {
-            events.add( new EvalTemplateEvent(self, start, out.index()-1) );
-            //self.events.add( new EvalTemplateEvent(self, start, out.index()) );
+        /*
+        if ( group.debug ) {
+            STDebugInfo info = self.getDebugInfo();
+            events.add( new EvalExprEvent(self, start, out.index()-1, exprStart, exprStop) );
+            info.interpEvents.add( new EvalExprEvent(self, start, out.index(), exprStart, exprStop) );
         }
+        */
         return n;
     }
 
@@ -789,9 +760,7 @@ public class Interpreter {
         throw new UnsupportedOperationException();
     }
 
-    public List<DebugEvent> getEvents() { return events; }
-
-    public void setDebug(boolean b) { debug = b; events = new ArrayList<DebugEvent>(); }
+    public List<InterpEvent> getEvents() { return events; }
     
     protected String toString(ST self, Object value) {
         if ( value!=null ) {

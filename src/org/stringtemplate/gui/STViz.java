@@ -1,6 +1,9 @@
 package org.stringtemplate.gui;
 
 import org.stringtemplate.*;
+import org.stringtemplate.debug.InterpEvent;
+import org.stringtemplate.debug.AddAttributeEvent;
+import org.stringtemplate.debug.EvalTemplateEvent;
 import org.stringtemplate.misc.Misc;
 
 import javax.swing.*;
@@ -21,7 +24,7 @@ import java.awt.*;
 public class STViz {
 	public static ST currentST;
 
-	public static List<Interpreter.DebugEvent> allEvents;
+	public static List<InterpEvent> allEvents;
 
 	public static JTreeSTModel tmodel;
 
@@ -40,6 +43,7 @@ public class STViz {
 		String tmpdir = System.getProperty("java.io.tmpdir");
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        group.setDebug(true);
 		ST st = group.getInstanceOf("method");
 		st.code.dump();
 		st.add("type", "float");
@@ -64,7 +68,6 @@ public class STViz {
 
 		StringWriter sw = new StringWriter();
 		Interpreter interp = new Interpreter(group, new AutoIndentWriter(sw));
-		interp.setDebug(true);
 		interp.exec(st);
 		allEvents = interp.getEvents();
 
@@ -94,7 +97,7 @@ public class STViz {
 		CaretListener caretListenerLabel = new CaretListener() {
 			public void caretUpdate(CaretEvent e) {
 				int dot = e.getDot();
-				Interpreter.DebugEvent de = findEventAtOutputLocation(allEvents, dot);
+				InterpEvent de = findEventAtOutputLocation(allEvents, dot);
 				if ( de==null ) currentST = tmodel.root.st;
 				else currentST = de.self;
 				update(m);
@@ -130,15 +133,14 @@ public class STViz {
 
 		if ( currentST.enclosingInstance!=null ) {
 			int i = tmodel.getIndexOfChild(currentST.enclosingInstance, currentST);
-			Interpreter.DebugEvent e = currentST.enclosingInstance.events.get(i);
-			if ( e instanceof Interpreter.EvalTemplateEvent ) {
-				Interpreter.EvalTemplateEvent et = (Interpreter.EvalTemplateEvent)e;
+			InterpEvent e = currentST.enclosingInstance.getDebugInfo().interpEvents.get(i);
+			if ( e instanceof EvalTemplateEvent) {
 				String txt = currentST.code.getTemplate();
 				m.template.setText(txt);
 				if ( currentST.isSubtemplate() ) {
 					highlight(m.template, currentST.code.embeddedStart, currentST.code.embeddedStop);
 				}
-				highlight(m.output, et.start, et.stop);
+				highlight(m.output, e.start, e.stop);
 			}
 			else {
 				m.template.setText(currentST.code.getTemplate());
@@ -164,32 +166,35 @@ public class STViz {
 	}
 
 	protected static void updateAttributes(final ST st, final STViewFrame m) {
-		System.out.println("add events="+st.addEvents);
+		System.out.println("add events="+ st.getDebugInfo().addAttrEvents);
 		final DefaultListModel attrModel = new DefaultListModel();
 		final Map<String,Object> attrs = st.getAttributes();
+		/*
 		class Pair {
 			public Object a, b;
 			public Pair(Object a, Object b) {this.a=a; this.b=b;}
 			public String toString() { return a.toString()+" = "+b; }
 		}
+		 */
 		for (String a : attrs.keySet()) {
-			if ( st.addEvents!=null ) {
-				List<ST.AddAttributeEvent> events = st.addEvents.get(a);
-				StringBuilder locations = new StringBuilder();
-				int i = 0;
-				for (ST.AddAttributeEvent ae : events) {
-					if ( i>0 ) locations.append(", ");
-					locations.append(ae.getFileName()+":"+ae.getLine());
-					i++;
-				}
-				attrModel.addElement(a+" = "+attrs.get(a)+" @ "+locations.toString());
-			}
-			else {
-				attrModel.addElement(a+" = "+attrs.get(a));
-			}
-			//attrModel.addElement(new Pair(a, attrs.get(a)));
-		}
-		m.attributes.setModel(attrModel);
+            if (st.getDebugInfo().addAttrEvents !=null ) {
+                List<AddAttributeEvent> events = st.getDebugInfo().addAttrEvents.get(a);
+                StringBuilder locations = new StringBuilder();
+                int i = 0;
+                if ( events!=null ) {
+                    for (AddAttributeEvent ae : events) {
+                        if ( i>0 ) locations.append(", ");
+                        locations.append(ae.getFileName()+":"+ae.getLine());
+                        i++;
+                    }
+                }
+                attrModel.addElement(a+" = "+attrs.get(a)+" @ "+locations.toString());
+            }
+            else {
+                attrModel.addElement(a+" = "+attrs.get(a));
+            }
+        }
+        m.attributes.setModel(attrModel);
 		m.attributes.addListSelectionListener(
 			new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent e) {
@@ -208,12 +213,22 @@ public class STViz {
 	protected static void updateStack(ST st, STViewFrame m) {
 		List<ST> stack = st.getEnclosingInstanceStack(true);
 		m.setTitle("STViz - ["+ Misc.join(stack.iterator()," ")+"]");
+        // also do source stack
+        StackTraceElement[] trace = st.getDebugInfo().newSTEvent.stack.getStackTrace();
+        StringWriter sw = new StringWriter();
+        for (StackTraceElement e : trace) {
+            sw.write(e.toString()+"\n");
+        }
+        //PrintWriter pw = new PrintWriter(sw);
+        //st.newSTEvent.printStackTrace(pw);
+        //pw.close();
+        m.stacktrace.setText(sw.toString());
 	}
 
-	public static Interpreter.DebugEvent findEventAtOutputLocation(List<Interpreter.DebugEvent> events,
+	public static InterpEvent findEventAtOutputLocation(List<InterpEvent> events,
 																   int charIndex)
 	{
-		for (Interpreter.DebugEvent e : events) {
+		for (InterpEvent e : events) {
 			if ( charIndex>=e.start && charIndex<=e.stop ) return e;
 		}
 		return null;

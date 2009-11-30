@@ -27,7 +27,10 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.debug.Event;
+import org.stringtemplate.debug.InterpEvent;
+import org.stringtemplate.debug.AddAttributeEvent;
+import org.stringtemplate.debug.ConstructionEvent;
+import org.stringtemplate.debug.STDebugInfo;
 import org.stringtemplate.misc.MultiMap;
 
 import java.util.*;
@@ -37,7 +40,7 @@ import java.io.IOException;
 public class ST {
 	public static final String SUBTEMPLATE_PREFIX = "_sub";
 
-	/** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
+    /** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
     public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT };    
 
     public static final String UNKNOWN_NAME = "unknown";
@@ -50,35 +53,6 @@ public class ST {
 
     /** Map an attribute name to its value(s). */
     protected Map<String,Object> attributes;
-
-    // TEMPORARY! TODO move to DebugST
-    public List<Interpreter.DebugEvent> events = new ArrayList<Interpreter.DebugEvent>();    
-
-	public static class AddAttributeEvent extends Event {
-		ST self;
-		String name;
-		Object value;
-		public AddAttributeEvent(ST self, String name, Object value) {
-			this.self =self;
-			this.name = name;
-			this.value = value;
-		}
-
-		public String toString() {
-			return "addEvent{" +
-				"self=" + self +
-				", name='" + name + '\'' +
-				", value=" + value +
-				", location=" + getFileName()+":"+getLine()+
-				'}';
-		}
-	}
-
-	/** Track add attribute "events"; used for ST user-level debugging;
-	 *  Avoid polluting ST with this field when not debugging.
-	 */
-	public MultiMap<String,AddAttributeEvent> addEvents;
-	//public List<AddAttributeEvent> addEvents;
 
     /** Enclosing instance if I'm embedded within another template.
      *  IF-subtemplates are considered embedded as well.
@@ -129,9 +103,9 @@ public class ST {
 
         if ( value instanceof ST ) ((ST)value).enclosingInstance = this;
 
-		if ( true ) {
-			if ( addEvents == null ) addEvents = new MultiMap<String,AddAttributeEvent>();
-			addEvents.map(name, new AddAttributeEvent(this, name, value));
+		if ( groupThatCreatedThisInstance.debug ) {
+            STDebugInfo info = groupThatCreatedThisInstance.debugInfoMap.get(this);
+            if ( info!=null ) info.addAttrEvents.map(name, new AddAttributeEvent(name, value));
 		}
 
         Object curvalue = null;
@@ -256,6 +230,10 @@ public class ST {
             p = p.enclosingInstance;
         }
         return stack;
+    }
+
+    public STDebugInfo getDebugInfo() {
+        return groupThatCreatedThisInstance.getDebugInfo(this);
     }
 
     public String getName() { return code.name; }

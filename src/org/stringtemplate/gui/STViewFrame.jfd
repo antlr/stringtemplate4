@@ -12,10 +12,6 @@
       <object class="com.jformdesigner.model.FormLayoutManager"> 
        <class>java.awt.GridLayout</class> 
        <void method="setProperty"> 
-        <string>rows</string> 
-        <int>2</int> 
-       </void> 
-       <void method="setProperty"> 
         <string>vgap</string> 
         <int>10</int> 
        </void> 
@@ -33,109 +29,12 @@
          <class>javax.swing.JSplitPane</class> 
         </object> 
         <void method="setProperty"> 
-         <string>continuousLayout</string> 
-         <boolean>true</boolean> 
+         <string>orientation</string> 
+         <int>0</int> 
         </void> 
         <void method="setProperty"> 
          <string>resizeWeight</string> 
-         <double>0.15</double> 
-        </void> 
-        <void method="auxiliary"> 
-         <void method="setProperty"> 
-          <string>JavaCodeGenerator.variableModifiers</string> 
-          <int>4</int> 
-         </void> 
-        </void> 
-        <void property="name"> 
-         <string>topSplitPane</string> 
-        </void> 
-        <void method="add"> 
-         <object class="com.jformdesigner.model.FormContainer"> 
-          <string>javax.swing.JScrollPane</string> 
-          <object class="com.jformdesigner.model.FormLayoutManager"> 
-           <class>javax.swing.JScrollPane</class> 
-          </object> 
-          <void method="auxiliary"> 
-           <void method="setProperty"> 
-            <string>JavaCodeGenerator.variableModifiers</string> 
-            <int>4</int> 
-           </void> 
-          </void> 
-          <void property="name"> 
-           <string>treeScrollPane</string> 
-          </void> 
-          <void method="add"> 
-           <object class="com.jformdesigner.model.FormComponent"> 
-            <string>javax.swing.JTree</string> 
-            <void property="name"> 
-             <string>tree</string> 
-            </void> 
-            <void method="auxiliary"> 
-             <void method="setProperty"> 
-              <string>JavaCodeGenerator.variableModifiers</string> 
-              <int>4</int> 
-             </void> 
-            </void> 
-           </object> 
-          </void> 
-         </object> 
-         <object class="com.jformdesigner.model.FormLayoutConstraints"> 
-          <class>java.lang.String</class> 
-          <void method="setProperty"> 
-           <string>value</string> 
-           <string>left</string> 
-          </void> 
-         </object> 
-        </void> 
-        <void method="add"> 
-         <object class="com.jformdesigner.model.FormContainer"> 
-          <string>javax.swing.JScrollPane</string> 
-          <object class="com.jformdesigner.model.FormLayoutManager"> 
-           <class>javax.swing.JScrollPane</class> 
-          </object> 
-          <void method="auxiliary"> 
-           <void method="setProperty"> 
-            <string>JavaCodeGenerator.variableModifiers</string> 
-            <int>4</int> 
-           </void> 
-          </void> 
-          <void property="name"> 
-           <string>scrollPane7</string> 
-          </void> 
-          <void method="add"> 
-           <object class="com.jformdesigner.model.FormComponent"> 
-            <string>javax.swing.JTextPane</string> 
-            <void property="name"> 
-             <string>output</string> 
-            </void> 
-            <void method="auxiliary"> 
-             <void method="setProperty"> 
-              <string>JavaCodeGenerator.variableModifiers</string> 
-              <int>4</int> 
-             </void> 
-            </void> 
-           </object> 
-          </void> 
-         </object> 
-         <object class="com.jformdesigner.model.FormLayoutConstraints"> 
-          <class>java.lang.String</class> 
-          <void method="setProperty"> 
-           <string>value</string> 
-           <string>right</string> 
-          </void> 
-         </object> 
-        </void> 
-       </object> 
-      </void> 
-      <void method="add"> 
-       <object class="com.jformdesigner.model.FormContainer"> 
-        <string>javax.swing.JSplitPane</string> 
-        <object class="com.jformdesigner.model.FormLayoutManager"> 
-         <class>javax.swing.JSplitPane</class> 
-        </object> 
-        <void method="setProperty"> 
-         <string>resizeWeight</string> 
-         <double>0.15</double> 
+         <double>0.8</double> 
         </void> 
         <void method="setProperty"> 
          <string>oneTouchExpandable</string> 
@@ -145,21 +44,27 @@
          <string>continuousLayout</string> 
          <boolean>true</boolean> 
         </void> 
-        <void method="auxiliary"> 
-         <void method="setProperty"> 
-          <string>JavaCodeGenerator.variableModifiers</string> 
-          <int>4</int> 
-         </void> 
-        </void> 
         <void property="name"> 
-         <string>bottomSplitPane</string> 
+         <string>mainSplitPane</string> 
         </void> 
         <void method="add"> 
          <object class="com.jformdesigner.model.FormContainer"> 
-          <string>javax.swing.JScrollPane</string> 
+          <string>javax.swing.JSplitPane</string> 
           <object class="com.jformdesigner.model.FormLayoutManager"> 
-           <class>javax.swing.JScrollPane</class> 
+           <class>javax.swing.JSplitPane</class> 
           </object> 
+          <void method="setProperty"> 
+           <string>continuousLayout</string> 
+           <boolean>true</boolean> 
+          </void> 
+          <void method="setProperty"> 
+           <string>resizeWeight</string> 
+           <double>0.15</double> 
+          </void> 
+          <void method="setProperty"> 
+           <string>oneTouchExpandable</string> 
+           <boolean>true</boolean> 
+          </void> 
           <void method="auxiliary"> 
            <void method="setProperty"> 
             <string>JavaCodeGenerator.variableModifiers</string> 
@@ -167,19 +72,81 @@
            </void> 
           </void> 
           <void property="name"> 
-           <string>attributeScrollPane</string> 
+           <string>topSplitPane</string> 
           </void> 
           <void method="add"> 
-           <object class="com.jformdesigner.model.FormComponent"> 
-            <string>javax.swing.JList</string> 
-            <void property="name"> 
-             <string>attributes</string> 
-            </void> 
+           <object class="com.jformdesigner.model.FormContainer"> 
+            <string>javax.swing.JScrollPane</string> 
+            <object class="com.jformdesigner.model.FormLayoutManager"> 
+             <class>javax.swing.JScrollPane</class> 
+            </object> 
             <void method="auxiliary"> 
              <void method="setProperty"> 
               <string>JavaCodeGenerator.variableModifiers</string> 
               <int>4</int> 
              </void> 
+            </void> 
+            <void property="name"> 
+             <string>treeScrollPane</string> 
+            </void> 
+            <void method="add"> 
+             <object class="com.jformdesigner.model.FormComponent"> 
+              <string>javax.swing.JTree</string> 
+              <void property="name"> 
+               <string>tree</string> 
+              </void> 
+              <void method="auxiliary"> 
+               <void method="setProperty"> 
+                <string>JavaCodeGenerator.variableModifiers</string> 
+                <int>4</int> 
+               </void> 
+              </void> 
+             </object> 
+            </void> 
+           </object> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+            <class>java.lang.String</class> 
+            <void method="setProperty"> 
+             <string>value</string> 
+             <string>left</string> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.jformdesigner.model.FormContainer"> 
+            <string>javax.swing.JScrollPane</string> 
+            <object class="com.jformdesigner.model.FormLayoutManager"> 
+             <class>javax.swing.JScrollPane</class> 
+            </object> 
+            <void method="auxiliary"> 
+             <void method="setProperty"> 
+              <string>JavaCodeGenerator.variableModifiers</string> 
+              <int>4</int> 
+             </void> 
+            </void> 
+            <void property="name"> 
+             <string>scrollPane7</string> 
+            </void> 
+            <void method="add"> 
+             <object class="com.jformdesigner.model.FormComponent"> 
+              <string>javax.swing.JTextPane</string> 
+              <void property="name"> 
+               <string>output</string> 
+              </void> 
+              <void method="auxiliary"> 
+               <void method="setProperty"> 
+                <string>JavaCodeGenerator.variableModifiers</string> 
+                <int>4</int> 
+               </void> 
+              </void> 
+             </object> 
+            </void> 
+           </object> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+            <class>java.lang.String</class> 
+            <void method="setProperty"> 
+             <string>value</string> 
+             <string>right</string> 
             </void> 
            </object> 
           </void> 
@@ -194,10 +161,22 @@
         </void> 
         <void method="add"> 
          <object class="com.jformdesigner.model.FormContainer"> 
-          <string>javax.swing.JTabbedPane</string> 
+          <string>javax.swing.JSplitPane</string> 
           <object class="com.jformdesigner.model.FormLayoutManager"> 
-           <class>javax.swing.JTabbedPane</class> 
+           <class>javax.swing.JSplitPane</class> 
           </object> 
+          <void method="setProperty"> 
+           <string>resizeWeight</string> 
+           <double>0.15</double> 
+          </void> 
+          <void method="setProperty"> 
+           <string>oneTouchExpandable</string> 
+           <boolean>true</boolean> 
+          </void> 
+          <void method="setProperty"> 
+           <string>continuousLayout</string> 
+           <boolean>true</boolean> 
+          </void> 
           <void method="auxiliary"> 
            <void method="setProperty"> 
             <string>JavaCodeGenerator.variableModifiers</string> 
@@ -205,7 +184,7 @@
            </void> 
           </void> 
           <void property="name"> 
-           <string>tabbedPane1</string> 
+           <string>bottomSplitPane</string> 
           </void> 
           <void method="add"> 
            <object class="com.jformdesigner.model.FormContainer"> 
@@ -220,104 +199,166 @@
              </void> 
             </void> 
             <void property="name"> 
-             <string>scrollPane13</string> 
+             <string>attributeScrollPane</string> 
             </void> 
             <void method="add"> 
              <object class="com.jformdesigner.model.FormComponent"> 
-              <string>javax.swing.JTextPane</string> 
+              <string>javax.swing.JList</string> 
               <void property="name"> 
+               <string>attributes</string> 
+              </void> 
+              <void method="auxiliary"> 
+               <void method="setProperty"> 
+                <string>JavaCodeGenerator.variableModifiers</string> 
+                <int>4</int> 
+               </void> 
+              </void> 
+             </object> 
+            </void> 
+           </object> 
+           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+            <class>java.lang.String</class> 
+            <void method="setProperty"> 
+             <string>value</string> 
+             <string>left</string> 
+            </void> 
+           </object> 
+          </void> 
+          <void method="add"> 
+           <object class="com.jformdesigner.model.FormContainer"> 
+            <string>javax.swing.JTabbedPane</string> 
+            <object class="com.jformdesigner.model.FormLayoutManager"> 
+             <class>javax.swing.JTabbedPane</class> 
+            </object> 
+            <void method="auxiliary"> 
+             <void method="setProperty"> 
+              <string>JavaCodeGenerator.variableModifiers</string> 
+              <int>4</int> 
+             </void> 
+            </void> 
+            <void property="name"> 
+             <string>tabbedPane1</string> 
+            </void> 
+            <void method="add"> 
+             <object class="com.jformdesigner.model.FormContainer"> 
+              <string>javax.swing.JScrollPane</string> 
+              <object class="com.jformdesigner.model.FormLayoutManager"> 
+               <class>javax.swing.JScrollPane</class> 
+              </object> 
+              <void method="auxiliary"> 
+               <void method="setProperty"> 
+                <string>JavaCodeGenerator.variableModifiers</string> 
+                <int>4</int> 
+               </void> 
+              </void> 
+              <void property="name"> 
+               <string>scrollPane13</string> 
+              </void> 
+              <void method="add"> 
+               <object class="com.jformdesigner.model.FormComponent"> 
+                <string>javax.swing.JTextPane</string> 
+                <void property="name"> 
+                 <string>template</string> 
+                </void> 
+                <void method="auxiliary"> 
+                 <void method="setProperty"> 
+                  <string>JavaCodeGenerator.variableModifiers</string> 
+                  <int>4</int> 
+                 </void> 
+                </void> 
+               </object> 
+              </void> 
+             </object> 
+             <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+              <null/> 
+              <void method="setProperty"> 
+               <string>title</string> 
                <string>template</string> 
               </void> 
+             </object> 
+            </void> 
+            <void method="add"> 
+             <object class="com.jformdesigner.model.FormContainer"> 
+              <string>javax.swing.JScrollPane</string> 
+              <object class="com.jformdesigner.model.FormLayoutManager"> 
+               <class>javax.swing.JScrollPane</class> 
+              </object> 
               <void method="auxiliary"> 
                <void method="setProperty"> 
                 <string>JavaCodeGenerator.variableModifiers</string> 
                 <int>4</int> 
                </void> 
               </void> 
+              <void property="name"> 
+               <string>scrollPane14</string> 
+              </void> 
+              <void method="add"> 
+               <object class="com.jformdesigner.model.FormComponent"> 
+                <string>javax.swing.JTextPane</string> 
+                <void property="name"> 
+                 <string>stacktrace</string> 
+                </void> 
+                <void method="auxiliary"> 
+                 <void method="setProperty"> 
+                  <string>JavaCodeGenerator.variableModifiers</string> 
+                  <int>4</int> 
+                 </void> 
+                </void> 
+               </object> 
+              </void> 
+             </object> 
+             <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+              <null/> 
+              <void method="setProperty"> 
+               <string>title</string> 
+               <string>stack trace</string> 
+              </void> 
              </object> 
             </void> 
-           </object> 
-           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
-            <null/> 
-            <void method="setProperty"> 
-             <string>title</string> 
-             <string>template</string> 
-            </void> 
-           </object> 
-          </void> 
-          <void method="add"> 
-           <object class="com.jformdesigner.model.FormContainer"> 
-            <string>javax.swing.JScrollPane</string> 
-            <object class="com.jformdesigner.model.FormLayoutManager"> 
-             <class>javax.swing.JScrollPane</class> 
-            </object> 
-            <void method="auxiliary"> 
-             <void method="setProperty"> 
-              <string>JavaCodeGenerator.variableModifiers</string> 
-              <int>4</int> 
-             </void> 
-            </void> 
-            <void property="name"> 
-             <string>scrollPane14</string> 
-            </void> 
             <void method="add"> 
-             <object class="com.jformdesigner.model.FormComponent"> 
-              <string>javax.swing.JTextPane</string> 
-              <void property="name"> 
-               <string>stacktrace</string> 
-              </void> 
+             <object class="com.jformdesigner.model.FormContainer"> 
+              <string>javax.swing.JScrollPane</string> 
+              <object class="com.jformdesigner.model.FormLayoutManager"> 
+               <class>javax.swing.JScrollPane</class> 
+              </object> 
               <void method="auxiliary"> 
                <void method="setProperty"> 
                 <string>JavaCodeGenerator.variableModifiers</string> 
                 <int>4</int> 
                </void> 
               </void> 
-             </object> 
-            </void> 
-           </object> 
-           <object class="com.jformdesigner.model.FormLayoutConstraints"> 
-            <null/> 
-            <void method="setProperty"> 
-             <string>title</string> 
-             <string>stack trace</string> 
-            </void> 
-           </object> 
-          </void> 
-          <void method="add"> 
-           <object class="com.jformdesigner.model.FormContainer"> 
-            <string>javax.swing.JScrollPane</string> 
-            <object class="com.jformdesigner.model.FormLayoutManager"> 
-             <class>javax.swing.JScrollPane</class> 
-            </object> 
-            <void method="auxiliary"> 
-             <void method="setProperty"> 
-              <string>JavaCodeGenerator.variableModifiers</string> 
-              <int>4</int> 
-             </void> 
-            </void> 
-            <void property="name"> 
-             <string>scrollPane15</string> 
-            </void> 
-            <void method="add"> 
-             <object class="com.jformdesigner.model.FormComponent"> 
-              <string>javax.swing.JTextPane</string> 
               <void property="name"> 
+               <string>scrollPane15</string> 
+              </void> 
+              <void method="add"> 
+               <object class="com.jformdesigner.model.FormComponent"> 
+                <string>javax.swing.JTextPane</string> 
+                <void property="name"> 
+                 <string>bytecode</string> 
+                </void> 
+                <void method="auxiliary"> 
+                 <void method="setProperty"> 
+                  <string>JavaCodeGenerator.variableModifiers</string> 
+                  <int>4</int> 
+                 </void> 
+                </void> 
+               </object> 
+              </void> 
+             </object> 
+             <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+              <null/> 
+              <void method="setProperty"> 
+               <string>title</string> 
                <string>bytecode</string> 
               </void> 
-              <void method="auxiliary"> 
-               <void method="setProperty"> 
-                <string>JavaCodeGenerator.variableModifiers</string> 
-                <int>4</int> 
-               </void> 
-              </void> 
              </object> 
             </void> 
            </object> 
            <object class="com.jformdesigner.model.FormLayoutConstraints"> 
-            <null/> 
+            <class>java.lang.String</class> 
             <void method="setProperty"> 
-             <string>title</string> 
-             <string>bytecode</string> 
+             <string>value</string> 
+             <string>right</string> 
             </void> 
            </object> 
           </void> 

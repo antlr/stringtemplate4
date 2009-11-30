@@ -1,9 +1,10 @@
 package org.stringtemplate.debug;
 
-public class Event {
-    protected Throwable stack;
-    public Event() { stack = new Throwable(); }
-	public String getFileName() { return getSTEntryPoint().getFileName(); }
+public class ConstructionEvent {
+    public Throwable stack;
+    public ConstructionEvent() { stack = new Throwable(); }
+
+    public String getFileName() { return getSTEntryPoint().getFileName(); }
 	public int getLine() { return getSTEntryPoint().getLineNumber(); }
 	
 	public StackTraceElement getSTEntryPoint() {

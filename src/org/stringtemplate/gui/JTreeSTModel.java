@@ -1,7 +1,8 @@
 package org.stringtemplate.gui;
 
 import org.stringtemplate.ST;
-import org.stringtemplate.Interpreter;
+import org.stringtemplate.debug.InterpEvent;
+import org.stringtemplate.debug.STDebugInfo;
 
 import javax.swing.tree.*;
 import javax.swing.event.TreeModelListener;
@@ -23,6 +24,10 @@ public class JTreeSTModel implements TreeModel {
 		public int hashCode() { return st != null ? st.hashCode() : 0; }
 		public String toString() {
 			if ( st.isSubtemplate() ) return "{...}";
+            STDebugInfo info = st.getDebugInfo();
+            if ( info!=null )
+                return st.toString()+"() @ "+
+                       info.newSTEvent.getFileName()+":"+info.newSTEvent.getLine();
 			return st.toString();
 		}
 	}
@@ -31,7 +36,7 @@ public class JTreeSTModel implements TreeModel {
 
     public int getChildCount(Object parent) {
 		ST st = getST(parent);
-        return st.events.size();
+        return st.getDebugInfo().interpEvents.size();
     }
 
     public int getIndexOfChild(Object parent, Object child){
@@ -39,7 +44,7 @@ public class JTreeSTModel implements TreeModel {
 		ST parentST = getST(parent);
 		ST childST = getST(child);
         int i = 0;
-        for (Interpreter.DebugEvent e : parentST.events) {
+        for (InterpEvent e : parentST.getDebugInfo().interpEvents) {
             if ( e.self == childST ) return i;
             i++;
         }
@@ -48,7 +53,7 @@ public class JTreeSTModel implements TreeModel {
 
     public Object getChild(Object parent, int index){
 		ST st = getST(parent);
-        return new Wrapper(st.events.get(index).self);
+        return new Wrapper(st.getDebugInfo().interpEvents.get(index).self);
     }
 
     public boolean isLeaf(Object node) {
