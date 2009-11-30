@@ -44,9 +44,9 @@ public class TestCompiler extends BaseTest {
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
-            "write, " +
+            "write 0 2, " +
             "load_attr 1, " +
-            "write";
+            "write 3 8";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , name]";
@@ -58,7 +58,7 @@ public class TestCompiler extends BaseTest {
         String template = "hi <foo()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
-            "load_str 0, write, new 1, write";
+            "load_str 0, write 0 2, new 1, write 3 9";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , /foo]";
@@ -70,7 +70,7 @@ public class TestCompiler extends BaseTest {
         String template = "hi <a.b>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
-            "load_str 0, write, load_attr 1, load_prop 2, write";
+            "load_str 0, write 0 2, load_attr 1, load_prop 2, write 3 7";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , a, b]";
@@ -82,8 +82,8 @@ public class TestCompiler extends BaseTest {
         String template = "<u.id>: <u.name>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
-            "load_attr 0, load_prop 1, write, load_str 2, write, " +
-            "load_attr 0, load_prop 3, write";
+            "load_attr 0, load_prop 1, write 0 5, load_str 2, write 6 7, " +
+            "load_attr 0, load_prop 3, write 8 15";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[u, id, : , name]";
@@ -95,7 +95,7 @@ public class TestCompiler extends BaseTest {
         String template = "hi <name:bold>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
-            "load_str 0, write, load_attr 1, load_str 2, map, write";
+            "load_str 0, write 0 2, load_attr 1, load_str 2, map, write 3 13";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , name, /bold]";
@@ -108,13 +108,13 @@ public class TestCompiler extends BaseTest {
         CompiledST code = new org.stringtemplate.Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
-            "write, " +
+            "write 0 2, " +
             "load_attr 1, " +
             "load_str 2, " +
             "map, " +
             "load_str 3, " +
             "map, " +
-            "write";
+            "write 3 21";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , name, /bold, /italics]";
@@ -126,7 +126,7 @@ public class TestCompiler extends BaseTest {
         String template = "hi <name:bold,italics>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
-            "load_str 0, write, load_attr 1, load_str 2, load_str 3, rot_map 2, write";
+            "load_str 0, write 0 2, load_attr 1, load_str 2, load_str 3, rot_map 2, write 3 21";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , name, /bold, /italics]";
@@ -138,7 +138,7 @@ public class TestCompiler extends BaseTest {
         String template = "hi <name:{n | <n>}>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
-            "load_str 0, write, load_attr 1, load_str 2, map, write";
+            "load_str 0, write 0 2, load_attr 1, load_str 2, map, write 3 18";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , name, /_sub1]";
@@ -150,7 +150,7 @@ public class TestCompiler extends BaseTest {
         String template = "go: <if(name)>hi, foo<endif>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
-            "load_str 0, write, load_attr 1, brf 14, load_str 2, write";
+            "load_str 0, write 0 3, load_attr 1, brf 22, load_str 2, write 14 20";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[go: , name, hi, foo]";
@@ -163,14 +163,14 @@ public class TestCompiler extends BaseTest {
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
-            "write, " +
+            "write 0 3, " +
             "load_attr 1, " +
-            "brf 17, " +
+            "brf 25, " +
             "load_str 2, " +
-            "write, " +
-            "br 21, " +
+            "write 14 20, " +
+            "br 33, " +
             "load_str 3, " +
-            "write";
+            "write 27 29";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[go: , name, hi, foo, bye]";
@@ -183,16 +183,16 @@ public class TestCompiler extends BaseTest {
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
-            "write, " +
+            "write 0 3, " +
             "load_attr 1, " +
-            "brf 17, " +
+            "brf 25, " +
             "load_str 2, " +
-            "write, " +
-            "br 27, " +
+            "write 14 20, " +
+            "br 39, " +
             "load_attr 3, " +
-            "brf 27, " +
+            "brf 39, " +
             "load_str 4, " +
-            "write";
+            "write 35 40";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[go: , name, hi, foo, user, a user]";
@@ -205,19 +205,19 @@ public class TestCompiler extends BaseTest {
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
-            "write, " +
+            "write 0 3, " +
             "load_attr 1, " +
-            "brf 17, " +
+            "brf 25, " +
             "load_str 2, " +
-            "write, " +
-            "br 34, " +
+            "write 14 20, " +
+            "br 50, " +
             "load_attr 3, " +
-            "brf 30, " +
+            "brf 42, " +
             "load_str 4, " +
-            "write, " +
-            "br 34, " +
+            "write 35 40, " +
+            "br 50, " +
             "load_str 5, " +
-            "write";
+            "write 47 49";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[go: , name, hi, foo, user, a user, bye]";
@@ -229,7 +229,7 @@ public class TestCompiler extends BaseTest {
         String template = "hi <name; separator=\"x\">";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
-            "load_str 0, write, load_attr 1, options, load_str 2, store_option 3, write_opt";
+            "load_str 0, write 0 2, load_attr 1, options, load_str 2, store_option 3, write_opt 3 23";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , name, x]";
@@ -241,7 +241,7 @@ public class TestCompiler extends BaseTest {
         String template = "hi <name; separator={, }>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
-            "load_str 0, write, load_attr 1, options, new 2, store_option 3, write_opt";
+            "load_str 0, write 0 2, load_attr 1, options, new 2, store_option 3, write_opt 3 24";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , name, /_sub1]";
@@ -253,9 +253,17 @@ public class TestCompiler extends BaseTest {
         String template = "hi <name; anchor, wrap=foo(), separator=\", \">";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
-            "load_str 0, write, load_attr 1, options, load_str 2, " +
-            "store_option 0, new 3, store_option 4, load_str 4, " +
-            "store_option 3, write_opt";
+            "load_str 0, " +
+            "write 0 2, " +
+            "load_attr 1, " +
+            "options, " +
+            "load_str 2, " +
+            "store_option 0, " +
+            "new 3, " +
+            "store_option 4, " +
+            "load_str 4, " +
+            "store_option 3, " +
+            "write_opt 3 44";
         String stringsExpected = // the ", , ," is the ", " separator string
             "[hi , name, true, /foo, , ]";
         String stringsResult = Arrays.toString(code.strings);
@@ -267,7 +275,7 @@ public class TestCompiler extends BaseTest {
     @Test public void testEmptyList() throws Exception {
         String template = "<[]>";
         CompiledST code = new Compiler().compile(template);
-        String asmExpected = "list, write";
+        String asmExpected = "list, write 0 3";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[]";
@@ -278,7 +286,7 @@ public class TestCompiler extends BaseTest {
     @Test public void testList() throws Exception {
         String template = "<[a,b]>";
         CompiledST code = new Compiler().compile(template);
-        String asmExpected = "list, load_attr 0, add, load_attr 1, add, write";
+        String asmExpected = "list, load_attr 0, add, load_attr 1, add, write 0 6";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[a, b]";
@@ -291,7 +299,7 @@ public class TestCompiler extends BaseTest {
         // compile as if in root dir and in template 'a'
         CompiledST code = new Compiler("/", "a").compile(template);
         String asmExpected =
-            "new 0, write";
+            "new 0, write 0 12";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[/region__a__r]";
@@ -304,7 +312,7 @@ public class TestCompiler extends BaseTest {
         // compile as if in root dir and in template 'a'
         CompiledST code = new Compiler("/", "a").compile(template);
         String asmExpected =
-            "load_str 0, write, new 1, write";
+            "load_str 0, write 0 1, new 1, write 2 7";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[x:, /region__a__r]";
