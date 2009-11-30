@@ -1,11 +1,9 @@
 package org.stringtemplate.debug;
 
-import org.stringtemplate.ST;
-
 public class InterpEvent {
-    public ST self;
+    public DebugST self;
     public int start, stop; // output location
-    public InterpEvent(ST self, int start, int stop) {
+    public InterpEvent(DebugST self, int start, int stop) {
         this.self = self;
         this.start = start;
         this.stop = stop;

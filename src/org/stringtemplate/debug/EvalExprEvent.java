@@ -1,11 +1,9 @@
 package org.stringtemplate.debug;
 
-import org.stringtemplate.ST;
-
 public class EvalExprEvent extends InterpEvent {
     int exprStart, exprStop; // template pattern location
     String expr;
-    public EvalExprEvent(ST self, int start, int stop,
+    public EvalExprEvent(DebugST self, int start, int stop,
                          int exprStart, int exprStop)
     {
         super(self, start, stop);

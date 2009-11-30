@@ -29,9 +29,8 @@ package org.stringtemplate;
 
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.debug.InterpEvent;
-import org.stringtemplate.debug.STDebugInfo;
 import org.stringtemplate.debug.EvalTemplateEvent;
-import org.stringtemplate.debug.EvalExprEvent;
+import org.stringtemplate.debug.DebugST;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -48,9 +47,6 @@ public class Interpreter {
     public static final int OPTION_SEPARATOR    = 3;
     public static final int OPTION_WRAP         = 4;
 
-    /** Track everything happening in interp if debug */
-    protected List<InterpEvent> events;
-
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
     public static final Set<String> predefinedAttributes =
@@ -61,10 +57,8 @@ public class Interpreter {
     int sp = -1;  // stack pointer register
     int nw = 0;   // how many char written on this template line so far? ("number written" register)
 
-    STWriter out;
-
     /** Exec st with respect to this group. Once set in ST.toString(),
-     *  it should be fixed.  ST has group also.
+     *  it should be fixed. ST has group also.
      */
     STGroup group;
     
@@ -72,25 +66,21 @@ public class Interpreter {
     
     public boolean trace = false;
 
-    public Interpreter(STGroup group, STWriter out) {
-        this(group,out,Locale.getDefault());
-    }
-    
-    public Interpreter(STGroup group, STWriter out, Locale locale) {
-        this.group = group;
-        this.out = out;
-        this.locale = locale;
-        if ( group.debug ) {
-            events = new ArrayList<InterpEvent>();
-            if ( group.debugInfoMap!=null ) {
-                for (STDebugInfo info : group.debugInfoMap.values()) {
-                    info.interpEvents = new ArrayList<InterpEvent>();
-                }
-            }
-        }
+    /** Track everything happening in interp if debug */
+    protected List<InterpEvent> events;
+
+    public Interpreter(STGroup group) {
+        this(group,Locale.getDefault());
     }
 
-    public int exec(ST self) {
+    // TODO: remove out and move back to exec; must avoid creating new interp when deugging same st tree 
+    public Interpreter(STGroup group, Locale locale) {
+        this.group = group;
+        this.locale = locale;
+        if ( group.debug ) events = new ArrayList<InterpEvent>();
+    }
+
+    public int exec(STWriter out, ST self) {
         int start = out.index(); // track char we're about to write
         int prevOpcode = 0;
         int n = 0; // how many char we write out
@@ -210,7 +200,7 @@ public class Interpreter {
                 int exprStop = getShort(code, ip);
                 ip += 2;
                 o = operands[sp--];
-                nw = writeObjectNoOptions(self, o, exprStart, exprStop);
+                nw = writeObjectNoOptions(out, self, o, exprStart, exprStop);
                 n += nw;
                 break;
 			case Bytecode.INSTR_WRITE_OPT :
@@ -220,7 +210,7 @@ public class Interpreter {
                 ip += 2;
 				options = (Object[])operands[sp--]; // get options
 				o = operands[sp--];                 // get option to write
-				nw = writeObjectWithOptions(self, o, options, exprStart, exprStop);
+				nw = writeObjectWithOptions(out, self, o, options, exprStart, exprStop);
                 n += nw;
 				break;
             case Bytecode.INSTR_MAP :
@@ -348,18 +338,17 @@ public class Interpreter {
         }
         if ( group.debug ) {
 			int stop = out.index() - 1;
-			EvalTemplateEvent e = new EvalTemplateEvent(self, start, stop);
+			EvalTemplateEvent e = new EvalTemplateEvent((DebugST)self, start, stop);
 			System.out.println(e);
             events.add(e);
             if ( self.enclosingInstance!=null ) {
-                STDebugInfo info = self.enclosingInstance.getDebugInfo();
-                info.interpEvents.add(e);
+                ((DebugST)self.enclosingInstance).interpEvents.add(e);
             }
         }
         return n;
     }
 
-    protected int writeObjectNoOptions(ST self, Object o, int exprStart, int exprStop) {
+    protected int writeObjectNoOptions(STWriter out, ST self, Object o, int exprStart, int exprStop) {
         //int start = out.index(); // track char we're about to write
         int n = writeObject(out, self, o, null);
         /*
@@ -372,7 +361,8 @@ public class Interpreter {
         return n;
     }
 
-    protected int writeObjectWithOptions(ST self, Object o, Object[] options,
+    protected int writeObjectWithOptions(STWriter out, ST self, Object o,
+                                         Object[] options,
                                          int exprStart, int exprStop)
     {
         //int start = out.index(); // track char we're about to write
@@ -423,7 +413,7 @@ public class Interpreter {
                     group.listener.error("Can't write wrap string");
                 }
             }
-            n = exec((ST)o);
+            n = exec(out, (ST)o);
         }
         else {
             o = convertAnythingIteratableToIterator(o); // normalize
@@ -769,8 +759,12 @@ public class Interpreter {
             if ( value instanceof ST ) ((ST)value).enclosingInstance = self;
             // if not string already, must evaluate it
             StringWriter sw = new StringWriter();
+            /*
             Interpreter interp = new Interpreter(group, new NoIndentWriter(sw), locale);
             interp.writeObjectNoOptions(self, value, -1, -1);
+            */
+            writeObjectNoOptions(new NoIndentWriter(sw), self, value, -1, -1);
+
             return sw.toString();
         }
         return null;

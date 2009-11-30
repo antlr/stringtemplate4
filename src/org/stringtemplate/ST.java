@@ -27,11 +27,7 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.debug.InterpEvent;
 import org.stringtemplate.debug.AddAttributeEvent;
-import org.stringtemplate.debug.ConstructionEvent;
-import org.stringtemplate.debug.STDebugInfo;
-import org.stringtemplate.misc.MultiMap;
 import org.stringtemplate.gui.STViz;
 
 import java.util.*;
@@ -103,11 +99,6 @@ public class ST {
         }
 
         if ( value instanceof ST ) ((ST)value).enclosingInstance = this;
-
-		if ( groupThatCreatedThisInstance.debug ) {
-            STDebugInfo info = groupThatCreatedThisInstance.debugInfoMap.get(this);
-            if ( info!=null ) info.addAttrEvents.map(name, new AddAttributeEvent(name, value));
-		}
 
         Object curvalue = null;
         if ( attributes==null || !attributes.containsKey(name) ) { // new attribute
@@ -233,22 +224,18 @@ public class ST {
         return stack;
     }
 
-    public STDebugInfo getDebugInfo() {
-        return groupThatCreatedThisInstance.getDebugInfo(this);
-    }
-
     public String getName() { return code.name; }
 
 	public boolean isSubtemplate() { return code.isSubtemplate(); }
 
     public int write(STWriter out) throws IOException {
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, out);
-        return interp.exec(this);
+        Interpreter interp = new Interpreter(groupThatCreatedThisInstance);
+        return interp.exec(out, this);
     }
 
-    public int write(STWriter out, Locale locale) throws IOException {
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, out, locale);
-        return interp.exec(this);
+    public int write(STWriter out, Locale locale) {
+        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
+        return interp.exec(out, this);
     }
 
     public String render() { return render(Locale.getDefault()); }
@@ -261,25 +248,8 @@ public class ST {
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
-        try {
-            write(wr, locale);
-        }
-        catch (IOException io) {
-            System.err.println("Got IOException writing to writer");
-        }
+        write(wr, locale);
         return out.toString();
-    }
-
-    public String inspect() { return inspect(Locale.getDefault()); }
-
-    public String inspect(int lineWidth) { return inspect(Locale.getDefault(), lineWidth); }
-
-    public String inspect(Locale locale) { return inspect(locale, STWriter.NO_WRAP); }
-
-    public String inspect(Locale locale, int lineWidth) {
-        String s = render(locale, lineWidth);
-        new STViz(this);
-        return s;
     }
 
     public String toString() {

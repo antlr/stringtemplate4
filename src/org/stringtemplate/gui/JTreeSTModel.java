@@ -1,8 +1,7 @@
 package org.stringtemplate.gui;
 
-import org.stringtemplate.ST;
 import org.stringtemplate.debug.InterpEvent;
-import org.stringtemplate.debug.STDebugInfo;
+import org.stringtemplate.debug.DebugST;
 
 import javax.swing.tree.*;
 import javax.swing.event.TreeModelListener;
@@ -11,8 +10,8 @@ public class JTreeSTModel implements TreeModel {
     Wrapper root;
 
 	public static class Wrapper {
-		public ST st;
-		public Wrapper(ST st) { this.st = st; }
+		public DebugST st;
+		public Wrapper(DebugST st) { this.st = st; }
 
 		public boolean equals(Object o) {
 			if (this == o) return true;
@@ -24,27 +23,27 @@ public class JTreeSTModel implements TreeModel {
 		public int hashCode() { return st != null ? st.hashCode() : 0; }
 		public String toString() {
 			if ( st.isSubtemplate() ) return "{...}";
-            STDebugInfo info = st.getDebugInfo();
-            if ( info!=null )
-                return st.toString()+" @ "+
-                       info.newSTEvent.getFileName()+":"+info.newSTEvent.getLine();
-			return st.toString();
+            return st.toString()+" @ "+st.newSTEvent.getFileName()+":"+st.newSTEvent.getLine();
 		}
 	}
 	
-    public JTreeSTModel(ST root) { this.root = new Wrapper(root); }
+    public JTreeSTModel(DebugST root) { this.root = new Wrapper(root); }
 
     public int getChildCount(Object parent) {
-		ST st = getST(parent);
-        return st.getDebugInfo().interpEvents.size();
+        DebugST st = ((Wrapper) parent).st;
+        return st.interpEvents.size();
+    }
+
+    public int getIndexOfChild(DebugST parent, DebugST child){
+        return getIndexOfChild(new Wrapper(parent), new Wrapper(child));
     }
 
     public int getIndexOfChild(Object parent, Object child){
         if ( parent==null ) return -1;
-		ST parentST = getST(parent);
-		ST childST = getST(child);
+        DebugST parentST = ((Wrapper) parent).st;
+        DebugST childST = ((Wrapper) child).st;
         int i = 0;
-        for (InterpEvent e : parentST.getDebugInfo().interpEvents) {
+        for (InterpEvent e : parentST.interpEvents) {
             if ( e.self == childST ) return i;
             i++;
         }
@@ -52,17 +51,15 @@ public class JTreeSTModel implements TreeModel {
     }
 
     public Object getChild(Object parent, int index){
-		ST st = getST(parent);
-        return new Wrapper(st.getDebugInfo().interpEvents.get(index).self);
+        DebugST st = ((Wrapper) parent).st;
+        return new Wrapper(st.interpEvents.get(index).self);
     }
 
     public boolean isLeaf(Object node) {
         return getChildCount(node)==0;
     }
 
-    public Object getRoot() {
-        return root;
-    }
+    public Object getRoot() { return root; }
 
     public void valueForPathChanged(TreePath treePath, Object o) {
     }
@@ -73,8 +70,4 @@ public class JTreeSTModel implements TreeModel {
     public void removeTreeModelListener(TreeModelListener treeModelListener) {
     }
 
-	public static ST getST(Object o) {
-		if ( o instanceof Wrapper ) return ((Wrapper)o).st;
-		else return (ST)o;
-	}
 }

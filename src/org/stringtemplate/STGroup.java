@@ -30,8 +30,7 @@ package org.stringtemplate;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 import org.stringtemplate.misc.Misc;
-import org.stringtemplate.debug.STDebugInfo;
-import org.stringtemplate.debug.ConstructionEvent;
+import org.stringtemplate.debug.DebugST;
 
 import java.util.*;
 
@@ -59,11 +58,6 @@ public class STGroup {
                 System.out.println(s);
             }
         };
-
-    /** To avoid polluting ST instances with debug info when not debugging,
-     *  we map ST instances to associated debug objects in group.
-     */
-    protected Map<ST, STDebugInfo> debugInfoMap;
 
     public String fullyQualifiedRootDirName;
 
@@ -108,7 +102,7 @@ public class STGroup {
 
 	public static STGroup defaultGroup = new STGroup();
 
-    protected boolean debug = false;    
+    public boolean debug = false;    
 
     public STGroup() { ; }
 
@@ -318,19 +312,13 @@ public class STGroup {
         return renderers.get(attributeType);
     }
 
-    public STDebugInfo getDebugInfo(ST st) {
-        if ( !debug ) return null;
-        return debugInfoMap.get(st);
-    }
-    
     /** StringTemplate object factory; each group can have its own. */
     public ST createStringTemplate() {
         // TODO: try making a mem pool
-        ST st = new ST();
         if ( debug ) {
-            debugInfoMap.put(st, new STDebugInfo());
+            return new DebugST();
         }
-        return st;
+        return new ST();
     }
 
     public String getName() { return "<no name>;"; }
@@ -363,10 +351,7 @@ public class STGroup {
         return buf.toString();
     }
 
-    public void setDebug(boolean b) {
-        debug = b;
-        if ( debug ) debugInfoMap = new HashMap<ST, STDebugInfo>();
-    }
+    public void setDebug(boolean b) { debug = b; }
 
     public void setErrorListener(STErrorListener listener) { this.listener = listener; }
 

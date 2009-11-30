@@ -20,8 +20,8 @@ public class TestDebugEvents extends BaseTest {
         ST st = group.getInstanceOf("t");
         st.code.dump();
         StringWriter sw = new StringWriter();
-        Interpreter interp = new Interpreter(group, new AutoIndentWriter(sw));
-        interp.exec(st);
+        Interpreter interp = new Interpreter(group);
+        interp.exec(new AutoIndentWriter(sw), st);
         String expected = "";
         List<InterpEvent> events = interp.getEvents();
         String result = events.toString();
@@ -39,8 +39,8 @@ public class TestDebugEvents extends BaseTest {
         st.code.dump();
         st.add("x", "foo");
         StringWriter sw = new StringWriter();
-        Interpreter interp = new Interpreter(group, new AutoIndentWriter(sw));
-        interp.exec(st);
+        Interpreter interp = new Interpreter(group);
+        interp.exec(new AutoIndentWriter(sw), st);
         String expected = "";
         List<InterpEvent> events = interp.getEvents();
         String result = events.toString();
@@ -59,8 +59,8 @@ public class TestDebugEvents extends BaseTest {
         st.code.dump();
         st.add("x", "foo");
         StringWriter sw = new StringWriter();
-        Interpreter interp = new Interpreter(group, new AutoIndentWriter(sw));
-        interp.exec(st);
+        Interpreter interp = new Interpreter(group);
+        interp.exec(new AutoIndentWriter(sw), st);
         String expected = "";
         List<InterpEvent> events = interp.getEvents();
         String result = events.toString();
