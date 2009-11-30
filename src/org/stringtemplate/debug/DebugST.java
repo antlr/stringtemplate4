@@ -30,6 +30,8 @@ public class DebugST extends ST {
         super.add(name, value);
     }
 
+    // LAUNCH A WINDOW TO INSPECT TEMPLATE HIERARCHY
+
     public List<InterpEvent> inspect() { return inspect(Locale.getDefault()); }
 
     public List<InterpEvent> inspect(int lineWidth) { return inspect(Locale.getDefault(), lineWidth); }
@@ -42,7 +44,25 @@ public class DebugST extends ST {
         wr.setLineWidth(lineWidth);
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
         interp.exec(wr, this); // render and track events
-        new STViz(this, out.toString(), interpEvents);
-        return interpEvents;
+        new STViz(this, out.toString(), interp.getEvents());
+        return interp.getEvents();
     }
+
+    // TESTING SUPPORT
+    
+    public List<InterpEvent> getEvents() { return getEvents(Locale.getDefault()); }
+
+    public List<InterpEvent> getEvents(int lineWidth) { return getEvents(Locale.getDefault(), lineWidth); }
+
+    public List<InterpEvent> getEvents(Locale locale) { return getEvents(locale, STWriter.NO_WRAP); }
+
+    public List<InterpEvent> getEvents(Locale locale, int lineWidth) {
+        StringWriter out = new StringWriter();
+        STWriter wr = new AutoIndentWriter(out);
+        wr.setLineWidth(lineWidth);
+        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
+        interp.exec(wr, this); // render and track events
+        return interp.getEvents();
+    }
+
 }

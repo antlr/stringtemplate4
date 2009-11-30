@@ -31,6 +31,7 @@ import org.stringtemplate.misc.Misc;
 import org.stringtemplate.debug.InterpEvent;
 import org.stringtemplate.debug.EvalTemplateEvent;
 import org.stringtemplate.debug.DebugST;
+import org.stringtemplate.debug.EvalExprEvent;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -349,15 +350,11 @@ public class Interpreter {
     }
 
     protected int writeObjectNoOptions(STWriter out, ST self, Object o, int exprStart, int exprStop) {
-        //int start = out.index(); // track char we're about to write
+        int start = out.index(); // track char we're about to write
         int n = writeObject(out, self, o, null);
-        /*
         if ( group.debug ) {
-            STDebugInfo info = self.getDebugInfo();
-            events.add( new EvalExprEvent(self, start, out.index()-1, exprStart, exprStop) );
-            info.interpEvents.add( new EvalExprEvent(self, start, out.index(), exprStart, exprStop) );
+            events.add( new EvalExprEvent((DebugST)self, start, out.index()-1, exprStart, exprStop) );
         }
-        */
         return n;
     }
 
@@ -365,7 +362,7 @@ public class Interpreter {
                                          Object[] options,
                                          int exprStart, int exprStop)
     {
-        //int start = out.index(); // track char we're about to write
+        int start = out.index(); // track char we're about to write
         // precompute all option values (render all the way to strings)
         String[] optionStrings = null;
         if ( options!=null ) {
@@ -383,13 +380,9 @@ public class Interpreter {
         if ( options!=null && options[OPTION_ANCHOR]!=null ) {
             out.popAnchorPoint();
         }
-        /*
         if ( group.debug ) {
-            STDebugInfo info = self.getDebugInfo();
-            events.add( new EvalExprEvent(self, start, out.index()-1, exprStart, exprStop) );
-            info.interpEvents.add( new EvalExprEvent(self, start, out.index(), exprStart, exprStop) );
+            events.add( new EvalExprEvent((DebugST)self, start, out.index()-1, exprStart, exprStop) );
         }
-        */
         return n;
     }
 
