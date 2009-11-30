@@ -26,7 +26,7 @@ public class JTreeSTModel implements TreeModel {
 			if ( st.isSubtemplate() ) return "{...}";
             STDebugInfo info = st.getDebugInfo();
             if ( info!=null )
-                return st.toString()+"() @ "+
+                return st.toString()+" @ "+
                        info.newSTEvent.getFileName()+":"+info.newSTEvent.getLine();
 			return st.toString();
 		}

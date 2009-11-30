@@ -64,50 +64,56 @@ public class STViz {
 		st.add("stats", s2);
 		st.add("stats", s3);
 
-		currentST = st;
+        st.inspect();
+	}
 
-		StringWriter sw = new StringWriter();
-		Interpreter interp = new Interpreter(group, new AutoIndentWriter(sw));
-		interp.exec(st);
-		allEvents = interp.getEvents();
+    public STViz(ST st) {
+        // TODO move all this to JFrame so i can return it.
+        currentST = st;
 
-		final STViewFrame m = new STViewFrame();
-		updateStack(currentST, m);
-		updateAttributes(currentST, m);
+        StringWriter sw = new StringWriter();
+        Interpreter interp = new Interpreter(st.groupThatCreatedThisInstance,
+                                             new AutoIndentWriter(sw));
+        interp.exec(st);
+        allEvents = interp.getEvents();
 
-		tmodel = new JTreeSTModel(st);
-		m.tree.setModel(tmodel);
-		m.tree.addTreeSelectionListener(
-			new TreeSelectionListener() {
-				public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
-					currentST = JTreeSTModel.getST(m.tree.getLastSelectedPathComponent());
-					update(m);
-				}
-			}
-		);
+        final STViewFrame m = new STViewFrame();
+        updateStack(currentST, m);
+        updateAttributes(currentST, m);
+
+        tmodel = new JTreeSTModel(st);
+        m.tree.setModel(tmodel);
+        m.tree.addTreeSelectionListener(
+            new TreeSelectionListener() {
+                public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
+                    currentST = JTreeSTModel.getST(m.tree.getLastSelectedPathComponent());
+                    update(m);
+                }
+            }
+        );
 
 
-		m.output.setText(sw.toString());
+        m.output.setText(sw.toString());
 
-		m.template.setText(st.code.getTemplate());
+        m.template.setText(st.code.getTemplate());
         m.bytecode.setText(st.code.disasm());
 
         updateStack(st, m);
 
-		CaretListener caretListenerLabel = new CaretListener() {
-			public void caretUpdate(CaretEvent e) {
-				int dot = e.getDot();
-				InterpEvent de = findEventAtOutputLocation(allEvents, dot);
-				if ( de==null ) currentST = tmodel.root.st;
-				else currentST = de.self;
-				update(m);
-			}
-		};
+        CaretListener caretListenerLabel = new CaretListener() {
+            public void caretUpdate(CaretEvent e) {
+                int dot = e.getDot();
+                InterpEvent de = findEventAtOutputLocation(allEvents, dot);
+                if ( de==null ) currentST = tmodel.root.st;
+                else currentST = de.self;
+                update(m);
+            }
+        };
 
-		m.output.addCaretListener(caretListenerLabel);
+        m.output.addCaretListener(caretListenerLabel);
 
-		m.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		m.pack();
+        m.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        m.pack();
         m.setSize(800,600);
         m.topSplitPane.setBorder(null);
         //m.topSplitPane.setResizeWeight(0.15);
@@ -115,8 +121,8 @@ public class STViz {
         //m.bottomSplitPane.setResizeWeight(0.15);
         m.treeScrollPane.setPreferredSize(new Dimension(120,400));
         m.bottomSplitPane.setPreferredSize(new Dimension(120,200));
-		m.setVisible(true);
-	}
+        m.setVisible(true);
+    }
 
 	private static void update(STViewFrame m) {
 		updateStack(currentST, m);
@@ -176,7 +182,8 @@ public class STViz {
 			public String toString() { return a.toString()+" = "+b; }
 		}
 		 */
-		for (String a : attrs.keySet()) {
+		if ( attrs!=null ) {
+            for (String a : attrs.keySet()) {
             if (st.getDebugInfo().addAttrEvents !=null ) {
                 List<AddAttributeEvent> events = st.getDebugInfo().addAttrEvents.get(a);
                 StringBuilder locations = new StringBuilder();
@@ -193,6 +200,7 @@ public class STViz {
             else {
                 attrModel.addElement(a+" = "+attrs.get(a));
             }
+        }
         }
         m.attributes.setModel(attrModel);
 		m.attributes.addListSelectionListener(
