@@ -4,6 +4,8 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.compiler.CompiledST;
+import org.stringtemplate.compiler.GroupLexer;
+import org.stringtemplate.compiler.GroupParser;
 
 import java.io.File;
 

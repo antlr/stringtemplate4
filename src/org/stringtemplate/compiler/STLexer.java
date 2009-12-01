@@ -2,8 +2,6 @@ package org.stringtemplate.compiler;
 
 import org.antlr.runtime.*;
 import org.stringtemplate.misc.Misc;
-import org.stringtemplate.STParser;
-import org.stringtemplate.compiler.STRecognitionException;
 
 import java.util.ArrayList;
 import java.util.List;

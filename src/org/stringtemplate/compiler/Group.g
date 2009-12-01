@@ -66,7 +66,7 @@ import org.stringtemplate.*;
 }
 
 @members {
-protected STGroup group;
+public STGroup group;
 }
 @lexer::members {
 protected STGroup group;
