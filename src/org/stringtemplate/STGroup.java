@@ -31,6 +31,8 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.debug.DebugST;
+import org.stringtemplate.compiler.*;
+import org.stringtemplate.compiler.Compiler;
 
 import java.util.*;
 
@@ -149,6 +151,9 @@ public class STGroup {
         return null;
     }
 
+    public CompiledST rawGetTemplate(String name) { return templates.get(name); }
+    public Map<String,Object> rawGetDictionary(String name) { return dictionaries.get(name); }
+
     // TODO: send in start/stop char or line/col so errors can be relative
     public CompiledST defineTemplate(String name, String template) {
         return defineTemplate("/", name, null, template);
@@ -244,7 +249,7 @@ public class STGroup {
     }
 
     protected CompiledST compile(String prefix, String enclosingTemplateName, String template) {
-        Compiler c = new Compiler(prefix, enclosingTemplateName);
+        Compiler c = new org.stringtemplate.compiler.Compiler(prefix, enclosingTemplateName);
         CompiledST code = c.compile(template);
         code.nativeGroup = this;
         code.template = template;

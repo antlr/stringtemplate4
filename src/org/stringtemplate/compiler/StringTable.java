@@ -1,4 +1,4 @@
-package org.stringtemplate;
+package org.stringtemplate.compiler;
 
 import java.util.LinkedHashMap;
 

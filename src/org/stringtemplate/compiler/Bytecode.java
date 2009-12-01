@@ -25,7 +25,7 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate;
+package org.stringtemplate.compiler;
 
 public class Bytecode {
     public static final int MAX_OPNDS = 3;

@@ -27,8 +27,7 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.debug.AddAttributeEvent;
-import org.stringtemplate.gui.STViz;
+import org.stringtemplate.compiler.CompiledST;
 
 import java.util.*;
 import java.io.StringWriter;
@@ -158,7 +157,7 @@ public class ST {
         }
         if ( code.formalArguments==null || code.formalArguments.get(name)==null ) {
             // if not hidden by formal args, return any dictionary
-            return code.nativeGroup.dictionaries.get(name);
+            return code.nativeGroup.rawGetDictionary(name);
         }
         return null;
     }

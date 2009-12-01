@@ -25,16 +25,19 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate;
+package org.stringtemplate.compiler;
+
+import org.stringtemplate.compiler.FormalArgument;
+import org.stringtemplate.STGroup;
+import org.stringtemplate.ST;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.io.Writer;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class CompiledST {
-    protected String name;
+    public String name;
 
     /** The original, immutable pattern (not really used again after
      *  initial "compilation"). Useful for debugging.
@@ -43,9 +46,9 @@ public class CompiledST {
 
     public int embeddedStart=-1, embeddedStop=-1; // if subtemplate
 
-    protected LinkedHashMap<String,FormalArgument> formalArguments;
+    public LinkedHashMap<String, FormalArgument> formalArguments;
 
-    protected List<CompiledST> implicitlyDefinedTemplates;
+    public List<CompiledST> implicitlyDefinedTemplates;
 
     /** The group that holds this ST definition.  We use it to initiate
      *  interpretation via ST.toString().  From there, it becomes field 'group'
@@ -56,7 +59,7 @@ public class CompiledST {
     /** Does this template come from a <@region>...<@end> embedded in
      *  another template?
      */
-    protected boolean isRegion;    
+    public boolean isRegion;    
 
     /** If someone refs <@r()> in template t, an implicit
      *
@@ -66,7 +69,7 @@ public class CompiledST {
      *  own.  We need to prevent more than one manual def though.  Between
      *  this var and isEmbeddedRegion we can determine these cases.
      */
-    protected ST.RegionType regionDefType;
+    public ST.RegionType regionDefType;
 
     public String[] strings;
     public byte[] instrs;        // byte-addressable code memory.

@@ -1,5 +1,7 @@
 package org.stringtemplate;
 
+import org.stringtemplate.compiler.CompiledST;
+
 import java.io.IOException;
 
 /** A singleton no-op ST that renders to "" and doesn't set attributes etc...

@@ -30,8 +30,8 @@ package org.stringtemplate.test;
 import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.*;
-import org.stringtemplate.Compiler;
-import org.stringtemplate.*;
+import org.stringtemplate.compiler.Compiler;
+import org.stringtemplate.compiler.*;
 
 import java.util.Arrays;
 
@@ -105,7 +105,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testRepeatedMap() throws Exception {
         String template = "hi <name:bold:italics>";
-        CompiledST code = new org.stringtemplate.Compiler().compile(template);
+        CompiledST code = new Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
             "write 0 2, " +
@@ -202,7 +202,7 @@ public class TestCompiler extends BaseTest {
     
     @Test public void testElseIfElse() throws Exception {
         String template = "go: <if(name)>hi, foo<elseif(user)>a user<else>bye<endif>";
-        CompiledST code = new Compiler().compile(template);
+        CompiledST code = new org.stringtemplate.compiler.Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
             "write 0 3, " +

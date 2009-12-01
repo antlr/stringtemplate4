@@ -35,8 +35,9 @@ options {
 }
 
 @header {
-package org.stringtemplate;
+package org.stringtemplate.compiler;
 import org.stringtemplate.misc.*;
+import org.stringtemplate.*;
 }
 
 @members {

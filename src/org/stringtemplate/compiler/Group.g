@@ -50,17 +50,19 @@
 grammar Group;
 
 @header {
-package org.stringtemplate;
+package org.stringtemplate.compiler;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import org.stringtemplate.misc.*;
+import org.stringtemplate.*;
 }
 
 @lexer::header {
-package org.stringtemplate;
+package org.stringtemplate.compiler;
+import org.stringtemplate.*;
 }
 
 @members {
@@ -143,10 +145,10 @@ suffix returns [int cardinality=FormalArgument.REQUIRED]
 dictDef
 	:	ID '::=' dict
         {
-        if ( group.dictionaries.get($ID.text)!=null ) {
+        if ( group.rawGetDictionary($ID.text)!=null ) {
             System.err.println("redefinition of map: "+$ID.text);
         }
-        else if ( group.templates.get($ID.text)!=null ) {
+        else if ( group.rawGetTemplate($ID.text)!=null ) {
             System.err.println("redefinition of template as map: "+$ID.text);
         }
         else {

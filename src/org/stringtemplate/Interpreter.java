@@ -28,10 +28,13 @@
 package org.stringtemplate;
 
 import org.stringtemplate.misc.Misc;
+import org.stringtemplate.misc.ArrayIterator;
 import org.stringtemplate.debug.InterpEvent;
 import org.stringtemplate.debug.EvalTemplateEvent;
 import org.stringtemplate.debug.DebugST;
 import org.stringtemplate.debug.EvalExprEvent;
+import org.stringtemplate.compiler.*;
+import org.stringtemplate.compiler.Compiler;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -247,7 +250,7 @@ public class Interpreter {
                 if ( !testAttributeTrue(o) ) ip = addr; // jump
                 break;
             case Bytecode.INSTR_OPTIONS :
-                operands[++sp] = new Object[Compiler.NUM_OPTIONS];
+                operands[++sp] = new Object[org.stringtemplate.compiler.Compiler.NUM_OPTIONS];
                 break;
             case Bytecode.INSTR_LIST :
                 operands[++sp] = new ArrayList<Object>();
@@ -367,7 +370,7 @@ public class Interpreter {
         String[] optionStrings = null;
         if ( options!=null ) {
             optionStrings = new String[options.length];
-            for (int i=0; i<Compiler.NUM_OPTIONS; i++) {
+            for (int i=0; i< Compiler.NUM_OPTIONS; i++) {
                 optionStrings[i] = toString(self, options[i]);
             }
         }

@@ -6,7 +6,7 @@ import org.antlr.runtime.UnbufferedTokenStream;
 import org.junit.Before;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.STGroup;
-import org.stringtemplate.STLexer;
+import org.stringtemplate.compiler.STLexer;
 
 import java.io.File;
 import java.io.FileWriter;

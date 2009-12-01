@@ -3,6 +3,7 @@ package org.stringtemplate;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 import org.stringtemplate.misc.Misc;
+import org.stringtemplate.compiler.CompiledST;
 
 import java.io.File;
 

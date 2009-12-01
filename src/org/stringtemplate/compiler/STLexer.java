@@ -1,7 +1,9 @@
-package org.stringtemplate;
+package org.stringtemplate.compiler;
 
 import org.antlr.runtime.*;
 import org.stringtemplate.misc.Misc;
+import org.stringtemplate.STParser;
+import org.stringtemplate.compiler.STRecognitionException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,7 @@ public class STLexer implements TokenSource {
             String txt = getText();
             if ( txt!=null ) txt = Misc.replaceEscapes(txt);
             else txt = "<no text>";
-            return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+STParser.tokenNames[type]+">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
+            return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+ STParser.tokenNames[type]+">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
         }
     }
 
@@ -69,7 +71,7 @@ public class STLexer implements TokenSource {
     char delimiterStopChar = '>';
 
     boolean scanningInsideExpr = false;
-	int subtemplateDepth = 0; // start out *not* in a {...} subtemplate 
+	public int subtemplateDepth = 0; // start out *not* in a {...} subtemplate 
 
     CharStream input;
     char c;        // current character
@@ -196,7 +198,7 @@ public class STLexer implements TokenSource {
 					}
 					RecognitionException re = new NoViableAltException("", 0, 0, input);
 					if ( c==EOF ) {
-						throw new STRecognitionException("EOF inside ST expression", re);						
+						throw new STRecognitionException("EOF inside ST expression", re);
 					}
                     throw new STRecognitionException("invalid character: "+c, re);
             }

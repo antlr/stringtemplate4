@@ -1,6 +1,7 @@
-package org.stringtemplate;
+package org.stringtemplate.compiler;
 
 import org.antlr.runtime.Token;
+import org.stringtemplate.compiler.CompiledST;
 
 /** Represents the name of a formal argument
  *  defined in a template:

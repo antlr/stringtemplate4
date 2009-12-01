@@ -1,4 +1,4 @@
-package org.stringtemplate;
+package org.stringtemplate.compiler;
 
 import org.antlr.runtime.RecognizerSharedState;
 import org.antlr.runtime.TokenStream;
