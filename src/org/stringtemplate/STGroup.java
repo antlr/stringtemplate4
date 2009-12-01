@@ -80,14 +80,6 @@ public class STGroup {
 
     protected boolean alreadyLoaded = false;
     
-    /** Where to report errors.  All string templates in this group
-     *  use this error handler by default.
-     */
-    //public STErrorListener listener = DEFAULT_ERROR_LISTENER;
-	
-	public static ErrorTolerance DEFAULT_ERROR_TOLERANCE = new ErrorTolerance();
-	public ErrorTolerance tolerance = DEFAULT_ERROR_TOLERANCE;
-
 	public static STGroup defaultGroup = new STGroup();
 
     public boolean debug = false;    
@@ -343,9 +335,4 @@ public class STGroup {
     }
 
     public void setDebug(boolean b) { debug = b; }
-
-	public void setErrorTolerance(ErrorTolerance errors) { this.tolerance = errors; }
-	public boolean detects(int x) { return tolerance.detects(x); }
-	public void detect(int x) { tolerance.detect(x); }
-	public void ignore(int x) { tolerance.ignore(x); }
 }
