@@ -105,7 +105,7 @@ public class STGroup {
     public ST getEmbeddedInstanceOf(ST enclosingInstance, String name) {
         ST st = getInstanceOf(name);
         if ( st==null ) {
-            ErrorManager.error("no such template: "+name);
+            ErrorManager.runTimeError(enclosingInstance, ErrorType.NO_SUCH_TEMPLATE, name);
             return ST.BLANK;
         }
         st.enclosingInstance = enclosingInstance;
@@ -211,15 +211,17 @@ public class STGroup {
         CompiledST prev = templates.get(name);
         if ( prev!=null ) {
             if ( !prev.isRegion ) {
-                ErrorManager.error("redefinition of "+name);
+                ErrorManager.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, name);
                 return;
             }
             if ( prev.isRegion && prev.regionDefType==ST.RegionType.EMBEDDED ) {
-                ErrorManager.error("can't redefine embedded region "+name);
+                ErrorManager.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
+                                              getUnMangledTemplateName(name));
                 return;
             }
             else if ( prev.isRegion && prev.regionDefType==ST.RegionType.EXPLICIT ) {
-                ErrorManager.error("can't redefine region in same group: "+name);
+                ErrorManager.compileTimeError(ErrorType.REGION_REDEFINITION,
+                                              getUnMangledTemplateName(name));
                 return;
             }
         }
@@ -241,11 +243,13 @@ public class STGroup {
         return "region__"+enclosingTemplateName+"__"+name;
     }
 
-    /** Return "t" from "region__t__foo" */
-    public static String getUnMangledTemplateName(String mangledName)
-    {
-        return mangledName.substring("region__".length(),
-            mangledName.lastIndexOf("__"));
+    /** Return "t.foo" from "region__t__foo" */
+    public static String getUnMangledTemplateName(String mangledName) {
+        String t = mangledName.substring("region__".length(),
+                   mangledName.lastIndexOf("__"));
+        String r = mangledName.substring(mangledName.lastIndexOf("__")+2,
+                                         mangledName.length());
+        return t+'.'+r;
     }
 
     /** Define a map for this group; not thread safe...do not keep adding
@@ -276,7 +280,7 @@ public class STGroup {
             parser.group(this, prefix);
         }
         catch (Exception e) {
-            ErrorManager.error("can't load group file: "+absoluteFileName, e);
+            ErrorManager.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, absoluteFileName);
         }
     }
 

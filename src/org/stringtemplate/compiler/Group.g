@@ -111,14 +111,13 @@ templateDef[String prefix]
         	RecognitionException re = (RecognitionException)e.getCause();
         	int charPosition =
         		re.charPositionInLine+templateToken.getCharPositionInLine()+n;
-	        ErrorManager.error(templateToken.getLine()+":"+
-                   	  		   charPosition+
-                               ": "+e.getMessage(), null);
+	        ErrorManager.compileTimeError(ErrorType.SYNTAX_ERROR, e.getMessage(),
+                                          templateToken.getLine()+":"+charPosition);
         }		
 	    }
 	|   alias=ID '::=' target=ID	    
-	;
-
+		;
+		
 formalArgs returns[LinkedHashMap<String,FormalArgument> args]
 @init {$args = new LinkedHashMap<String,FormalArgument>();}
     :	formalArg[$args] ( ',' formalArg[$args] )*
@@ -146,10 +145,10 @@ dictDef
 	:	ID '::=' dict
         {
         if ( group.rawGetDictionary($ID.text)!=null ) {
-            ErrorManager.error("redefinition of map: "+$ID.text);
+			ErrorManager.compileTimeError(ErrorType.MAP_REDEFINITION, $ID.text);
         }
         else if ( group.rawGetTemplate($ID.text)!=null ) {
-            ErrorManager.error("redefinition of template as map: "+$ID.text);
+			ErrorManager.compileTimeError(ErrorType.TEMPLATE_REDEFINITION_AS_MAP, $ID.text);
         }
         else {
             group.defineDictionary($ID.text, $dict.mapping);

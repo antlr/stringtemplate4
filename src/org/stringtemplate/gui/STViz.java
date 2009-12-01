@@ -126,7 +126,7 @@ public class STViz {
 			highlighter.addHighlight(i, j+1, DefaultHighlighter.DefaultPainter);
 		}
 		catch (BadLocationException ble) {
-			ErrorManager.error("can't highlight char "+i+".."+(j+1));
+			ErrorManager.internalError(tmodel.root.st, ErrorType.GUI_ERROR, ble);
 		}
 	}
 

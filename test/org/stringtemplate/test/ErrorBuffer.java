@@ -1,38 +1,38 @@
 package org.stringtemplate.test;
 
 import org.stringtemplate.STErrorListener;
+import org.stringtemplate.STMessage;
+import org.stringtemplate.misc.Misc;
 
 import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.util.List;
+import java.util.ArrayList;
 
 public class ErrorBuffer implements STErrorListener {
-    StringBuffer errorOutput = new StringBuffer(500);
+    List<STMessage> errors = new ArrayList<STMessage>();
     int n = 0;
-    public void error(String msg) { error(msg, null); }
-    public void error(String msg, Throwable e) {
-        n++;
-        if ( n>1 ) {
-            errorOutput.append('\n');
-        }
-        if ( e!=null ) {
-            StringWriter duh = new StringWriter();
-            e.printStackTrace(new PrintWriter(duh));
-            errorOutput.append(msg+": "+duh.toString());
-        }
-        else {
-            errorOutput.append(msg);
-        }
+
+    public void compileTimeError(STMessage msg) {
+        errors.add(msg);
     }
-    public void warning(String msg) {
-        n++;
-        errorOutput.append(msg);
+
+    public void runTimeError(STMessage msg) {
+        errors.add(msg);
     }
-    public boolean equals(Object o) {
-        String me = toString();
-        String them = o.toString();
-        return me.equals(them);
+
+    public void IOError(STMessage msg) {
+        errors.add(msg);
+    }
+
+    public void internalError(STMessage msg) {
+        errors.add(msg);
     }
     public String toString() {
-        return errorOutput.toString();
+        StringBuilder buf = new StringBuilder();
+        for (STMessage m : errors) {
+            buf.append(m.toString());
+        }
+        return buf.toString();
     }
 }

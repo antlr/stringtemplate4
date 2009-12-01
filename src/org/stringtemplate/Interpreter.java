@@ -139,7 +139,7 @@ public class Interpreter {
                 name = self.code.strings[nameIndex];
                 st = group.getEmbeddedInstanceOf(self, name);
                 if ( st == null ) {
-                    ErrorManager.error("no such template "+name);
+                    ErrorManager.runTimeError(self, ErrorType.NO_SUCH_TEMPLATE, name);
                     st = ST.BLANK;
                 }
                 operands[++sp] = st;
@@ -148,7 +148,7 @@ public class Interpreter {
                 name = (String)operands[sp--];
                 st = group.getEmbeddedInstanceOf(self, name);
                 if ( st == null ) {
-                    ErrorManager.error("no such template "+name);
+                    ErrorManager.runTimeError(self, ErrorType.NO_SUCH_TEMPLATE, name);
                     st = ST.BLANK;
                 }
                 operands[++sp] = st;
@@ -159,7 +159,7 @@ public class Interpreter {
                 name = self.code.strings[nameIndex];
                 CompiledST imported = group.lookupImportedTemplate(name);
                 if ( imported==null ) {
-                    ErrorManager.error("no imported template for "+name);
+                    ErrorManager.runTimeError(self, ErrorType.NO_IMPORTED_TEMPLATE, name);
                     operands[++sp] = ST.BLANK;
                     break;
                 }
@@ -186,7 +186,7 @@ public class Interpreter {
                     nargs = st.code.formalArguments.size();
                 }
                 if ( nargs!=1 ) {
-                    ErrorManager.error("arg mismatch; expecting 1, found "+nargs);
+                    ErrorManager.runTimeError(self, ErrorType.EXPECTING_SINGLE_ARGUMENT, st, nargs);
                 }
                 else {
                     Iterator it = st.code.formalArguments.keySet().iterator();
@@ -292,7 +292,7 @@ public class Interpreter {
                     operands[++sp] = ((String)o).trim();
                 }
                 else {
-                    ErrorManager.error("trim(non string): "+o);
+                    ErrorManager.runTimeError(self, ErrorType.EXPECTING_STRING, "trim", o);
                     operands[++sp] = o;
                 }
                 break;
@@ -305,7 +305,7 @@ public class Interpreter {
                     operands[++sp] = ((String)o).length();
                 }
                 else {
-                    ErrorManager.error("strlen(non string): "+o);
+                    ErrorManager.runTimeError(self, ErrorType.EXPECTING_STRING, "strlen", o);
                     operands[++sp] = 0;
                 }
                 break;
@@ -344,11 +344,11 @@ public class Interpreter {
                     nw = -1; // indicate nothing written but no WRITE yet
                 }
                 catch (IOException ioe) {
-                    ErrorManager.error("[internal]: can't write newline");
+                    ErrorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
                 }
                 break;
             default :
-                ErrorManager.error("[internal]: Invalid bytecode: "+opcode+" @ ip="+(ip-1));
+                ErrorManager.internalError(self, ErrorType.INVALID_BYTECODE, null, opcode, ip-1);
                 self.code.dump();
             }
             prevOpcode = opcode;            
@@ -419,7 +419,7 @@ public class Interpreter {
                     out.writeWrap(options[OPTION_WRAP]);
                 }
                 catch (IOException ioe) {
-                    ErrorManager.error("Can't write wrap string");
+                    ErrorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
                 }
             }
             n = exec(out, (ST)o);
@@ -431,7 +431,7 @@ public class Interpreter {
                 else n = writePOJO(out, o, options);
             }
             catch (IOException ioe) {
-                ErrorManager.error("can't write "+o);
+                ErrorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe, o);
             }
         }
         return n;
@@ -536,16 +536,13 @@ public class Interpreter {
         CompiledST code = group.lookupTemplate(template);
         Map formalArguments = code.formalArguments;
         if ( formalArguments==null || formalArguments.size()==0 ) {
-            ErrorManager.error("missing formal arguments in anonymous"+
-                       " template in context "+self.getEnclosingInstanceStackString(),null);
+            ErrorManager.runTimeError(self, ErrorType.MISSING_FORMAL_ARGUMENTS);
             return null;
         }
 
         Object[] formalArgumentNames = formalArguments.keySet().toArray();
         if ( formalArgumentNames.length != numAttributes ) {
-            ErrorManager.error("number of arguments "+formalArguments.keySet()+
-                       " mismatch between attribute list and anonymous"+
-                       " template in context "+self.getEnclosingInstanceStackString(),null);
+            ErrorManager.runTimeError(self, ErrorType.ARGUMENT_COUNT_MISMATCH, template);
             // truncate arg list to match smaller size
             int shorterSize = Math.min(formalArgumentNames.length, numAttributes);
             numAttributes = shorterSize;
@@ -851,8 +848,7 @@ public class Interpreter {
                 value = invokeMethod(m, o, value);
             }
             catch (Exception e) {
-                ErrorManager.error("Can't get property "+propertyName+" using method get/is"+methodSuffix+
-                    " from "+c.getName()+" instance");
+                ErrorManager.runTimeError(self, ErrorType.CANT_ACCESS_PROPERTY_METHOD, e, m);
             }
         }
         else {
@@ -864,13 +860,11 @@ public class Interpreter {
                     value = accessField(f, o, value);
                 }
                 catch (IllegalAccessException iae) {
-                    ErrorManager.error("Can't access property "+propertyName+" using method get/is"+methodSuffix+
-                        " or direct field access from "+c.getName()+" instance");
+                    ErrorManager.runTimeError(self, ErrorType.CANT_ACCESS_PROPERTY_FIELD, iae, f);
                 }
             }
             catch (NoSuchFieldException nsfe) {
-                ErrorManager.error("Class "+c.getName()+" has no such attribute: "+propertyName+
-                    " in template context "+"PUT CALLSTACK HERE");
+                ErrorManager.runTimeError(self, ErrorType.NO_SUCH_PROPERTY, c, propertyName);
             }
         }
 

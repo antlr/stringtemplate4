@@ -105,7 +105,7 @@ public class TestRegions extends BaseTest {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
         group.load();
-        String expected = "redefinition of /region__a__r";
+        String expected = "redefinition of template /region__a__r"+newline;
         String result = errors.toString();
         assertEquals(expected, result);
     }
