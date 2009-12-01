@@ -1,4 +1,4 @@
-package org.stringtemplate;
+package org.stringtemplate.compiler;
 
 public class STException extends RuntimeException { // no checking damnit!
     public STException() { ; }

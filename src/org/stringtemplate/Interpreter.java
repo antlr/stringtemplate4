@@ -29,6 +29,7 @@ package org.stringtemplate;
 
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.misc.ArrayIterator;
+import org.stringtemplate.misc.BlankST;
 import org.stringtemplate.debug.InterpEvent;
 import org.stringtemplate.debug.EvalTemplateEvent;
 import org.stringtemplate.debug.DebugST;

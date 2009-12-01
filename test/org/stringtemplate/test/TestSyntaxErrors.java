@@ -3,6 +3,7 @@ package org.stringtemplate.test;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.*;
+import org.stringtemplate.compiler.STException;
 import org.antlr.runtime.RecognitionException;
 
 public class TestSyntaxErrors extends BaseTest {

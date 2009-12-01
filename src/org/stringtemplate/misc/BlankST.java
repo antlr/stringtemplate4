@@ -1,6 +1,8 @@
-package org.stringtemplate;
+package org.stringtemplate.misc;
 
 import org.stringtemplate.compiler.CompiledST;
+import org.stringtemplate.ST;
+import org.stringtemplate.STWriter;
 
 import java.io.IOException;
 

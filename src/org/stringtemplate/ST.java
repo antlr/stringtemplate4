@@ -28,6 +28,7 @@
 package org.stringtemplate;
 
 import org.stringtemplate.compiler.CompiledST;
+import org.stringtemplate.misc.BlankST;
 
 import java.util.*;
 import java.io.StringWriter;
