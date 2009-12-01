@@ -138,13 +138,19 @@ public class Interpreter {
                 ip += 2;
                 name = self.code.strings[nameIndex];
                 st = group.getEmbeddedInstanceOf(self, name);
-                if ( st == null ) System.err.println("no such template "+name);
+                if ( st == null ) {
+                    ErrorManager.error("no such template "+name);
+                    st = ST.BLANK;
+                }
                 operands[++sp] = st;
                 break;
             case Bytecode.INSTR_NEW_IND:
                 name = (String)operands[sp--];
                 st = group.getEmbeddedInstanceOf(self, name);
-                if ( st == null ) System.err.println("no such template "+name);
+                if ( st == null ) {
+                    ErrorManager.error("no such template "+name);
+                    st = ST.BLANK;
+                }
                 operands[++sp] = st;
                 break;
             case Bytecode.INSTR_SUPER_NEW :
@@ -153,8 +159,8 @@ public class Interpreter {
                 name = self.code.strings[nameIndex];
                 CompiledST imported = group.lookupImportedTemplate(name);
                 if ( imported==null ) {
-                    group.listener.error("no imported template for "+name);
-                    operands[++sp] = new BlankST();
+                    ErrorManager.error("no imported template for "+name);
+                    operands[++sp] = ST.BLANK;
                     break;
                 }
                 // TODO: factor into STGroup
@@ -180,7 +186,7 @@ public class Interpreter {
                     nargs = st.code.formalArguments.size();
                 }
                 if ( nargs!=1 ) {
-                    System.err.println("arg mismatch; expecting 1, found "+nargs);
+                    ErrorManager.error("arg mismatch; expecting 1, found "+nargs);
                 }
                 else {
                     Iterator it = st.code.formalArguments.keySet().iterator();
@@ -278,14 +284,17 @@ public class Interpreter {
                 operands[sp] = trunc(operands[sp]);
                 break;
             case Bytecode.INSTR_STRIP  :
-                operands[sp] = strip(operands[sp]);
+                operands[sp] = strip(operands[sp]); // TODO: should strip work on strings?
                 break;
             case Bytecode.INSTR_TRIM   :
                 o = operands[sp--];
                 if ( o.getClass() == String.class ) {
                     operands[++sp] = ((String)o).trim();
                 }
-                else System.err.println("strlen(non string)");
+                else {
+                    ErrorManager.error("trim(non string): "+o);
+                    operands[++sp] = o;
+                }
                 break;
             case Bytecode.INSTR_LENGTH :
                 operands[sp] = length(operands[sp]);
@@ -295,7 +304,10 @@ public class Interpreter {
                 if ( o.getClass() == String.class ) {
                     operands[++sp] = ((String)o).length();
                 }
-                else System.err.println("strlen(non string)");
+                else {
+                    ErrorManager.error("strlen(non string): "+o);
+                    operands[++sp] = 0;
+                }
                 break;
             case Bytecode.INSTR_REVERSE :
 				operands[sp] = reverse(operands[sp]);
@@ -332,11 +344,11 @@ public class Interpreter {
                     nw = -1; // indicate nothing written but no WRITE yet
                 }
                 catch (IOException ioe) {
-                    System.err.println("can't write newline");
+                    ErrorManager.error("[internal]: can't write newline");
                 }
                 break;
             default :
-                System.err.println("Invalid bytecode: "+opcode+" @ ip="+(ip-1));
+                ErrorManager.error("[internal]: Invalid bytecode: "+opcode+" @ ip="+(ip-1));
                 self.code.dump();
             }
             prevOpcode = opcode;            
@@ -344,7 +356,7 @@ public class Interpreter {
         if ( group.debug ) {
 			int stop = out.index() - 1;
 			EvalTemplateEvent e = new EvalTemplateEvent((DebugST)self, start, stop);
-			System.out.println(e);
+			//System.out.println(e);
             events.add(e);
             if ( self.enclosingInstance!=null ) {
                 ((DebugST)self.enclosingInstance).interpEvents.add(e);
@@ -407,7 +419,7 @@ public class Interpreter {
                     out.writeWrap(options[OPTION_WRAP]);
                 }
                 catch (IOException ioe) {
-                    group.listener.error("Can't write wrap string");
+                    ErrorManager.error("Can't write wrap string");
                 }
             }
             n = exec(out, (ST)o);
@@ -419,7 +431,7 @@ public class Interpreter {
                 else n = writePOJO(out, o, options);
             }
             catch (IOException ioe) {
-                System.err.println("can't write "+o);
+                ErrorManager.error("can't write "+o);
             }
         }
         return n;
@@ -524,14 +536,14 @@ public class Interpreter {
         CompiledST code = group.lookupTemplate(template);
         Map formalArguments = code.formalArguments;
         if ( formalArguments==null || formalArguments.size()==0 ) {
-            group.listener.error("missing formal arguments in anonymous"+
+            ErrorManager.error("missing formal arguments in anonymous"+
                        " template in context "+self.getEnclosingInstanceStackString(),null);
             return null;
         }
 
         Object[] formalArgumentNames = formalArguments.keySet().toArray();
         if ( formalArgumentNames.length != numAttributes ) {
-            group.listener.error("number of arguments "+formalArguments.keySet()+
+            ErrorManager.error("number of arguments "+formalArguments.keySet()+
                        " mismatch between attribute list and anonymous"+
                        " template in context "+self.getEnclosingInstanceStackString(),null);
             // truncate arg list to match smaller size
@@ -839,7 +851,7 @@ public class Interpreter {
                 value = invokeMethod(m, o, value);
             }
             catch (Exception e) {
-                System.err.println("Can't get property "+propertyName+" using method get/is"+methodSuffix+
+                ErrorManager.error("Can't get property "+propertyName+" using method get/is"+methodSuffix+
                     " from "+c.getName()+" instance");
             }
         }
@@ -852,12 +864,12 @@ public class Interpreter {
                     value = accessField(f, o, value);
                 }
                 catch (IllegalAccessException iae) {
-                    System.err.println("Can't access property "+propertyName+" using method get/is"+methodSuffix+
+                    ErrorManager.error("Can't access property "+propertyName+" using method get/is"+methodSuffix+
                         " or direct field access from "+c.getName()+" instance");
                 }
             }
             catch (NoSuchFieldException nsfe) {
-                System.err.println("Class "+c.getName()+" has no such attribute: "+propertyName+
+                ErrorManager.error("Class "+c.getName()+" has no such attribute: "+propertyName+
                     " in template context "+"PUT CALLSTACK HERE");
             }
         }

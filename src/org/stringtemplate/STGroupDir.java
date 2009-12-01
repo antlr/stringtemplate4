@@ -68,7 +68,7 @@ public class STGroupDir extends STGroup {
             return templates.get("/"+prefix+ Misc.getFileNameNoSuffix(fileName));
         }
         catch (Exception e) {
-            System.err.println("can't load template file: "+absoluteFileName);
+            ErrorManager.error("can't load template file: "+absoluteFileName);
             e.printStackTrace(System.err);
         }
         return null;

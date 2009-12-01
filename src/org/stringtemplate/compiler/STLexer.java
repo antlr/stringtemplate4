@@ -2,6 +2,7 @@ package org.stringtemplate.compiler;
 
 import org.antlr.runtime.*;
 import org.stringtemplate.misc.Misc;
+import org.stringtemplate.ErrorManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -263,7 +264,7 @@ public class STLexer implements TokenSource {
                 break;
             case 'u' : t = UNICODE(); break;
             default :
-                System.err.println("bad \\ char");
+                ErrorManager.error("bad \\ char");
         }
         consume();
         match(delimiterStopChar);
@@ -273,16 +274,16 @@ public class STLexer implements TokenSource {
     Token UNICODE() {
         consume();
         char[] chars = new char[4];
-        if ( !isUnicodeLetter(c) ) System.err.println("bad unicode char: "+c);
+        if ( !isUnicodeLetter(c) ) ErrorManager.error("bad unicode char: "+c);
         chars[0] = c;
         consume();
-        if ( !isUnicodeLetter(c) ) System.err.println("bad unicode char: "+c);
+        if ( !isUnicodeLetter(c) ) ErrorManager.error("bad unicode char: "+c);
         chars[1] = c;
         consume();
-        if ( !isUnicodeLetter(c) ) System.err.println("bad unicode char: "+c);
+        if ( !isUnicodeLetter(c) ) ErrorManager.error("bad unicode char: "+c);
         chars[2] = c;
         consume();
-        if ( !isUnicodeLetter(c) ) System.err.println("bad unicode char: "+c);
+        if ( !isUnicodeLetter(c) ) ErrorManager.error("bad unicode char: "+c);
         chars[3] = c;
         // ESCAPE kills final char and >
         char uc = (char)Integer.parseInt(new String(chars), 16);

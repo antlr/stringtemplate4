@@ -1,10 +1,7 @@
 package org.stringtemplate.test;
 
 import org.junit.Test;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
-import org.stringtemplate.STGroupDir;
-import org.stringtemplate.STGroupFile;
+import org.stringtemplate.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -106,7 +103,7 @@ public class TestRegions extends BaseTest {
 
         STGroup group = new STGroupFile(dir+"/g.stg");
         ErrorBuffer errors = new ErrorBuffer();
-        group.setErrorListener(errors);
+        ErrorManager.setErrorListener(errors);
         group.load();
         String expected = "redefinition of /region__a__r";
         String result = errors.toString();

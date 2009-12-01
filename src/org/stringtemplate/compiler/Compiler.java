@@ -209,7 +209,7 @@ public class Compiler implements CodeGenerator {
         if ( tokenSource instanceof STLexer ) {
             stop = lexer.input.index();
             // sub.template = lexer.input.substring(start,stop-2);
-            System.out.println(start+".."+stop);
+            //System.out.println(start+".."+stop);
             sub.embeddedStart = start;
             sub.embeddedStop = stop-1;
             sub.template = lexer.input.substring(0, lexer.input.size()-1);

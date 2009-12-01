@@ -45,7 +45,7 @@ public class TestSyntaxErrors extends BaseTest {
 
 		STErrorListener errors = new ErrorBuffer();
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		group.listener = errors;
+		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
         String expected = "2:15: mismatched input '<' expecting EOF";
         String result = errors.toString();
@@ -61,7 +61,7 @@ public class TestSyntaxErrors extends BaseTest {
 
 		STErrorListener errors = new ErrorBuffer();
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		group.listener = errors;
+		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
 		String expected = "2:14: mismatched input '<' expecting EOF"; // TODO: terrible err message
 		String result = errors.toString();
@@ -77,7 +77,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroup group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		group.listener = errors;
+		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
 		String expected = "2:29: no viable alternative at input '!'";
 		String result = errors.toString();

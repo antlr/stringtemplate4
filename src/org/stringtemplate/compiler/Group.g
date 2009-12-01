@@ -111,9 +111,9 @@ templateDef[String prefix]
         	RecognitionException re = (RecognitionException)e.getCause();
         	int charPosition =
         		re.charPositionInLine+templateToken.getCharPositionInLine()+n;
-	        group.listener.error(templateToken.getLine()+":"+
-                    	  		 charPosition+
-	                             ": "+e.getMessage(), null);
+	        ErrorManager.error(templateToken.getLine()+":"+
+                   	  		   charPosition+
+                               ": "+e.getMessage(), null);
         }		
 	    }
 	|   alias=ID '::=' target=ID	    
@@ -146,10 +146,10 @@ dictDef
 	:	ID '::=' dict
         {
         if ( group.rawGetDictionary($ID.text)!=null ) {
-            System.err.println("redefinition of map: "+$ID.text);
+            ErrorManager.error("redefinition of map: "+$ID.text);
         }
         else if ( group.rawGetTemplate($ID.text)!=null ) {
-            System.err.println("redefinition of template as map: "+$ID.text);
+            ErrorManager.error("redefinition of template as map: "+$ID.text);
         }
         else {
             group.defineDictionary($ID.text, $dict.mapping);

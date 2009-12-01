@@ -112,7 +112,7 @@ public String prefixedName(String t) {
     public void setOption(Token id) {
         Integer I = Compiler.supportedOptions.get(id.getText());
         if ( I==null ) {
-            System.err.println("no such option: "+id.getText());
+            ErrorManager.error("no such option: "+id.getText());
             return;
         }
         gen.emit(Bytecode.INSTR_STORE_OPTION, I);
@@ -121,7 +121,7 @@ public String prefixedName(String t) {
     public void defaultOption(Token id) {
         String v = Compiler.defaultOptionValues.get(id.getText());
         if ( v==null ) {
-            System.err.println("no def value for "+id.getText());
+            ErrorManager.error("no def value for "+id.getText());
             return;
         }
         gen.emit(Bytecode.INSTR_LOAD_STR, v);
@@ -130,7 +130,7 @@ public String prefixedName(String t) {
     public void func(Token id) {
         Short funcBytecode = Compiler.funcs.get(id.getText());
         if ( funcBytecode==null ) {
-            System.err.println("no such fun: "+id);
+            ErrorManager.error("no such fun: "+id);
             gen.emit(Bytecode.INSTR_NOOP);
         }
         else {

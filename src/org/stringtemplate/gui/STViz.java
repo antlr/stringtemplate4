@@ -126,12 +126,12 @@ public class STViz {
 			highlighter.addHighlight(i, j+1, DefaultHighlighter.DefaultPainter);
 		}
 		catch (BadLocationException ble) {
-			System.out.println("can't highlight");
+			ErrorManager.error("can't highlight char "+i+".."+(j+1));
 		}
 	}
 
 	protected void updateAttributes(final DebugST st, final STViewFrame m) {
-		System.out.println("add events="+ st.addAttrEvents);
+		//System.out.println("add events="+ st.addAttrEvents);
 		final DefaultListModel attrModel = new DefaultListModel();
 		final Map<String,Object> attrs = st.getAttributes();
 		/*

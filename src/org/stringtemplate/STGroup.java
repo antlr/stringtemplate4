@@ -47,20 +47,6 @@ public class STGroup {
     public static final String DICT_KEY = "key";
     public static final String DEFAULT_KEY = "default";
 
-    public static STErrorListener DEFAULT_ERROR_LISTENER =
-        new STErrorListener() {
-            public void error(String s) { error(s, null); }
-            public void error(String s, Throwable e) {
-                System.err.println(s);
-                if ( e!=null ) {
-                    e.printStackTrace(System.err);
-                }
-            }
-            public void warning(String s) {
-                System.out.println(s);
-            }
-        };
-
     public String fullyQualifiedRootDirName;
 
     /** Load files using what encoding? */
@@ -97,7 +83,7 @@ public class STGroup {
     /** Where to report errors.  All string templates in this group
      *  use this error handler by default.
      */
-    public STErrorListener listener = DEFAULT_ERROR_LISTENER;
+    //public STErrorListener listener = DEFAULT_ERROR_LISTENER;
 	
 	public static ErrorTolerance DEFAULT_ERROR_TOLERANCE = new ErrorTolerance();
 	public ErrorTolerance tolerance = DEFAULT_ERROR_TOLERANCE;
@@ -127,7 +113,7 @@ public class STGroup {
     public ST getEmbeddedInstanceOf(ST enclosingInstance, String name) {
         ST st = getInstanceOf(name);
         if ( st==null ) {
-            System.err.println("no such template: "+name);
+            ErrorManager.error("no such template: "+name);
             return ST.BLANK;
         }
         st.enclosingInstance = enclosingInstance;
@@ -233,15 +219,15 @@ public class STGroup {
         CompiledST prev = templates.get(name);
         if ( prev!=null ) {
             if ( !prev.isRegion ) {
-                listener.error("redefinition of "+name);
+                ErrorManager.error("redefinition of "+name);
                 return;
             }
             if ( prev.isRegion && prev.regionDefType==ST.RegionType.EMBEDDED ) {
-                listener.error("can't redefine embedded region "+name);
+                ErrorManager.error("can't redefine embedded region "+name);
                 return;
             }
             else if ( prev.isRegion && prev.regionDefType==ST.RegionType.EXPLICIT ) {
-                listener.error("can't redefine region in same group: "+name);
+                ErrorManager.error("can't redefine region in same group: "+name);
                 return;
             }
         }
@@ -298,7 +284,7 @@ public class STGroup {
             parser.group(this, prefix);
         }
         catch (Exception e) {
-            listener.error("can't load group file: "+absoluteFileName, e);
+            ErrorManager.error("can't load group file: "+absoluteFileName, e);
         }
     }
 
@@ -357,8 +343,6 @@ public class STGroup {
     }
 
     public void setDebug(boolean b) { debug = b; }
-
-    public void setErrorListener(STErrorListener listener) { this.listener = listener; }
 
 	public void setErrorTolerance(ErrorTolerance errors) { this.tolerance = errors; }
 	public boolean detects(int x) { return tolerance.detects(x); }
