@@ -40,7 +40,7 @@ public class ST {
     /** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
     public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT };    
 
-    public static final String UNKNOWN_NAME = "unknown";
+    public static final String UNKNOWN_NAME = "anonymous";
     public static final ST BLANK = new BlankST();
     
     /** The code to interpret; it pulls from attributes and this template's
@@ -230,11 +230,13 @@ public class ST {
 
     public int write(STWriter out) throws IOException {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance);
+        interp.setDefaultArguments(this);
         return interp.exec(out, this);
     }
 
     public int write(STWriter out, Locale locale) {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
+        interp.setDefaultArguments(this);
         return interp.exec(out, this);
     }
 
@@ -253,6 +255,7 @@ public class ST {
     }
 
     public String toString() {
+        if ( code==null ) return "bad-template()";
         return code.name+"()";
     }
 }

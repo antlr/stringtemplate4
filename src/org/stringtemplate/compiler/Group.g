@@ -124,7 +124,6 @@ formalArgs returns[LinkedHashMap<String,FormalArgument> args]
 	;
 
 formalArg[LinkedHashMap<String,FormalArgument> args]
-@init {String defvalue = null;}
 	:	ID
 		(	'=' a=STRING			
 		|	'=' a=ANONYMOUS_TEMPLATE

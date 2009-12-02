@@ -2,15 +2,11 @@ package org.stringtemplate.test;
 
 import org.stringtemplate.STErrorListener;
 import org.stringtemplate.STMessage;
-import org.stringtemplate.misc.Misc;
-
-import java.io.StringWriter;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
 
 public class ErrorBuffer implements STErrorListener {
-    List<STMessage> errors = new ArrayList<STMessage>();
+    public List<STMessage> errors = new ArrayList<STMessage>();
     int n = 0;
 
     public void compileTimeError(STMessage msg) {

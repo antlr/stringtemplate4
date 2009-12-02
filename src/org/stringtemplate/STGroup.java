@@ -105,7 +105,8 @@ public class STGroup {
     public ST getEmbeddedInstanceOf(ST enclosingInstance, String name) {
         ST st = getInstanceOf(name);
         if ( st==null ) {
-            ErrorManager.runTimeError(enclosingInstance, ErrorType.NO_SUCH_TEMPLATE, name);
+            ErrorManager.runTimeError(enclosingInstance, ErrorType.NO_SUCH_TEMPLATE,
+                                      STGroup.getSimpleName(name));
             return ST.BLANK;
         }
         st.enclosingInstance = enclosingInstance;
@@ -175,7 +176,9 @@ public class STGroup {
                 FormalArgument fa = args.get(a);
                 if ( fa.defaultValueToken !=null ) {
                     Compiler c2 = new Compiler(prefix, name);
-                    fa.compiledDefaultValue = c2.compile(template);
+                    String defArgTemplate = Misc.strip(fa.defaultValueToken.getText(), 1);
+                    fa.compiledDefaultValue = c2.compile(defArgTemplate);
+                    fa.compiledDefaultValue.name = fa.name+"-default-value";
                 }
             }
         }
@@ -250,6 +253,14 @@ public class STGroup {
         String r = mangledName.substring(mangledName.lastIndexOf("__")+2,
                                          mangledName.length());
         return t+'.'+r;
+    }
+
+    /** Convert template names like /foo to foo */
+    public static String getSimpleName(String name) {
+        if ( name.charAt(0)=='/' && name.lastIndexOf('/')==0 ) {
+            return name.substring(1);
+        }
+        return name;
     }
 
     /** Define a map for this group; not thread safe...do not keep adding

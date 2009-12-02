@@ -29,7 +29,6 @@ package org.stringtemplate;
 
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.misc.ArrayIterator;
-import org.stringtemplate.misc.BlankST;
 import org.stringtemplate.debug.InterpEvent;
 import org.stringtemplate.debug.EvalTemplateEvent;
 import org.stringtemplate.debug.DebugST;
@@ -42,7 +41,6 @@ import java.io.StringWriter;
 import java.util.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 
 public class Interpreter {
     // TODO: enum?
@@ -139,7 +137,7 @@ public class Interpreter {
                 name = self.code.strings[nameIndex];
                 st = group.getEmbeddedInstanceOf(self, name);
                 if ( st == null ) {
-                    ErrorManager.runTimeError(self, ErrorType.NO_SUCH_TEMPLATE, name);
+                    ErrorManager.runTimeError(self, ErrorType.NO_SUCH_TEMPLATE, STGroup.getSimpleName(name));
                     st = ST.BLANK;
                 }
                 operands[++sp] = st;
@@ -148,7 +146,7 @@ public class Interpreter {
                 name = (String)operands[sp--];
                 st = group.getEmbeddedInstanceOf(self, name);
                 if ( st == null ) {
-                    ErrorManager.runTimeError(self, ErrorType.NO_SUCH_TEMPLATE, name);
+                    ErrorManager.runTimeError(self, ErrorType.NO_SUCH_TEMPLATE, STGroup.getSimpleName(name));
                     st = ST.BLANK;
                 }
                 operands[++sp] = st;
@@ -159,7 +157,7 @@ public class Interpreter {
                 name = self.code.strings[nameIndex];
                 CompiledST imported = group.lookupImportedTemplate(name);
                 if ( imported==null ) {
-                    ErrorManager.runTimeError(self, ErrorType.NO_IMPORTED_TEMPLATE, name);
+                    ErrorManager.runTimeError(self, ErrorType.NO_IMPORTED_TEMPLATE, STGroup.getSimpleName(name));
                     operands[++sp] = ST.BLANK;
                     break;
                 }
@@ -412,6 +410,7 @@ public class Interpreter {
         }
         if ( o instanceof ST ) {
             ((ST)o).enclosingInstance = self;
+            setDefaultArguments((ST)o);
             if ( options!=null && options[OPTION_WRAP]!=null ) {
                 // if we have a wrap string, then inform writer it
                 // might need to wrap
@@ -542,7 +541,8 @@ public class Interpreter {
 
         Object[] formalArgumentNames = formalArguments.keySet().toArray();
         if ( formalArgumentNames.length != numAttributes ) {
-            ErrorManager.runTimeError(self, ErrorType.ARGUMENT_COUNT_MISMATCH, template);
+            ErrorManager.runTimeError(self, ErrorType.ARGUMENT_COUNT_MISMATCH,
+                                      STGroup.getSimpleName(template));
             // truncate arg list to match smaller size
             int shorterSize = Math.min(formalArgumentNames.length, numAttributes);
             numAttributes = shorterSize;
@@ -837,18 +837,18 @@ public class Interpreter {
         String propertyName = (String)property;
         String methodSuffix = Character.toUpperCase(propertyName.charAt(0))+
             propertyName.substring(1,propertyName.length());
-        Method m = getMethod(c,"get"+methodSuffix);
+        Method m = Misc.getMethod(c,"get"+methodSuffix);
         if ( m==null ) {
-            m = getMethod(c, "is"+methodSuffix);
+            m = Misc.getMethod(c, "is"+methodSuffix);
         }
         if ( m != null ) {
             // save to avoid lookup later
             //self.getGroup().cacheClassProperty(c,propertyName,m);
             try {
-                value = invokeMethod(m, o, value);
+                value = Misc.invokeMethod(m, o, value);
             }
             catch (Exception e) {
-                ErrorManager.runTimeError(self, ErrorType.CANT_ACCESS_PROPERTY_METHOD, e, m);
+                //ErrorManager.runTimeError(self, ErrorType.NO_SUCH_PROPERTY, e, m);
             }
         }
         else {
@@ -857,55 +857,53 @@ public class Interpreter {
                 Field f = c.getField(propertyName);
                 //self.getGroup().cacheClassProperty(c,propertyName,f);
                 try {
-                    value = accessField(f, o, value);
+                    value = Misc.accessField(f, o, value);
                 }
                 catch (IllegalAccessException iae) {
-                    ErrorManager.runTimeError(self, ErrorType.CANT_ACCESS_PROPERTY_FIELD, iae, f);
+                    //ErrorManager.runTimeError(self, ErrorType.NO_SUCH_PROPERTY, iae, f);
                 }
             }
             catch (NoSuchFieldException nsfe) {
-                ErrorManager.runTimeError(self, ErrorType.NO_SUCH_PROPERTY, c, propertyName);
+                //ErrorManager.runTimeError(self, ErrorType.NO_SUCH_PROPERTY, c, propertyName);
             }
         }
 
         return value;
     }
 
-    protected Object accessField(Field f, Object o, Object value) throws IllegalAccessException {
-        try {
-            // make sure it's accessible (stupid java)
-            f.setAccessible(true);
+    /** Set any default argument values that were not set by the
+     *  invoking template or by setAttribute directly.  Note
+     *  that the default values may be templates.  Their evaluation
+     *  context is the template itself and, hence, can see attributes
+     *  within the template, any arguments, and any values inherited
+     *  by the template.
+     */
+    public void setDefaultArguments(ST invokedST) {
+        if ( invokedST.code.formalArguments==null || invokedST.code.formalArguments.size()==0 ) return;
+        for (FormalArgument arg : invokedST.code.formalArguments.values()) {
+            // if no value for attribute and default arg, inject default arg into self
+            if ( (invokedST.attributes==null || invokedST.attributes.get(arg.name)==null) &&
+                 arg.compiledDefaultValue!=null )
+            {
+                ST defaultArgST = group.createStringTemplate();
+                defaultArgST.groupThatCreatedThisInstance = group;
+                defaultArgST.code = arg.compiledDefaultValue;
+                System.out.println("setting def arg "+arg.name+" to "+defaultArgST);
+                // If default arg is template with single expression
+                // wrapped in parens, x={<(...)>}, then eval to string
+                // rather than setting x to the template for later
+                // eval.
+                String defArgTemplate = arg.defaultValueToken.getText();
+                if ( defArgTemplate.startsWith("{<(") && defArgTemplate.endsWith(")>}") ) {
+                    invokedST.rawSetAttribute(arg.name, toString(invokedST, defaultArgST));
+                }
+                else {
+                    invokedST.rawSetAttribute(arg.name, defaultArgST);
+                }
+            }
         }
-        catch (SecurityException se) {
-            ; // oh well; security won't let us
-        }
-        value = f.get(o);
-        return value;
     }
 
-    protected Object invokeMethod(Method m, Object o, Object value) throws IllegalAccessException, InvocationTargetException {
-        try {
-            // make sure it's accessible (stupid java)
-            m.setAccessible(true);
-        }
-        catch (SecurityException se) {
-            ; // oh well; security won't let us
-        }
-        value = m.invoke(o,(Object[])null);
-        return value;
-    }
-
-    protected Method getMethod(Class c, String methodName) {
-        Method m;
-        try {
-            m = c.getMethod(methodName, (Class[])null);
-        }
-        catch (NoSuchMethodException nsme) {
-            m = null;
-        }
-        return m;
-    }
-    
     protected void trace(ST self, int ip) {
         BytecodeDisassembler dis = new BytecodeDisassembler(self.code.instrs,
                                                             self.code.instrs.length,
@@ -928,7 +926,8 @@ public class Interpreter {
 
     protected void printForTrace(Object o) {
         if ( o instanceof ST ) {
-            System.out.print(" "+((ST)o).code.name+"()");
+            if ( ((ST)o).code==null ) System.out.print("bad-template()");
+            else System.out.print(" "+((ST)o).code.name+"()");
             return;
         }
         o = convertAnythingIteratableToIterator(o);

@@ -6,6 +6,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Arrays;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 public class Misc {
     public static final String newline = System.getProperty("line.separator");
@@ -70,5 +73,40 @@ public class Misc {
         s = s.replaceAll("\r", "\\\\r");
         s = s.replaceAll("\t", "\\\\t");
         return s;
+    }
+
+    public static Object accessField(Field f, Object o, Object value) throws IllegalAccessException {
+        try {
+            // make sure it's accessible (stupid java)
+            f.setAccessible(true);
+        }
+        catch (SecurityException se) {
+            ; // oh well; security won't let us
+        }
+        value = f.get(o);
+        return value;
+    }
+
+    public static Object invokeMethod(Method m, Object o, Object value) throws IllegalAccessException, InvocationTargetException {
+        try {
+            // make sure it's accessible (stupid java)
+            m.setAccessible(true);
+        }
+        catch (SecurityException se) {
+            ; // oh well; security won't let us
+        }
+        value = m.invoke(o,(Object[])null);
+        return value;
+    }
+
+    public static Method getMethod(Class c, String methodName) {
+        Method m;
+        try {
+            m = c.getMethod(methodName, (Class[])null);
+        }
+        catch (NoSuchMethodException nsme) {
+            m = null;
+        }
+        return m;
     }
 }

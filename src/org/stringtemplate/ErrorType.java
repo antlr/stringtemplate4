@@ -4,10 +4,8 @@ public enum ErrorType {
     // RUNTIME SEMANTIC ERRORS
     NO_SUCH_TEMPLATE("no such template: %s"),
     NO_IMPORTED_TEMPLATE("no such template: super.%s"),
-    CANT_ACCESS_PROPERTY_METHOD("can't access property %s via method"),
-    CANT_ACCESS_PROPERTY_FIELD("can't access property %s as field"),
-    NO_SUCH_PROPERTY("%s doesn't have a %s property"),
-    EXPECTING_SINGLE_ARGUMENT("expecting single arg in template %s, not %s args"),
+    //NO_SUCH_PROPERTY("%s doesn't have a %s property"),
+    EXPECTING_SINGLE_ARGUMENT("expecting single arg in template reference %s (not %s)"),
     MISSING_FORMAL_ARGUMENTS("missing argument definitions"),
     ARGUMENT_COUNT_MISMATCH("template %s's actual and formal argument count does not match"),
     EXPECTING_STRING("function %s expects a string not %s"),
