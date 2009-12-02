@@ -185,7 +185,7 @@ public class TestSubtemplates extends BaseTest {
         p.add("phones", "1");
         p.add("phones", "2");
         p.add("salaries", "big");
-        String expecting = "Ter@1: big, Tom@2: n/a, Sriram@n/a: n/a";
+        String expecting = " Ter@1: big, Tom@2: n/a, Sriram@n/a: n/a ";
         assertEquals(expecting, p.render());
     }
 }
