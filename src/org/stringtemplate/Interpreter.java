@@ -541,8 +541,10 @@ public class Interpreter {
 
         Object[] formalArgumentNames = formalArguments.keySet().toArray();
         if ( formalArgumentNames.length != numAttributes ) {
-            ErrorManager.runTimeError(self, ErrorType.ARGUMENT_COUNT_MISMATCH,
-                                      STGroup.getSimpleName(template));
+            ErrorManager.runTimeError(self,
+                                      ErrorType.MAP_ARGUMENT_COUNT_MISMATCH,
+                                      numAttributes,
+                                      formalArgumentNames.length);
             // truncate arg list to match smaller size
             int shorterSize = Math.min(formalArgumentNames.length, numAttributes);
             numAttributes = shorterSize;

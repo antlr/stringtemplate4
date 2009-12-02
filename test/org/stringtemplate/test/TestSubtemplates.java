@@ -1,16 +1,18 @@
 package org.stringtemplate.test;
 
 import org.junit.Test;
+import org.junit.Before;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.ErrorManager;
 import org.stringtemplate.STGroupFile;
+import org.stringtemplate.compiler.*;
 
 import java.util.ArrayList;
-import java.io.StringReader;
 
 public class TestSubtemplates extends BaseTest {
+
     @Test public void testSimpleIteration() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "<names:{<it>}>!");
@@ -110,7 +112,9 @@ public class TestSubtemplates extends BaseTest {
         e.add("phones", "2");
         e.add("salaries", "big");
         e.add("salaries", "huge");
-        String expecting = "0. Ter@1: big"+newline+"1. Tom@2: huge"+newline;
+        String expecting =
+            "0. Ter@1: big"+newline+
+            "1. Tom@2: huge"+newline;
         assertEquals(expecting, e.render());
     }
 
@@ -150,10 +154,11 @@ public class TestSubtemplates extends BaseTest {
         e.add("phones", "1");
         e.add("phones", "2");
         e.add("salaries", "big");
+        e.render();
+        String errorExpecting = "iterating through 3 arguments but parallel map has 2 formal arguments in context anonymous"+newline;
+        assertEquals(errorExpecting, errors.toString());
         String expecting = "Ter@1, Tom@2";
         assertEquals(expecting, e.render());
-        String errorExpecting = "template _sub13's actual and formal argument count does not match in context anonymous"+newline;
-        assertEquals(errorExpecting, errors.toString());
     }
 
     @Test public void testParallelAttributeIterationWithMissingArgs() throws Exception {

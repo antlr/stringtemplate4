@@ -20,8 +20,11 @@ public class BaseTest {
     public static final String newline = Misc.newline;
 
     @Before
-        public void setUp() { STGroup.defaultGroup = new STGroup(); }
-    
+    public void setUp() {
+        STGroup.defaultGroup = new STGroup();
+        org.stringtemplate.compiler.Compiler.subtemplateCount = 0;
+    }
+
     public static void writeFile(String dir, String fileName, String content) {
 		try {
 			File f = new File(dir, fileName);

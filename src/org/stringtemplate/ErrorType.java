@@ -7,7 +7,7 @@ public enum ErrorType {
     //NO_SUCH_PROPERTY("%s doesn't have a %s property"),
     EXPECTING_SINGLE_ARGUMENT("expecting single arg in template reference %s (not %s)"),
     MISSING_FORMAL_ARGUMENTS("missing argument definitions"),
-    ARGUMENT_COUNT_MISMATCH("template %s's actual and formal argument count does not match"),
+    MAP_ARGUMENT_COUNT_MISMATCH("iterating through %s arguments but parallel map has %s formal arguments"),
     EXPECTING_STRING("function %s expects a string not %s"),
 
     // COMPILE-TIME SYNTAX/SEMANTIC ERRORS
