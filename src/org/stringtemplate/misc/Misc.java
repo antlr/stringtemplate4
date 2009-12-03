@@ -75,6 +75,20 @@ public class Misc {
         return s;
     }
 
+    /** Given index into string, compute the line and char position in line */
+    public static Coordinate getLineCharPosition(String s, int index) {
+        int line = 1;
+        int charPos = 0;
+        int p = 0;
+        while ( p < index ) { // don't care about s[index] itself; count before
+            if ( s.charAt(p)=='\n' ) { line++; charPos=0; }
+            else charPos++;
+            p++;
+        }
+        
+        return new Coordinate(line,charPos);
+    }
+
     public static Object accessField(Field f, Object o, Object value) throws IllegalAccessException {
         try {
             // make sure it's accessible (stupid java)

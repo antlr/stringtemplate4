@@ -38,12 +38,7 @@ public class STMessage {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         String msg = String.format(error.messageTemplate, arg, arg2);
-        pw.print(msg);
-        if ( self!=null ) {
-            pw.print(" in context ");
-            pw.print(self.getEnclosingInstanceStackString());
-        }
-        pw.println();
+        pw.println(msg);
         if ( cause!=null ) {
             cause.printStackTrace(pw);
             cause.printStackTrace();

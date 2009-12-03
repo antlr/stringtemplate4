@@ -143,38 +143,6 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testParallelAttributeIterationWithMismatchArgListSizes() throws Exception {
-        ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
-        ST e = new ST(
-                "<names,phones,salaries:{n,p | <n>@<p>}; separator=\", \">"
-            );
-        e.add("names", "Ter");
-        e.add("names", "Tom");
-        e.add("phones", "1");
-        e.add("phones", "2");
-        e.add("salaries", "big");
-        e.render();
-        String errorExpecting = "iterating through 3 arguments but parallel map has 2 formal arguments in context anonymous"+newline;
-        assertEquals(errorExpecting, errors.toString());
-        String expecting = "Ter@1, Tom@2";
-        assertEquals(expecting, e.render());
-    }
-
-    @Test public void testParallelAttributeIterationWithMissingArgs() throws Exception {
-        ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
-        ST e = new ST(
-                "<names,phones,salaries:{<n>@<p>}; separator=\", \">"
-            );
-        e.add("names", "Tom");
-        e.add("phones", "2");
-        e.add("salaries", "big");
-        e.render(); // generate the error
-        String errorExpecting = "missing argument definitions in context anonymous"+newline;
-        assertEquals(errorExpecting, errors.toString());
-    }
-
     @Test public void testParallelAttributeIterationWithDifferentSizesTemplateRefInsideToo() throws Exception {
         String templates =
                 "page(names,phones,salaries) ::= "+newline+

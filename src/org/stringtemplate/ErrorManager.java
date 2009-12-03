@@ -53,20 +53,20 @@ public class ErrorManager {
         listener.get().compileTimeError(new STMessage(error,null,null,arg,arg2));
     }
 
-    public static void runTimeError(ST self, ErrorType error) {
-        listener.get().runTimeError(new STMessage(error,self));
+    public static void runTimeError(ST self, int ip, ErrorType error) {
+        listener.get().runTimeError(new STRuntimeMessage(error,ip,self));
     }
 
-    public static void runTimeError(ST self, ErrorType error, Object arg) {
-        listener.get().runTimeError(new STMessage(error,self,null,arg));
+    public static void runTimeError(ST self, int ip, ErrorType error, Object arg) {
+        listener.get().runTimeError(new STRuntimeMessage(error,ip,self,null,arg));
     }
 
-    public static void runTimeError(ST self, ErrorType error, Throwable e, Object arg) {
-        listener.get().runTimeError(new STMessage(error,self,null,arg));
+    public static void runTimeError(ST self, int ip, ErrorType error, Throwable e, Object arg) {
+        listener.get().runTimeError(new STRuntimeMessage(error,ip,self,e,arg));
     }
 
-    public static void runTimeError(ST self, ErrorType error, Object arg, Object arg2) {
-        listener.get().runTimeError(new STMessage(error,self,null, arg,arg2));
+    public static void runTimeError(ST self, int ip, ErrorType error, Object arg, Object arg2) {
+        listener.get().runTimeError(new STRuntimeMessage(error,ip,self,null,arg,arg2));
     }
 
     public static void IOError(ST self, ErrorType error, Throwable e) {

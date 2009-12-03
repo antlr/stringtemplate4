@@ -11,9 +11,6 @@ import org.stringtemplate.compiler.*;
 import org.stringtemplate.misc.Misc;
 
 public class TestRuntimeErrors extends BaseTest {
-    @Before
-    public void setUp() { org.stringtemplate.compiler.Compiler.subtemplateCount = 0; }
-
     public static class UserHiddenName {
         protected String name;
         public UserHiddenName(String name) { this.name = name; }
@@ -36,7 +33,7 @@ public class TestRuntimeErrors extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "no such template: foo in context t"+newline;
+        String expected = "context [t] 1:0 no such template: foo"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -58,7 +55,7 @@ public class TestRuntimeErrors extends BaseTest {
         group.importTemplates(group2);
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "no such template: super.t in context t"+newline;
+        String expected = "context [t] 1:1 no such template: super.t"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -126,8 +123,40 @@ public class TestRuntimeErrors extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "expecting single arg in template reference u() (not 2) in context t"+newline;
+        String expected = "context [t] 1:3 expecting single arg in template reference u() (not 2 args)"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
+    }
+
+    @Test public void testParallelAttributeIterationWithMismatchArgListSizes() throws Exception {
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
+        ST e = new ST(
+                "<names,phones,salaries:{n,p | <n>@<p>}; separator=\", \">"
+            );
+        e.add("names", "Ter");
+        e.add("names", "Tom");
+        e.add("phones", "1");
+        e.add("phones", "2");
+        e.add("salaries", "big");
+        e.render();
+        String errorExpecting = "context [anonymous] 1:1 iterating through 3 arguments but parallel map has 2 formal arguments"+newline;
+        assertEquals(errorExpecting, errors.toString());
+        String expecting = "Ter@1, Tom@2";
+        assertEquals(expecting, e.render());
+    }
+
+    @Test public void testParallelAttributeIterationWithMissingArgs() throws Exception {
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
+        ST e = new ST(
+                "<names,phones,salaries:{<n>@<p>}; separator=\", \">"
+            );
+        e.add("names", "Tom");
+        e.add("phones", "2");
+        e.add("salaries", "big");
+        e.render(); // generate the error
+        String errorExpecting = "context [anonymous] 1:1 missing argument definitions"+newline;
+        assertEquals(errorExpecting, errors.toString());
     }
 }

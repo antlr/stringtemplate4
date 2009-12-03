@@ -397,12 +397,12 @@ expr:	mapExpr
 	;
 
 mapExpr
-@init {int nt=1, ne=1;}
+@init {int nt=1, ne=1; int a=$start.getStartIndex();}
 	:	memberExpr (c=',' memberExpr {ne++;} )*
 		(	':' templateRef
-			(	(',' templateRef {nt++;})+  {gen.emit(Bytecode.INSTR_ROT_MAP, nt);}
-			|	{if ( $c!=null ) gen.emit(Bytecode.INSTR_PAR_MAP, ne);
-				 else gen.emit(Bytecode.INSTR_MAP);}
+			(	(',' templateRef {nt++;})+  {gen.emit(Bytecode.INSTR_ROT_MAP, nt, a, ((CommonToken)input.LT(-1)).getStopIndex());}
+			|	{if ( $c!=null ) gen.emit(Bytecode.INSTR_PAR_MAP, ne, a, ((CommonToken)input.LT(-1)).getStopIndex());
+				 else gen.emit(Bytecode.INSTR_MAP, a, ((CommonToken)input.LT(-1)).getStopIndex());}
 			)
 		)*
 	;

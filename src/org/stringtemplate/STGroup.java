@@ -102,10 +102,10 @@ public class STGroup {
         return null;
     }
 
-    public ST getEmbeddedInstanceOf(ST enclosingInstance, String name) {
+    public ST getEmbeddedInstanceOf(ST enclosingInstance, int ip, String name) {
         ST st = getInstanceOf(name);
         if ( st==null ) {
-            ErrorManager.runTimeError(enclosingInstance, ErrorType.NO_SUCH_TEMPLATE,
+            ErrorManager.runTimeError(enclosingInstance, ip, ErrorType.NO_SUCH_TEMPLATE,
                                       STGroup.getSimpleName(name));
             return ST.BLANK;
         }

@@ -29,11 +29,9 @@ package org.stringtemplate;
 
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.misc.ArrayIterator;
-import org.stringtemplate.misc.Interval;
 import org.stringtemplate.debug.InterpEvent;
 import org.stringtemplate.debug.EvalTemplateEvent;
 import org.stringtemplate.debug.DebugST;
-import org.stringtemplate.debug.EvalExprEvent;
 import org.stringtemplate.compiler.*;
 import org.stringtemplate.compiler.Compiler;
 
@@ -59,6 +57,7 @@ public class Interpreter {
     /** Operand stack, grows upwards */
     Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
     int sp = -1;  // stack pointer register
+    int current_ip = 0;
     int nw = 0;   // how many char written on this template line so far? ("number written" register)
 
     /** Exec st with respect to this group. Once set in ST.toString(),
@@ -99,6 +98,7 @@ public class Interpreter {
         while ( ip < self.code.codeSize ) {
             if ( trace ) trace(self, ip);
             short opcode = code[ip];
+            current_ip = ip;
             ip++; //jump to next instruction or first byte of operand
             switch (opcode) {
             case Bytecode.INSTR_LOAD_STR :
@@ -136,18 +136,18 @@ public class Interpreter {
                 nameIndex = getShort(code, ip);
                 ip += 2;
                 name = self.code.strings[nameIndex];
-                st = group.getEmbeddedInstanceOf(self, name);
+                st = group.getEmbeddedInstanceOf(self, ip, name);
                 if ( st == null ) {
-                    ErrorManager.runTimeError(self, ErrorType.NO_SUCH_TEMPLATE, STGroup.getSimpleName(name));
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_TEMPLATE, STGroup.getSimpleName(name));
                     st = ST.BLANK;
                 }
                 operands[++sp] = st;
                 break;
             case Bytecode.INSTR_NEW_IND:
                 name = (String)operands[sp--];
-                st = group.getEmbeddedInstanceOf(self, name);
+                st = group.getEmbeddedInstanceOf(self, ip, name);
                 if ( st == null ) {
-                    ErrorManager.runTimeError(self, ErrorType.NO_SUCH_TEMPLATE, STGroup.getSimpleName(name));
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_TEMPLATE, STGroup.getSimpleName(name));
                     st = ST.BLANK;
                 }
                 operands[++sp] = st;
@@ -158,7 +158,7 @@ public class Interpreter {
                 name = self.code.strings[nameIndex];
                 CompiledST imported = group.lookupImportedTemplate(name);
                 if ( imported==null ) {
-                    ErrorManager.runTimeError(self, ErrorType.NO_IMPORTED_TEMPLATE, STGroup.getSimpleName(name));
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE, STGroup.getSimpleName(name));
                     operands[++sp] = ST.BLANK;
                     break;
                 }
@@ -185,7 +185,7 @@ public class Interpreter {
                     nargs = st.code.formalArguments.size();
                 }
                 if ( nargs!=1 ) {
-                    ErrorManager.runTimeError(self, ErrorType.EXPECTING_SINGLE_ARGUMENT, st, nargs);
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_SINGLE_ARGUMENT, st, nargs);
                 }
                 else {
                     Iterator it = st.code.formalArguments.keySet().iterator();
@@ -283,7 +283,7 @@ public class Interpreter {
                     operands[++sp] = ((String)o).trim();
                 }
                 else {
-                    ErrorManager.runTimeError(self, ErrorType.EXPECTING_STRING, "trim", o);
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "trim", o);
                     operands[++sp] = o;
                 }
                 break;
@@ -296,7 +296,7 @@ public class Interpreter {
                     operands[++sp] = ((String)o).length();
                 }
                 else {
-                    ErrorManager.runTimeError(self, ErrorType.EXPECTING_STRING, "strlen", o);
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "strlen", o);
                     operands[++sp] = 0;
                 }
                 break;
@@ -498,7 +498,7 @@ public class Interpreter {
                 int templateIndex = ti % templates.size(); // rotate through
                 ti++;
                 String name = templates.get(templateIndex);
-                ST st = group.getEmbeddedInstanceOf(self, name);
+                ST st = group.getEmbeddedInstanceOf(self, current_ip, name);
                 setSoleArgument(st, iterValue);
                 st.rawSetAttribute("i0", i0);
                 st.rawSetAttribute("i", i);
@@ -535,13 +535,14 @@ public class Interpreter {
         CompiledST code = group.lookupTemplate(template);
         Map formalArguments = code.formalArguments;
         if ( formalArguments==null || formalArguments.size()==0 ) {
-            ErrorManager.runTimeError(self, ErrorType.MISSING_FORMAL_ARGUMENTS);
+            ErrorManager.runTimeError(self, current_ip, ErrorType.MISSING_FORMAL_ARGUMENTS);
             return null;
         }
 
         Object[] formalArgumentNames = formalArguments.keySet().toArray();
         if ( formalArgumentNames.length != numAttributes ) {
             ErrorManager.runTimeError(self,
+                                      current_ip,
                                       ErrorType.MAP_ARGUMENT_COUNT_MISMATCH,
                                       numAttributes,
                                       formalArgumentNames.length);
@@ -562,7 +563,7 @@ public class Interpreter {
         while ( true ) {
             // get a value for each attribute in list; put into ST instance
             int numEmpty = 0;
-            ST embedded = group.getEmbeddedInstanceOf(self, template);
+            ST embedded = group.getEmbeddedInstanceOf(self, current_ip, template);
             embedded.rawSetAttribute("i0", i);
             embedded.rawSetAttribute("i", i+1);
             for (int a = 0; a < numAttributes; a++) {
