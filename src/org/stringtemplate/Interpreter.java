@@ -29,6 +29,7 @@ package org.stringtemplate;
 
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.misc.ArrayIterator;
+import org.stringtemplate.misc.Interval;
 import org.stringtemplate.debug.InterpEvent;
 import org.stringtemplate.debug.EvalTemplateEvent;
 import org.stringtemplate.debug.DebugST;
@@ -93,8 +94,8 @@ public class Interpreter {
         Object o = null, left = null, right = null;
         ST st = null;
         Object[] options = null;
-        int ip = 0;
         byte[] code = self.code.instrs;        // which code block are we executing
+        int ip = 0;
         while ( ip < self.code.codeSize ) {
             if ( trace ) trace(self, ip);
             short opcode = code[ip];
@@ -204,23 +205,11 @@ public class Interpreter {
                 options[optionIndex] = o; // store value into options on stack
                 break;
             case Bytecode.INSTR_WRITE :
-                /*
-                int exprStart = getShort(code, ip);
-                ip += 2;
-                int exprStop = getShort(code, ip);
-                ip += 2;
-                 */
                 o = operands[sp--];
                 nw = writeObjectNoOptions(out, self, o);
                 n += nw;
                 break;
 			case Bytecode.INSTR_WRITE_OPT :
-                /*
-                exprStart = getShort(code, ip);
-                ip += 2;
-                exprStop = getShort(code, ip);
-                ip += 2;
-                */
 				options = (Object[])operands[sp--]; // get options
 				o = operands[sp--];                 // get option to write
 				nw = writeObjectWithOptions(out, self, o, options);
@@ -370,10 +359,13 @@ public class Interpreter {
     protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
         int start = out.index(); // track char we're about to write
         int n = writeObject(out, self, o, null);
+/*
         if ( group.debug ) {
-            int exprStart=-1, exprStop=-1;
+            Interval templateLocation = self.code.sourceMap[ip];
+            int exprStart=templateLocation.a, exprStop=templateLocation.b;
             events.add( new EvalExprEvent((DebugST)self, start, out.index()-1, exprStart, exprStop) );
         }
+         */
         return n;
     }
 
@@ -398,10 +390,13 @@ public class Interpreter {
         if ( options!=null && options[OPTION_ANCHOR]!=null ) {
             out.popAnchorPoint();
         }
+/*
         if ( group.debug ) {
-            int exprStart=-1, exprStop=-1;            
+            Interval templateLocation = self.code.sourceMap[ip];
+            int exprStart=templateLocation.a, exprStop=templateLocation.b;
             events.add( new EvalExprEvent((DebugST)self, start, out.index()-1, exprStart, exprStop) );
         }
+         */
         return n;
     }
 
@@ -912,9 +907,7 @@ public class Interpreter {
     }
 
     protected void trace(ST self, int ip) {
-        BytecodeDisassembler dis = new BytecodeDisassembler(self.code.instrs,
-                                                            self.code.instrs.length,
-                                                            self.code.strings);
+        BytecodeDisassembler dis = new BytecodeDisassembler(self.code);
         StringBuilder buf = new StringBuilder();
         dis.disassembleInstruction(buf,ip);
         String name = self.code.name+":";

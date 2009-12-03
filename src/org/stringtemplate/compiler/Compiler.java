@@ -29,6 +29,7 @@ package org.stringtemplate.compiler;
 
 import org.antlr.runtime.*;
 import org.stringtemplate.*;
+import org.stringtemplate.misc.Interval;
 
 import java.util.*;
 
@@ -77,6 +78,7 @@ public class Compiler implements CodeGenerator {
 
     StringTable strings = new StringTable();
     byte[] instrs;
+    Interval[] sourceMap;
     int ip = 0;
     CompiledST code = new CompiledST();
 
@@ -111,6 +113,7 @@ public class Compiler implements CodeGenerator {
     {
         int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
         instrs = new byte[initialSize];
+        sourceMap = new Interval[initialSize];
         code.template = template;
 
         STLexer lexer =
@@ -127,8 +130,11 @@ public class Compiler implements CodeGenerator {
         }
 
         if ( strings!=null ) code.strings = strings.toArray();
-        code.instrs = instrs;
         code.codeSize = ip;
+        code.instrs = new byte[code.codeSize];
+        code.sourceMap = new Interval[code.codeSize];
+        System.arraycopy(instrs, 0, code.instrs, 0, code.codeSize);
+        System.arraycopy(sourceMap, 0, code.sourceMap, 0, code.codeSize);
         return code;
     }
 
@@ -136,6 +142,7 @@ public class Compiler implements CodeGenerator {
                               RecognizerSharedState state)
     {
         instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
+        sourceMap = new Interval[SUBTEMPLATE_INITIAL_CODE_SIZE];
         STParser parser = new STParser(tokens, state, this, enclosingTemplateName);
         try {
             parser.template(); // parse, trigger compile actions for single expr
@@ -147,8 +154,11 @@ public class Compiler implements CodeGenerator {
         }
 
         if ( strings!=null ) code.strings = strings.toArray();
-        code.instrs = instrs;
         code.codeSize = ip;
+        code.instrs = new byte[code.codeSize];
+        code.sourceMap = new Interval[code.codeSize];
+        System.arraycopy(instrs, 0, code.instrs, 0, code.codeSize);
+        System.arraycopy(sourceMap, 0, code.sourceMap, 0, code.codeSize);
         return code;
     }
 
@@ -162,20 +172,21 @@ public class Compiler implements CodeGenerator {
 
     public void emit(short opcode, int p, int q) {
         ensureCapacity(1);
+        if ( !(p<0 || q<0) ) sourceMap[ip] = new Interval(p, q);
         instrs[ip++] = (byte)opcode;
     }
 
     public void emit(short opcode, int arg) { emit(opcode,arg,-1,-1); }
 
     public void emit(short opcode, int arg, int p, int q) {
-        emit(opcode);
+        emit(opcode, p, q);
         ensureCapacity(2);
         writeShort(instrs, ip, (short)arg);
         ip += 2;
     }
 
     public void emit(short opcode, int arg1, int arg2, int p, int q) {
-        emit(opcode, arg1);
+        emit(opcode, arg1, p, q);
         ensureCapacity(2);
         writeShort(instrs, ip, (short)arg2);
         ip += 2;
@@ -185,7 +196,7 @@ public class Compiler implements CodeGenerator {
 
     public void emit(short opcode, String s, int p, int q) {
         int i = defineString(s);
-        emit(opcode, i);
+        emit(opcode, i, p, q);
     }
 
     public void write(int addr, short value) {
@@ -269,6 +280,9 @@ public class Compiler implements CodeGenerator {
             byte[] c = new byte[instrs.length*2];
             System.arraycopy(instrs, 0, c, 0, instrs.length);
             instrs = c;
+            Interval[] sm = new Interval[sourceMap.length*2];
+            System.arraycopy(sourceMap, 0, sm, 0, sourceMap.length);
+            sourceMap = sm;
         }
     }
 

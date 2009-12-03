@@ -78,38 +78,32 @@ public class CompiledST {
     public Interval[] sourceMap; // maps IP to range in template pattern
 
     public String getTemplate() { return template; }
-/*        if ( embeddedStart>=0 ) return template.substring(embeddedStart, embeddedStop);
-        return template;
-    }
-    */
 
 	public boolean isSubtemplate() { return name.startsWith("/"+ST.SUBTEMPLATE_PREFIX); } 
 
     public String instrs() {
-        BytecodeDisassembler dis = new BytecodeDisassembler(instrs,
-                                                            codeSize,
-                                                            strings);
+        BytecodeDisassembler dis = new BytecodeDisassembler(this);
         return dis.instrs();
     }
 
     public void dump() {
-        BytecodeDisassembler dis = new BytecodeDisassembler(instrs,
-                                                            codeSize,
-                                                            strings);
+        BytecodeDisassembler dis = new BytecodeDisassembler(this);
         System.out.println(dis.disassemble());
         System.out.println("Strings:");
         System.out.println(dis.strings());
+        System.out.println("Bytecode to template map:");
+        System.out.println(dis.sourceMap());
     }
 
     public String disasm() {
-        BytecodeDisassembler dis = new BytecodeDisassembler(instrs,
-                                                            codeSize,
-                                                            strings);
+        BytecodeDisassembler dis = new BytecodeDisassembler(this);
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         pw.println(dis.disassemble());
         pw.println("Strings:");
         pw.println(dis.strings());
+        pw.println("Bytecode to template map:");
+        pw.println(dis.sourceMap());
         pw.close();
         return sw.toString();
     }

@@ -29,38 +29,36 @@ package org.stringtemplate.compiler;
 
 import org.stringtemplate.compiler.Bytecode;
 import org.stringtemplate.misc.Misc;
+import org.stringtemplate.misc.Interval;
 
 import java.util.List;
 import java.util.ArrayList;
 
 public class BytecodeDisassembler {
     // TODO: make disassembler point at compiledST code?
-    byte[] code;
+    CompiledST code;
+    /*
+    byte[] instrs;
     int codeSize;
     protected Object[] strings;
+    Interval[] sourceMap;
+     */
     Bytecode def;
 
-    public BytecodeDisassembler(byte[] code,
-                                int codeSize,
-                                String[] strings)
-    {
-        this.code = code;
-        this.codeSize = codeSize;
-        this.strings = strings;
-    }
+    public BytecodeDisassembler(CompiledST code) { this.code = code; }
 
     public String instrs() {
         StringBuilder buf = new StringBuilder();
         int ip=0;
-        while (ip<codeSize) {
+        while (ip<code.codeSize) {
             if ( ip>0 ) buf.append(", ");
-            int opcode = code[ip];
+            int opcode = code.instrs[ip];
             Bytecode.Instruction I = Bytecode.instructions[opcode];
             buf.append(I.name);
             ip++;
             for (int opnd=0; opnd<I.n; opnd++) {
                 buf.append(' ');
-                buf.append(getShort(code, ip));
+                buf.append(getShort(code.instrs, ip));
                 ip += Bytecode.OPND_SIZE_IN_BYTES;
             }
         }
@@ -70,7 +68,7 @@ public class BytecodeDisassembler {
     public String disassemble() {
         StringBuilder buf = new StringBuilder();
         int i=0;
-        while (i<codeSize) {
+        while (i<code.codeSize) {
             i = disassembleInstruction(buf, i);
             buf.append('\n');
         }
@@ -78,8 +76,8 @@ public class BytecodeDisassembler {
     }
 
     public int disassembleInstruction(StringBuilder buf, int ip) {
-        int opcode = code[ip];
-		if ( ip>=codeSize ) {
+        int opcode = code.instrs[ip];
+		if ( ip>=code.codeSize ) {
 			throw new IllegalArgumentException("ip out of range: "+ip);
 		}
         Bytecode.Instruction I =
@@ -97,7 +95,7 @@ public class BytecodeDisassembler {
         }
         List<String> operands = new ArrayList<String>();
         for (int i=0; i<I.n; i++) {
-            int opnd = getShort(code, ip);
+            int opnd = getShort(code.instrs, ip);
             ip += Bytecode.OPND_SIZE_IN_BYTES;
             switch ( I.type[i] ) {
                 case Bytecode.STRING :
@@ -125,11 +123,11 @@ public class BytecodeDisassembler {
         buf.append("#");
         buf.append(poolIndex);
         String s = "<bad string index>";
-        if ( poolIndex<strings.length ) {
-            if ( strings[poolIndex]==null ) s = "null";
+        if ( poolIndex<code.strings.length ) {
+            if ( code.strings[poolIndex]==null ) s = "null";
             else {
-                s = strings[poolIndex].toString();
-                if ( strings[poolIndex] instanceof String ) {
+                s = code.strings[poolIndex].toString();
+                if ( code.strings[poolIndex] instanceof String ) {
                     s = Misc.replaceEscapes(s);
                     s='"'+s+'"';
                 }
@@ -150,7 +148,7 @@ public class BytecodeDisassembler {
     public String strings() {
         StringBuffer buf = new StringBuffer();
         int addr = 0;
-        for (Object o : strings) {
+        for (Object o : code.strings) {
             if ( o instanceof String ) {
 				String s = (String)o;
                 s = Misc.replaceEscapes(s);
@@ -158,6 +156,19 @@ public class BytecodeDisassembler {
             }
             else {
                 buf.append( String.format("%04d: %s\n", addr, o) );
+            }
+            addr++;
+        }
+        return buf.toString();
+    }
+
+    public String sourceMap() {
+        StringBuffer buf = new StringBuffer();
+        int addr = 0;
+        for (Interval I : code.sourceMap) {
+            if ( I!=null ) {
+                String chunk = code.template.substring(I.a,I.b+1);
+                buf.append( String.format("%04d: %s\t\"%s\"\n", addr, I, chunk) );
             }
             addr++;
         }

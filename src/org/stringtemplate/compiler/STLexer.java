@@ -399,7 +399,6 @@ public class STLexer implements TokenSource {
         STToken t =
             new STToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
                 input.index()-1, input.index()-1);
-        t.setStartIndex(input.index()-1);
         t.setLine(input.getLine());
         t.setCharPositionInLine(input.getCharPositionInLine()-1);
         return t;
@@ -414,7 +413,8 @@ public class STLexer implements TokenSource {
 
 	public Token newToken(int ttype, String text) {
 		STToken t = new STToken(ttype, text);
-		t.setStartIndex(startCharIndex);
+        t.setStartIndex(startCharIndex);
+        t.setStopIndex(input.index()-1);
 		t.setLine(startLine);
 		t.setCharPositionInLine(startCharPositionInLine);
 		return t;
