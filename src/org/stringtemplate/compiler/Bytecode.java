@@ -112,8 +112,8 @@ public class Bytecode {
         new Instruction("new",STRING),
         new Instruction("new_ind"),
         new Instruction("super_new",STRING),
-        new Instruction("write", INT, INT), // write delimiter-start-in-template, stop
-		new Instruction("write_opt", INT, INT),
+        new Instruction("write"),
+		new Instruction("write_opt"),
         new Instruction("map"),
         new Instruction("rot_map", INT),
         new Instruction("par_map", INT),

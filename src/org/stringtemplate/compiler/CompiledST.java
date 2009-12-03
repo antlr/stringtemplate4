@@ -30,6 +30,7 @@ package org.stringtemplate.compiler;
 import org.stringtemplate.compiler.FormalArgument;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.ST;
+import org.stringtemplate.misc.Interval;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,6 +75,7 @@ public class CompiledST {
     public String[] strings;
     public byte[] instrs;        // byte-addressable code memory.
     public int codeSize;
+    public Interval[] sourceMap; // maps IP to range in template pattern
 
     public String getTemplate() { return template; }
 /*        if ( embeddedStart>=0 ) return template.substring(embeddedStart, embeddedStop);

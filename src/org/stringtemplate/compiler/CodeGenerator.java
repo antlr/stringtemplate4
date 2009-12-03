@@ -9,9 +9,12 @@ import java.util.List;
 // TODO: maybe rename; more than code gen now; break into two interfaces?
 public interface CodeGenerator {
     void emit(short opcode);
+    void emit(short opcode, int sourceStart, int sourceStop);
     void emit(short opcode, int arg);
-    void emit(short opcode, int arg1, int arg2);
+    void emit(short opcode, int arg, int sourceStart, int sourceStop);
+    void emit(short opcode, int arg1, int arg2, int sourceStart, int sourceStop);
     void emit(short opcode, String s);
+    void emit(short opcode, String s, int sourceStart, int sourceStop);
     void write(int addr, short value);
     /** Return address where next instruction will be written */
     int address();

@@ -204,22 +204,26 @@ public class Interpreter {
                 options[optionIndex] = o; // store value into options on stack
                 break;
             case Bytecode.INSTR_WRITE :
+                /*
                 int exprStart = getShort(code, ip);
                 ip += 2;
                 int exprStop = getShort(code, ip);
                 ip += 2;
+                 */
                 o = operands[sp--];
-                nw = writeObjectNoOptions(out, self, o, exprStart, exprStop);
+                nw = writeObjectNoOptions(out, self, o);
                 n += nw;
                 break;
 			case Bytecode.INSTR_WRITE_OPT :
+                /*
                 exprStart = getShort(code, ip);
                 ip += 2;
                 exprStop = getShort(code, ip);
                 ip += 2;
+                */
 				options = (Object[])operands[sp--]; // get options
 				o = operands[sp--];                 // get option to write
-				nw = writeObjectWithOptions(out, self, o, options, exprStart, exprStop);
+				nw = writeObjectWithOptions(out, self, o, options);
                 n += nw;
 				break;
             case Bytecode.INSTR_MAP :
@@ -363,18 +367,18 @@ public class Interpreter {
         return n;
     }
 
-    protected int writeObjectNoOptions(STWriter out, ST self, Object o, int exprStart, int exprStop) {
+    protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
         int start = out.index(); // track char we're about to write
         int n = writeObject(out, self, o, null);
         if ( group.debug ) {
+            int exprStart=-1, exprStop=-1;
             events.add( new EvalExprEvent((DebugST)self, start, out.index()-1, exprStart, exprStop) );
         }
         return n;
     }
 
     protected int writeObjectWithOptions(STWriter out, ST self, Object o,
-                                         Object[] options,
-                                         int exprStart, int exprStop)
+                                         Object[] options)
     {
         int start = out.index(); // track char we're about to write
         // precompute all option values (render all the way to strings)
@@ -395,6 +399,7 @@ public class Interpreter {
             out.popAnchorPoint();
         }
         if ( group.debug ) {
+            int exprStart=-1, exprStop=-1;            
             events.add( new EvalExprEvent((DebugST)self, start, out.index()-1, exprStart, exprStop) );
         }
         return n;
@@ -771,7 +776,7 @@ public class Interpreter {
             Interpreter interp = new Interpreter(group, new NoIndentWriter(sw), locale);
             interp.writeObjectNoOptions(self, value, -1, -1);
             */
-            writeObjectNoOptions(new NoIndentWriter(sw), self, value, -1, -1);
+            writeObjectNoOptions(new NoIndentWriter(sw), self, value);
 
             return sw.toString();
         }

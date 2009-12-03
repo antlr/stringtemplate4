@@ -54,6 +54,7 @@ public class TestCoreBasics extends BaseTest {
         st.add("name", "Ter");
         String expected = "hi Ter!";
         String result = st.render();
+        st.code.dump();
         assertEquals(expected, result);
     }
 

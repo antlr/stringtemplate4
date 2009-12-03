@@ -158,26 +158,32 @@ public class Compiler implements CodeGenerator {
 
     // CodeGenerator interface impl.
 
-    public void emit(short opcode) {
+    public void emit(short opcode) { emit(opcode,-1,-1); }
+
+    public void emit(short opcode, int p, int q) {
         ensureCapacity(1);
         instrs[ip++] = (byte)opcode;
     }
 
-    public void emit(short opcode, int arg) {
+    public void emit(short opcode, int arg) { emit(opcode,arg,-1,-1); }
+
+    public void emit(short opcode, int arg, int p, int q) {
         emit(opcode);
         ensureCapacity(2);
         writeShort(instrs, ip, (short)arg);
         ip += 2;
     }
 
-    public void emit(short opcode, int arg1, int arg2) {
+    public void emit(short opcode, int arg1, int arg2, int p, int q) {
         emit(opcode, arg1);
         ensureCapacity(2);
         writeShort(instrs, ip, (short)arg2);
         ip += 2;
     }
 
-    public void emit(short opcode, String s) {
+    public void emit(short opcode, String s) { emit(opcode,s,-1,-1);}
+
+    public void emit(short opcode, String s, int p, int q) {
         int i = defineString(s);
         emit(opcode, i);
     }
