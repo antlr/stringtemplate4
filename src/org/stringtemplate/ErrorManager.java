@@ -43,6 +43,12 @@ public class ErrorManager {
         protected STErrorListener initialValue() { return DEFAULT_ERROR_LISTENER; }
     };
 
+    /** Backward compatibility for tombu, co-designer.  Don't check missing
+     *  args against formal arg lists and don't require template headers in .st
+     *  files.
+     */
+    public static boolean v3_mode = false;
+
     public static void setErrorListener(STErrorListener listener) { ErrorManager.listener.set(listener); }
 
     public static void compileTimeError(ErrorType error, Object arg) {

@@ -105,6 +105,20 @@ public class TestFunctions extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
+    @Test public void testStripOp() throws Exception {
+        ST e = new ST(
+                "<strip(names); null=\"n/a\">"
+            );
+        e.add("names", null);
+        e.add("names", "Tom");
+        e.add("names", null);
+        e.add("names", null);
+        e.add("names", "Sriram");
+        e.add("names", null);
+        String expecting = "TomSriram";
+        assertEquals(expecting, e.render());
+    }
+
     @Test public void testCombinedOp() throws Exception {
         // replace first of yours with first of mine
         ST e = new ST(

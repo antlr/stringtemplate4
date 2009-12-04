@@ -110,7 +110,9 @@ public class Interpreter {
                 nameIndex = getShort(code, ip);
                 ip += 2;
                 name = self.code.strings[nameIndex];
-                operands[++sp] = self.getAttribute(name);
+                o = self.getAttribute(name);
+                operands[++sp] = o;
+                if ( o==null ) checkNullAttributeAgainstFormalArguments(self, name);
                 break;
             case Bytecode.INSTR_LOAD_LOCAL:
                 nameIndex = getShort(code, ip);
@@ -283,7 +285,7 @@ public class Interpreter {
                     operands[++sp] = ((String)o).trim();
                 }
                 else {
-                    ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "trim", o);
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "trim", o.getClass().getName());
                     operands[++sp] = o;
                 }
                 break;
@@ -296,7 +298,7 @@ public class Interpreter {
                     operands[++sp] = ((String)o).length();
                 }
                 else {
-                    ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "strlen", o);
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "strlen", o.getClass().getName());
                     operands[++sp] = 0;
                 }
                 break;
@@ -753,12 +755,6 @@ public class Interpreter {
         return i;
     }
 
-    public Object strlen(Object v) {
-        //return null;
-        // TODO: impl
-        throw new UnsupportedOperationException();
-    }
-
     public List<InterpEvent> getEvents() { return events; }
     
     protected String toString(ST self, Object value) {
@@ -907,6 +903,28 @@ public class Interpreter {
         }
     }
 
+    /** A reference to an attribute with no value must be compared against
+     *  the formal parameters up the enclosing chain to see if it exists;
+     *  if it exists all is well, but if not, record an error.
+     *
+     *  Don't do the check if tombu mode. (i.e., don't check if no formal
+     *  parameters exist).
+     */
+    protected void checkNullAttributeAgainstFormalArguments(ST self, String name) {
+        if ( ErrorManager.v3_mode) return; // ignore unknown args in tombu mode
+
+        ST p = self;
+        while ( p!=null ) {
+            if ( p.code.formalArguments!=null && p.code.formalArguments.get(name)!=null ) {
+                // found it; no problems, just return
+                return;
+            }
+            p = p.enclosingInstance;
+        }
+
+        ErrorManager.runTimeError(self, current_ip, ErrorType.NO_ATTRIBUTE_DEFINITION, name);
+    }
+    
     protected void trace(ST self, int ip) {
         BytecodeDisassembler dis = new BytecodeDisassembler(self.code);
         StringBuilder buf = new StringBuilder();

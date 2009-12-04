@@ -1,11 +1,10 @@
 package org.stringtemplate.misc;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Iterator;
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
@@ -57,16 +56,19 @@ public class Misc {
         return f.substring(0,f.lastIndexOf('.'));
     }
 
-    /*
-    public static String trimRight(String s) {
-        if ( s==null || s.length()==0 ) return s;
-        int i = s.length()-1;
-        while ( i>=0 && STLexer.isWS(s.charAt(i)) ) {
-            i--;
+    public static String readLines(String file) throws IOException {
+        Reader r = new InputStreamReader(new FileInputStream(file));
+        BufferedReader br = new BufferedReader(r);
+        StringBuilder buf = new StringBuilder();
+        String line = br.readLine();
+        while (line != null) {
+            buf.append(line);
+            buf.append('\n');
+            line = br.readLine();
         }
-        return s.substring(0,i+1);
+        br.close();
+        return buf.toString();
     }
-    */
 
     public static String replaceEscapes(String s) {
         s = s.replaceAll("\n", "\\\\n");

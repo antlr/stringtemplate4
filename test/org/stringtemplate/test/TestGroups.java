@@ -2,10 +2,7 @@ package org.stringtemplate.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.STGroup;
-import org.stringtemplate.STGroupDir;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroupFile;
+import org.stringtemplate.*;
 
 public class TestGroups extends BaseTest {
     @Test public void testSimpleGroup() throws Exception {
@@ -369,5 +366,22 @@ public class TestGroups extends BaseTest {
         String result = b.render();
         //System.err.println("result='"+result+"'");
         assertEquals(expecting, result);
+    }
+
+    @Test public void testTombuMode() throws Exception {
+        ErrorManager.v3_mode = true;
+        String dir = getRandomDir();
+        String a =
+            "foo\n"+
+            "bar\n";
+        writeFile(dir, "a.st", a);
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("a");
+        String expected =
+            "foo"+newline+
+            "bar"+newline;
+        String result = st.render();
+        assertEquals(expected, result);
+        ErrorManager.v3_mode = false;
     }
 }

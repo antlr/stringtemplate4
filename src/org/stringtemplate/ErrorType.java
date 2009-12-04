@@ -4,7 +4,7 @@ public enum ErrorType {
     // RUNTIME SEMANTIC ERRORS
     NO_SUCH_TEMPLATE("no such template: %s"),
     NO_IMPORTED_TEMPLATE("no such template: super.%s"),
-    //NO_SUCH_PROPERTY("%s doesn't have a %s property"),
+    NO_ATTRIBUTE_DEFINITION("attribute %s isn't defined"),
     EXPECTING_SINGLE_ARGUMENT("expecting single arg in template reference %s (not %s args)"),
     MISSING_FORMAL_ARGUMENTS("missing argument definitions"),
     MAP_ARGUMENT_COUNT_MISMATCH("iterating through %s arguments but parallel map has %s formal arguments"),
@@ -23,7 +23,7 @@ public enum ErrorType {
     NO_SUCH_OPTION("no such option: %s"),
 
     // IO ERRORS
-    WRITE_IO_ERROR("error writing output"),
+    WRITE_IO_ERROR("error writing output caused by"),
     CANT_LOAD_GROUP_FILE("can't load group file %s"),
     CANT_LOAD_TEMPLATE_FILE("can't load template file %s"),
     INVALID_BYTECODE("invalid bytecode %s at IP %s"),

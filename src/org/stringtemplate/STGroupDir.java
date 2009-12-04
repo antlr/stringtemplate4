@@ -59,13 +59,20 @@ public class STGroupDir extends STGroup {
             return null;
         }
         try {
-            ANTLRFileStream fs = new ANTLRFileStream(f.toString(), encoding);
-            GroupLexer lexer = new GroupLexer(fs);
-			UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
-            GroupParser parser = new GroupParser(tokens);
-            parser.group = this;
-            parser.templateDef(prefix);
-            return templates.get("/"+prefix+ Misc.getFileNameNoSuffix(fileName));
+            String templateName = Misc.getFileNameNoSuffix(fileName);
+            if ( ErrorManager.v3_mode) {
+                String template = Misc.readLines(absoluteFileName);
+                defineTemplate(prefix, templateName, null, template);
+            }
+            else {
+                ANTLRFileStream fs = new ANTLRFileStream(f.toString(), encoding);
+                GroupLexer lexer = new GroupLexer(fs);
+                UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+                GroupParser parser = new GroupParser(tokens);
+                parser.group = this;
+                parser.templateDef(prefix);
+            }
+            return templates.get("/"+prefix+templateName);
         }
         catch (Exception e) {
             ErrorManager.IOError(null, ErrorType.CANT_LOAD_TEMPLATE_FILE, e, absoluteFileName);

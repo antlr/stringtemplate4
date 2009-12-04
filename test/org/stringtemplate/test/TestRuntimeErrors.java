@@ -127,6 +127,42 @@ public class TestRuntimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
+    @Test public void testUndefinedArg() throws Exception {
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
+
+        String templates =
+            "t() ::= \"<u()>\"\n"+
+            "u() ::= \"<x>\"\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        ST st = group.getInstanceOf("t");
+        st.render();
+        String expected = "context [t, u] 1:1 attribute x isn't defined"+newline;
+		String result = errors.toString();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testUndefinedArgNoProblemInTombuMode() throws Exception {
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
+        ErrorManager.v3_mode = true;
+
+        String templates =
+            "t() ::= \"<u()>\"\n"+
+            "u() ::= \"<x>\"\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        ST st = group.getInstanceOf("t");
+        st.render();
+        String expected = "";
+		String result = errors.toString();
+        assertEquals(expected, result);
+        ErrorManager.v3_mode = false;
+    }
+
     @Test public void testParallelAttributeIterationWithMismatchArgListSizes() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
@@ -156,6 +192,26 @@ public class TestRuntimeErrors extends BaseTest {
         e.add("salaries", "big");
         e.render(); // generate the error
         String errorExpecting = "context [anonymous] 1:1 missing argument definitions"+newline;
+        assertEquals(errorExpecting, errors.toString());
+    }
+
+    @Test public void testStringTypeMismatch() throws Exception {
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
+        ST e = new ST("<trim(s)>");
+        e.add("s", 34);
+        e.render(); // generate the error
+        String errorExpecting = "context [anonymous] 1:1 function trim expects a string not java.lang.Integer"+newline;
+        assertEquals(errorExpecting, errors.toString());
+    }
+
+    @Test public void testStringTypeMismatch2() throws Exception {
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
+        ST e = new ST("<strlen(s)>");
+        e.add("s", 34);
+        e.render(); // generate the error
+        String errorExpecting = "context [anonymous] 1:1 function strlen expects a string not java.lang.Integer"+newline;
         assertEquals(errorExpecting, errors.toString());
     }
 }
