@@ -333,7 +333,7 @@ public class STGroup {
         if ( imports!=null ) buf.append(" : "+imports);
         for (String name : templates.keySet()) {
 			CompiledST c = templates.get(name);
-			if ( c.isSubtemplate() ) continue;
+			if ( c.isSubtemplate ) continue;
             int slash = name.lastIndexOf('/');
             name = name.substring(slash+1, name.length());
             buf.append(name);

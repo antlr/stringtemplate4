@@ -2,6 +2,7 @@ package org.stringtemplate.test;
 
 import org.junit.Test;
 import org.stringtemplate.*;
+import org.stringtemplate.misc.ErrorBuffer;
 
 import static org.junit.Assert.assertEquals;
 

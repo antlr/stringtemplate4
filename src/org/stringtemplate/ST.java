@@ -226,7 +226,7 @@ public class ST {
 
     public String getName() { return code.name; }
 
-	public boolean isSubtemplate() { return code.isSubtemplate(); }
+	public boolean isSubtemplate() { return code.isSubtemplate; }
 
     public int write(STWriter out) throws IOException {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance);

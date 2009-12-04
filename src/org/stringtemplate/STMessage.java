@@ -7,8 +7,8 @@ public class STMessage {
     /** if in debug mode, has create instance, add attr events and eval
      *  template events.
      */    
-    ST self;
-    ErrorType error;
+    public ST self;
+    public ErrorType error;
     public Object arg;
     public Object arg2;
     public Throwable cause;

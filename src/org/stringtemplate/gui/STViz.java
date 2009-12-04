@@ -6,6 +6,7 @@ import org.stringtemplate.debug.AddAttributeEvent;
 import org.stringtemplate.debug.EvalTemplateEvent;
 import org.stringtemplate.debug.DebugST;
 import org.stringtemplate.misc.Misc;
+import org.stringtemplate.misc.Interval;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -25,12 +26,14 @@ public class STViz {
 	public DebugST currentST;
 	public List<InterpEvent> allEvents;
 	public JTreeSTModel tmodel;
+    public List<STMessage> errors;
 
-    public STViz(DebugST root, String output, final List<InterpEvent> allEvents) {
+    public STViz(DebugST root, String output, final List<InterpEvent> allEvents, List<STMessage> errors) {
         // TODO move all this to JFrame so i can return it.
         currentST = root;
 
         this.allEvents = allEvents;
+        this.errors = errors;
 
         final STViewFrame m = new STViewFrame();
         updateStack(currentST, m);
@@ -51,6 +54,19 @@ public class STViz {
             }
         );
 
+        m.attributes.addListSelectionListener(
+            new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e) {
+                    int minIndex = m.attributes.getMinSelectionIndex();
+                    int maxIndex = m.attributes.getMaxSelectionIndex();
+                    for (int i = minIndex; i <= maxIndex; i++) {
+                        if (m.attributes.isSelectedIndex(i)) {
+                            //System.out.println("index="+i);
+                        }
+                    }
+                }
+            }
+        );        
 
         m.output.setText(output);
 
@@ -75,6 +91,45 @@ public class STViz {
         m.pack();
         m.setSize(800,600);
         m.topSplitPane.setBorder(null);
+        m.overallSplitPane.setBorder(null);
+
+        // ADD ERRORS
+        if ( errors==null || errors.size()==0 ) {
+            m.errorScrollPane.setVisible(false); // don't show unless errors
+        }
+        else {
+            final DefaultListModel errorListModel = new DefaultListModel();
+            for (STMessage msg : errors) {
+                errorListModel.addElement(msg);
+            }
+            m.errorList.setModel(errorListModel);
+        }
+
+        m.errorList.addListSelectionListener(
+            new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e) {
+                    int minIndex = m.errorList.getMinSelectionIndex();
+                    int maxIndex = m.errorList.getMaxSelectionIndex();
+                    int i = minIndex;
+                    while ( i <= maxIndex ) {
+                        if (m.errorList.isSelectedIndex(i)) break;
+                        i++;
+                    }
+                    ListModel model = m.errorList.getModel();
+                    STMessage msg = (STMessage)model.getElementAt(i);
+                    if ( msg instanceof STRuntimeMessage ) {
+                        STRuntimeMessage rmsg = (STRuntimeMessage)msg;
+                        Interval I = rmsg.self.code.sourceMap[rmsg.ip];
+                        currentST = (DebugST)msg.self;
+                        update(m);
+                        if ( I!=null ) { // highlight template
+                            highlight(m.template, I.a, I.b);
+                        }
+                    }
+                }
+            }
+        );
+
         //m.topSplitPane.setResizeWeight(0.15);
         m.bottomSplitPane.setBorder(null);
         //m.bottomSplitPane.setResizeWeight(0.15);
@@ -162,19 +217,6 @@ public class STViz {
         }
         }
         m.attributes.setModel(attrModel);
-		m.attributes.addListSelectionListener(
-			new ListSelectionListener() {
-				public void valueChanged(ListSelectionEvent e) {
-					int minIndex = m.attributes.getMinSelectionIndex();
-					int maxIndex = m.attributes.getMaxSelectionIndex();
-					for (int i = minIndex; i <= maxIndex; i++) {
-						if (m.attributes.isSelectedIndex(i)) {
-							//System.out.println("index="+i);
-						}
-					}
-				}
-			}
-		);
 	}
 
 	protected void updateStack(DebugST st, STViewFrame m) {
@@ -204,12 +246,12 @@ public class STViz {
     public static void main(String[] args) throws IOException { // test rig
         String templates =
             "method(type,name,args,stats) ::= <<\n" +
-                "public <type> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
+                "public <type> <ick()> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
                 "    <if(locals)>int locals[<locals>];<endif>\n"+
                 "    <stats;separator=\"\\n\">\n" +
                 "}\n" +
                 ">>\n"+
-                "assign(a,b) ::= \"<a> = <b>;\"\n"+
+                "assign(a,b) ::= \"<a> = <b> <a,b:{foo}>;\"\n"+
                 "return(x) ::= <<return <x>;>>\n" +
                 "paren(x) ::= \"(<x>)\"\n";
 

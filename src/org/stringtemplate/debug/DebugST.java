@@ -1,10 +1,8 @@
 package org.stringtemplate.debug;
 
 import org.stringtemplate.misc.MultiMap;
-import org.stringtemplate.ST;
-import org.stringtemplate.STWriter;
-import org.stringtemplate.Interpreter;
-import org.stringtemplate.AutoIndentWriter;
+import org.stringtemplate.misc.ErrorBuffer;
+import org.stringtemplate.*;
 import org.stringtemplate.gui.STViz;
 
 import java.util.List;
@@ -39,12 +37,14 @@ public class DebugST extends ST {
     public List<InterpEvent> inspect(Locale locale) { return inspect(locale, STWriter.NO_WRAP); }
 
     public List<InterpEvent> inspect(Locale locale, int lineWidth) {
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
         interp.exec(wr, this); // render and track events
-        new STViz(this, out.toString(), interp.getEvents());
+        new STViz(this, out.toString(), interp.getEvents(), errors.errors);
         return interp.getEvents();
     }
 

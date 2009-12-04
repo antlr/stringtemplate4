@@ -223,6 +223,7 @@ public class Compiler implements CodeGenerator {
         Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
         CompiledST sub = c.compile(input, state);
         sub.name = name;
+        sub.isSubtemplate = true;
         if ( tokenSource instanceof STLexer ) {
             stop = lexer.input.index();
             // sub.template = lexer.input.substring(start,stop-2);

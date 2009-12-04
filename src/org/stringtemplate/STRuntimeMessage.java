@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 
 public class STRuntimeMessage extends STMessage {
     /** Where error occurred in bytecode memory */
-    int ip;
+    public int ip;
     
     public STRuntimeMessage(ErrorType error, int ip) { this(error, ip, null); }
     public STRuntimeMessage(ErrorType error, int ip, ST self) { this(error,ip,self,null); }

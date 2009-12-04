@@ -1,4 +1,4 @@
-package org.stringtemplate.test;
+package org.stringtemplate.misc;
 
 import org.stringtemplate.STErrorListener;
 import org.stringtemplate.STMessage;
@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class ErrorBuffer implements STErrorListener {
     public List<STMessage> errors = new ArrayList<STMessage>();
-    int n = 0;
 
     public void compileTimeError(STMessage msg) {
         errors.add(msg);

@@ -60,7 +60,9 @@ public class CompiledST {
     /** Does this template come from a <@region>...<@end> embedded in
      *  another template?
      */
-    public boolean isRegion;    
+    public boolean isRegion;
+
+    public boolean isSubtemplate;
 
     /** If someone refs <@r()> in template t, an implicit
      *
@@ -79,7 +81,7 @@ public class CompiledST {
 
     public String getTemplate() { return template; }
 
-	public boolean isSubtemplate() { return name.startsWith("/"+ST.SUBTEMPLATE_PREFIX); } 
+	public boolean isSubtemplate() { return isSubtemplate; } 
 
     public String instrs() {
         BytecodeDisassembler dis = new BytecodeDisassembler(this);
