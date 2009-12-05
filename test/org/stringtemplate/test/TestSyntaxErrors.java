@@ -19,7 +19,7 @@ public class TestSyntaxErrors extends BaseTest {
 			RecognitionException re = (RecognitionException)se.getCause();
 			result = 1+":"+re.charPositionInLine+": "+se.getMessage();
 		}
-        String expected = "1:1: mismatched input '<' expecting EOF";
+        String expected = "1:0: is this a template? parser says: mismatched input ' ' expecting EOF";
         assertEquals(expected, result);
     }    
 
@@ -40,7 +40,6 @@ public class TestSyntaxErrors extends BaseTest {
 
     @Test public void testValidButOutOfPlaceChar() throws Exception {
         String templates =
-            "group t;\n" +
             "foo() ::= <<hi <.> mom>>\n";
         writeFile(tmpdir, "t.stg", templates);
 
@@ -55,7 +54,6 @@ public class TestSyntaxErrors extends BaseTest {
 
     @Test public void testValidButOutOfPlaceCharOnDifferentLine() throws Exception {
         String templates =
-			"group t;\n" +
 				"foo() ::= \"hi <\n" +
 				".> mom\"\n";
 		writeFile(tmpdir, "t.stg", templates);
@@ -71,7 +69,6 @@ public class TestSyntaxErrors extends BaseTest {
 
     @Test public void testErrorInNestedTemplate() throws Exception {
         String templates =
-            "group t;\n" +
             "foo() ::= \"hi <name:{[<aaa.bb!>]}> mom\"\n";
         writeFile(tmpdir, "t.stg", templates);
 

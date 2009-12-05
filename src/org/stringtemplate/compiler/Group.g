@@ -211,7 +211,7 @@ ANONYMOUS_TEMPLATE
 			new STLexer(input, group.delimiterStartChar, group.delimiterStopChar);
 		lexer.subtemplateDepth = 1;
 		//CommonTokenStream tokens = new CommonTokenStream(lexer);
-		UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
         STParser parser = new STParser(tokens, (CodeGenerator)null, null);
 		parser.template();
 		}

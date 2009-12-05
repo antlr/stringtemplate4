@@ -118,15 +118,22 @@ public class Compiler implements CodeGenerator {
 
         STLexer lexer =
             new STLexer(new ANTLRStringStream(template), delimiterStartChar, delimiterStopChar);
-        UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
         STParser parser = new STParser(tokens, this, enclosingTemplateName);
         try {
             parser.templateAndEOF(); // parse, trigger compile actions for single expr
         }
         catch (RecognitionException re) {
             String msg = parser.getErrorMessage(re, parser.getTokenNames());
-            re.printStackTrace(System.err);
-            throw new STRecognitionException(msg, re);
+            if ( tokens.LA(1)==STLexer.LDELIM ) {
+                throw new STRecognitionException(
+                    "is this a template? parser says: "+msg
+                     ,
+                    re);
+            }
+            else {
+                throw new STRecognitionException(msg, re);
+            }
         }
 
         if ( strings!=null ) code.strings = strings.toArray();

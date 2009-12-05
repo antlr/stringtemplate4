@@ -29,6 +29,7 @@ package org.stringtemplate;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
+import org.antlr.runtime.CommonTokenStream;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.debug.DebugST;
 import org.stringtemplate.compiler.*;
@@ -286,7 +287,7 @@ public class STGroup {
         try {
             ANTLRFileStream fs = new ANTLRFileStream(absoluteFileName, encoding);
             GroupLexer lexer = new GroupLexer(fs);
-            UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
             GroupParser parser = new GroupParser(tokens);
             parser.group(this, prefix);
         }

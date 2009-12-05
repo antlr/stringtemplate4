@@ -158,14 +158,17 @@ templateAndEOF
 	:	template EOF
 	;
 
-// TODO: remove backtracking
-template : element* ;
+template
+	:	element*
+	;
 
 element
-options {backtrack=true; k=2;}
-	:	i=INDENT         {indent($i.text);}
-		ifOnOneLine      {gen.emit(Bytecode.INSTR_DEDENT);}
-	|	i=INDENT ifOnMultiLines
+	:	(// TODO: remove backtracking
+			options {backtrack=true; k=2;}
+		:	i=INDENT         {indent($i.text);}
+			ifOnOneLine      {gen.emit(Bytecode.INSTR_DEDENT);}
+		|	i=INDENT ifOnMultiLines
+		)
 	|	ifOnMultiLines
 	|	i=INDENT       	 {indent($i.text);}
 		exprTag          {gen.emit(Bytecode.INSTR_DEDENT);}

@@ -379,7 +379,7 @@ public class TestGroups extends BaseTest {
         ST st = group.getInstanceOf("a");
         String expected =
             "foo"+newline+
-            "bar"+newline;
+            "bar";
         String result = st.render();
         assertEquals(expected, result);
         ErrorManager.v3_mode = false;

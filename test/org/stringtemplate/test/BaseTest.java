@@ -3,6 +3,7 @@ package org.stringtemplate.test;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.UnbufferedTokenStream;
+import org.antlr.runtime.CommonTokenStream;
 import org.junit.Before;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.STGroup;
@@ -51,7 +52,7 @@ public class BaseTest {
         STLexer lexer =
             new STLexer(new ANTLRStringStream(template),
                         delimiterStartChar, delimiterStopChar);
-        UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
         StringBuffer buf = new StringBuffer();
         buf.append("[");
         int i = 1;

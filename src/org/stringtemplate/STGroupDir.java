@@ -2,6 +2,7 @@ package org.stringtemplate;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
+import org.antlr.runtime.CommonTokenStream;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.compiler.CompiledST;
 import org.stringtemplate.compiler.GroupLexer;
@@ -62,12 +63,13 @@ public class STGroupDir extends STGroup {
             String templateName = Misc.getFileNameNoSuffix(fileName);
             if ( ErrorManager.v3_mode) {
                 String template = Misc.readLines(absoluteFileName);
+                template = template.trim();
                 defineTemplate(prefix, templateName, null, template);
             }
             else {
                 ANTLRFileStream fs = new ANTLRFileStream(f.toString(), encoding);
                 GroupLexer lexer = new GroupLexer(fs);
-                UnbufferedTokenStream tokens = new UnbufferedTokenStream(lexer);
+                CommonTokenStream tokens = new CommonTokenStream(lexer);
                 GroupParser parser = new GroupParser(tokens);
                 parser.group = this;
                 parser.templateDef(prefix);
