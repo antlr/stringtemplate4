@@ -198,11 +198,11 @@ public class STLexer implements TokenSource {
 						return id;
 					}
 					RecognitionException re = new NoViableAltException("", 0, 0, input);
+                    re.line = startLine;
+                    re.charPositionInLine = startCharPositionInLine;
 					if ( c==EOF ) {
-                        re.token = newToken(EOF);
 						throw new STException("EOF inside ST expression", re);
 					}
-                    re.token = newToken(Token.INVALID_TOKEN_TYPE);
                     throw new STException("invalid character: "+c, re);
             }
         }

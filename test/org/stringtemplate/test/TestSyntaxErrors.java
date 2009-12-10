@@ -17,7 +17,7 @@ public class TestSyntaxErrors extends BaseTest {
 		}
 		catch (STException se) {
             RecognitionException re = (RecognitionException)se.getCause();
-            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,se,se.getMessage()).toString();
+            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
 		}
         String expected = "1:0: this doesn't look like a template: \" <> \"";
         assertEquals(expected, result);
@@ -32,7 +32,7 @@ public class TestSyntaxErrors extends BaseTest {
 		}
 		catch (STException se) {
             RecognitionException re = (RecognitionException)se.getCause();
-            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,se,se.getMessage()).toString();
+            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
 		}
         String expected = "1:3: doesn't look like an expression";
         assertEquals(expected, result);
@@ -47,7 +47,7 @@ public class TestSyntaxErrors extends BaseTest {
 		}
 		catch (STException se) {
             RecognitionException re = (RecognitionException)se.getCause();
-            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,se,se.getMessage()).toString();
+            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
 		}
         String expected = "1:4: invalid character: *";
         assertEquals(expected, result);
@@ -73,12 +73,12 @@ public class TestSyntaxErrors extends BaseTest {
 				".> mom\"\n";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STErrorListener errors = new ErrorBuffer();
+		ErrorBuffer errors = new ErrorBuffer();
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "1:14: doesn't look like an expression"+newline;
-		String result = errors.toString();
+		String expected = "[t.stg 1:15: \\n in string, 1:14: doesn't look like an expression]";
+		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
 

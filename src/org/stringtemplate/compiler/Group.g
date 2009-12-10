@@ -37,11 +37,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import org.stringtemplate.misc.*;
 import org.stringtemplate.*;
+import java.io.File;
 }
 
 @lexer::header {
 package org.stringtemplate.compiler;
 import org.stringtemplate.*;
+import java.io.File;
 }
 
 @members {
@@ -59,9 +61,34 @@ public String getSourceName() {
     File f = new File(fullFileName);
     return f.getName();
 }
+public void error(String msg) {
+    NoViableAltException e = new NoViableAltException("", 0, 0, input);
+    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
+    recover(input, null);
 }
+}
+
 @lexer::members {
 protected STGroup group;
+public void reportError(RecognitionException e) {
+    String msg = null;
+    if ( e instanceof NoViableAltException ) {
+        msg = "invalid character '"+(char)input.LA(1)+"'";
+    }
+    else if ( e instanceof MismatchedTokenException && ((MismatchedTokenException)e).expecting=='"' ) {
+        msg = "unterminated string";
+    }
+    else {
+        msg = getErrorMessage(e, getTokenNames());
+    }
+    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
+}
+public String getSourceName() {
+    String fullFileName = super.getSourceName();
+    // strip to simple name
+    File f = new File(fullFileName);
+    return f.getName();
+}
 }
 
 group[STGroup group, String prefix]
@@ -78,7 +105,10 @@ this.group = lexer.group = $group;
  */
 def[String prefix] : templateDef[prefix] | dictDef ;
 	catch[RecognitionException re] {
-		sync("garbled template definition starting at '"+input.LT(1).getText()+"'");
+		// kill at least current token; it's garbage.
+		// pretend we already saw an error here
+		state.lastErrorIndex = input.index();
+		error("garbled template definition starting at '"+input.LT(1).getText()+"'");
 	}
 
 templateDef[String prefix]
@@ -116,10 +146,9 @@ templateDef[String prefix]
 		}
         catch (STException e) {
         	RecognitionException re = (RecognitionException)e.getCause();
-        	re.token.setCharPositionInLine(
-                re.charPositionInLine+templateToken.getCharPositionInLine()+n
-            );
-            re.token.setLine( re.line + templateToken.getLine() - 1 );
+        	re.charPositionInLine =
+                re.charPositionInLine+templateToken.getCharPositionInLine()+n;
+            re.line = re.line + templateToken.getLine() - 1;
    	        ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re, e.getMessage());
         }		
 	    }
@@ -173,6 +202,9 @@ dictPairs[Map<String,Object> mapping]
     	(',' keyValuePair[mapping])* (',' defaultValuePair[mapping])?
     |	defaultValuePair[mapping] 
     ;	
+ 	catch[RecognitionException re] {
+		error("missing dictionary entry at '"+input.LT(1).getText()+"'");
+	}
 	
 defaultValuePair[Map<String,Object> mapping]
 	:	'default' ':' keyValue {mapping.put(STGroup.DEFAULT_KEY, $keyValue.value);}
@@ -188,32 +220,27 @@ keyValue returns [Object value]
 	|	STRING				{$value = Misc.replaceEscapes(Misc.strip($STRING.text, 1));}
 	|	{input.LT(1).getText().equals("key")}?=> ID
 							{$value = STGroup.DICT_KEY;}
-	|						{$value = null;}
 	;
-
-sync[String msg]
-@init {
-    // Consume any garbled tokens that come before the next statement
-    // or the end of the block.
-    int mark = input.index();
-    Token t = input.LT(1);
-    recover(input, null);
-    if ( input.index() != mark ) { // we consumed bad tokens
-        NoViableAltException e = new NoViableAltException("", 0, 0, input);
-        e.token = t;
-        ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
-        recover(input, null);
-    }
-}
-    :   // Deliberately match nothing, causing this rule always to be 
-        // entered.
-    ;
+ 	catch[RecognitionException re] {
+		error("missing value for key at '"+input.LT(1).getText()+"'");
+	}
 
 ID	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'-'|'_')*
 	;
 
 STRING
-	:	'"' ( '\\' '"' | '\\' ~'"' | ~('\\'|'"') )* '"'
+	:	'"'
+		(	'\\' '"'
+		|	'\\' ~'"'
+		|	{
+			String msg = "\\n in string";
+    		NoViableAltException e = new NoViableAltException("", 0, 0, input);
+			ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
+			}
+			'\n'
+		|	~('\\'|'"'|'\n')
+		)*
+		'"'
 	;
 
 BIGSTRING
@@ -246,7 +273,7 @@ ANONYMOUS_TEMPLATE
 
 COMMENT
     :   '/*' ( options {greedy=false;} : . )* '*/' {skip();}
-    ;
+        ;
 
 LINE_COMMENT
     :	'//' ~('\n'|'\r')* '\r'? '\n' {skip();}

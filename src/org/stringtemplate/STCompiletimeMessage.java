@@ -1,6 +1,7 @@
 package org.stringtemplate;
 
 import org.antlr.runtime.Token;
+import org.antlr.runtime.RecognitionException;
 
 public class STCompiletimeMessage extends STMessage {
     Token token;
@@ -20,7 +21,8 @@ public class STCompiletimeMessage extends STMessage {
     }
 
     public String toString() {
-        String hdr = token.getLine()+":"+token.getCharPositionInLine();
+        RecognitionException re = (RecognitionException)cause;
+        String hdr = re.line+":"+re.charPositionInLine;
         if ( arg==null ) return String.format(error.messageTemplate, hdr+": "+msg);
         return String.format(error.messageTemplate, arg+" "+hdr+": "+msg);
     }

@@ -39,6 +39,21 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+    @Test public void testNewlineInString() throws Exception {
+        String templates =
+            "foo() ::= \"\nfoo\"\n";
+        writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = null;
+		STErrorListener errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ErrorManager.setErrorListener(errors);
+		group.load(); // force load
+		String expected = "t.stg 1:11: \\n in string"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
     @Test public void testParen2() throws Exception {
         String templates =
             "foo) ::= << >>\n" +
@@ -112,6 +127,66 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
 		String expected = "[1:15: 'b' came as a complete surprise to me]";
+		String result = errors.errors.toString();
+		assertEquals(expected, result);
+	}
+
+    @Test public void testMap() throws Exception {
+        String templates =
+            "d ::= []\n";
+        writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = null;
+		ErrorBuffer errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ErrorManager.setErrorListener(errors);
+		group.load(); // force load
+		String expected = "[t.stg 1:7: missing dictionary entry at ']']";
+		String result = errors.errors.toString();
+		assertEquals(expected, result);
+	}
+
+    @Test public void testMap2() throws Exception {
+        String templates =
+            "d ::= [\"k\":]\n";
+        writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = null;
+		ErrorBuffer errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ErrorManager.setErrorListener(errors);
+		group.load(); // force load
+		String expected = "[t.stg 1:11: missing value for key at ']']";
+		String result = errors.errors.toString();
+		assertEquals(expected, result);
+	}
+
+    @Test public void testMap3() throws Exception {
+        String templates =
+            "d ::= [\"k\":{dfkj}}]\n"; // extra }
+        writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = null;
+		ErrorBuffer errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ErrorManager.setErrorListener(errors);
+		group.load(); // force load
+		String expected = "[t.stg 1:17: invalid character '}']";
+		String result = errors.errors.toString();
+		assertEquals(expected, result);
+	}
+
+    @Test public void testUnterminatedString() throws Exception {
+        String templates =
+            "f() ::= \""; // extra }
+        writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = null;
+		ErrorBuffer errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ErrorManager.setErrorListener(errors);
+		group.load(); // force load
+		String expected = "[t.stg 1:9: unterminated string, t.stg 1:9: missing template at '<EOF>']";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
