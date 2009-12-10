@@ -124,16 +124,7 @@ public class Compiler implements CodeGenerator {
             parser.templateAndEOF(); // parse, trigger compile actions for single expr
         }
         catch (RecognitionException re) {
-            String msg = parser.getErrorMessage(re, parser.getTokenNames());
-            if ( tokens.LA(1)==STLexer.LDELIM ) {
-                throw new STRecognitionException(
-                    "is this a template? parser says: "+msg
-                     ,
-                    re);
-            }
-            else {
-                throw new STRecognitionException(msg, re);
-            }
+            throwSTException(tokens, parser, re);
         }
 
         if ( strings!=null ) code.strings = strings.toArray();
@@ -155,9 +146,7 @@ public class Compiler implements CodeGenerator {
             parser.template(); // parse, trigger compile actions for single expr
         }
         catch (RecognitionException re) {
-            String msg = parser.getErrorMessage(re, parser.getTokenNames());
-            re.printStackTrace(System.err);
-            throw new STRecognitionException(msg, re);
+            throwSTException(tokens, parser, re);
         }
 
         if ( strings!=null ) code.strings = strings.toArray();
@@ -167,6 +156,36 @@ public class Compiler implements CodeGenerator {
         System.arraycopy(instrs, 0, code.instrs, 0, code.codeSize);
         System.arraycopy(sourceMap, 0, code.sourceMap, 0, code.codeSize);
         return code;
+    }
+
+    protected void throwSTException(TokenStream tokens, STParser parser, RecognitionException re) {
+        String msg = parser.getErrorMessage(re, parser.getTokenNames());
+        //String hdr = parser.getErrorHeader(re);
+        if ( re.token.getType() == STLexer.EOF_TYPE ) {
+            throw new STException(
+                "premature EOF",
+                re);
+        }
+        else if ( re instanceof NoViableAltException) {
+            throw new STException(
+                "'"+re.token.getText()+"' came as a complete surprise to me",
+                re);
+        }
+        else if ( tokens.index() == 0 ) {
+            // couldn't parse anything
+            throw new STException(
+                "this doesn't look like a template: \""+tokens+"\"",
+                re);
+        }
+        else if ( tokens.LA(1) == STLexer.LDELIM ) {
+            // couldn't parse anything
+            throw new STException(
+                "doesn't look like an expression",
+                re);
+        }
+        else {
+            throw new STException(msg, re);
+        }
     }
 
     public int defineString(String s) {

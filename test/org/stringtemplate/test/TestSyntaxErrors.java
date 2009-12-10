@@ -16,12 +16,27 @@ public class TestSyntaxErrors extends BaseTest {
         	group.defineTemplate("test", template);
 		}
 		catch (STException se) {
-			RecognitionException re = (RecognitionException)se.getCause();
-			result = 1+":"+re.charPositionInLine+": "+se.getMessage();
+            RecognitionException re = (RecognitionException)se.getCause();
+            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,se,se.getMessage()).toString();
 		}
-        String expected = "1:0: is this a template? parser says: mismatched input ' ' expecting EOF";
+        String expected = "1:0: this doesn't look like a template: \" <> \"";
         assertEquals(expected, result);
-    }    
+    }
+
+    @Test public void testEmptyExpr2() throws Exception {
+        String template = "hi <> ";
+        STGroup group = new STGroup();
+		String result = null;
+		try {
+        	group.defineTemplate("test", template);
+		}
+		catch (STException se) {
+            RecognitionException re = (RecognitionException)se.getCause();
+            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,se,se.getMessage()).toString();
+		}
+        String expected = "1:3: doesn't look like an expression";
+        assertEquals(expected, result);
+    }
 
     @Test public void testWeirdChar() throws Exception {
         String template = "   <*>";
@@ -31,8 +46,8 @@ public class TestSyntaxErrors extends BaseTest {
         	group.defineTemplate("test", template);
 		}
 		catch (STException se) {
-			RecognitionException re = (RecognitionException)se.getCause();
-			result = 1+":"+re.charPositionInLine+": "+se.getMessage();
+            RecognitionException re = (RecognitionException)se.getCause();
+            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,se,se.getMessage()).toString();
 		}
         String expected = "1:4: invalid character: *";
         assertEquals(expected, result);
@@ -47,7 +62,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-        String expected = "2:15: mismatched input '<' expecting EOF";
+        String expected = "1:15: doesn't look like an expression"+newline;
         String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -62,7 +77,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "2:14: mismatched input '<' expecting EOF"; // TODO: terrible err message
+		String expected = "1:14: doesn't look like an expression"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -77,8 +92,39 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "2:29: no viable alternative at input '!'";
+		String expected = "1:29: '!' came as a complete surprise to me"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
+
+    @Test public void testEOFInExpr() throws Exception {
+        String templates =
+            "foo() ::= \"hi <name:{[<aaa.bb>]}\"\n";
+        writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = null;
+		STErrorListener errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ErrorManager.setErrorListener(errors);
+		group.load(); // force load
+		String expected = "1:32: premature EOF"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
+    @Test public void testMissingRPAREN() throws Exception {
+        String templates =
+            "foo() ::= \"hi <foo(>\"\n";
+        writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = null;
+		STErrorListener errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ErrorManager.setErrorListener(errors);
+		group.load(); // force load
+		String expected = "1:19: mismatched input '>' expecting RPAREN"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
 }

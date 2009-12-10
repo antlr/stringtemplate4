@@ -1,6 +1,7 @@
 package org.stringtemplate;
 
 import org.antlr.tool.ToolMessage;
+import org.antlr.runtime.RecognitionException;
 
 /** Track errors per thread; e.g., one server transaction's errors
  *  will go in one grouping since each has it's own thread.
@@ -57,6 +58,14 @@ public class ErrorManager {
 
     public static void compileTimeError(ErrorType error, Object arg, Object arg2) {
         listener.get().compileTimeError(new STMessage(error,null,null,arg,arg2));
+    }
+
+    public static void syntaxError(ErrorType error, RecognitionException e, String msg) {
+        listener.get().compileTimeError(new STCompiletimeMessage(error,e.token,e,msg));
+    }
+
+    public static void syntaxError(ErrorType error, RecognitionException e, String msg, Object arg) {
+        listener.get().compileTimeError(new STCompiletimeMessage(error, e.token, e,msg,arg));
     }
 
     public static void runTimeError(ST self, int ip, ErrorType error) {

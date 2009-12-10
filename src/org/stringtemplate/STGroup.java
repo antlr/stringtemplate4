@@ -30,6 +30,7 @@ package org.stringtemplate;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.UnbufferedTokenStream;
 import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.debug.DebugST;
 import org.stringtemplate.compiler.*;
@@ -284,13 +285,24 @@ public class STGroup {
     public void loadGroupFile(String prefix, String fileName) {
         String absoluteFileName = fullyQualifiedRootDirName+"/"+fileName;
         //System.out.println("load group file "+absoluteFileName);
+        GroupParser parser = null;
         try {
             ANTLRFileStream fs = new ANTLRFileStream(absoluteFileName, encoding);
             GroupLexer lexer = new GroupLexer(fs);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
-            GroupParser parser = new GroupParser(tokens);
+            parser = new GroupParser(tokens);
             parser.group(this, prefix);
         }
+        /*
+        catch (RecognitionException re) {
+            if ( re.token.getType() == STLexer.EOF_TYPE ) {
+                ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re, "premature EOF", absoluteFileName);
+            }
+            else {
+                ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re, absoluteFileName);
+            }
+        }
+        */
         catch (Exception e) {
             ErrorManager.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, absoluteFileName);
         }

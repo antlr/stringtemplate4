@@ -38,7 +38,7 @@ public class STMessage {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         String msg = String.format(error.messageTemplate, arg, arg2);
-        pw.println(msg);
+        pw.print(msg);
         if ( cause!=null ) {
             cause.printStackTrace(pw);
             cause.printStackTrace();

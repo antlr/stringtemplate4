@@ -100,7 +100,7 @@ public class STLexer implements TokenSource {
     /** Ensure x is next character on the input stream */
     public void match(char x) {
         if ( c == x) consume();
-        else throw new Error("expecting "+x+"; found "+c);
+        else throw new Error(getErrorHeader()+": expecting "+x+"; found "+c);
     }
 
     protected void consume() {
@@ -128,7 +128,8 @@ public class STLexer implements TokenSource {
     protected Token outside() {
         if ( input.getCharPositionInLine()==0 && (c==' '||c=='\t') ) {
             while ( c==' ' || c=='\t' ) consume(); // scarf indent
-            return newToken(INDENT);
+            if ( c!=EOF ) return newToken(INDENT);
+            return newToken(TEXT);
         }
         if ( c==delimiterStartChar ) {
             consume();
@@ -198,9 +199,11 @@ public class STLexer implements TokenSource {
 					}
 					RecognitionException re = new NoViableAltException("", 0, 0, input);
 					if ( c==EOF ) {
-						throw new STRecognitionException("EOF inside ST expression", re);
+                        re.token = newToken(EOF);
+						throw new STException("EOF inside ST expression", re);
 					}
-                    throw new STRecognitionException("invalid character: "+c, re);
+                    re.token = newToken(Token.INVALID_TOKEN_TYPE);
+                    throw new STException("invalid character: "+c, re);
             }
         }
     }
@@ -419,6 +422,10 @@ public class STLexer implements TokenSource {
 		t.setCharPositionInLine(startCharPositionInLine);
 		return t;
 	}
+
+    public String getErrorHeader() {
+        return startLine+":"+startCharPositionInLine;
+    }
 
     public String getSourceName() {
         return "no idea";

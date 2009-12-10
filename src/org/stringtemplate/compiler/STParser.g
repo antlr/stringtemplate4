@@ -91,11 +91,6 @@ public STParser(TokenStream input, RecognizerSharedState state, CodeGenerator ge
     if ( gen!=null ) this.gen = gen;
     this.enclosingTemplateName = enclosingTemplateName;
 }
-protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
-	throws RecognitionException
-{
-	throw new MismatchedTokenException(ttype, input);
-}
 
 public String prefixedName(String t) {
 	if ( t!=null && t.charAt(0)=='/' ) return gen.templateReferencePrefix()+t.substring(1);
@@ -148,6 +143,12 @@ public String prefixedName(String t) {
     }
     
     public void indent(String indent) {	gen.emit(Bytecode.INSTR_INDENT, indent); }
+
+protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
+	throws RecognitionException
+{
+	throw new MismatchedTokenException(ttype, input);
+}
 }
 
 @rulecatch {

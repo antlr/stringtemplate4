@@ -26,27 +26,6 @@
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/** Match a group of template definitions beginning
- *  with a group name declaration.  Templates are enclosed
- *  in double-quotes or <<...>> quotes for multi-line templates.
- *  Template names have arg lists that indicate the cardinality
- *  of the attribute: present, optional, zero-or-more, one-or-more.
- *  Here is a sample group file:
-
-	group nfa;
-
-	// an NFA has edges and states
-	nfa(states,edges) ::= <<
-	digraph NFA {
-	rankdir=LR;
-	<states; separator="\\n">
-	<edges; separator="\\n">
-	}
-	>>
-
-	state(name) ::= "node [shape = circle]; <name>;"
-
- */
 grammar Group;
 
 @header {
@@ -67,6 +46,19 @@ import org.stringtemplate.*;
 
 @members {
 public STGroup group;
+
+public void displayRecognitionError(String[] tokenNames,
+                                    RecognitionException e)
+{
+    String msg = getErrorMessage(e, tokenNames);
+    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
+}
+public String getSourceName() {
+    String fullFileName = super.getSourceName();
+    // strip to simple name
+    File f = new File(fullFileName);
+    return f.getName();
+}
 }
 @lexer::members {
 protected STGroup group;
@@ -77,8 +69,17 @@ group[STGroup group, String prefix]
 GroupLexer lexer = (GroupLexer)input.getTokenSource();
 this.group = lexer.group = $group;
 }
-	:	( templateDef[prefix] | dictDef )+
+	:	def[prefix]+
     ;
+
+/** Match template and dictionary defs outside of (...)+ loop in group.
+ *  The key is catching while still in the loop; must keep prediction of
+ *  elements separate from "stay in loop" prediction.
+ */
+def[String prefix] : templateDef[prefix] | dictDef ;
+	catch[RecognitionException re] {
+		sync("garbled template definition starting at '"+input.LT(1).getText()+"'");
+	}
 
 templateDef[String prefix]
 @init {
@@ -93,6 +94,12 @@ templateDef[String prefix]
 	    {Token templateToken = input.LT(1);}
 	    (	STRING     {template=$STRING.text; n=1;}
 	    |	BIGSTRING  {template=$BIGSTRING.text; n=2;}
+	    |	{
+	    	template = "";
+	    	String msg = "missing template at '"+input.LT(1).getText()+"'";
+            NoViableAltException e = new NoViableAltException("", 0, 0, input);
+    	    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
+    	    }
 	    )
 	    {
 	    template = Misc.strip(template, n);
@@ -107,16 +114,17 @@ templateDef[String prefix]
 		    	group.defineTemplate(prefix, $name.text, $formalArgs.args, template);
 		    }
 		}
-        catch (STRecognitionException e) {
+        catch (STException e) {
         	RecognitionException re = (RecognitionException)e.getCause();
-        	int charPosition =
-        		re.charPositionInLine+templateToken.getCharPositionInLine()+n;
-	        ErrorManager.compileTimeError(ErrorType.SYNTAX_ERROR, e.getMessage(),
-                                          templateToken.getLine()+":"+charPosition);
+        	re.token.setCharPositionInLine(
+                re.charPositionInLine+templateToken.getCharPositionInLine()+n
+            );
+            re.token.setLine( re.line + templateToken.getLine() - 1 );
+   	        ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re, e.getMessage());
         }		
 	    }
 	|   alias=ID '::=' target=ID	    
-		;
+	;
 		
 formalArgs returns[LinkedHashMap<String,FormalArgument> args]
 @init {$args = new LinkedHashMap<String,FormalArgument>();}
@@ -138,7 +146,7 @@ suffix returns [int cardinality=FormalArgument.REQUIRED]
     |   PLUS     
 	|
     ;
-    */
+        */
 
 dictDef
 	:	ID '::=' dict
@@ -182,6 +190,24 @@ keyValue returns [Object value]
 							{$value = STGroup.DICT_KEY;}
 	|						{$value = null;}
 	;
+
+sync[String msg]
+@init {
+    // Consume any garbled tokens that come before the next statement
+    // or the end of the block.
+    int mark = input.index();
+    Token t = input.LT(1);
+    recover(input, null);
+    if ( input.index() != mark ) { // we consumed bad tokens
+        NoViableAltException e = new NoViableAltException("", 0, 0, input);
+        e.token = t;
+        ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
+        recover(input, null);
+    }
+}
+    :   // Deliberately match nothing, causing this rule always to be 
+        // entered.
+    ;
 
 ID	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'-'|'_')*
 	;
