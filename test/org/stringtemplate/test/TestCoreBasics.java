@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.*;
 import org.stringtemplate.*;
+import org.stringtemplate.misc.ErrorBuffer;
 import org.stringtemplate.misc.Misc;
 
 import java.util.ArrayList;
@@ -53,7 +54,25 @@ public class TestCoreBasics extends BaseTest {
         st.add("name", "Ter");
         String expected = "hi Ter!";
         String result = st.render();
-        st.code.dump();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testSetUnknownAttr() throws Exception {
+        String templates =
+            "t() ::= <<hi <name>!>>\n";
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        ST st = group.getInstanceOf("t");
+        st.add("name", "Ter");
+        String expected = "hi Ter!";
+        String result = st.render();
+        assertEquals(expected, result);
+
+        // check error now
+        expected = "[context [t]  can't set attribute name; template t has no such attribute]";
+        result = errors.errors.toString();
         assertEquals(expected, result);
     }
 

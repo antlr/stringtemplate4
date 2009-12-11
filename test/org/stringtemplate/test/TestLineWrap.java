@@ -59,7 +59,8 @@ public class TestLineWrap extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 
-        final ST x = new ST(group, "<\\n>{ <stuff; anchor, separator=\",\\n\"> }<\\n>");
+        final ST x = new ST("<\\n>{ <stuff; anchor, separator=\",\\n\"> }<\\n>");
+        x.groupThatCreatedThisInstance = group;
         x.add("stuff", "1");
         x.add("stuff", "2");
         x.add("stuff", "3");

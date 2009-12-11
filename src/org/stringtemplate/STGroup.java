@@ -137,16 +137,18 @@ public class STGroup {
 
     // TODO: send in start/stop char or line/col so errors can be relative
     public CompiledST defineTemplate(String name, String template) {
-        return defineTemplate("/", name, null, template);
+        return defineTemplate("/", name, FormalArgument.UNKNOWN, template);
     }
 
     public CompiledST defineTemplate(String name,
                                      List<String> args,
                                      String template)
     {
-        LinkedHashMap<String,FormalArgument> margs =
-            new LinkedHashMap<String,FormalArgument>();
-        for (String a : args) margs.put(a, new FormalArgument(a));
+        LinkedHashMap<String,FormalArgument> margs = null;
+        if ( args!=null ) {
+            margs = new LinkedHashMap<String,FormalArgument>();
+            for (String a : args) margs.put(a, new FormalArgument(a));
+        }
         return defineTemplate("/", name, margs, template);
     }
 
@@ -154,9 +156,11 @@ public class STGroup {
                                      String[] args,
                                      String template)
     {
-        LinkedHashMap<String,FormalArgument> margs =
-            new LinkedHashMap<String,FormalArgument>();
-        for (String a : args) margs.put(a, new FormalArgument(a));
+        LinkedHashMap<String,FormalArgument> margs = null;
+        if ( args!=null ) {
+            margs = new LinkedHashMap<String,FormalArgument>();
+            for (String a : args) margs.put(a, new FormalArgument(a));
+        }
         return defineTemplate("/", name, margs, template);
     }
 

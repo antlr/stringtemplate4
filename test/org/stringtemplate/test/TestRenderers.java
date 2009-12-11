@@ -141,7 +141,8 @@ public class TestRenderers extends BaseTest {
                 "The names: <names; format=\"upper\">";
         STGroup group = new STGroup();
         group.registerRenderer(String.class, new StringRenderer());
-        ST st = new ST(group, template);
+        ST st = new ST(template);
+        st.groupThatCreatedThisInstance = group;
         st.add("names", "ter");
         st.add("names", "tom");
         st.add("names", "sriram");
@@ -155,7 +156,8 @@ public class TestRenderers extends BaseTest {
                 "The names: <names; separator=\" and \", format=\"upper\">";
         STGroup group = new STGroup();
         group.registerRenderer(String.class, new StringRenderer());
-        ST st = new ST(group, template);
+        ST st = new ST(template);
+        st.groupThatCreatedThisInstance = group;
         st.add("names", "ter");
         st.add("names", "tom");
         st.add("names", "sriram");
@@ -169,7 +171,8 @@ public class TestRenderers extends BaseTest {
                 "The names: <names; separator=\" and \", null=\"n/a\", format=\"upper\">";
         STGroup group = new STGroup();
         group.registerRenderer(String.class, new StringRenderer());
-        ST st = new ST(group, template);
+        ST st = new ST(template);
+        st.groupThatCreatedThisInstance = group;
         List names = new ArrayList();
         names.add("ter");
         names.add(null);

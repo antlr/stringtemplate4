@@ -176,24 +176,14 @@ public class Interpreter {
                 ip += 2;
                 o = operands[sp--];    // value to store
                 st = (ST)operands[sp]; // store arg in ST on top of stack
+                st.checkAttributeExists(name);
                 st.rawSetAttribute(name, o);
                 break;
             case Bytecode.INSTR_STORE_SOLE_ARG :
                 // unnamed arg, set to sole arg (or first if multiple)
                 o = operands[sp--];    // value to store
                 st = (ST)operands[sp]; // store arg in ST on top of stack
-                int nargs = 0;
-                if ( st.code.formalArguments!=null ) {
-                    nargs = st.code.formalArguments.size();
-                }
-                if ( nargs!=1 ) {
-                    ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_SINGLE_ARGUMENT, st, nargs);
-                }
-                else {
-                    Iterator it = st.code.formalArguments.keySet().iterator();
-                    name = (String)it.next();
-                    st.rawSetAttribute(name, o);
-                }
+                setSoleArgument(self, st, o);
                 break;
             case Bytecode.INSTR_SET_PASS_THRU :
                 st = (ST)operands[sp]; // ST on top of stack
@@ -501,7 +491,7 @@ public class Interpreter {
                 ti++;
                 String name = templates.get(templateIndex);
                 ST st = group.getEmbeddedInstanceOf(self, current_ip, name);
-                setSoleArgument(st, iterValue);
+                setSoleArgument(self, st, iterValue);
                 st.rawSetAttribute("i0", i0);
                 st.rawSetAttribute("i", i);
                 mapped.add(st);
@@ -514,7 +504,7 @@ public class Interpreter {
         else { // if only single value, just apply first template to attribute
             ST st = group.getInstanceOf(templates.get(0));
             if ( st!=null ) {
-                setSoleArgument(st, attr);
+                setSoleArgument(self, st, attr);
                 st.rawSetAttribute("i0", 0);
                 st.rawSetAttribute("i", 1);
                 operands[++sp] = st;
@@ -578,6 +568,7 @@ public class Interpreter {
                 if ( it!=null && it.hasNext() ) {
                     String argName = (String)formalArgumentNames[a];
                     Object iteratedValue = it.next();
+                    embedded.checkAttributeExists(argName);
                     embedded.rawSetAttribute(argName, iteratedValue);
                 }
                 else {
@@ -591,14 +582,19 @@ public class Interpreter {
         return results;
     }
 
-    protected void setSoleArgument(ST st, Object attr) {
+    protected void setSoleArgument(ST self, ST st, Object attr) {
+        String name = "it";
+        int nargs = 0;
         if ( st.code.formalArguments!=null ) {
-            String arg = st.code.formalArguments.keySet().iterator().next();
-            st.rawSetAttribute(arg, attr);
+            nargs = st.code.formalArguments.size();
         }
-        else {
-            st.rawSetAttribute("it", attr);
+        if ( nargs > 0 ) {
+            if ( nargs != 1 ) {
+                ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_SINGLE_ARGUMENT, st, nargs);
+            }
+            name = st.code.formalArguments.keySet().iterator().next();
         }
+        st.rawSetAttribute(name, attr);
     }
 
     protected void addToList(List<Object> list, Object o) {
@@ -912,11 +908,11 @@ public class Interpreter {
      *  the formal parameters up the enclosing chain to see if it exists;
      *  if it exists all is well, but if not, record an error.
      *
-     *  Don't do the check unless debugging and only if not tombu mode.
+     *  Don't generate error if template has no formal arguments.
      */
     protected void checkNullAttributeAgainstFormalArguments(ST self, String name) {
-        if ( !group.debug || ErrorManager.v3_mode ) return; // ignore unknown args in tombu mode
-
+        if ( self.code.formalArguments == FormalArgument.UNKNOWN ) return;
+        
         ST p = self;
         while ( p!=null ) {
             if ( p.code.formalArguments!=null && p.code.formalArguments.get(name)!=null ) {

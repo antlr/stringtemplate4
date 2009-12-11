@@ -47,7 +47,7 @@ public class CompiledST {
 
     public int embeddedStart=-1, embeddedStop=-1; // if subtemplate
 
-    public LinkedHashMap<String, FormalArgument> formalArguments;
+    public LinkedHashMap<String, FormalArgument> formalArguments = FormalArgument.UNKNOWN;
 
     public List<CompiledST> implicitlyDefinedTemplates;
 

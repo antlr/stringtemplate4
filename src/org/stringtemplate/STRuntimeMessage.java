@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 
 public class STRuntimeMessage extends STMessage {
     /** Where error occurred in bytecode memory */
-    public int ip;
+    public int ip = -1;
     
     public STRuntimeMessage(ErrorType error, int ip) { this(error, ip, null); }
     public STRuntimeMessage(ErrorType error, int ip, ST self) { this(error,ip,self,null); }
@@ -28,6 +28,7 @@ public class STRuntimeMessage extends STMessage {
      *  return it's template line:col.
      */
     public String getSourceLocation() {
+        if ( ip<0 ) return "";
         Interval I = self.code.sourceMap[ip];
         if ( I==null ) return null;
         // get left edge and get line/col

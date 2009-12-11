@@ -9,7 +9,7 @@ import org.stringtemplate.ErrorManager;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.misc.ErrorBuffer;
 
-public class TestRuntimeErrors extends BaseTest {
+public class TestInterptimeErrors extends BaseTest {
     public static class UserHiddenName {
         protected String name;
         public UserHiddenName(String name) { this.name = name; }
@@ -127,7 +127,7 @@ public class TestRuntimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testUndefinedArg() throws Exception {
+    @Test public void testUndefinedAttr() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
 
@@ -140,28 +140,9 @@ public class TestRuntimeErrors extends BaseTest {
         group.debug = true; 
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [t, u] 1:1 attribute x isn't defined"+newline;
+        String expected = "context [t u] 1:1 attribute x isn't defined"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
-    }
-
-    @Test public void testUndefinedArgNoProblemInTombuMode() throws Exception {
-        ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
-        ErrorManager.v3_mode = true;
-
-        String templates =
-            "t() ::= \"<u()>\"\n"+
-            "u() ::= \"<x>\"\n";
-
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        ST st = group.getInstanceOf("t");
-        st.render();
-        String expected = "";
-		String result = errors.toString();
-        assertEquals(expected, result);
-        ErrorManager.v3_mode = false;
     }
 
     @Test public void testParallelAttributeIterationWithMismatchArgListSizes() throws Exception {

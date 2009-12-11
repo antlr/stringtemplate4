@@ -27,8 +27,10 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.compiler.CompiledST;
+import org.stringtemplate.compiler.*;
+import org.stringtemplate.compiler.Compiler;
 import org.stringtemplate.misc.BlankST;
+import org.stringtemplate.misc.Misc;
 
 import java.util.*;
 import java.io.StringWriter;
@@ -84,13 +86,20 @@ public class ST {
     public ST() {;}
     
     public ST(String template) {
-        this(STGroup.defaultGroup, template);
+        //this(STGroup.defaultGroup, template);
+        //code = STGroup.defaultGroup.defineTemplate(UNKNOWN_NAME, template);
+        groupThatCreatedThisInstance = STGroup.defaultGroup;
+        code = groupThatCreatedThisInstance.compile("/", null, template);
+        code.name = UNKNOWN_NAME;
+        groupThatCreatedThisInstance.defineImplicitlyDefinedTemplates(code);
     }
 
+    /*
     public ST(STGroup nativeGroup, String template) {
         code = nativeGroup.defineTemplate(UNKNOWN_NAME, template);
         groupThatCreatedThisInstance = nativeGroup;
     }
+     */
 
     public void add(String name, Object value) {
         if ( name==null ) return; // allow null value
@@ -102,6 +111,7 @@ public class ST {
 
         Object curvalue = null;
         if ( attributes==null || !attributes.containsKey(name) ) { // new attribute
+            checkAttributeExists(name);
             rawSetAttribute(name, value);
             return;
         }
@@ -131,6 +141,13 @@ public class ST {
         attributes.put(name, value);
     }
 
+    protected void checkAttributeExists(String name) {
+        if ( code.formalArguments == FormalArgument.UNKNOWN ) return;
+        if ( code.formalArguments == null || code.formalArguments.get(name) == null ) {
+            ErrorManager.runTimeError(this, -1, ErrorType.CANT_SET_ATTRIBUTE, name, getName());
+        }
+    }
+    
     /** Find an attr with dynamic scoping up enclosing ST chain.
      *  If not found, look for a map.  So attributes sent in to a template
      *  override dictionary names.
@@ -206,7 +223,7 @@ public class ST {
         StringBuilder buf = new StringBuilder();
         int i = 0;
         for (ST st : templates) {
-            if ( i>0 ) buf.append(", ");
+            if ( i>0 ) buf.append(" ");
             buf.append(st.getName());
             i++;
         }

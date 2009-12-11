@@ -3,6 +3,7 @@ package org.stringtemplate;
 public enum ErrorType {      
     // RUNTIME SEMANTIC ERRORS
     NO_SUCH_TEMPLATE("no such template: %s"),
+    CANT_SET_ATTRIBUTE("can't set attribute %s; template %s has no such attribute"),
     NO_IMPORTED_TEMPLATE("no such template: super.%s"),
     NO_ATTRIBUTE_DEFINITION("attribute %s isn't defined"),
     EXPECTING_SINGLE_ARGUMENT("expecting single arg in template reference %s (not %s args)"),

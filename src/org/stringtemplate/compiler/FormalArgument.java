@@ -3,6 +3,8 @@ package org.stringtemplate.compiler;
 import org.antlr.runtime.Token;
 import org.stringtemplate.compiler.CompiledST;
 
+import java.util.LinkedHashMap;
+
 /** Represents the name of a formal argument
  *  defined in a template:
  *
@@ -20,11 +22,11 @@ import org.stringtemplate.compiler.CompiledST;
  */
 public class FormalArgument {
     // the following represent bit positions emulating a cardinality bitset.
+/*
     public static final int OPTIONAL = 1;     // a?
     public static final int REQUIRED = 2;     // a
     public static final int ZERO_OR_MORE = 4; // a*
     public static final int ONE_OR_MORE = 8;  // a+
-
     public static final String[] suffixes = {
         null,
         "?",
@@ -36,9 +38,18 @@ public class FormalArgument {
         null,
         "+"
     };
+    //protected int cardinality = REQUIRED;
+     */
+
+    /** When template arguments are not available such as when the user
+     *  uses "new ST(...)", then the list of formal arguments
+     *  must be distinguished from the case where a template can specify
+     *  args and there just aren't any such as the t() template above.
+     */
+    public static final LinkedHashMap<String, FormalArgument> UNKNOWN =
+        new LinkedHashMap<String, FormalArgument>();
 
     public String name;
-    //protected int cardinality = REQUIRED;
 
 	/** If they specified name="value", store the template here */
 	public Token defaultValueToken;
