@@ -71,7 +71,7 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
 
         // check error now
-        expected = "[context [t]  can't set attribute name; template t has no such attribute]";
+        expected = "[context [t] can't set attribute name; template t has no such attribute]";
         result = errors.errors.toString();
         assertEquals(expected, result);
     }

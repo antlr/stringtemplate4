@@ -284,7 +284,7 @@ public class TestGroups extends BaseTest {
         }
         String templates =
                 "method(fields) ::= <<"+newline+
-                "<fields:{f | <f:stat()>}>" +newline+  // THIS SHOULD BE ERROR; >1 arg?
+                "<fields:{f | <f:stat()>}>" +newline+
                 ">>"+newline+
                 "stat(f,value={<f.name>}) ::= \"x=<value>; // <f.name>\""+newline
                 ;

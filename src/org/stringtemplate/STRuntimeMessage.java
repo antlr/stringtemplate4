@@ -28,7 +28,7 @@ public class STRuntimeMessage extends STMessage {
      *  return it's template line:col.
      */
     public String getSourceLocation() {
-        if ( ip<0 ) return "";
+        if ( ip<0 ) return null;
         Interval I = self.code.sourceMap[ip];
         if ( I==null ) return null;
         // get left edge and get line/col

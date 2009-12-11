@@ -388,16 +388,20 @@ exprNoComma
 					  $templateRef.stop.getStopIndex());
 			}
 		)?
+/*
 	|	subtemplate {gen.emit(Bytecode.INSTR_NEW, $subtemplate.name,
 					 $subtemplate.start.getStartIndex(),
 					 $subtemplate.stop.getStopIndex());}
+					 */
 	;
 
 expr:	mapExpr
+/*
 	|	subtemplate
 		{gen.emit(Bytecode.INSTR_NEW, prefixedName($subtemplate.name),
 				  $subtemplate.start.getStartIndex(),
 				  $subtemplate.stop.getStopIndex());}
+*/
 	;
 
 mapExpr
@@ -446,6 +450,10 @@ primary
 	|	STRING    {gen.emit(Bytecode.INSTR_LOAD_STR,
 							Misc.strip($STRING.text,1),
 					 		$STRING.getStartIndex(), $STRING.getStopIndex());}
+	|	subtemplate
+		{gen.emit(Bytecode.INSTR_NEW, prefixedName($subtemplate.name),
+				  $subtemplate.start.getStartIndex(),
+				  $subtemplate.stop.getStopIndex());}
 	|	list
 	|	lp='(' expr rp=')' {gen.emit(Bytecode.INSTR_TOSTR,
 									 $lp.getStartIndex(),$rp.getStartIndex());}

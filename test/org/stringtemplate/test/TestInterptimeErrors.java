@@ -110,6 +110,25 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
+    @Test public void testPassUnknownAttr() throws Exception {
+        String templates =
+            "t() ::= \"<u(x={Ter})>\"\n"+
+            "u(y) ::= <<hi <x>!>>\n";
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        ST st = group.getInstanceOf("t");
+        String expected = "hi Ter!";
+        String result = st.render();
+        assertEquals(expected, result);
+
+        // check error now
+        expected = "[context [t u] can't set attribute x; template u has no such attribute]";
+        result = errors.errors.toString();
+        assertEquals(expected, result);
+    }
+
     @Test public void testSoleArg() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
@@ -124,6 +143,26 @@ public class TestInterptimeErrors extends BaseTest {
         st.render();
         String expected = "context [t] 1:3 expecting single arg in template reference u() (not 2 args)"+newline;
 		String result = errors.toString();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testSoleArgUsingApplySyntax() throws Exception {
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
+
+        String templates =
+            "t() ::= \"<{9}:u()>\"\n"+
+            "u(x,y) ::= \"<x>\"\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        ST st = group.getInstanceOf("t");
+        String expected = "9";
+        String result = st.render();
+        assertEquals(expected, result);
+
+        expected = "context [t] 1:1 expecting single arg in template reference u() (not 2 args)"+newline;
+		result = errors.toString();
         assertEquals(expected, result);
     }
 
