@@ -122,37 +122,4 @@ public class TestLists extends BaseTest {
 		String result = e.render();
 		assertEquals(expecting, result);
 	}
-
-    public void testNullListGetsNoOutput() throws Exception {
-        ST t = new ST(
-            "begin\n" +
-            "$users:{name: $it$}; separator=\", \"$\n" +
-            "end\n");
-        //t.setAttribute("users", new Duh());
-        String expecting="begin\nend\n";
-        String result = t.render();
-        assertEquals(expecting, result);
-    }
-
-    public void testEmptyListGetsNoOutput() throws Exception {
-        ST t = new ST(
-            "begin\n" +
-            "$users:{name: $it$}; separator=\", \"$\n" +
-            "end\n");
-        t.add("users", new ArrayList());
-        String expecting="begin\nend\n";
-        String result = t.render();
-        assertEquals(expecting, result);
-    }
-
-    public void testEmptyListNoIteratorGetsNoOutput() throws Exception {
-        ST t = new ST(
-            "begin\n" +
-            "$users; separator=\", \"$\n" +
-            "end\n");
-        t.add("users", new ArrayList());
-        String expecting="begin\nend\n";
-        String result = t.render();
-        assertEquals(expecting, result);
-    }    
 }

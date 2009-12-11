@@ -67,7 +67,7 @@ public class TestNullAndEmptyValues extends BaseTest {
             "end\n");
         ST t = group.getInstanceOf("test");
         t.add("users", null);
-        String expecting="begin\nend"+newline;
+        String expecting="begin"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -80,7 +80,7 @@ public class TestNullAndEmptyValues extends BaseTest {
             "end\n");
         ST t = group.getInstanceOf("test");
         //t.setAttribute("users", new Duh());
-        String expecting="begin\nend"+newline;
+        String expecting="begin"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -93,7 +93,7 @@ public class TestNullAndEmptyValues extends BaseTest {
             "end\n");
         ST t = group.getInstanceOf("test");
         t.add("users", new ArrayList());
-        String expecting="begin\nend"+newline;
+        String expecting="begin"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }

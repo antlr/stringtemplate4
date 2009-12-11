@@ -68,7 +68,7 @@ public class TestWhitespace extends BaseTest {
         st.add("names", "Ter");
         st.add("names", "Tom");
         st.add("names", "Sumana");
-        String expected = "Ter\nTom\nSumana\n!";
+        String expected = "Ter"+newline+"Tom"+newline+"Sumana"+newline+"!";
         String result = st.render();
         assertEquals(expected, result);
     }
@@ -77,7 +77,7 @@ public class TestWhitespace extends BaseTest {
         ST t = new ST(
             "<users>\n" +
             "end\n");
-        String expecting="end\n";
+        String expecting="end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -87,7 +87,7 @@ public class TestWhitespace extends BaseTest {
             "begin\n" +
             "    \n" +
             "end\n");
-        String expecting="begin\n\nend\n";
+        String expecting="begin"+newline+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -111,7 +111,7 @@ public class TestWhitespace extends BaseTest {
             "	<users>\n"+
             "	<users>\n"+
             "end\n");
-        String expecting="begin\nend\n";
+        String expecting="begin"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -122,7 +122,7 @@ public class TestWhitespace extends BaseTest {
             "  <name>\n"+
             "	<users><users>\n"+
             "end\n");
-        String expecting="begin\nend\n";
+        String expecting="begin"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -132,7 +132,7 @@ public class TestWhitespace extends BaseTest {
             "begin\n"+
             "<if(x)><endif>\n"+
             "end\n");
-        String expecting="begin\nend\n";
+        String expecting="begin"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -142,7 +142,7 @@ public class TestWhitespace extends BaseTest {
             "begin\n"+
             "    <if(x)><endif>\n"+
             "end\n");
-        String expecting="begin\nend\n";
+        String expecting="begin"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -152,7 +152,7 @@ public class TestWhitespace extends BaseTest {
             "begin\n"+
             "<if(users)><else><endif>\n"+
             "end\n");
-        String expecting="begin\nend\n";
+        String expecting="begin"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -166,7 +166,7 @@ public class TestWhitespace extends BaseTest {
             "bar\n" +
             "<endif>\n"+
             "end\n");
-        String expecting="begin\nbar\nend\n";
+        String expecting="begin"+newline+"bar"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
@@ -183,7 +183,7 @@ public class TestWhitespace extends BaseTest {
             "<endif>\n"+
             "end\n");
         t.add("x", "x");
-        String expecting="begin\nbar\nend\n";
+        String expecting="begin"+newline+"bar"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
