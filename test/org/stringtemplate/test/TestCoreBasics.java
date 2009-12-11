@@ -27,14 +27,18 @@
 */
 package org.stringtemplate.test;
 
+import org.antlr.runtime.CommonToken;
 import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.*;
 import org.stringtemplate.*;
+import org.stringtemplate.compiler.FormalArgument;
+import org.stringtemplate.compiler.GroupParser;
 import org.stringtemplate.misc.ErrorBuffer;
 import org.stringtemplate.misc.Misc;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.io.StringWriter;
 
@@ -150,7 +154,12 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testIncludeWithSingleUnnamedArg() throws Exception {
         String template = "load <box(\"arg\")>;";
         ST st = new ST(template);
-        st.code.nativeGroup.defineTemplate("box", new String[]{"x"}, "kewl <x> daddy");
+        LinkedHashMap<String,FormalArgument> args =
+            new LinkedHashMap<String,FormalArgument>();
+        args.put("x", new FormalArgument("x"));
+        st.code.nativeGroup.defineTemplate("/",
+                                           new CommonToken(GroupParser.ID, "box"),
+                                           args, "kewl <x> daddy");
         st.add("name", "Ter");
         String expected = "load kewl arg daddy;";
         String result = st.render();

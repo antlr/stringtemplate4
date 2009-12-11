@@ -1,6 +1,7 @@
 package org.stringtemplate;
 
 import org.antlr.runtime.ANTLRFileStream;
+import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.UnbufferedTokenStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.stringtemplate.misc.Misc;
@@ -64,7 +65,10 @@ public class STGroupDir extends STGroup {
             if ( ErrorManager.v3_mode) {
                 String template = Misc.readLines(absoluteFileName);
                 template = template.trim();
-                defineTemplate(prefix, templateName, null, template);
+                defineTemplate(prefix,
+                               new CommonToken(GroupParser.ID,templateName),
+                               null,
+                               template);
             }
             else {
                 ANTLRFileStream fs = new ANTLRFileStream(f.toString(), encoding);

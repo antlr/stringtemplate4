@@ -106,7 +106,7 @@ public class TestRegions extends BaseTest {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
         group.load();
-        String expected = "redefinition of template /region__a__r"+newline;
+        String expected = "2:3: region a.r is embedded and thus already implicitly defined"+newline;
         String result = errors.toString();
         assertEquals(expected, result);
     }

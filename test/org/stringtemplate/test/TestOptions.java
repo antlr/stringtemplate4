@@ -2,8 +2,11 @@ package org.stringtemplate.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+
+import org.stringtemplate.ErrorManager;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
+import org.stringtemplate.misc.ErrorBuffer;
 
 public class TestOptions extends BaseTest {
     @Test public void testSeparator() throws Exception {
@@ -110,5 +113,19 @@ public class TestOptions extends BaseTest {
         String expected = "";
         String result = st.render();
         assertEquals(expected, result);
+    }
+
+    @Test public void testIllegalOption() throws Exception {
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "<name; bad=\"ugly\">");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        String expected = "Ter";
+        String result = st.render();
+        assertEquals(expected, result);
+        expected = "[1:7: no such option: bad]";
+        assertEquals(expected, errors.errors.toString());
     }
 }

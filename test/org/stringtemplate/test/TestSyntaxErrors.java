@@ -17,7 +17,7 @@ public class TestSyntaxErrors extends BaseTest {
 		}
 		catch (STException se) {
             RecognitionException re = (RecognitionException)se.getCause();
-            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
+            result = new STSyntaxErrorMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
 		}
         String expected = "1:0: this doesn't look like a template: \" <> \"";
         assertEquals(expected, result);
@@ -32,7 +32,7 @@ public class TestSyntaxErrors extends BaseTest {
 		}
 		catch (STException se) {
             RecognitionException re = (RecognitionException)se.getCause();
-            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
+            result = new STSyntaxErrorMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
 		}
         String expected = "1:3: doesn't look like an expression";
         assertEquals(expected, result);
@@ -47,7 +47,7 @@ public class TestSyntaxErrors extends BaseTest {
 		}
 		catch (STException se) {
             RecognitionException re = (RecognitionException)se.getCause();
-            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
+            result = new STSyntaxErrorMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
 		}
         String expected = "1:4: invalid character: *";
         assertEquals(expected, result);

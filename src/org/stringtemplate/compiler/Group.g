@@ -140,10 +140,10 @@ templateDef[String prefix]
    		}
 	    try {
 		    if ( $enclosing!=null ) {
-			    group.defineRegion(prefix, $enclosing.text, $region.text, template);
+			    group.defineRegion(prefix, $enclosing.text, $region, template);
 		    }
 		    else {
-		    	group.defineTemplate(prefix, $name.text, $formalArgs.args, template);
+		    	group.defineTemplate(prefix, $name, $formalArgs.args, template);
 		    }
 		}
         catch (STException e) {
@@ -159,7 +159,7 @@ templateDef[String prefix]
    	        ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re, e.getMessage());
         }		
 	    }
-	|   alias=ID '::=' target=ID	    
+	|   alias=ID '::=' target=ID  {group.defineTemplateAlias($alias, $target);}
 	;
 		
 formalArgs returns[LinkedHashMap<String,FormalArgument> args]
@@ -188,10 +188,10 @@ dictDef
 	:	ID '::=' dict
         {
         if ( group.rawGetDictionary($ID.text)!=null ) {
-			ErrorManager.compileTimeError(ErrorType.MAP_REDEFINITION, $ID.text);
+			ErrorManager.compileTimeError(ErrorType.MAP_REDEFINITION, $ID);
         }
         else if ( group.rawGetTemplate($ID.text)!=null ) {
-			ErrorManager.compileTimeError(ErrorType.TEMPLATE_REDEFINITION_AS_MAP, $ID.text);
+			ErrorManager.compileTimeError(ErrorType.TEMPLATE_REDEFINITION_AS_MAP, $ID);
         }
         else {
             group.defineDictionary($ID.text, $dict.mapping);

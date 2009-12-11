@@ -17,6 +17,7 @@ public enum ErrorType {
     EMBEDDED_REGION_REDEFINITION("region %s is embedded and thus already implicitly defined"),
     REGION_REDEFINITION("redefinition of region %s"),
     MAP_REDEFINITION("redefinition of dictionary %s"),
+    ALIAS_TARGET_UNDEFINED("cannot alias %s to undefined template: %s"),
     TEMPLATE_REDEFINITION_AS_MAP("redefinition of template %s as a map"),
     LEXER_ERROR("lexer there are add character %s"),
     NO_DEFAULT_VALUE("missing dictionary default value"),

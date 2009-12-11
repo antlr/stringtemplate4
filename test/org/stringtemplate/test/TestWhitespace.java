@@ -22,6 +22,18 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expected, result);
     }
 
+    @Test public void testTrimmedSubtemplatesNoArgs() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "<names:{ <it> }>");
+        ST st = group.getInstanceOf("test");
+        st.add("names", "Ter");
+        st.add("names", "Tom");
+        st.add("names", "Sumana");
+        String expected = " Ter  Tom  Sumana ";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
     @Test public void testTrimJustOneWSInSubtemplates() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "<names:{n |  <n> }>!");

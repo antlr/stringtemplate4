@@ -1,5 +1,7 @@
 package org.stringtemplate;
 
+import org.antlr.runtime.Token;
+
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
@@ -11,6 +13,7 @@ public class STMessage {
     public ErrorType error;
     public Object arg;
     public Object arg2;
+    public Token where;
     public Throwable cause;
 
     public STMessage(ErrorType error) {
@@ -24,8 +27,17 @@ public class STMessage {
         this(error,self);
         this.cause = cause;
     }
+    public STMessage(ErrorType error, ST self, Throwable cause, Token where) {
+        this(error,self);
+        this.cause = cause;
+        this.where = where;
+    }
     public STMessage(ErrorType error, ST self, Throwable cause, Object arg) {
         this(error,self,cause);
+        this.arg = arg;
+    }
+    public STMessage(ErrorType error, ST self, Throwable cause, Token where, Object arg) {
+        this(error,self,cause,where);
         this.arg = arg;
     }
     public STMessage(ErrorType error, ST self, Throwable cause, Object arg, Object arg2) {

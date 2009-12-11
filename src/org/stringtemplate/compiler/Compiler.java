@@ -282,6 +282,8 @@ public class Compiler implements CodeGenerator {
         String fullName =
             templatePathPrefix+
             STGroup.getMangledRegionName(enclosingTemplateName, regionName);
+        sub.isRegion = true;
+        sub.regionDefType = ST.RegionType.EMBEDDED;
         sub.name = fullName;
         if ( code.implicitlyDefinedTemplates == null ) {
             code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();

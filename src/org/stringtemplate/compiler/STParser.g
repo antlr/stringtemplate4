@@ -113,6 +113,8 @@ public String prefixedName(String t) {
         Integer I = Compiler.supportedOptions.get(id.getText());
         if ( I==null ) {
             ErrorManager.compileTimeError(ErrorType.NO_SUCH_OPTION, id);
+	        gen.emit(Bytecode.INSTR_POP,
+	                 id.getStartIndex(), id.getStopIndex());
             return;
         }
         gen.emit(Bytecode.INSTR_STORE_OPTION, I,
@@ -123,7 +125,8 @@ public String prefixedName(String t) {
         String v = Compiler.defaultOptionValues.get(id.getText());
         if ( v==null ) {
             ErrorManager.compileTimeError(ErrorType.NO_DEFAULT_VALUE, id);
-            return;
+	        gen.emit(Bytecode.INSTR_POP,
+	                 id.getStartIndex(), id.getStopIndex());
         }
         gen.emit(Bytecode.INSTR_LOAD_STR, v,
                  id.getStartIndex(), id.getStopIndex());
@@ -133,7 +136,7 @@ public String prefixedName(String t) {
         Short funcBytecode = Compiler.funcs.get(id.getText());
         if ( funcBytecode==null ) {
             ErrorManager.compileTimeError(ErrorType.NO_SUCH_FUNCTION, id);
-            gen.emit(Bytecode.INSTR_NOOP,
+            gen.emit(Bytecode.INSTR_POP,
                      id.getStartIndex(), id.getStopIndex());
         }
         else {

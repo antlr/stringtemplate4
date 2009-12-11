@@ -1,6 +1,6 @@
 package org.stringtemplate;
 
-import org.antlr.tool.ToolMessage;
+import org.antlr.runtime.Token;
 import org.antlr.runtime.RecognitionException;
 
 /** Track errors per thread; e.g., one server transaction's errors
@@ -54,20 +54,30 @@ public class ErrorManager {
 
     public static void setErrorListener(STErrorListener listener) { ErrorManager.listener.set(listener); }
 
-    public static void compileTimeError(ErrorType error, Object arg) {
-        listener.get().compileTimeError(new STMessage(error,null,null,arg));
+    public static void compileTimeError(ErrorType error, Token t) {
+        listener.get().compileTimeError(new STCompiletimeMessage(error,t,null,t.getText()));
     }
 
+    public static void compileTimeError(ErrorType error, Object arg) {
+        listener.get().compileTimeError(new STCompiletimeMessage(error,null,null,arg));
+    }
+
+    public static void compileTimeError(ErrorType error, Token t, Object arg) {
+        listener.get().compileTimeError(new STCompiletimeMessage(error,t,null,arg));
+    }
+
+/*
     public static void compileTimeError(ErrorType error, Object arg, Object arg2) {
         listener.get().compileTimeError(new STMessage(error,null,null,arg,arg2));
     }
+     */
 
     public static void syntaxError(ErrorType error, RecognitionException e, String msg) {
-        listener.get().compileTimeError(new STCompiletimeMessage(error,e.token,e,msg));
+        listener.get().compileTimeError(new STSyntaxErrorMessage(error,e.token,e,msg));
     }
 
     public static void syntaxError(ErrorType error, RecognitionException e, String msg, Object arg) {
-        listener.get().compileTimeError(new STCompiletimeMessage(error, e.token, e,msg,arg));
+        listener.get().compileTimeError(new STSyntaxErrorMessage(error, e.token, e,msg,arg));
     }
 
     public static void runTimeError(ST self, int ip, ErrorType error) {

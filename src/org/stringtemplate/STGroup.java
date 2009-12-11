@@ -27,10 +27,7 @@
 */
 package org.stringtemplate;
 
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.UnbufferedTokenStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.*;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.debug.DebugST;
 import org.stringtemplate.compiler.*;
@@ -135,11 +132,13 @@ public class STGroup {
     public CompiledST rawGetTemplate(String name) { return templates.get(name); }
     public Map<String,Object> rawGetDictionary(String name) { return dictionaries.get(name); }
 
-    // TODO: send in start/stop char or line/col so errors can be relative
+    // for testing
     public CompiledST defineTemplate(String name, String template) {
-        return defineTemplate("/", name, FormalArgument.UNKNOWN, template);
+        return defineTemplate("/", new CommonToken(GroupParser.ID,name),
+                              FormalArgument.UNKNOWN, template);
     }
 
+/*
     public CompiledST defineTemplate(String name,
                                      List<String> args,
                                      String template)
@@ -152,7 +151,7 @@ public class STGroup {
         return defineTemplate("/", name, margs, template);
     }
 
-    public CompiledST defineTemplate(String name,
+    public CompiledST defineTemplate(Token nameT,
                                      String[] args,
                                      String template)
     {
@@ -161,22 +160,24 @@ public class STGroup {
             margs = new LinkedHashMap<String,FormalArgument>();
             for (String a : args) margs.put(a, new FormalArgument(a));
         }
-        return defineTemplate("/", name, margs, template);
+        return defineTemplate("/", nameT, margs, template);
     }
+     */
 
 	// can't trap recog errors here; don't know where in file template is defined
     public CompiledST defineTemplate(String prefix,
-                                     String name,
+                                     Token nameT,
                                      LinkedHashMap<String,FormalArgument> args,
                                      String template)
     {
+        String name = nameT.getText();
         if ( name!=null && (name.length()==0 || name.indexOf('.')>=0) ) {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
         CompiledST code = compile(prefix, name, template);
         code.name = name;
         code.formalArguments = args;
-        rawDefineTemplate(prefix+name, code);
+        rawDefineTemplate(prefix+name, code, nameT);
         if ( args!=null ) { // compile any default args
             for (String a : args.keySet()) {
                 FormalArgument fa = args.get(a);
@@ -194,42 +195,60 @@ public class STGroup {
         return code;
     }
 
+    /** Make name and alias for target.  Replace any previous def of name */
+    public CompiledST defineTemplateAlias(Token aliasT, Token targetT) {
+        String alias = aliasT.getText();
+        String target = targetT.getText();
+        CompiledST targetCode = templates.get(target);
+        if ( targetCode==null ){
+            NoViableAltException e = null;
+            ErrorManager.syntaxError(ErrorType.ALIAS_TARGET_UNDEFINED, e, alias, target);
+            return null;
+        }
+        templates.put(alias, targetCode);
+        return targetCode;
+    }
+
     public CompiledST defineRegion(String prefix,
                                    String enclosingTemplateName,
-                                   String name,
+                                   Token regionT,
                                    String template)
     {
+        String name = regionT.getText();
         CompiledST code = compile(prefix, enclosingTemplateName, template);
         code.name = prefix+getMangledRegionName(enclosingTemplateName, name);
         code.isRegion = true;
         code.regionDefType = ST.RegionType.EXPLICIT;
-        rawDefineTemplate(code.name, code);
+
+        rawDefineTemplate(code.name, code, regionT);
         return code;
     }
 
 	protected void defineImplicitlyDefinedTemplates(CompiledST code) {
         if ( code.implicitlyDefinedTemplates !=null ) {
             for (CompiledST sub : code.implicitlyDefinedTemplates) {
-                rawDefineTemplate(sub.name, sub);
+                rawDefineTemplate(sub.name, sub, null);
                 defineImplicitlyDefinedTemplates(sub);
             }
         }
     }
 
-    protected void rawDefineTemplate(String name, CompiledST code) {
+    protected void rawDefineTemplate(String name, CompiledST code, Token defT) {
         CompiledST prev = templates.get(name);
         if ( prev!=null ) {
             if ( !prev.isRegion ) {
-                ErrorManager.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, name);
+                ErrorManager.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, defT);
                 return;
             }
             if ( prev.isRegion && prev.regionDefType==ST.RegionType.EMBEDDED ) {
                 ErrorManager.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
+                                              defT,
                                               getUnMangledTemplateName(name));
                 return;
             }
             else if ( prev.isRegion && prev.regionDefType==ST.RegionType.EXPLICIT ) {
                 ErrorManager.compileTimeError(ErrorType.REGION_REDEFINITION,
+                                              defT,
                                               getUnMangledTemplateName(name));
                 return;
             }
@@ -254,8 +273,8 @@ public class STGroup {
 
     /** Return "t.foo" from "region__t__foo" */
     public static String getUnMangledTemplateName(String mangledName) {
-        String t = mangledName.substring("region__".length(),
-                   mangledName.lastIndexOf("__"));
+        String t = mangledName.substring("region__".length()+1,
+                                         mangledName.lastIndexOf("__"));
         String r = mangledName.substring(mangledName.lastIndexOf("__")+2,
                                          mangledName.length());
         return t+'.'+r;

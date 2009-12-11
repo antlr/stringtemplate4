@@ -330,6 +330,11 @@ public class Interpreter {
                     ErrorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
                 }
                 break;
+            case Bytecode.INSTR_NOOP :
+                break;
+            case Bytecode.INSTR_POP :
+                sp--; // throw away top of stack
+                break;
             default :
                 ErrorManager.internalError(self, ErrorType.INVALID_BYTECODE, null, opcode, ip-1);
                 self.code.dump();

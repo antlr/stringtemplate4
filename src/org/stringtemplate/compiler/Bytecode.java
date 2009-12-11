@@ -76,25 +76,28 @@ public class Bytecode {
     public static final short INSTR_LIST            = 21;
     public static final short INSTR_ADD             = 22;
     public static final short INSTR_TOSTR           = 23;
+
     // Predefined functions
-    public static final short INSTR_NOOP            = 24; // do nothing
-    public static final short INSTR_FIRST           = 25;
-    public static final short INSTR_LAST            = 26;
-    public static final short INSTR_REST            = 27;
-    public static final short INSTR_TRUNC           = 28;
-    public static final short INSTR_STRIP           = 29;
-    public static final short INSTR_TRIM            = 30;
-    public static final short INSTR_LENGTH          = 31;
-    public static final short INSTR_STRLEN          = 32;
-    public static final short INSTR_REVERSE         = 33;
+    public static final short INSTR_FIRST           = 24;
+    public static final short INSTR_LAST            = 25;
+    public static final short INSTR_REST            = 26;
+    public static final short INSTR_TRUNC           = 27;
+    public static final short INSTR_STRIP           = 28;
+    public static final short INSTR_TRIM            = 29;
+    public static final short INSTR_LENGTH          = 30;
+    public static final short INSTR_STRLEN          = 31;
+    public static final short INSTR_REVERSE         = 32;
 
-	public static final short INSTR_NOT             = 34;
-	public static final short INSTR_OR              = 35;
-	public static final short INSTR_AND             = 36;
+	public static final short INSTR_NOT             = 33;
+	public static final short INSTR_OR              = 34;
+	public static final short INSTR_AND             = 35;
 
-	public static final short INSTR_INDENT          = 37;
-    public static final short INSTR_DEDENT          = 38;
-    public static final short INSTR_NEWLINE         = 39;
+	public static final short INSTR_INDENT          = 36;
+    public static final short INSTR_DEDENT          = 37;
+    public static final short INSTR_NEWLINE         = 38;
+
+    public static final short INSTR_NOOP            = 39; // do nothing
+    public static final short INSTR_POP             = 40;    
 
     /** Used for assembly/disassembly; describes instruction set */
     // START: instr
@@ -123,7 +126,6 @@ public class Bytecode {
         new Instruction("list"),
         new Instruction("add"),
         new Instruction("tostr"),
-        new Instruction("noop"),
         new Instruction("first"),
         new Instruction("last"),
         new Instruction("rest"),
@@ -138,7 +140,9 @@ public class Bytecode {
 		new Instruction("and"),
 		new Instruction("indent", STRING),
         new Instruction("dedent"),
-        new Instruction("newline")
+        new Instruction("newline"),
+        new Instruction("noop"),
+        new Instruction("pop")        
     };
     // END: instr
 }
