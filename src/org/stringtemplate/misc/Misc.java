@@ -41,14 +41,10 @@ public class Misc {
         return s.substring(0, s.length()-n);
     }
 
-    public static String trimOneStartingWS(String s) {
-        // strip newline from front and back, but just one
+    public static String trimOneStartingNewline(String s) {
+        // strip newline from front but just one
         if ( s.startsWith("\r\n") ) s = s.substring(2);
         else if ( s.startsWith("\n") ) s = s.substring(1);
-        /*
-        if ( s.endsWith("\r\n") ) s = s.substring(0,s.length()-2);
-        else if ( s.endsWith("\n") ) s = s.substring(0,s.length()-1);
-         */
         return s;
     }
 

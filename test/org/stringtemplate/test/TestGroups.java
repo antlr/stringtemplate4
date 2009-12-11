@@ -3,6 +3,8 @@ package org.stringtemplate.test;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.*;
+import org.stringtemplate.compiler.*;
+import org.stringtemplate.compiler.Compiler;
 
 public class TestGroups extends BaseTest {
     @Test public void testSimpleGroup() throws Exception {
@@ -282,7 +284,7 @@ public class TestGroups extends BaseTest {
         }
         String templates =
                 "method(fields) ::= <<"+newline+
-                "<fields:{f | <f:stat>}>" +newline+  // THIS SHOULD BE ERROR; >1 arg?
+                "<fields:{f | <f:stat()>}>" +newline+  // THIS SHOULD BE ERROR; >1 arg?
                 ">>"+newline+
                 "stat(f,value={<f.name>}) ::= \"x=<value>; // <f.name>\""+newline
                 ;

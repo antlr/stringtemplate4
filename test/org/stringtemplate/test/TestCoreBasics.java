@@ -30,9 +30,8 @@ package org.stringtemplate.test;
 import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.*;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
-import org.stringtemplate.AutoIndentWriter;
+import org.stringtemplate.*;
+import org.stringtemplate.misc.Misc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -178,13 +177,29 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testMap() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("inc", "[<it>]");
-        group.defineTemplate("test", "hi <name:inc>!");
+        group.defineTemplate("test", "hi <name:inc()>!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", "Sumana");
         String expected =
             "hi [Ter][Tom][Sumana]!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testMapWithExprAsTemplateName() throws Exception {
+        String templates =
+            "d ::= [\"foo\":\"bold\"]\n" +
+            "test() ::= \"<name:(d.foo)()>\"\n" +
+            "bold() ::= <<*<it>*>>\n";
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        st.add("name", "Tom");
+        st.add("name", "Sumana");
+        String expected = "*Ter**Tom**Sumana*";
         String result = st.render();
         assertEquals(expected, result);
     }
@@ -223,7 +238,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testMapIndexes() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("inc", "<i>:<it>");
-        group.defineTemplate("test", "<name:inc; separator=\", \">");
+        group.defineTemplate("test", "<name:inc(); separator=\", \">");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
@@ -238,7 +253,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testMapSingleValue() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("a", "[<it>]");
-        group.defineTemplate("test", "hi <name:a>!");
+        group.defineTemplate("test", "hi <name:a()>!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         String expected = "hi [Ter]!";
@@ -250,7 +265,7 @@ public class TestCoreBasics extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("a", "[<it>]");
         group.defineTemplate("b", "(<it>)");
-        group.defineTemplate("test", "hi <name:a:b>!");
+        group.defineTemplate("test", "hi <name:a():b()>!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
@@ -265,7 +280,7 @@ public class TestCoreBasics extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("a", "[<it>]");
         group.defineTemplate("b", "(<it>)");
-        group.defineTemplate("test", "hi <name:a,b>!");
+        group.defineTemplate("test", "hi <name:a(),b()>!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");

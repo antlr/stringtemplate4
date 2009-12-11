@@ -133,8 +133,10 @@ templateDef[String prefix]
 	    )
 	    {
 	    template = Misc.strip(template, n);
-   		if ( templateToken.getType()==BIGSTRING ) {
-   			template = Misc.trimOneStartingWS(template);
+	    boolean removedNL = false;
+   		if ( templateToken.getType()==BIGSTRING && template.charAt(0)=='\n' ) {
+   			removedNL = true;
+   			template = Misc.trimOneStartingNewline(template);
    		}
 	    try {
 		    if ( $enclosing!=null ) {
@@ -146,9 +148,14 @@ templateDef[String prefix]
 		}
         catch (STException e) {
         	RecognitionException re = (RecognitionException)e.getCause();
-        	re.charPositionInLine =
-                re.charPositionInLine+templateToken.getCharPositionInLine()+n;
-            re.line = re.line + templateToken.getLine() - 1;
+        	if ( removedNL ) {
+   	            re.line = re.line + templateToken.getLine();
+        	}
+        	else {
+	        	re.charPositionInLine =
+	                re.charPositionInLine+templateToken.getCharPositionInLine()+n;
+	            re.line = re.line + templateToken.getLine() - 1;
+            }
    	        ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re, e.getMessage());
         }		
 	    }

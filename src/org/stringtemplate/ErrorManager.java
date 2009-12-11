@@ -13,9 +13,11 @@ public class ErrorManager {
     public static STErrorListener DEFAULT_ERROR_LISTENER =
         new STErrorListener() {
             public void compileTimeError(STMessage msg) {
+                System.err.println(msg);
             }
 
             public void runTimeError(STMessage msg) {
+                System.err.println(msg);
             }
 
             public void IOError(STMessage msg) {

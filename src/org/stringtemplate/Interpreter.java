@@ -513,10 +513,15 @@ public class Interpreter {
         }
         else { // if only single value, just apply first template to attribute
             ST st = group.getInstanceOf(templates.get(0));
-            setSoleArgument(st, attr);
-            st.rawSetAttribute("i0", 0);
-            st.rawSetAttribute("i", 1);
-            operands[++sp] = st;
+            if ( st!=null ) {
+                setSoleArgument(st, attr);
+                st.rawSetAttribute("i0", 0);
+                st.rawSetAttribute("i", 1);
+                operands[++sp] = st;
+            }
+            else {
+                operands[++sp] = ST.BLANK;
+            }
 //            map(self, attr, templates.get(1));
         }
     }

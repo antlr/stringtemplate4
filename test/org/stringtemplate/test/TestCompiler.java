@@ -92,7 +92,7 @@ public class TestCompiler extends BaseTest {
     }
 
     @Test public void testMap() throws Exception {
-        String template = "hi <name:bold>";
+        String template = "hi <name:bold()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
             "load_str 0, write, load_attr 1, load_str 2, map, write";
@@ -104,7 +104,7 @@ public class TestCompiler extends BaseTest {
     }
 
     @Test public void testRepeatedMap() throws Exception {
-        String template = "hi <name:bold:italics>";
+        String template = "hi <name:bold():italics()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
@@ -123,7 +123,7 @@ public class TestCompiler extends BaseTest {
     }
 
     @Test public void testRotMap() throws Exception {
-        String template = "hi <name:bold,italics>";
+        String template = "hi <name:bold(),italics()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
             "load_str 0, write, load_attr 1, load_str 2, load_str 3, rot_map 2, write";

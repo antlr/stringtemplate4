@@ -55,7 +55,7 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
     @Test public void testIndirectMap() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("a", "[<it>]");
-        group.defineTemplate("test", "hi <names:(templateName)>!");
+        group.defineTemplate("test", "hi <names:(templateName)()>!");
         ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");

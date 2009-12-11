@@ -14,6 +14,8 @@ public class BlankST extends DebugST { // extend DebugST not just ST in case we'
     public BlankST() { code = new CompiledST(); }
     public BlankST(String template) { this(); }
 
+    public String getName() { return "blank"; }
+
     public void add(String name, Object value) { }
 
     public void rawSetAttribute(String name, Object value) { }
