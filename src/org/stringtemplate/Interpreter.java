@@ -912,11 +912,10 @@ public class Interpreter {
      *  the formal parameters up the enclosing chain to see if it exists;
      *  if it exists all is well, but if not, record an error.
      *
-     *  Don't do the check if tombu mode. (i.e., don't check if no formal
-     *  parameters exist).
+     *  Don't do the check unless debugging and only if not tombu mode.
      */
     protected void checkNullAttributeAgainstFormalArguments(ST self, String name) {
-        if ( ErrorManager.v3_mode) return; // ignore unknown args in tombu mode
+        if ( !group.debug || ErrorManager.v3_mode ) return; // ignore unknown args in tombu mode
 
         ST p = self;
         while ( p!=null ) {

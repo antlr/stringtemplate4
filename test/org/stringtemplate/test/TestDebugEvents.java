@@ -17,7 +17,7 @@ public class TestDebugEvents extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        group.setDebug(true);
+        group.debug = true;
         DebugST st = (DebugST)group.getInstanceOf("t");
         List<InterpEvent> events = st.getEvents();
         String expected =
@@ -33,7 +33,7 @@ public class TestDebugEvents extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        group.setDebug(true);
+        group.debug = true;
         DebugST st = (DebugST)group.getInstanceOf("t");
         List<InterpEvent> events = st.getEvents();
         String expected =
@@ -51,7 +51,7 @@ public class TestDebugEvents extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        group.setDebug(true);
+        group.debug = true;
         DebugST st = (DebugST)group.getInstanceOf("t");
         List<InterpEvent> events = st.getEvents();
         String expected =

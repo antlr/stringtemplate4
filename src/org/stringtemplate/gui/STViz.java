@@ -258,7 +258,7 @@ public class STViz {
         String tmpdir = System.getProperty("java.io.tmpdir");
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        group.setDebug(true);
+        group.debug = true;
         DebugST st = (DebugST)group.getInstanceOf("method");
         st.code.dump();
         st.add("type", "float");

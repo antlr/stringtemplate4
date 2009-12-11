@@ -361,6 +361,4 @@ public class STGroup {
         }
         return buf.toString();
     }
-
-    public void setDebug(boolean b) { debug = b; }
 }
