@@ -86,7 +86,7 @@ public class STLexer implements TokenSource {
         return _nextToken();
     }
 
-    public STLexer(ANTLRStringStream input) {
+    public STLexer(CharStream input) {
 		this(input, '<', '>');
     }
 

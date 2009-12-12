@@ -33,6 +33,10 @@ import org.stringtemplate.debug.DebugST;
 import org.stringtemplate.compiler.*;
 import org.stringtemplate.compiler.Compiler;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 /** A directory or directory tree of .st template files and/or group files.
@@ -306,29 +310,35 @@ public class STGroup {
 
     // TODO: make this happen in background then flip ptr to new list of templates/dictionaries?
     public void loadGroupFile(String prefix, String fileName) {
-        String absoluteFileName = fullyQualifiedRootDirName+"/"+fileName;
         //System.out.println("load group file "+absoluteFileName);
         GroupParser parser = null;
         try {
-            ANTLRFileStream fs = new ANTLRFileStream(absoluteFileName, encoding);
+            CharStream fs = openStream(fileName);
             GroupLexer lexer = new GroupLexer(fs);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             parser = new GroupParser(tokens);
             parser.group(this, prefix);
         }
-        /*
-        catch (RecognitionException re) {
-            if ( re.token.getType() == STLexer.EOF_TYPE ) {
-                ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re, "premature EOF", absoluteFileName);
-            }
-            else {
-                ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re, absoluteFileName);
-            }
-        }
-        */
         catch (Exception e) {
+            String absoluteFileName = fullyQualifiedRootDirName+"/"+fileName;
             ErrorManager.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, absoluteFileName);
         }
+    }
+
+    /** Open a fully-qualified filename or look for it in class path */
+    protected CharStream openStream(String fileName) throws IOException {
+        File f = new File(fileName);
+        if ( f.exists() ) return new ANTLRFileStream(fileName, encoding);
+
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        InputStream is = cl.getResourceAsStream(fileName);
+        if ( is==null ) {
+            cl = this.getClass().getClassLoader();
+            is = cl.getResourceAsStream(fileName);
+        }
+        if ( is==null ) {
+        }
+        return new ANTLRInputStream(is, encoding);
     }
 
     /** Register a renderer for all objects of a particular type for all

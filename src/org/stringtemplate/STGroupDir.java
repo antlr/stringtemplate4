@@ -1,13 +1,8 @@
 package org.stringtemplate;
 
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.CommonToken;
-import org.antlr.runtime.UnbufferedTokenStream;
-import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.*;
+import org.stringtemplate.compiler.*;
 import org.stringtemplate.misc.Misc;
-import org.stringtemplate.compiler.CompiledST;
-import org.stringtemplate.compiler.GroupLexer;
-import org.stringtemplate.compiler.GroupParser;
 
 import java.io.File;
 
@@ -48,7 +43,7 @@ public class STGroupDir extends STGroup {
                 loadTemplateFile(prefix, f.getName());
             }
             else if ( f.getName().endsWith(".stg") ) {
-                loadGroupFile(prefix+Misc.getFileNameNoSuffix(f.getName())+"/", prefix+f.getName());
+                loadGroupFile(prefix+Misc.getFileNameNoSuffix(f.getName())+"/", f.getAbsolutePath());
             }
         }
     }
@@ -63,7 +58,8 @@ public class STGroupDir extends STGroup {
         try {
             String templateName = Misc.getFileNameNoSuffix(fileName);
             if ( ErrorManager.v3_mode) {
-                String template = Misc.readLines(absoluteFileName);
+                CharStream fs = openStream(absoluteFileName);
+                String template = fs.toString(); // needs > ANTLR 3.2
                 template = template.trim();
                 defineTemplate(prefix,
                                new CommonToken(GroupParser.ID,templateName),
@@ -71,7 +67,7 @@ public class STGroupDir extends STGroup {
                                template);
             }
             else {
-                ANTLRFileStream fs = new ANTLRFileStream(f.toString(), encoding);
+                CharStream fs = openStream(absoluteFileName);
                 GroupLexer lexer = new GroupLexer(fs);
                 CommonTokenStream tokens = new CommonTokenStream(lexer);
                 GroupParser parser = new GroupParser(tokens);

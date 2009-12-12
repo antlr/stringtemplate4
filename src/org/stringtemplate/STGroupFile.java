@@ -2,19 +2,39 @@ package org.stringtemplate;
 
 import org.stringtemplate.misc.Misc;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 
 public class STGroupFile extends STGroup {
     public String fileName;
 
-    public STGroupFile(String fullyQualifiedFileName) {
-        if ( !fullyQualifiedFileName.endsWith(".stg") ) {
-            throw new IllegalArgumentException("Group file names must end in .stg: "+fullyQualifiedFileName);
+    /** Load a file relative to current dir or from root or via CLASSPATH. */
+    public STGroupFile(String fileName) {
+        if ( !fileName.endsWith(".stg") ) {
+            throw new IllegalArgumentException("Group file names must end in .stg: "+fileName);
         }
+        this.fileName = fileName;
+        /*
         File f = new File(fullyQualifiedFileName);
-        File absF = f.getAbsoluteFile();
-        this.fullyQualifiedRootDirName = absF.getParent();
-        this.fileName = f.getName();
+        if ( f.exists() ) {
+            File absF = f.getAbsoluteFile();
+            this.fullyQualifiedRootDirName = absF.getParent();
+            this.fileName = f.getName();
+        }
+        else {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            URL u = cl.getResource(fileName);
+            if ( u==null ) {
+                cl = this.getClass().getClassLoader();
+                u = cl.getResource(fileName);
+            }
+            if ( u==null ) {
+                throw new IllegalArgumentException("Can't find "+fullyQualifiedFileName);
+            }
+        }
+        */
     }
 
     public STGroupFile(String fullyQualifiedFileName, String encoding) {
