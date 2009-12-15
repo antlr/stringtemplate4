@@ -1,9 +1,12 @@
 package org.stringtemplate.test;
 
 import org.junit.Test;
+import org.stringtemplate.ErrorManager;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroupFile;
+import org.stringtemplate.misc.ErrorBuffer;
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
@@ -144,13 +147,13 @@ public class TestDictionaries extends BaseTest {
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
         writeFile(tmpdir, "test.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
-        ST st = group.getInstanceOf("var");
-        st.add("type", "UserRecord");
-        st.add("name", "x");
-        String expecting = "UserRecord x = ;";
-        String result = st.render();
-        assertEquals(expecting, result);
+        ErrorBuffer errors = new ErrorBuffer();
+        ErrorManager.setErrorListener(errors);
+        STGroupFile group = new STGroupFile(tmpdir+"/"+"test.stg");
+        group.load();
+        String expected = "[test.stg 1:33: missing value for key at ']']";
+        String result = errors.errors.toString();
+        assertEquals(expected, result);
     }
 
     @Test public void testDictDefaultValueIsKey() throws Exception {

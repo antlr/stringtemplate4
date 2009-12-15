@@ -37,6 +37,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 
 /** A directory or directory tree of .st template files and/or group files.
@@ -50,7 +52,7 @@ public class STGroup {
     public static final String DICT_KEY = "key";
     public static final String DEFAULT_KEY = "default";
 
-    public String fullyQualifiedRootDirName;
+    //public String fullyQualifiedRootDirName;
 
     /** Load files using what encoding? */
     public String encoding;
@@ -81,9 +83,12 @@ public class STGroup {
      */
     protected Map<Class,AttributeRenderer> renderers;
 
-    protected boolean alreadyLoaded = false;
-    
 	public static STGroup defaultGroup = new STGroup();
+
+    /** Used to indicate that the template doesn't exist.
+     *  Prevents duplicate group file loads and unnecessary file checks.
+     */
+    protected static final CompiledST NOT_FOUND_ST = new CompiledST();
 
     public boolean debug = false;    
 
@@ -117,11 +122,19 @@ public class STGroup {
     }
 
     public CompiledST lookupTemplate(String name) {
-        if ( !alreadyLoaded ) load();
+        //if ( !alreadyLoaded ) load();
         CompiledST code = templates.get(name);
+        if ( code==NOT_FOUND_ST ) return null;
+        // try to load from disk and look up again
+        if ( code==null ) code = load(name);
         if ( code==null ) code = lookupImportedTemplate(name);
+        if ( code==null ) {
+            templates.put(name, NOT_FOUND_ST);
+        }
         return code;
     }
+
+    protected CompiledST load(String name) { return null; }
 
     protected CompiledST lookupImportedTemplate(String name) {
         //System.out.println("look for "+name+" in "+imports);
@@ -306,30 +319,36 @@ public class STGroup {
         imports.add(g);
     }
 
-    public void load() { ; }
+    //public void load() { ; }
 
     // TODO: make this happen in background then flip ptr to new list of templates/dictionaries?
     public void loadGroupFile(String prefix, String fileName) {
-        //System.out.println("load group file "+absoluteFileName);
+        System.out.println("load group file prefix="+prefix+", fileName="+fileName);
         GroupParser parser = null;
         try {
-            CharStream fs = openStream(fileName);
+            URL f = new URL(fileName);
+            ANTLRInputStream fs = new ANTLRInputStream(f.openStream());
             GroupLexer lexer = new GroupLexer(fs);
+            fs.name = fileName;
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             parser = new GroupParser(tokens);
             parser.group(this, prefix);
         }
         catch (Exception e) {
-            String absoluteFileName = fullyQualifiedRootDirName+"/"+fileName;
-            ErrorManager.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, absoluteFileName);
+            ErrorManager.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, fileName);
         }
     }
 
     /** Open a fully-qualified filename or look for it in class path */
     protected CharStream openStream(String fileName) throws IOException {
-        File f = new File(fileName);
-        if ( f.exists() ) return new ANTLRFileStream(fileName, encoding);
+        String fullName = fileName;
+        System.out.println("load file "+fullName);
+        File f = new File(fullName);
+        if ( f.exists() ) return new ANTLRFileStream(fullName, encoding);
 
+        // from stream, it's relative to some dir in CLASSPATH
+        fullName = fileName;
+        System.out.println("load file "+fullName+" from CLASSPATH");
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         InputStream is = cl.getResourceAsStream(fileName);
         if ( is==null ) {
@@ -337,6 +356,7 @@ public class STGroup {
             is = cl.getResourceAsStream(fileName);
         }
         if ( is==null ) {
+            System.err.println("fix this; error");
         }
         return new ANTLRInputStream(is, encoding);
     }
@@ -374,12 +394,11 @@ public class STGroup {
     public String toString() { return getName(); }
 
     public String show() {
-        if ( !alreadyLoaded ) load();
         StringBuilder buf = new StringBuilder();
         if ( imports!=null ) buf.append(" : "+imports);
         for (String name : templates.keySet()) {
 			CompiledST c = templates.get(name);
-			if ( c.isSubtemplate ) continue;
+			if ( c.isSubtemplate || c==NOT_FOUND_ST ) continue;
             int slash = name.lastIndexOf('/');
             name = name.substring(slash+1, name.length());
             buf.append(name);

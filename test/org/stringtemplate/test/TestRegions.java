@@ -102,7 +102,7 @@ public class TestRegions extends BaseTest {
                    "@a.r() ::= <<bar>>\n"; // error; dup
         writeFile(dir, "g.stg", g);
 
-        STGroup group = new STGroupFile(dir+"/g.stg");
+        STGroupFile group = new STGroupFile(dir+"/g.stg");
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
         group.load();

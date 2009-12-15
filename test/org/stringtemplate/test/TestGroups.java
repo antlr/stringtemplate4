@@ -171,7 +171,7 @@ public class TestGroups extends BaseTest {
             "b() ::= \"bar\"\n"+
             "b() ::= \"duh\"\n";
         writeFile(dir, "group.stg", groupFile);
-        STGroup group = new STGroupFile(dir+"/group.stg");
+        STGroupFile group = new STGroupFile(dir+"/group.stg");
         group.load();
     }
 
@@ -385,5 +385,19 @@ public class TestGroups extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
         ErrorManager.v3_mode = false;
+    }
+
+    @Test public void testCantSeeGroupDirIfGroupFileOfSameName() throws Exception {
+        String dir = getRandomDir();
+        String a = "a() ::= <<dir1 a>>\n";
+        writeFile(dir, "group/a.st", a); // can't see this file
+
+        String groupFile =
+            "b() ::= \"group file b\"\n";
+        writeFile(dir, "group.stg", groupFile);
+
+        STGroup group1 = new STGroupDir(dir);
+        ST st = group1.getInstanceOf("/group/a"); // can't see
+        assertEquals(null, st);
     }
 }

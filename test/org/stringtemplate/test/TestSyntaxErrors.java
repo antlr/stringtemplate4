@@ -59,7 +59,7 @@ public class TestSyntaxErrors extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
 
 		STErrorListener errors = new ErrorBuffer();
-		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		STGroupFile group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
         String expected = "1:15: doesn't look like an expression"+newline;
@@ -74,7 +74,7 @@ public class TestSyntaxErrors extends BaseTest {
 		writeFile(tmpdir, "t.stg", templates);
 
 		ErrorBuffer errors = new ErrorBuffer();
-		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		STGroupFile group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
 		String expected = "[t.stg 1:15: \\n in string, 1:14: doesn't look like an expression]";
@@ -87,7 +87,7 @@ public class TestSyntaxErrors extends BaseTest {
             "foo() ::= \"hi <name:{[<aaa.bb!>]}> mom\"\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroup group = null;
+		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
@@ -102,7 +102,7 @@ public class TestSyntaxErrors extends BaseTest {
             "foo() ::= \"hi <name:{[<aaa.bb>]}\"\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroup group = null;
+		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
@@ -117,7 +117,7 @@ public class TestSyntaxErrors extends BaseTest {
             "foo() ::= \"hi <foo(>\"\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroup group = null;
+		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);

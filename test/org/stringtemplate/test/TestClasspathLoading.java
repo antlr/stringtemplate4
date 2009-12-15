@@ -15,7 +15,7 @@ public class TestClasspathLoading extends BaseTest {
     //public static final String tmpdir = System.getProperty("java.io.tmpdir");
     public static final String tmpdir = "/tmp";
     public static final String newline = Misc.newline;
-    public static final String dir = "st";
+    public static final String dir = "yuck";
 
     @Before public void setup() {
         writeFile(tmpdir+"/"+dir, "a.st", "a(x) ::= <<a>>\n");
@@ -31,7 +31,7 @@ public class TestClasspathLoading extends BaseTest {
     public void test() {
         STGroup group = new STGroupDir(dir);
         ST st = group.getInstanceOf("a");
-        String expected = "foo"+newline;
+        String expected = "a";
         String result = st.render();
         assertEquals(expected, result);
     }

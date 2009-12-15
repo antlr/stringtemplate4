@@ -52,8 +52,8 @@ public class STMessage {
         String msg = String.format(error.messageTemplate, arg, arg2);
         pw.print(msg);
         if ( cause!=null ) {
+            pw.print("\nCaused by: ");
             cause.printStackTrace(pw);
-            cause.printStackTrace();
         }
         return sw.toString();
     }

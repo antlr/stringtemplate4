@@ -21,11 +21,12 @@ public class ErrorManager {
             }
 
             public void IOError(STMessage msg) {
-                throw new Error("I/O error", msg.cause);
+                System.err.println(msg);
             }
 
             public void internalError(STMessage msg) {
-                throw new Error("internal error", msg.cause);
+                System.err.println(msg);
+                // throw new Error("internal error", msg.cause);
             }
 
             // TODO: put in [root ... template] stack

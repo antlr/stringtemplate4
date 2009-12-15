@@ -24,8 +24,10 @@ public enum ErrorType {
     NO_SUCH_FUNCTION("no such function: %s"),
     NO_SUCH_OPTION("no such option: %s"),
 
-    // IO ERRORS
+    // INTERNAL ERRORS
     WRITE_IO_ERROR("error writing output caused by"),
+    READ_IO_ERROR("error reading input caused by"),
+    CANT_LOAD_GROUP_DIR("can't load group dir %s"),
     CANT_LOAD_GROUP_FILE("can't load group file %s"),
     CANT_LOAD_TEMPLATE_FILE("can't load template file %s"),
     INVALID_BYTECODE("invalid bytecode %s at IP %s"),
