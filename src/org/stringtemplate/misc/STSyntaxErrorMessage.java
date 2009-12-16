@@ -1,7 +1,9 @@
-package org.stringtemplate;
+package org.stringtemplate.misc;
 
 import org.antlr.runtime.Token;
 import org.antlr.runtime.RecognitionException;
+import org.stringtemplate.misc.ErrorType;
+import org.stringtemplate.misc.STMessage;
 
 public class STSyntaxErrorMessage extends STMessage {
     String msg;

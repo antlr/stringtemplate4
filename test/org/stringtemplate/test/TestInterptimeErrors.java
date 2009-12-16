@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.STGroupFile;
 import org.stringtemplate.ST;
-import org.stringtemplate.ErrorManager;
+import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.misc.ErrorBuffer;
 

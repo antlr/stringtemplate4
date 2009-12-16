@@ -6,6 +6,9 @@ import org.stringtemplate.*;
 import org.stringtemplate.misc.ErrorBuffer;
 import org.stringtemplate.compiler.STException;
 import org.antlr.runtime.RecognitionException;
+import org.stringtemplate.misc.ErrorManager;
+import org.stringtemplate.misc.ErrorType;
+import org.stringtemplate.misc.STSyntaxErrorMessage;
 
 public class TestSyntaxErrors extends BaseTest {
     @Test public void testEmptyExpr() throws Exception {

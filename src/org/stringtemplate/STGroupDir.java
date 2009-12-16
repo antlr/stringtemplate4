@@ -2,6 +2,8 @@ package org.stringtemplate;
 
 import org.antlr.runtime.*;
 import org.stringtemplate.compiler.*;
+import org.stringtemplate.misc.ErrorManager;
+import org.stringtemplate.misc.ErrorType;
 import org.stringtemplate.misc.Misc;
 
 import java.io.File;
@@ -9,8 +11,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 // TODO: caching?

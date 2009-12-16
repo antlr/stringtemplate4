@@ -3,8 +3,7 @@ package org.stringtemplate.test;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.*;
-import org.stringtemplate.compiler.*;
-import org.stringtemplate.compiler.Compiler;
+import org.stringtemplate.misc.ErrorManager;
 
 public class TestGroups extends BaseTest {
     @Test public void testSimpleGroup() throws Exception {

@@ -1,7 +1,7 @@
 package org.stringtemplate.misc;
 
 import org.stringtemplate.STErrorListener;
-import org.stringtemplate.STMessage;
+import org.stringtemplate.misc.STMessage;
 import java.util.List;
 import java.util.ArrayList;
 

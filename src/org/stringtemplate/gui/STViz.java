@@ -5,8 +5,7 @@ import org.stringtemplate.debug.InterpEvent;
 import org.stringtemplate.debug.AddAttributeEvent;
 import org.stringtemplate.debug.EvalTemplateEvent;
 import org.stringtemplate.debug.DebugST;
-import org.stringtemplate.misc.Misc;
-import org.stringtemplate.misc.Interval;
+import org.stringtemplate.misc.*;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -17,8 +16,6 @@ import javax.swing.text.JTextComponent;
 import javax.swing.event.*;
 import java.io.*;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.awt.*;
 

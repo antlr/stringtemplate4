@@ -1,7 +1,7 @@
 package org.stringtemplate.test;
 
 import org.junit.Test;
-import org.stringtemplate.ErrorManager;
+import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroupFile;

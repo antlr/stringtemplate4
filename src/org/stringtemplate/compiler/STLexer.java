@@ -2,8 +2,8 @@ package org.stringtemplate.compiler;
 
 import org.antlr.runtime.*;
 import org.stringtemplate.misc.Misc;
-import org.stringtemplate.ErrorManager;
-import org.stringtemplate.ErrorType;
+import org.stringtemplate.misc.ErrorManager;
+import org.stringtemplate.misc.ErrorType;
 
 import java.util.ArrayList;
 import java.util.List;

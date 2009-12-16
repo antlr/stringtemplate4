@@ -28,9 +28,9 @@
 package org.stringtemplate;
 
 import org.stringtemplate.compiler.*;
-import org.stringtemplate.compiler.Compiler;
 import org.stringtemplate.misc.BlankST;
-import org.stringtemplate.misc.Misc;
+import org.stringtemplate.misc.ErrorManager;
+import org.stringtemplate.misc.ErrorType;
 
 import java.util.*;
 import java.io.StringWriter;

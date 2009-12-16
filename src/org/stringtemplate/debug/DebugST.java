@@ -1,5 +1,6 @@
 package org.stringtemplate.debug;
 
+import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.misc.MultiMap;
 import org.stringtemplate.misc.ErrorBuffer;
 import org.stringtemplate.*;

@@ -27,6 +27,8 @@
 */
 package org.stringtemplate;
 
+import org.stringtemplate.misc.ErrorManager;
+import org.stringtemplate.misc.ErrorType;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.misc.ArrayIterator;
 import org.stringtemplate.debug.InterpEvent;

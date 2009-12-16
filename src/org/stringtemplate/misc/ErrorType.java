@@ -1,4 +1,4 @@
-package org.stringtemplate;
+package org.stringtemplate.misc;
 
 public enum ErrorType {      
     // RUNTIME SEMANTIC ERRORS

@@ -1,13 +1,11 @@
 package org.stringtemplate.test;
 
 import org.junit.Test;
-import org.junit.Before;
+
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
-import org.stringtemplate.ErrorManager;
 import org.stringtemplate.STGroupFile;
-import org.stringtemplate.compiler.*;
 
 import java.util.ArrayList;
 

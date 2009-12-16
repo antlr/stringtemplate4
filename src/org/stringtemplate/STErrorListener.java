@@ -1,5 +1,7 @@
 package org.stringtemplate;
 
+import org.stringtemplate.misc.STMessage;
+
 /** How to handle messages */
 public interface STErrorListener {
     public void compileTimeError(STMessage msg);

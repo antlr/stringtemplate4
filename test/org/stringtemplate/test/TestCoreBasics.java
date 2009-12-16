@@ -29,13 +29,13 @@ package org.stringtemplate.test;
 
 import org.antlr.runtime.CommonToken;
 import org.junit.Test;
-import org.junit.Before;
+
 import static org.junit.Assert.*;
 import org.stringtemplate.*;
 import org.stringtemplate.compiler.FormalArgument;
 import org.stringtemplate.compiler.GroupParser;
 import org.stringtemplate.misc.ErrorBuffer;
-import org.stringtemplate.misc.Misc;
+import org.stringtemplate.misc.ErrorManager;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

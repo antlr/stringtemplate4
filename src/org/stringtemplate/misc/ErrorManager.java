@@ -1,7 +1,13 @@
-package org.stringtemplate;
+package org.stringtemplate.misc;
 
 import org.antlr.runtime.Token;
 import org.antlr.runtime.RecognitionException;
+import org.stringtemplate.ST;
+import org.stringtemplate.STErrorListener;
+import org.stringtemplate.misc.STCompiletimeMessage;
+import org.stringtemplate.misc.STMessage;
+import org.stringtemplate.misc.STRuntimeMessage;
+import org.stringtemplate.misc.STSyntaxErrorMessage;
 
 /** Track errors per thread; e.g., one server transaction's errors
  *  will go in one grouping since each has it's own thread.

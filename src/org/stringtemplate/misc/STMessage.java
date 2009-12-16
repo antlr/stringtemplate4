@@ -1,6 +1,8 @@
-package org.stringtemplate;
+package org.stringtemplate.misc;
 
 import org.antlr.runtime.Token;
+import org.stringtemplate.misc.ErrorType;
+import org.stringtemplate.ST;
 
 import java.io.StringWriter;
 import java.io.PrintWriter;

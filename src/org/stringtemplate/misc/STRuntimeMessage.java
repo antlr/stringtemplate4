@@ -1,11 +1,11 @@
-package org.stringtemplate;
+package org.stringtemplate.misc;
 
+import org.stringtemplate.misc.ErrorType;
+import org.stringtemplate.ST;
 import org.stringtemplate.misc.Interval;
 import org.stringtemplate.misc.Coordinate;
 import org.stringtemplate.misc.Misc;
-
-import java.io.StringWriter;
-import java.io.PrintWriter;
+import org.stringtemplate.misc.STMessage;
 
 public class STRuntimeMessage extends STMessage {
     /** Where error occurred in bytecode memory */

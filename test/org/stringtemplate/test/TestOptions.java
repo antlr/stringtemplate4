@@ -3,7 +3,7 @@ package org.stringtemplate.test;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-import org.stringtemplate.ErrorManager;
+import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.ST;
 import org.stringtemplate.STGroup;
 import org.stringtemplate.misc.ErrorBuffer;

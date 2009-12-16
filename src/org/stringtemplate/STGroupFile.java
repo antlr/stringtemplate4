@@ -1,11 +1,10 @@
 package org.stringtemplate;
 
 import org.stringtemplate.compiler.CompiledST;
+import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.misc.Misc;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
 import java.net.URL;
 
 public class STGroupFile extends STGroup {

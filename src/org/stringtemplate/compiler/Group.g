@@ -43,6 +43,7 @@ import java.io.File;
 @lexer::header {
 package org.stringtemplate.compiler;
 import org.stringtemplate.*;
+import org.stringtemplate.misc.*;
 import java.io.File;
 }
 
