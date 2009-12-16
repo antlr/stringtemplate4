@@ -1,5 +1,6 @@
 package org.stringtemplate;
 
+import java.net.URLEncoder;
 import java.util.*;
 
 public class StringRenderer implements AttributeRenderer {
@@ -13,11 +14,44 @@ public class StringRenderer implements AttributeRenderer {
             return Character.toUpperCase(s.charAt(0))+s.substring(1);
         }
         if ( formatString.equals("url-encode") ) {
-            return s; // TODO: impl
+            return URLEncoder.encode(s);
         }
         if ( formatString.equals("xml-encode") ) {
-            return s; // TODO: impl
+            return escapeHTML(s); // TODO: impl
         }
         return String.format(formatString, s);
+    }
+
+    public static String escapeHTML(String s) {
+        if ( s==null ) {
+            return null;
+        }
+        StringBuilder buf = new StringBuilder( s.length() );
+        int len = s.length();
+        for (int i=0; i<len; i++) {
+            char c = s.charAt(i);
+            switch ( c ) {
+                case '&' :
+                    buf.append("&amp;");
+                    break;
+                case '<' :
+                    buf.append("&lt;");
+                    break;
+                case '>' :
+                    buf.append("&gt;");
+                    break;
+                case '\r':
+                case '\n':
+                case '\t':
+                    buf.append(c);
+                    break;
+                default:
+                    boolean control = c < ' '; // 32
+                    boolean aboveASCII = c > 126;
+                    if ( control || aboveASCII ) buf.append("&#"+(int)c+";");
+                    else buf.append(c);
+            }
+        }
+        return buf.toString();
     }
 }
