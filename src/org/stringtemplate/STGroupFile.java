@@ -38,7 +38,7 @@ public class STGroupFile extends STGroup {
             }
         }
         catch (Exception e) {
-            ErrorManager.internalError(null, ErrorType.CANT_LOAD_GROUP_DIR, e, fileName);
+            ErrorManager.internalError(null, "can't load group file "+fileName, e);
         }
         this.fileName = fileName;
     }
@@ -63,7 +63,6 @@ public class STGroupFile extends STGroup {
         alreadyLoaded = true;
     }
 
-    @Override
     public String show() {
         if ( !alreadyLoaded ) load();
         return super.show();

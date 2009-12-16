@@ -105,15 +105,7 @@ public class ErrorManager {
         listener.get().IOError(new STMessage(error, self, e, arg));
     }
 
-    public static void internalError(ST self, ErrorType error, Throwable e) {
-        listener.get().internalError(new STMessage(error, self, e));
-    }
-
-    public static void internalError(ST self, ErrorType error, Throwable e, Object arg) {
-        listener.get().internalError(new STMessage(error, self, e, arg));
-    }
-
-    public static void internalError(ST self, ErrorType error, Throwable e, Object arg, Object arg2) {
-        listener.get().internalError(new STMessage(error, self, e, arg, arg2));
+    public static void internalError(ST self, String msg, Throwable e) {
+        listener.get().internalError(new STMessage(ErrorType.INTERNAL_ERROR, self, e, msg));
     }
 }

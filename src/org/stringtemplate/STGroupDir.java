@@ -41,10 +41,10 @@ public class STGroupDir extends STGroup {
             }
         }
         catch (Exception e) {
-            ErrorManager.internalError(null, ErrorType.CANT_LOAD_GROUP_DIR, e, dirName);
+            ErrorManager.internalError(null, "can't load group dir "+dirName, e);
         }
 
-        System.out.println("STGroupDir("+dirName+") found as "+root);
+        //System.out.println("STGroupDir("+dirName+") found as "+root);
     }
 
     public STGroupDir(String fullyQualifiedRootDirName, String encoding) {
@@ -73,7 +73,7 @@ public class STGroupDir extends STGroup {
             groupFileURL = new URL(root+parent+".stg");
         }
         catch (MalformedURLException e) {
-            ErrorManager.internalError(null, ErrorType.READ_IO_ERROR, e, root+parent+".stg");
+            ErrorManager.internalError(null, "bad URL: "+root+parent+".stg", e);
         }
         InputStream is = null;
         try {
@@ -84,31 +84,24 @@ public class STGroupDir extends STGroup {
             return loadTemplateFile(name+".st"); // load /prefix/t.st file
         }
         catch (IOException ioe) {
-            ErrorManager.internalError(null, ErrorType.READ_IO_ERROR, ioe, name);
+            ErrorManager.internalError(null, "can't load template file "+name, ioe);
         }
         try { // clean up
             is.close();
         }
         catch (IOException ioe) {
-            ErrorManager.internalError(null, ErrorType.READ_IO_ERROR, ioe, name);
+            ErrorManager.internalError(null, "can't close template file stream "+name, ioe);
         }
         loadGroupFile(prefix, root+parent+".stg");
         return templates.get(name);
     }
 
     public CompiledST loadTemplateFile(String fileName) {
-        System.out.println("load "+fileName+" from "+root);
+        //System.out.println("load "+fileName+" from "+root);
         String prefix = new File(fileName).getParent();
         if ( !prefix.endsWith("/") ) prefix += "/";
-        /*
-        File f = new File(absoluteFileName);
-        if ( !f.exists() ) { // TODO: add tolerance check here
-            return null;
-        }
-         */
         try {
             String templateName = Misc.getFileNameNoSuffix(fileName);
-            //String fullName = prefix+"/"+fileName;
             URL f = new URL(root+fileName);
             CharStream fs = new ANTLRInputStream(f.openStream());
             if ( ErrorManager.v3_mode) {
@@ -135,98 +128,6 @@ public class STGroupDir extends STGroup {
         }
         return null;
     }
-
-    public void _load(String prefix) {
-        /*
-        String fullName = ;
-        File dir = null;
-        if ( fullyQualifiedRootDirName!=null ) {
-            fullName = fullyQualifiedRootDirName+"/"+prefix;
-            dir = new File(fullName);
-        }
-        else {
-            if ( prefix.equals("/") ) fullName = groupDirName;
-            else fullName = prefix+"/"+groupDirName;
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            URL url = cl.getResource(fullName);
-            if ( url==null ) {
-                cl = this.getClass().getClassLoader();
-                url = cl.getResource(fullName);
-            }
-            if ( url==null ) {
-                throw new IllegalArgumentException("No such directory: "+
-                                                   url);
-            }
-            try {
-            dir = new File(url.toURI());
-            }
-            catch (URISyntaxException e) {
-                System.err.println("fix this; bad url: "+e.getMessage());
-            }
-        }
-         */
-        File dir = null;
-        try {
-            dir = new File(new URL(root, prefix).toExternalForm());
-        }
-        catch (MalformedURLException e) {
-
-        }
-        System.out.println("get files in "+dir);
-        File[] filesAndDirs = dir.listFiles();
-        if ( filesAndDirs==null ) return;
-        for (File f : filesAndDirs) {
-            if ( f.isDirectory() ) _load(prefix+f.getName()+"/");
-            // otherwise, load template or group file
-            if ( f.getName().endsWith(".st") ) {
-                loadTemplateFile(prefix, f.getName());
-            }
-            else if ( f.getName().endsWith(".stg") ) {
-                String fullName = prefix+"/"+f.getName();
-                loadGroupFile(prefix+Misc.getFileNameNoSuffix(f.getName())+"/", fullName);
-            }
-        }
-    }
-
-    public CompiledST loadTemplateFile(String prefix, String fileName) { // load from disk
-        String absoluteFileName = root + prefix + "/" + fileName;
-        System.out.println("load "+absoluteFileName);
-        /*
-        File f = new File(absoluteFileName);
-        if ( !f.exists() ) { // TODO: add tolerance check here
-            return null;
-        }
-         */
-        try {
-            String templateName = Misc.getFileNameNoSuffix(fileName);
-            String fullName = prefix+"/"+fileName;
-            if ( ErrorManager.v3_mode) {
-                CharStream fs = openStream(fullName);
-                String template = fs.toString(); // needs > ANTLR 3.2
-                template = template.trim();
-                defineTemplate(prefix,
-                               new CommonToken(GroupParser.ID,templateName),
-                               null,
-                               template);
-            }
-            else {
-                URL f = new URL(new URL(root, prefix), fileName);
-                CharStream fs = new ANTLRInputStream(f.openStream());
-                //CharStream fs = openStream(fullName);
-                GroupLexer lexer = new GroupLexer(fs);
-                CommonTokenStream tokens = new CommonTokenStream(lexer);
-                GroupParser parser = new GroupParser(tokens);
-                parser.group = this;
-                parser.templateDef(prefix);
-            }
-            return templates.get("/"+prefix+templateName);
-        }
-        catch (Exception e) {
-            ErrorManager.IOError(null, ErrorType.CANT_LOAD_TEMPLATE_FILE, e, absoluteFileName);
-            e.printStackTrace(System.err);
-        }
-        return null;
-    }    
 
     public String getName() { return groupDirName; }
 }

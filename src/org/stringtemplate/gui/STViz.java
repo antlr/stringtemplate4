@@ -181,7 +181,7 @@ public class STViz {
 			highlighter.addHighlight(i, j+1, DefaultHighlighter.DefaultPainter);
 		}
 		catch (BadLocationException ble) {
-			ErrorManager.internalError(tmodel.root.st, ErrorType.GUI_ERROR, ble);
+			ErrorManager.internalError(tmodel.root.st, "bad highligh location", ble);
 		}
 	}
 

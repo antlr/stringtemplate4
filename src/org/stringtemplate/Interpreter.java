@@ -336,7 +336,7 @@ public class Interpreter {
                 sp--; // throw away top of stack
                 break;
             default :
-                ErrorManager.internalError(self, ErrorType.INVALID_BYTECODE, null, opcode, ip-1);
+                ErrorManager.internalError(self, "invalid bytecode @ "+(ip-1)+": "+opcode, null);
                 self.code.dump();
             }
             prevOpcode = opcode;            

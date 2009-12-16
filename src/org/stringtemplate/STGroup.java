@@ -33,11 +33,6 @@ import org.stringtemplate.debug.DebugST;
 import org.stringtemplate.compiler.*;
 import org.stringtemplate.compiler.Compiler;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.util.*;
 
@@ -122,7 +117,6 @@ public class STGroup {
     }
 
     public CompiledST lookupTemplate(String name) {
-        //if ( !alreadyLoaded ) load();
         CompiledST code = templates.get(name);
         if ( code==NOT_FOUND_ST ) return null;
         // try to load from disk and look up again
@@ -154,32 +148,6 @@ public class STGroup {
         return defineTemplate("/", new CommonToken(GroupParser.ID,name),
                               FormalArgument.UNKNOWN, template);
     }
-
-/*
-    public CompiledST defineTemplate(String name,
-                                     List<String> args,
-                                     String template)
-    {
-        LinkedHashMap<String,FormalArgument> margs = null;
-        if ( args!=null ) {
-            margs = new LinkedHashMap<String,FormalArgument>();
-            for (String a : args) margs.put(a, new FormalArgument(a));
-        }
-        return defineTemplate("/", name, margs, template);
-    }
-
-    public CompiledST defineTemplate(Token nameT,
-                                     String[] args,
-                                     String template)
-    {
-        LinkedHashMap<String,FormalArgument> margs = null;
-        if ( args!=null ) {
-            margs = new LinkedHashMap<String,FormalArgument>();
-            for (String a : args) margs.put(a, new FormalArgument(a));
-        }
-        return defineTemplate("/", nameT, margs, template);
-    }
-     */
 
 	// can't trap recog errors here; don't know where in file template is defined
     public CompiledST defineTemplate(String prefix,
@@ -319,11 +287,9 @@ public class STGroup {
         imports.add(g);
     }
 
-    //public void load() { ; }
-
     // TODO: make this happen in background then flip ptr to new list of templates/dictionaries?
     public void loadGroupFile(String prefix, String fileName) {
-        System.out.println("load group file prefix="+prefix+", fileName="+fileName);
+        //System.out.println("load group file prefix="+prefix+", fileName="+fileName);
         GroupParser parser = null;
         try {
             URL f = new URL(fileName);
@@ -337,28 +303,6 @@ public class STGroup {
         catch (Exception e) {
             ErrorManager.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, fileName);
         }
-    }
-
-    /** Open a fully-qualified filename or look for it in class path */
-    protected CharStream openStream(String fileName) throws IOException {
-        String fullName = fileName;
-        System.out.println("load file "+fullName);
-        File f = new File(fullName);
-        if ( f.exists() ) return new ANTLRFileStream(fullName, encoding);
-
-        // from stream, it's relative to some dir in CLASSPATH
-        fullName = fileName;
-        System.out.println("load file "+fullName+" from CLASSPATH");
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        InputStream is = cl.getResourceAsStream(fileName);
-        if ( is==null ) {
-            cl = this.getClass().getClassLoader();
-            is = cl.getResourceAsStream(fileName);
-        }
-        if ( is==null ) {
-            System.err.println("fix this; error");
-        }
-        return new ANTLRInputStream(is, encoding);
     }
 
     /** Register a renderer for all objects of a particular type for all
