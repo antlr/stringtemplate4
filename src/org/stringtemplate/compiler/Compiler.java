@@ -41,14 +41,14 @@ public class Compiler implements CodeGenerator {
     public static final double CODE_SIZE_FACTOR = 5.0;
     public static final int SUBTEMPLATE_INITIAL_CODE_SIZE = 15;
 
-    public static final Map<String, Integer> supportedOptions =
-        new HashMap<String, Integer>() {
+    public static final Map<String, Interpreter.Option> supportedOptions =
+        new HashMap<String, Interpreter.Option>() {
             {
-                put("anchor",       Interpreter.OPTION_ANCHOR);
-                put("format",       Interpreter.OPTION_FORMAT);
-                put("null",         Interpreter.OPTION_NULL);
-                put("separator",    Interpreter.OPTION_SEPARATOR);
-                put("wrap",         Interpreter.OPTION_WRAP);
+                put("anchor",       Interpreter.Option.ANCHOR);
+                put("format",       Interpreter.Option.FORMAT);
+                put("null",         Interpreter.Option.NULL);
+                put("separator",    Interpreter.Option.SEPARATOR);
+                put("wrap",         Interpreter.Option.WRAP);
             }
         };
 

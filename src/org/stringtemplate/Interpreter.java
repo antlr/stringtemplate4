@@ -44,12 +44,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 
 public class Interpreter {
-    // TODO: enum?
-    public static final int OPTION_ANCHOR       = 0;
-    public static final int OPTION_FORMAT       = 1;
-    public static final int OPTION_NULL         = 2;
-    public static final int OPTION_SEPARATOR    = 3;
-    public static final int OPTION_WRAP         = 4;
+    public enum Option { ANCHOR, FORMAT, NULL, SEPARATOR, WRAP }
 
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
@@ -380,13 +375,13 @@ public class Interpreter {
                 optionStrings[i] = toString(self, options[i]);
             }
         }
-        if ( options!=null && options[OPTION_ANCHOR]!=null ) {
+        if ( options!=null && options[Option.ANCHOR.ordinal()]!=null ) {
             out.pushAnchorPoint();
         }
 
         int n = writeObject(out, self, o, optionStrings);
         
-        if ( options!=null && options[OPTION_ANCHOR]!=null ) {
+        if ( options!=null && options[Option.ANCHOR.ordinal()]!=null ) {
             out.popAnchorPoint();
         }
 /*
@@ -402,19 +397,19 @@ public class Interpreter {
     protected int writeObject(STWriter out, ST self, Object o, String[] options) {
         int n = 0;
         if ( o == null ) {
-            if ( options!=null && options[OPTION_NULL]!=null ) {
-                o = options[OPTION_NULL];
+            if ( options!=null && options[Option.NULL.ordinal()]!=null ) {
+                o = options[Option.NULL.ordinal()];
             }
             else return 0;
         }
         if ( o instanceof ST ) {
             ((ST)o).enclosingInstance = self;
             setDefaultArguments((ST)o);
-            if ( options!=null && options[OPTION_WRAP]!=null ) {
+            if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
                 // if we have a wrap string, then inform writer it
                 // might need to wrap
                 try {
-                    out.writeWrap(options[OPTION_WRAP]);
+                    out.writeWrap(options[Option.WRAP.ordinal()]);
                 }
                 catch (IOException ioe) {
                     ErrorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
@@ -440,7 +435,7 @@ public class Interpreter {
         int n = 0;
         Iterator it = (Iterator)o;
         String separator = null;
-        if ( options!=null ) separator = options[OPTION_SEPARATOR];
+        if ( options!=null ) separator = options[Option.SEPARATOR.ordinal()];
         boolean seenAValue = false;
         while ( it.hasNext() ) {
             Object iterValue = it.next();
@@ -448,7 +443,7 @@ public class Interpreter {
             boolean needSeparator = seenAValue &&
                 separator!=null &&            // we have a separator and
                 (iterValue!=null ||           // either we have a value
-                 options[OPTION_NULL]!=null); // or no value but null option
+                 options[Option.NULL.ordinal()]!=null); // or no value but null option
             if ( needSeparator ) n += out.writeSeparator(separator);
             int nw = writeObject(out, self, iterValue, options);
             if ( nw > 0 ) seenAValue = true;
@@ -459,14 +454,14 @@ public class Interpreter {
 
     protected int writePOJO(STWriter out, Object o, String[] options) throws IOException {
         String formatString = null;
-        if ( options!=null ) formatString = options[OPTION_FORMAT];
+        if ( options!=null ) formatString = options[Option.FORMAT.ordinal()];
         AttributeRenderer r = group.getAttributeRenderer(o.getClass());
         String v = null;
         if ( r!=null ) v = r.toString(o, formatString, locale);
         else v = o.toString();
         int n = 0;
-        if ( options!=null && options[OPTION_WRAP]!=null ) {
-            n = out.write(v, options[OPTION_WRAP]);
+        if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
+            n = out.write(v, options[Option.WRAP.ordinal()]);
         }
         else {
             n = out.write(v);
