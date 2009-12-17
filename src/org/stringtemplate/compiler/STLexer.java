@@ -33,8 +33,7 @@ public class STLexer implements TokenSource {
 
     public static final Token SKIP = new STToken(-1, "<skip>");
 
-    // TODO: enum?
-    // pasted from STParser
+    // must follow STLexer.tokens file that STParser.g loads
     public static final int RBRACK=17;
     public static final int LBRACK=16;
     public static final int ELSE=5;
@@ -50,7 +49,6 @@ public class STLexer implements TokenSource {
     public static final int ELSEIF=6;
     public static final int COLON=13;
     public static final int RPAREN=15;
-    public static final int WS=27;
     public static final int COMMA=18;
     public static final int RCURLY=21;
     public static final int ENDIF=7;
