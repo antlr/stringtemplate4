@@ -30,18 +30,23 @@ package org.stringtemplate.compiler;
 public class Bytecode {
     public static final int MAX_OPNDS = 3;
     public static final int OPND_SIZE_IN_BYTES = 2;
-    public static final int STRING = 1;
-    public static final int ADDR   = 2;
-    public static final int INT    = 3;
+
+    public enum OperandType { NONE, STRING, ADDR, INT }
 
     public static class Instruction {
         String name; // E.g., "load_str", "new"
-        int[] type = new int[MAX_OPNDS];
+        OperandType[] type = new OperandType[MAX_OPNDS];
         int n = 0;
-        public Instruction(String name) { this(name,0,0,0); n=0; }
-        public Instruction(String name, int a) { this(name,a,0,0); n=1; }
-        public Instruction(String name, int a, int b) { this(name,a,b,0); n=2; }
-        public Instruction(String name, int a, int b, int c) {
+        public Instruction(String name) {
+            this(name,OperandType.NONE,OperandType.NONE,OperandType.NONE); n=0;
+        }
+        public Instruction(String name, OperandType a) {
+            this(name,a,OperandType.NONE,OperandType.NONE); n=1;
+        }
+        public Instruction(String name, OperandType a, OperandType b) {
+            this(name,a,b,OperandType.NONE); n=2;
+        }
+        public Instruction(String name, OperandType a, OperandType b, OperandType c) {
             this.name = name;
             type[0] = a;
             type[1] = b;
@@ -50,7 +55,8 @@ public class Bytecode {
         }
     }
 
-    // TODO: try an enum here
+    // don't use enum for efficiency; don't want CompiledST.instrs to
+    // be an array of objects (Bytecode[]). We want it to be byte[].
 
     // INSTRUCTION BYTECODES (byte is signed; use a short to keep 0..255)
     public static final short INSTR_LOAD_STR        = 1;
@@ -103,25 +109,25 @@ public class Bytecode {
     // START: instr
     public static Instruction[] instructions = new Instruction[] {
         null, // <INVALID>
-        new Instruction("load_str",STRING), // index is the opcode
-        new Instruction("load_attr",STRING),
-        new Instruction("load_local",STRING),
-        new Instruction("load_prop",STRING),
+        new Instruction("load_str",OperandType.STRING), // index is the opcode
+        new Instruction("load_attr",OperandType.STRING),
+        new Instruction("load_local",OperandType.STRING),
+        new Instruction("load_prop",OperandType.STRING),
         new Instruction("load_prop_ind"),
-        new Instruction("store_attr",STRING),
+        new Instruction("store_attr",OperandType.STRING),
         new Instruction("store_sole_arg"),
         new Instruction("set_pass_thru"),
-        new Instruction("store_option",INT),
-        new Instruction("new",STRING),
+        new Instruction("store_option",OperandType.INT),
+        new Instruction("new",OperandType.STRING),
         new Instruction("new_ind"),
-        new Instruction("super_new",STRING),
+        new Instruction("super_new",OperandType.STRING),
         new Instruction("write"),
 		new Instruction("write_opt"),
         new Instruction("map"),
-        new Instruction("rot_map", INT),
-        new Instruction("par_map", INT),
-        new Instruction("br", ADDR),
-        new Instruction("brf", ADDR),
+        new Instruction("rot_map", OperandType.INT),
+        new Instruction("par_map", OperandType.INT),
+        new Instruction("br", OperandType.ADDR),
+        new Instruction("brf", OperandType.ADDR),
         new Instruction("options"),
         new Instruction("list"),
         new Instruction("add"),
@@ -138,7 +144,7 @@ public class Bytecode {
 		new Instruction("not"),
 		new Instruction("or"),
 		new Instruction("and"),
-		new Instruction("indent", STRING),
+		new Instruction("indent", OperandType.STRING),
         new Instruction("dedent"),
         new Instruction("newline"),
         new Instruction("noop"),

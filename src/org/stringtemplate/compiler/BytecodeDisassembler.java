@@ -89,11 +89,11 @@ public class BytecodeDisassembler {
             int opnd = getShort(code.instrs, ip);
             ip += Bytecode.OPND_SIZE_IN_BYTES;
             switch ( I.type[i] ) {
-                case Bytecode.STRING :
+                case STRING :
                     operands.add(showConstPoolOperand(opnd));
                     break;
-                case Bytecode.ADDR :
-                case Bytecode.INT :
+                case ADDR :
+                case INT :
                     operands.add(String.valueOf(opnd));
                     break;
                 default:
