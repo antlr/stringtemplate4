@@ -9,7 +9,7 @@ public class EvalExprEvent extends InterpEvent {
         super(self, start, stop);
         this.exprStart = exprStart;
         this.exprStop = exprStop;
-        expr = self.code.template.substring(exprStart, exprStop+1);
+        expr = self.impl.template.substring(exprStart, exprStop+1);
     }
 
     @Override

@@ -55,6 +55,7 @@ public static final CodeGenerator NOOP_GEN = new CodeGenerator() {
 	public void emit(short opcode, String s) {;}
 	public void emit(short opcode, String s, int p, int q) {;}
     public void emit(short opcode, int arg1, int arg2, int p, int q) {;}
+    public void insert(int addr, short opcode, String s) {;}
     public void write(int addr, short value) {;}
 	public int address() { return 0; }
     public String templateReferencePrefix() { return null; }
@@ -110,14 +111,14 @@ public String prefixedName(String t) {
     }
 
     public void setOption(CommonToken id) {
-        Integer I = Compiler.supportedOptions.get(id.getText());
-        if ( I==null ) {
+        Interpreter.Option O = Compiler.supportedOptions.get(id.getText());
+        if ( O==null ) {
             ErrorManager.compileTimeError(ErrorType.NO_SUCH_OPTION, id);
 	        gen.emit(Bytecode.INSTR_POP,
 	                 id.getStartIndex(), id.getStopIndex());
             return;
         }
-        gen.emit(Bytecode.INSTR_STORE_OPTION, I,
+        gen.emit(Bytecode.INSTR_STORE_OPTION, O.ordinal(),
                  id.getStartIndex(), id.getStopIndex());
     }
 
@@ -167,13 +168,20 @@ template
 	;
 
 element
-	:	(// TODO: remove backtracking
-			options {backtrack=true; k=2;}
-		:	i=INDENT         {indent($i.text);}
-			ifOnOneLine      {gen.emit(Bytecode.INSTR_DEDENT);}
-		|	i=INDENT ifOnMultiLines
-		)
-	|	ifOnMultiLines
+	:	i=INDENT {int start_address = gen.address();}
+		ifstat
+		// kill \n for <endif> on line by itself if multi-line IF
+		( {$i.line!=input.LT(1).getLine()}? NEWLINE )?
+		{
+		if ( $i.line == input.LT(1).getLine() ) { // need INDENT for IF on one line
+			gen.insert(start_address, Bytecode.INSTR_INDENT, $i.text);
+			gen.emit(Bytecode.INSTR_DEDENT);
+		}
+		}
+
+	|	ifstat
+		( {$i.line!=input.LT(1).getLine()}? NEWLINE )?
+
 	|	i=INDENT       	 {indent($i.text);}
 		exprTag          {gen.emit(Bytecode.INSTR_DEDENT);}
 	|	exprTag
@@ -251,7 +259,7 @@ subtemplate returns [String name]
  */
 addTemplateEndTokensToFollowOfTemplateRule : template ('}'|LDELIM '@end') ;
 
-ifOnMultiLines
+ifstat
 @init {
     /** Tracks address of branch operand (in code block).  It's how
      *  we backpatch forward references when generating code for IFs.
@@ -294,59 +302,7 @@ ifOnMultiLines
 			template
 		)?
 		INDENT? endif=LDELIM 'endif' RDELIM
-		( {true}? NEWLINE )? // kill \on for <endif> on line by itself
-		{
-		if ( prevBranchOperand>=0 ) {
-			gen.write(prevBranchOperand, (short)gen.address());
-		}
-        for (int opnd : endRefs) gen.write(opnd, (short)gen.address());
-		}
-	;
-
-// TODO: code dup but need to call elementsForIfOnOneLine not template inside :(
-ifOnOneLine
-@init {
-    /** Tracks address of branch operand (in code block).  It's how
-     *  we backpatch forward references when generating code for IFs.
-     */
-    int prevBranchOperand = -1;
-    /** Branch instruction operands that are forward refs to end of IF.
-     *  We need to update them once we see the endif.
-     */
-    List<Integer> endRefs = new ArrayList<Integer>();
-}
-	:	LDELIM 'if' '(' conditional ')' RDELIM
-		{
-        prevBranchOperand = gen.address()+1;
-        gen.emit(Bytecode.INSTR_BRF, -1); // write placeholder as branch target
-		}
-		elementsForIfOnOneLine*
-		(	LDELIM 'elseif'
-			{
-			endRefs.add(gen.address()+1);
-			gen.emit(Bytecode.INSTR_BR, -1); // br end
-			// update previous branch instruction
-			gen.write(prevBranchOperand, (short)gen.address());
-			prevBranchOperand = -1;
-			}
-			'(' conditional ')' RDELIM
-			{
-        	prevBranchOperand = gen.address()+1;
-        	gen.emit(Bytecode.INSTR_BRF, -1); // write placeholder as branch target
-			}
-			elementsForIfOnOneLine*
-		)*
-		(	LDELIM 'else' RDELIM
-			{
-			endRefs.add(gen.address()+1);
-			gen.emit(Bytecode.INSTR_BR, -1); // br end
-			// update previous branch instruction
-			gen.write(prevBranchOperand, (short)gen.address());
-			prevBranchOperand = -1;
-			}
-			elementsForIfOnOneLine*
-		)?
-		endif=LDELIM 'endif' RDELIM
+		//( {true}? NEWLINE )? // kill \on for <endif> on line by itself
 		{
 		if ( prevBranchOperand>=0 ) {
 			gen.write(prevBranchOperand, (short)gen.address());
@@ -355,12 +311,6 @@ ifOnOneLine
 		}
 	;
 		
-elementsForIfOnOneLine
-	:	exprTag
-	|	text
-	|	ifOnOneLine
-	;
-	
 conditional
 	:	andConditional ('||' andConditional {gen.emit(Bytecode.INSTR_OR);})*
 	;
@@ -499,3 +449,4 @@ listElement
 							  $exprNoComma.start.getStartIndex(),
 							  $exprNoComma.stop.getStopIndex());}
     ;
+    

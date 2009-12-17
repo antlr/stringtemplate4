@@ -14,6 +14,7 @@ public interface CodeGenerator {
     void emit(short opcode, int arg, int sourceStart, int sourceStop);
     void emit(short opcode, int arg1, int arg2, int sourceStart, int sourceStop);
     void emit(short opcode, String s);
+    void insert(int ip, short opcode, String s);
     void emit(short opcode, String s, int sourceStart, int sourceStop);
     void write(int addr, short value);
     /** Return address where next instruction will be written */

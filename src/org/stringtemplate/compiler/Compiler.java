@@ -31,6 +31,7 @@ import org.antlr.runtime.*;
 import org.stringtemplate.*;
 import org.stringtemplate.misc.Interval;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /** A compiler for a single template */
@@ -219,6 +220,15 @@ public class Compiler implements CodeGenerator {
     }
 
     public void emit(short opcode, String s) { emit(opcode,s,-1,-1);}
+
+    public void insert(int addr, short opcode, String s) {
+        ensureCapacity(3);
+        System.arraycopy(instrs, addr, instrs, addr+3, 3); // make room for 3 bytes
+        int save = ip;
+        ip = addr;
+        emit(opcode, s);
+        ip = save;
+    }
 
     public void emit(short opcode, String s, int p, int q) {
         int i = defineString(s);

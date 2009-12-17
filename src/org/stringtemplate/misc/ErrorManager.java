@@ -11,8 +11,6 @@ import org.stringtemplate.misc.STSyntaxErrorMessage;
 
 /** Track errors per thread; e.g., one server transaction's errors
  *  will go in one grouping since each has it's own thread.
- *
- *  TODO: what happens if the thread is reused?  Will these listeners go away?
  */
 public class ErrorManager {
     
@@ -23,7 +21,9 @@ public class ErrorManager {
             }
 
             public void runTimeError(STMessage msg) {
-                System.err.println(msg);
+                if ( msg.error != ErrorType.NO_SUCH_PROPERTY ) { // ignore these
+                    System.err.println(msg);
+                }
             }
 
             public void IOError(STMessage msg) {
@@ -35,7 +35,6 @@ public class ErrorManager {
                 // throw new Error("internal error", msg.cause);
             }
 
-            // TODO: put in [root ... template] stack
             public void error(String s) { error(s, null); }
             public void error(String s, Throwable e) {
                 System.err.println(s);
@@ -48,7 +47,9 @@ public class ErrorManager {
             }
         };
 
-    /** Gives us a new listener per thread */
+    /** Gives us a new listener per thread.  If your server reuses threads,
+     *  these thread locals might not go away.  Might need to manually reset.
+     */
     static ThreadLocal<STErrorListener> listener = new ThreadLocal<STErrorListener>() {
         protected STErrorListener initialValue() { return DEFAULT_ERROR_LISTENER; }
     };

@@ -13,7 +13,9 @@ public class ErrorBuffer implements STErrorListener {
     }
 
     public void runTimeError(STMessage msg) {
-        errors.add(msg);
+        if ( msg.error != ErrorType.NO_SUCH_PROPERTY ) { // ignore these
+            errors.add(msg);
+        }
     }
 
     public void IOError(STMessage msg) {

@@ -17,7 +17,7 @@ public class StringRenderer implements AttributeRenderer {
             return URLEncoder.encode(s);
         }
         if ( formatString.equals("xml-encode") ) {
-            return escapeHTML(s); // TODO: impl
+            return escapeHTML(s);
         }
         return String.format(formatString, s);
     }

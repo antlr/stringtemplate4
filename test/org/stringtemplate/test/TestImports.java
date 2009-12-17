@@ -48,7 +48,7 @@ public class TestImports extends BaseTest {
         STGroup group2 = new STGroupFile(dir+"/y/group.stg");
         group1.importTemplates(group2);
         ST st = group1.getInstanceOf("/a");
-        st.code.dump();
+        st.impl.dump();
         String expected = " group file b ";
         String result = st.render();
         assertEquals(expected, result);

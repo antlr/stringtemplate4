@@ -67,8 +67,8 @@ public class STViz {
 
         m.output.setText(output);
 
-        m.template.setText(currentST.code.getTemplate());
-        m.bytecode.setText(currentST.code.disasm());
+        m.template.setText(currentST.impl.getTemplate());
+        m.bytecode.setText(currentST.impl.disasm());
 
         updateStack(currentST, m);
 
@@ -116,7 +116,7 @@ public class STViz {
                     STMessage msg = (STMessage)model.getElementAt(i);
                     if ( msg instanceof STRuntimeMessage ) {
                         STRuntimeMessage rmsg = (STRuntimeMessage)msg;
-                        Interval I = rmsg.self.code.sourceMap[rmsg.ip];
+                        Interval I = rmsg.self.impl.sourceMap[rmsg.ip];
                         currentST = (DebugST)msg.self;
                         update(m);
                         if ( I!=null ) { // highlight template
@@ -138,7 +138,7 @@ public class STViz {
 	private void update(STViewFrame m) {
 		updateStack(currentST, m);
 		updateAttributes(currentST, m);
-        m.bytecode.setText(currentST.code.disasm());
+        m.bytecode.setText(currentST.impl.disasm());
 
 
 		List<ST> pathST = currentST.getEnclosingInstanceStack(true);
@@ -152,19 +152,19 @@ public class STViz {
 			int i = tmodel.getIndexOfChild((DebugST)currentST.enclosingInstance, currentST);
 			InterpEvent e = ((DebugST)currentST.enclosingInstance).interpEvents.get(i);
 			if ( e instanceof EvalTemplateEvent) {
-				String txt = currentST.code.getTemplate();
+				String txt = currentST.impl.getTemplate();
 				m.template.setText(txt);
 				if ( currentST.isSubtemplate() ) {
-					highlight(m.template, currentST.code.embeddedStart, currentST.code.embeddedStop);
+					highlight(m.template, currentST.impl.embeddedStart, currentST.impl.embeddedStop);
 				}
 				highlight(m.output, e.start, e.stop);
 			}
 			else {
-				m.template.setText(currentST.code.getTemplate());
+				m.template.setText(currentST.impl.getTemplate());
 			}
 		}
 		else {
-			String txt = currentST.code.getTemplate();
+			String txt = currentST.impl.getTemplate();
 			m.template.setText(txt);
 			highlight(m.output, 0, txt.length());
 		}
@@ -257,7 +257,7 @@ public class STViz {
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         group.debug = true;
         DebugST st = (DebugST)group.getInstanceOf("method");
-        st.code.dump();
+        st.impl.dump();
         st.add("type", "float");
         st.add("name", "foo");
         st.add("locals", 3);

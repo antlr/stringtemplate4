@@ -45,10 +45,8 @@ public class ST {
     public static final String UNKNOWN_NAME = "anonymous";
     public static final ST BLANK = new BlankST();
     
-    /** The code to interpret; it pulls from attributes and this template's
-     *  group of templates to evaluate to string.
-     */
-    public CompiledST code; // TODO: is this the right name?
+    /** The implementation for this template among all instances of same tmpelate . */
+    public CompiledST impl;
 
     /** Map an attribute name to its value(s). */
     protected Map<String,Object> attributes;
@@ -89,9 +87,9 @@ public class ST {
         //this(STGroup.defaultGroup, template);
         //code = STGroup.defaultGroup.defineTemplate(UNKNOWN_NAME, template);
         groupThatCreatedThisInstance = STGroup.defaultGroup;
-        code = groupThatCreatedThisInstance.compile("/", null, template);
-        code.name = UNKNOWN_NAME;
-        groupThatCreatedThisInstance.defineImplicitlyDefinedTemplates(code);
+        impl = groupThatCreatedThisInstance.compile("/", null, template);
+        impl.name = UNKNOWN_NAME;
+        groupThatCreatedThisInstance.defineImplicitlyDefinedTemplates(impl);
     }
 
     /*
@@ -142,8 +140,8 @@ public class ST {
     }
 
     protected void checkAttributeExists(String name) {
-        if ( code.formalArguments == FormalArgument.UNKNOWN ) return;
-        if ( code.formalArguments == null || code.formalArguments.get(name) == null ) {
+        if ( impl.formalArguments == FormalArgument.UNKNOWN ) return;
+        if ( impl.formalArguments == null || impl.formalArguments.get(name) == null ) {
             ErrorManager.runTimeError(this, -1, ErrorType.CANT_SET_ATTRIBUTE, name, getName());
         }
     }
@@ -157,8 +155,8 @@ public class ST {
         if ( attributes!=null ) o = attributes.get(name);
         if ( o!=null ) return o;
         
-        if ( code.formalArguments!=null &&
-             code.formalArguments.get(name)!=null &&  // no local value && it's a formal arg
+        if ( impl.formalArguments!=null &&
+             impl.formalArguments.get(name)!=null &&  // no local value && it's a formal arg
              !passThroughAttributes )                 // but no ... in arg list
         {
             // if you've defined attribute as formal arg for this
@@ -173,9 +171,9 @@ public class ST {
             if ( o!=null ) return o;
             p = p.enclosingInstance;
         }
-        if ( code.formalArguments==null || code.formalArguments.get(name)==null ) {
+        if ( impl.formalArguments==null || impl.formalArguments.get(name)==null ) {
             // if not hidden by formal args, return any dictionary
-            return code.nativeGroup.rawGetDictionary(name);
+            return impl.nativeGroup.rawGetDictionary(name);
         }
         return null;
     }
@@ -241,9 +239,9 @@ public class ST {
         return stack;
     }
 
-    public String getName() { return code.name; }
+    public String getName() { return impl.name; }
 
-	public boolean isSubtemplate() { return code.isSubtemplate; }
+	public boolean isSubtemplate() { return impl.isSubtemplate; }
 
     public int write(STWriter out) throws IOException {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance);
@@ -272,7 +270,7 @@ public class ST {
     }
 
     public String toString() {
-        if ( code==null ) return "bad-template()";
-        return code.name+"()";
+        if ( impl ==null ) return "bad-template()";
+        return impl.name+"()";
     }
 }

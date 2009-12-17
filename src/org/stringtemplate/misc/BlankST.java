@@ -1,7 +1,6 @@
 package org.stringtemplate.misc;
 
 import org.stringtemplate.compiler.CompiledST;
-import org.stringtemplate.ST;
 import org.stringtemplate.STWriter;
 import org.stringtemplate.debug.DebugST;
 
@@ -11,7 +10,7 @@ import java.io.IOException;
  *  Used to prevent error propogation when we can't find a template.
  */
 public class BlankST extends DebugST { // extend DebugST not just ST in case we're debugging
-    public BlankST() { code = new CompiledST(); }
+    public BlankST() { impl = new CompiledST(); }
     public BlankST(String template) { this(); }
 
     public String getName() { return "blank"; }

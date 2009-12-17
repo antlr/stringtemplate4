@@ -68,7 +68,7 @@ public class TestGroups extends BaseTest {
         writeFile(dir+"/subdir", "b.st", b);
         STGroup group = new STGroupDir(dir);
         ST st = group.getInstanceOf("a");
-        st.code.dump();
+        st.impl.dump();
         String expected = " bar ";
         String result = st.render();
         assertEquals(expected, result);
@@ -158,7 +158,7 @@ public class TestGroups extends BaseTest {
         writeFile(dir+"/subdir", "b.st", b);
         STGroup group = new STGroupDir(dir);
         ST st = group.getInstanceOf("subdir/a");
-        st.code.dump();
+        st.impl.dump();
         String expected = " bar ";
         String result = st.render();
         assertEquals(expected, result);

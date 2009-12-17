@@ -73,7 +73,6 @@ public class Interpreter {
         this(group,Locale.getDefault());
     }
 
-    // TODO: remove out and move back to exec; must avoid creating new interp when deugging same st tree 
     public Interpreter(STGroup group, Locale locale) {
         this.group = group;
         this.locale = locale;
@@ -90,9 +89,9 @@ public class Interpreter {
         Object o = null, left = null, right = null;
         ST st = null;
         Object[] options = null;
-        byte[] code = self.code.instrs;        // which code block are we executing
+        byte[] code = self.impl.instrs;        // which code block are we executing
         int ip = 0;
-        while ( ip < self.code.codeSize ) {
+        while ( ip < self.impl.codeSize ) {
             if ( trace ) trace(self, ip);
             short opcode = code[ip];
             current_ip = ip;
@@ -101,12 +100,12 @@ public class Interpreter {
             case Bytecode.INSTR_LOAD_STR :
                 int strIndex = getShort(code, ip);
                 ip += 2;
-                operands[++sp] = self.code.strings[strIndex];
+                operands[++sp] = self.impl.strings[strIndex];
                 break;
             case Bytecode.INSTR_LOAD_ATTR :
                 nameIndex = getShort(code, ip);
                 ip += 2;
-                name = self.code.strings[nameIndex];
+                name = self.impl.strings[nameIndex];
                 o = self.getAttribute(name);
                 operands[++sp] = o;
                 if ( o==null ) checkNullAttributeAgainstFormalArguments(self, name);
@@ -114,7 +113,7 @@ public class Interpreter {
             case Bytecode.INSTR_LOAD_LOCAL:
                 nameIndex = getShort(code, ip);
                 ip += 2;
-                name = self.code.strings[nameIndex];
+                name = self.impl.strings[nameIndex];
                 if ( self.attributes!=null ) o = self.attributes.get(name);
                 else o = null;
                 operands[++sp] = o;
@@ -123,7 +122,7 @@ public class Interpreter {
                 nameIndex = getShort(code, ip);
                 ip += 2;
                 o = operands[sp--];
-                name = self.code.strings[nameIndex];
+                name = self.impl.strings[nameIndex];
                 operands[++sp] = getObjectProperty(self, o, name);
                 break;
             case Bytecode.INSTR_LOAD_PROP_IND :
@@ -134,10 +133,11 @@ public class Interpreter {
             case Bytecode.INSTR_NEW :
                 nameIndex = getShort(code, ip);
                 ip += 2;
-                name = self.code.strings[nameIndex];
+                name = self.impl.strings[nameIndex];
                 st = group.getEmbeddedInstanceOf(self, ip, name);
                 if ( st == null ) {
-                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_TEMPLATE, STGroup.getSimpleName(name));
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_TEMPLATE,
+                                              STGroup.getSimpleName(name));
                     st = ST.BLANK;
                 }
                 operands[++sp] = st;
@@ -146,7 +146,8 @@ public class Interpreter {
                 name = (String)operands[sp--];
                 st = group.getEmbeddedInstanceOf(self, ip, name);
                 if ( st == null ) {
-                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_TEMPLATE, STGroup.getSimpleName(name));
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_TEMPLATE,
+                                              STGroup.getSimpleName(name));
                     st = ST.BLANK;
                 }
                 operands[++sp] = st;
@@ -154,22 +155,22 @@ public class Interpreter {
             case Bytecode.INSTR_SUPER_NEW :
                 nameIndex = getShort(code, ip);
                 ip += 2;
-                name = self.code.strings[nameIndex];
+                name = self.impl.strings[nameIndex];
                 CompiledST imported = group.lookupImportedTemplate(name);
                 if ( imported==null ) {
-                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE, STGroup.getSimpleName(name));
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
+                                              STGroup.getSimpleName(name));
                     operands[++sp] = ST.BLANK;
                     break;
                 }
-                // TODO: factor into STGroup
                 st = imported.nativeGroup.createStringTemplate();
                 st.groupThatCreatedThisInstance = group;
-                st.code = imported;
+                st.impl = imported;
                 operands[++sp] = st;
                 break;
             case Bytecode.INSTR_STORE_ATTR:
                 nameIndex = getShort(code, ip);
-                name = self.code.strings[nameIndex];
+                name = self.impl.strings[nameIndex];
                 ip += 2;
                 o = operands[sp--];    // value to store
                 st = (ST)operands[sp]; // store arg in ST on top of stack
@@ -264,7 +265,7 @@ public class Interpreter {
                 operands[sp] = trunc(operands[sp]);
                 break;
             case Bytecode.INSTR_STRIP  :
-                operands[sp] = strip(operands[sp]); // TODO: should strip work on strings?
+                operands[sp] = strip(operands[sp]);
                 break;
             case Bytecode.INSTR_TRIM   :
                 o = operands[sp--];
@@ -308,7 +309,7 @@ public class Interpreter {
 			case Bytecode.INSTR_INDENT :
 				strIndex = getShort(code, ip);
 				ip += 2;
-				out.pushIndentation(self.code.strings[strIndex]);
+				out.pushIndentation(self.impl.strings[strIndex]);
 				break;
 			case Bytecode.INSTR_DEDENT :
 				out.popIndentation();
@@ -334,7 +335,7 @@ public class Interpreter {
                 break;
             default :
                 ErrorManager.internalError(self, "invalid bytecode @ "+(ip-1)+": "+opcode, null);
-                self.code.dump();
+                self.impl.dump();
             }
             prevOpcode = opcode;            
         }
@@ -587,14 +588,14 @@ public class Interpreter {
     protected void setSoleArgument(ST self, ST st, Object attr) {
         String name = "it";
         int nargs = 0;
-        if ( st.code.formalArguments!=null ) {
-            nargs = st.code.formalArguments.size();
+        if ( st.impl.formalArguments!=null ) {
+            nargs = st.impl.formalArguments.size();
         }
         if ( nargs > 0 ) {
             if ( nargs != 1 ) {
                 ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_SINGLE_ARGUMENT, st, nargs);
             }
-            name = st.code.formalArguments.keySet().iterator().next();
+            name = st.impl.formalArguments.keySet().iterator().next();
         }
         st.rawSetAttribute(name, attr);
     }
@@ -807,8 +808,14 @@ public class Interpreter {
     }
 
     protected Object getObjectProperty(ST self, Object o, Object property) {
-        if ( o==null || property==null ) {
-            // TODO: throw Ill arg if they want
+        if ( o==null ) {
+            ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+                                      "null object");
+            return null;
+        }
+        if ( property==null ) {
+            ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+                                      "property name of "+o.getClass().getName()+" is null");
             return null;
         }
 
@@ -844,13 +851,13 @@ public class Interpreter {
             m = Misc.getMethod(c, "is"+methodSuffix);
         }
         if ( m != null ) {
-            // save to avoid lookup later
-            //self.getGroup().cacheClassProperty(c,propertyName,m);
+            // TODO: save to avoid lookup later
             try {
                 value = Misc.invokeMethod(m, o, value);
             }
             catch (Exception e) {
-                //ErrorManager.runTimeError(self, ErrorType.NO_SUCH_PROPERTY, e, m);
+                ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+                                          e, c.getName()+"."+propertyName);
             }
         }
         else {
@@ -862,11 +869,13 @@ public class Interpreter {
                     value = Misc.accessField(f, o, value);
                 }
                 catch (IllegalAccessException iae) {
-                    //ErrorManager.runTimeError(self, ErrorType.NO_SUCH_PROPERTY, iae, f);
+                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+                                              iae, c.getName()+"."+propertyName);
                 }
             }
             catch (NoSuchFieldException nsfe) {
-                //ErrorManager.runTimeError(self, ErrorType.NO_SUCH_PROPERTY, c, propertyName);
+                ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+                                          nsfe, c.getName()+"."+propertyName);
             }
         }
 
@@ -881,15 +890,15 @@ public class Interpreter {
      *  by the template.
      */
     public void setDefaultArguments(ST invokedST) {
-        if ( invokedST.code.formalArguments==null || invokedST.code.formalArguments.size()==0 ) return;
-        for (FormalArgument arg : invokedST.code.formalArguments.values()) {
+        if ( invokedST.impl.formalArguments==null || invokedST.impl.formalArguments.size()==0 ) return;
+        for (FormalArgument arg : invokedST.impl.formalArguments.values()) {
             // if no value for attribute and default arg, inject default arg into self
             if ( (invokedST.attributes==null || invokedST.attributes.get(arg.name)==null) &&
                  arg.compiledDefaultValue!=null )
             {
                 ST defaultArgST = group.createStringTemplate();
                 defaultArgST.groupThatCreatedThisInstance = group;
-                defaultArgST.code = arg.compiledDefaultValue;
+                defaultArgST.impl = arg.compiledDefaultValue;
                 System.out.println("setting def arg "+arg.name+" to "+defaultArgST);
                 // If default arg is template with single expression
                 // wrapped in parens, x={<(...)>}, then eval to string
@@ -913,11 +922,11 @@ public class Interpreter {
      *  Don't generate error if template has no formal arguments.
      */
     protected void checkNullAttributeAgainstFormalArguments(ST self, String name) {
-        if ( self.code.formalArguments == FormalArgument.UNKNOWN ) return;
+        if ( self.impl.formalArguments == FormalArgument.UNKNOWN ) return;
         
         ST p = self;
         while ( p!=null ) {
-            if ( p.code.formalArguments!=null && p.code.formalArguments.get(name)!=null ) {
+            if ( p.impl.formalArguments!=null && p.impl.formalArguments.get(name)!=null ) {
                 // found it; no problems, just return
                 return;
             }
@@ -928,11 +937,11 @@ public class Interpreter {
     }
     
     protected void trace(ST self, int ip) {
-        BytecodeDisassembler dis = new BytecodeDisassembler(self.code);
+        BytecodeDisassembler dis = new BytecodeDisassembler(self.impl);
         StringBuilder buf = new StringBuilder();
         dis.disassembleInstruction(buf,ip);
-        String name = self.code.name+":";
-        if ( self.code.name==ST.UNKNOWN_NAME) name = "";
+        String name = self.impl.name+":";
+        if ( self.impl.name==ST.UNKNOWN_NAME) name = "";
         System.out.printf("%-40s",name+buf);
         System.out.print("\tstack=[");
         for (int i = 0; i <= sp; i++) {
@@ -947,8 +956,8 @@ public class Interpreter {
 
     protected void printForTrace(Object o) {
         if ( o instanceof ST ) {
-            if ( ((ST)o).code==null ) System.out.print("bad-template()");
-            else System.out.print(" "+((ST)o).code.name+"()");
+            if ( ((ST)o).impl ==null ) System.out.print("bad-template()");
+            else System.out.print(" "+((ST)o).impl.name+"()");
             return;
         }
         o = convertAnythingIteratableToIterator(o);

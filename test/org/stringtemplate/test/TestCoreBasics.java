@@ -129,7 +129,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testInclude() throws Exception {
         String template = "load <box()>;";
         ST st = new ST(template);
-        st.code.nativeGroup.defineTemplate("box",
+        st.impl.nativeGroup.defineTemplate("box",
                                 "kewl\n" +
                                 "daddy"
                                 );
@@ -144,7 +144,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testIncludeWithArg() throws Exception {
         String template = "load <box(x=\"arg\")>;";
         ST st = new ST(template);
-        st.code.nativeGroup.defineTemplate("box", "kewl <x> daddy");
+        st.impl.nativeGroup.defineTemplate("box", "kewl <x> daddy");
         st.add("name", "Ter");
         String expected = "load kewl arg daddy;";
         String result = st.render();
@@ -157,7 +157,7 @@ public class TestCoreBasics extends BaseTest {
         LinkedHashMap<String,FormalArgument> args =
             new LinkedHashMap<String,FormalArgument>();
         args.put("x", new FormalArgument("x"));
-        st.code.nativeGroup.defineTemplate("/",
+        st.impl.nativeGroup.defineTemplate("/",
                                            new CommonToken(GroupParser.ID, "box"),
                                            args, "kewl <x> daddy");
         st.add("name", "Ter");
@@ -169,8 +169,8 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testIncludeWithArg2() throws Exception {
         String template = "load <box(x=\"arg\", y=foo())>;";
         ST st = new ST(template);
-        st.code.nativeGroup.defineTemplate("box", "kewl <x> <y> daddy");
-        st.code.nativeGroup.defineTemplate("foo", "blech");
+        st.impl.nativeGroup.defineTemplate("box", "kewl <x> <y> daddy");
+        st.impl.nativeGroup.defineTemplate("foo", "blech");
         st.add("name", "Ter");
         String expected = "load kewl arg blech daddy;";
         String result = st.render();
@@ -180,8 +180,8 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testIncludeWithNestedArgs() throws Exception {
         String template = "load <box(y=foo(x=\"arg\"))>;";
         ST st = new ST(template);
-        st.code.nativeGroup.defineTemplate("box", "kewl <y> daddy");
-        st.code.nativeGroup.defineTemplate("foo", "blech <x>");
+        st.impl.nativeGroup.defineTemplate("box", "kewl <y> daddy");
+        st.impl.nativeGroup.defineTemplate("foo", "blech <x>");
         st.add("name", "Ter");
         String expected = "load kewl blech arg daddy;";
         String result = st.render();
