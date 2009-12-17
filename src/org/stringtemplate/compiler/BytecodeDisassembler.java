@@ -27,7 +27,6 @@
 */
 package org.stringtemplate.compiler;
 
-import org.stringtemplate.compiler.Bytecode;
 import org.stringtemplate.misc.Misc;
 import org.stringtemplate.misc.Interval;
 
@@ -35,15 +34,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class BytecodeDisassembler {
-    // TODO: make disassembler point at compiledST code?
     CompiledST code;
-    /*
-    byte[] instrs;
-    int codeSize;
-    protected Object[] strings;
-    Interval[] sourceMap;
-     */
-    Bytecode def;
 
     public BytecodeDisassembler(CompiledST code) { this.code = code; }
 

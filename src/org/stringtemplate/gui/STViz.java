@@ -67,7 +67,7 @@ public class STViz {
 
         m.output.setText(output);
 
-        m.template.setText(currentST.impl.getTemplate());
+        m.template.setText(currentST.impl.template);
         m.bytecode.setText(currentST.impl.disasm());
 
         updateStack(currentST, m);
@@ -152,7 +152,7 @@ public class STViz {
 			int i = tmodel.getIndexOfChild((DebugST)currentST.enclosingInstance, currentST);
 			InterpEvent e = ((DebugST)currentST.enclosingInstance).interpEvents.get(i);
 			if ( e instanceof EvalTemplateEvent) {
-				String txt = currentST.impl.getTemplate();
+				String txt = currentST.impl.template;
 				m.template.setText(txt);
 				if ( currentST.isSubtemplate() ) {
 					highlight(m.template, currentST.impl.embeddedStart, currentST.impl.embeddedStop);
@@ -160,11 +160,11 @@ public class STViz {
 				highlight(m.output, e.start, e.stop);
 			}
 			else {
-				m.template.setText(currentST.impl.getTemplate());
+				m.template.setText(currentST.impl.template);
 			}
 		}
 		else {
-			String txt = currentST.impl.getTemplate();
+			String txt = currentST.impl.template;
 			m.template.setText(txt);
 			highlight(m.output, 0, txt.length());
 		}

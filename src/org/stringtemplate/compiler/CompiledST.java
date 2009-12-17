@@ -38,6 +38,11 @@ import java.util.List;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+/** The result of compiling an ST.  Contains all the bytecode instructions,
+ *  string table, bytecode address to source code map, and other bookkeeping
+ *  info.  It's the implementation of an ST you might say.  All instances
+ *  of the same template share a single implementation (impl field).
+ */
 public class CompiledST {
     public String name;
 
@@ -46,10 +51,12 @@ public class CompiledST {
      */
     public String template;
 
+    /** Where within a template does the subtemplate start? */
     public int embeddedStart=-1, embeddedStop=-1; // if subtemplate
 
     public LinkedHashMap<String, FormalArgument> formalArguments = FormalArgument.UNKNOWN;
 
+    /** A list of all regions and subtemplates */
     public List<CompiledST> implicitlyDefinedTemplates;
 
     /** The group that holds this ST definition.  We use it to initiate
@@ -63,8 +70,6 @@ public class CompiledST {
      */
     public boolean isRegion;
 
-    public boolean isSubtemplate;
-
     /** If someone refs <@r()> in template t, an implicit
      *
      *   @t.r() ::= ""
@@ -75,12 +80,12 @@ public class CompiledST {
      */
     public ST.RegionType regionDefType;
 
-    public String[] strings;
+    public boolean isSubtemplate; // {...}
+
+    public String[] strings;     // string operands of instructions
     public byte[] instrs;        // byte-addressable code memory.
     public int codeSize;
     public Interval[] sourceMap; // maps IP to range in template pattern
-
-    public String getTemplate() { return template; }
 
     public void addImplicitlyDefinedTemplate(CompiledST sub) {
         if ( implicitlyDefinedTemplates == null ) {
