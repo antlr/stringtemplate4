@@ -139,17 +139,13 @@ exprTag
 
 region returns [String name] // match $@foo$...$@end$
 	:	LDELIM '@' ID RDELIM
-		{
-		$name = gen.compileRegion(enclosingTemplateName, $ID.text, input, state);
-        }
+		{$name = gen.compileRegion(enclosingTemplateName, $ID.text, input, state);}
 		LDELIM '@end' RDELIM
 	;
 	
 subtemplate returns [String name]
 	:	'{' ( ids+=ID (',' ids+=ID)* '|' )?
-		{
-			$name = gen.compileAnonTemplate(enclosingTemplateName, input, $ids, state);
-        }
+		{$name = gen.compileAnonTemplate(enclosingTemplateName, input, $ids, state);}
         '}'
     ;
 
@@ -230,17 +226,17 @@ exprOptions
 	;
 
 option
-	:	ID ( '=' exprNoComma | {gen.defaultOption($ID);} )
-		{gen.setOption($ID);}
+	:	ID ( '=' exprNoComma | {gen.defaultOption($ID);} ) {gen.setOption($ID);}
 	;
 	
 exprNoComma
 	:	memberExpr
 		(	':' templateRef
-			{gen.emit(Bytecode.INSTR_MAP,
-					  $templateRef.start.getStartIndex(),
-					  $templateRef.stop.getStopIndex());
-			}
+						   {
+						   gen.emit(Bytecode.INSTR_MAP,
+								    $templateRef.start.getStartIndex(),
+								    $templateRef.stop.getStopIndex());
+						   }
 		)?
 	;
 
@@ -250,57 +246,65 @@ mapExpr
 @init {int nt=1, ne=1; int a=$start.getStartIndex();}
 	:	memberExpr (c=',' memberExpr {ne++;} )*
 		(	':' templateRef
-			(	(',' templateRef {nt++;})+  {gen.emit(Bytecode.INSTR_ROT_MAP, nt, a, ((CommonToken)input.LT(-1)).getStopIndex());}
-			|	{if ( $c!=null ) gen.emit(Bytecode.INSTR_PAR_MAP, ne, a, ((CommonToken)input.LT(-1)).getStopIndex());
-				 else gen.emit(Bytecode.INSTR_MAP, a, ((CommonToken)input.LT(-1)).getStopIndex());}
+			(	(',' templateRef {nt++;})+
+						   {gen.emit(Bytecode.INSTR_ROT_MAP, nt, a,
+						              ((CommonToken)input.LT(-1)).getStopIndex());}
+			|	           {
+			               if ( $c!=null ) gen.emit(Bytecode.INSTR_PAR_MAP, ne, a,
+						                            ((CommonToken)input.LT(-1)).getStopIndex());
+						   else gen.emit(Bytecode.INSTR_MAP, a,
+							             ((CommonToken)input.LT(-1)).getStopIndex());
+						   }
 			)
 		)*
 	;
 
 memberExpr
 	:	callExpr
-		(	'.' ID {gen.emit(Bytecode.INSTR_LOAD_PROP, $ID.text,
-					         $ID.getStartIndex(), $ID.getStopIndex());}
+		(	'.' ID         {gen.emit(Bytecode.INSTR_LOAD_PROP, $ID.text,
+					                 $ID.getStartIndex(), $ID.getStopIndex());}
 		|	'.' lp='(' mapExpr rp=')'
-			{gen.emit(Bytecode.INSTR_LOAD_PROP_IND,
-					  $lp.getStartIndex(),$rp.getStartIndex());}
+						   {gen.emit(Bytecode.INSTR_LOAD_PROP_IND,
+						   		     $lp.getStartIndex(),$rp.getStartIndex());}
 		)*
 	;
 	
 callExpr
 options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
 	:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
-		ID '(' expr ')' {gen.func($ID);}
+		ID '(' expr ')'    {gen.func($ID);}
 	|	(s='super' '.')? ID
-		{gen.emit($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW,
-				  gen.prefixedName($ID.text),
-				  $start.getStartIndex(), $ID.getStopIndex());}
+						   {gen.emit($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW,
+								     gen.prefixedName($ID.text),
+								     $start.getStartIndex(), $ID.getStopIndex());}
 		'(' args? ')'
 	|	'@' (s='super' '.')? ID '(' rp=')'	// convert <@r()> to <region__enclosingTemplate__r()>
-		{
-		String mangled = STGroup.getMangledRegionName(enclosingTemplateName, $ID.text);
-		gen.defineBlankRegion(gen.prefixedName(mangled));
-		gen.emit($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW,
-				 gen.prefixedName(mangled),
-				 $start.getStartIndex(), $rp.getStartIndex());
-		}
+						   {
+						   String mangled = STGroup.getMangledRegionName(enclosingTemplateName, $ID.text);
+						   gen.defineBlankRegion(gen.prefixedName(mangled));
+						   gen.emit($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW,
+							   	    gen.prefixedName(mangled),
+								    $start.getStartIndex(), $rp.getStartIndex());
+						   }
 	|	primary
 	;
 
 primary
-	:	o=ID	  {gen.refAttr($o);}
-	|	STRING    {gen.emit(Bytecode.INSTR_LOAD_STR,
-							Misc.strip($STRING.text,1),
-					 		$STRING.getStartIndex(), $STRING.getStopIndex());}
+	:	o=ID	           {gen.refAttr($o);}
+	|	STRING             {gen.emit(Bytecode.INSTR_LOAD_STR,
+									 Misc.strip($STRING.text,1),
+							 		 $STRING.getStartIndex(), $STRING.getStopIndex());}
 	|	subtemplate
-		{gen.emit(Bytecode.INSTR_NEW, gen.prefixedName($subtemplate.name),
-				  $subtemplate.start.getStartIndex(),
-				  $subtemplate.stop.getStopIndex());}
+		                   {gen.emit(Bytecode.INSTR_NEW, gen.prefixedName($subtemplate.name),
+									 $subtemplate.start.getStartIndex(),
+									 $subtemplate.stop.getStopIndex());}
 	|	list
 	|	lp='(' expr rp=')' {gen.emit(Bytecode.INSTR_TOSTR,
 									 $lp.getStartIndex(),$rp.getStartIndex());}
-		(	{gen.emit(Bytecode.INSTR_NEW_IND,$lp.getStartIndex(),$rp.getStartIndex());}
-			'(' args? ')' )? // indirect call
+		(	               {gen.emit(Bytecode.INSTR_NEW_IND,
+                        		     $lp.getStartIndex(),$rp.getStartIndex());}
+			'(' args? ')' // indirect call
+		)? 
 	;
 
 args:	arg (',' arg)* ;
@@ -319,14 +323,15 @@ expr:{arg | ...}     apply subtemplate to expr
 expr:(e)()           convert e to a string template name and apply to expr
 */
 templateRef
-	:	ID  '(' ')'
-		{gen.emit(Bytecode.INSTR_LOAD_STR, gen.prefixedName($ID.text),
-		 		  $ID.getStartIndex(), $ID.getStopIndex());}
-	|	subtemplate {gen.emit(Bytecode.INSTR_LOAD_STR, gen.prefixedName($subtemplate.name),
-							  $subtemplate.start.getStartIndex(),
-							  $subtemplate.stop.getStopIndex());}
+	:	ID  '(' ')'		   {gen.emit(Bytecode.INSTR_LOAD_STR,gen.prefixedName($ID.text),
+                   		 		     $ID.getStartIndex(), $ID.getStopIndex());}
+	|	subtemplate        {gen.emit(Bytecode.INSTR_LOAD_STR,
+	                                 gen.prefixedName($subtemplate.name),
+									 $subtemplate.start.getStartIndex(),
+									 $subtemplate.stop.getStopIndex());}
 	|	lp='(' mapExpr rp=')' '(' ')'
-			{gen.emit(Bytecode.INSTR_TOSTR,$lp.getStartIndex(),$rp.getStartIndex());}
+		                   {gen.emit(Bytecode.INSTR_TOSTR,
+		                             $lp.getStartIndex(),$rp.getStartIndex());}
 	;
 	
 list:	{gen.emit(Bytecode.INSTR_LIST);} '[' listElement (',' listElement)* ']'
@@ -334,8 +339,8 @@ list:	{gen.emit(Bytecode.INSTR_LIST);} '[' listElement (',' listElement)* ']'
 	;
 
 listElement
-    :   exprNoComma {gen.emit(Bytecode.INSTR_ADD,
-							  $exprNoComma.start.getStartIndex(),
-							  $exprNoComma.stop.getStopIndex());}
+    :   exprNoComma        {gen.emit(Bytecode.INSTR_ADD,
+								    $exprNoComma.start.getStartIndex(),
+								    $exprNoComma.stop.getStopIndex());}
     ;
     
