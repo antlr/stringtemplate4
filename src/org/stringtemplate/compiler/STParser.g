@@ -19,7 +19,7 @@
  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-M NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
@@ -46,46 +46,12 @@ import org.stringtemplate.*;
  *  an enclosing template.
  */
 String enclosingTemplateName;
-/** used to parse w/o compilation side-effects; needed by group lexer etc... */
-public static final CodeGenerator NOOP_GEN = new CodeGenerator() {
-	public void emit(short opcode) {;}
-	public void emit(short opcode, int p, int q) {;}
-	public void emit(short opcode, int arg) {;}
-	public void emit(short opcode, int arg, int p, int q) {;}
-	public void emit(short opcode, String s) {;}
-	public void emit(short opcode, String s, int p, int q) {;}
-    public void emit(short opcode, int arg1, int arg2, int p, int q) {;}
-    public void insert(int addr, short opcode, String s) {;}
-    public void write(int addr, short value) {;}
-	public int address() { return 0; }
-    public String templateReferencePrefix() { return null; }
-	public String compileAnonTemplate(String enclosingTemplateName,
-                                      TokenStream input,
-                                      List<Token> ids,
-                                      RecognizerSharedState state)
-    {
-		Compiler c = new Compiler();
-		c.compile(input, state);
-		return null;
-	}
-    public String compileRegion(String enclosingTemplateName,
-                                String regionName,
-                                TokenStream input,
-                                RecognizerSharedState state)
-    {
-    	Compiler c = new Compiler();
-		c.compile(input, state);
-		return null;
-    }
-    public void defineBlankRegion(String fullyQualifiedName) {;}
-};
+Compiler gen = Compiler.NOOP_GEN;
 
-CodeGenerator gen = NOOP_GEN;
-
-public STParser(TokenStream input, CodeGenerator gen, String enclosingTemplateName) {
+public STParser(TokenStream input, Compiler gen, String enclosingTemplateName) {
     this(input, new RecognizerSharedState(), gen, enclosingTemplateName);
 }
-public STParser(TokenStream input, RecognizerSharedState state, CodeGenerator gen, String enclosingTemplateName) {
+public STParser(TokenStream input, RecognizerSharedState state, Compiler gen, String enclosingTemplateName) {
     super(null,null); // overcome bug in ANTLR 3.2
 	this.input = input;
 	this.state = state;
@@ -93,60 +59,7 @@ public STParser(TokenStream input, RecognizerSharedState state, CodeGenerator ge
     this.enclosingTemplateName = enclosingTemplateName;
 }
 
-public String prefixedName(String t) {
-	if ( t!=null && t.charAt(0)=='/' ) return gen.templateReferencePrefix()+t.substring(1);
-	return gen.templateReferencePrefix()+t;
-}
- 
-    public void refAttr(CommonToken id) {
-        String name = id.getText();
-        if ( Interpreter.predefinedAttributes.contains(name) ) {
-            gen.emit(Bytecode.INSTR_LOAD_LOCAL, name,
-                     id.getStartIndex(), id.getStopIndex());
-        }
-        else {
-            gen.emit(Bytecode.INSTR_LOAD_ATTR, name,
-                     id.getStartIndex(), id.getStopIndex());
-        }
-    }
-
-    public void setOption(CommonToken id) {
-        Interpreter.Option O = Compiler.supportedOptions.get(id.getText());
-        if ( O==null ) {
-            ErrorManager.compileTimeError(ErrorType.NO_SUCH_OPTION, id);
-	        gen.emit(Bytecode.INSTR_POP,
-	                 id.getStartIndex(), id.getStopIndex());
-            return;
-        }
-        gen.emit(Bytecode.INSTR_STORE_OPTION, O.ordinal(),
-                 id.getStartIndex(), id.getStopIndex());
-    }
-
-    public void defaultOption(CommonToken id) {
-        String v = Compiler.defaultOptionValues.get(id.getText());
-        if ( v==null ) {
-            ErrorManager.compileTimeError(ErrorType.NO_DEFAULT_VALUE, id);
-	        gen.emit(Bytecode.INSTR_POP,
-	                 id.getStartIndex(), id.getStopIndex());
-        }
-        gen.emit(Bytecode.INSTR_LOAD_STR, v,
-                 id.getStartIndex(), id.getStopIndex());
-    }
-    
-    public void func(CommonToken id) {
-        Short funcBytecode = Compiler.funcs.get(id.getText());
-        if ( funcBytecode==null ) {
-            ErrorManager.compileTimeError(ErrorType.NO_SUCH_FUNCTION, id);
-            gen.emit(Bytecode.INSTR_POP,
-                     id.getStartIndex(), id.getStopIndex());
-        }
-        else {
-            gen.emit(funcBytecode,
-                     id.getStartIndex(), id.getStopIndex());
-        }
-    }
-    
-    public void indent(String indent) {	gen.emit(Bytecode.INSTR_INDENT, indent); }
+public void indent(String indent) {	gen.emit(Bytecode.INSTR_INDENT, indent); }
 
 protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
 	throws RecognitionException
@@ -168,19 +81,17 @@ template
 	;
 
 element
-	:	i=INDENT {int start_address = gen.address();}
+	:	( i=INDENT )? {int start_address = gen.address();}
 		ifstat
 		// kill \n for <endif> on line by itself if multi-line IF
-		( {$i.line!=input.LT(1).getLine()}? NEWLINE )?
+		( {$ifstat.start.getLine()!=input.LT(1).getLine()}? NEWLINE )?
 		{
-		if ( $i.line == input.LT(1).getLine() ) { // need INDENT for IF on one line
+		if ( $i!=null && $ifstat.start.getLine() == input.LT(1).getLine() ) {
+			// need to emit INDENT if we found indent for IF on one line
 			gen.insert(start_address, Bytecode.INSTR_INDENT, $i.text);
 			gen.emit(Bytecode.INSTR_DEDENT);
 		}
 		}
-
-	|	ifstat
-		( {$i.line!=input.LT(1).getLine()}? NEWLINE )?
 
 	|	i=INDENT       	 {indent($i.text);}
 		exprTag          {gen.emit(Bytecode.INSTR_DEDENT);}
@@ -319,8 +230,8 @@ exprOptions
 	;
 
 option
-	:	ID ( '=' exprNoComma | {defaultOption($ID);} )
-		{setOption($ID);}
+	:	ID ( '=' exprNoComma | {gen.defaultOption($ID);} )
+		{gen.setOption($ID);}
 	;
 	
 exprNoComma
@@ -331,21 +242,9 @@ exprNoComma
 					  $templateRef.stop.getStopIndex());
 			}
 		)?
-/*
-	|	subtemplate {gen.emit(Bytecode.INSTR_NEW, $subtemplate.name,
-					 $subtemplate.start.getStartIndex(),
-					 $subtemplate.stop.getStopIndex());}
-					 */
 	;
 
-expr:	mapExpr
-/*
-	|	subtemplate
-		{gen.emit(Bytecode.INSTR_NEW, prefixedName($subtemplate.name),
-				  $subtemplate.start.getStartIndex(),
-				  $subtemplate.stop.getStopIndex());}
-*/
-	;
+expr : mapExpr ;
 
 mapExpr
 @init {int nt=1, ne=1; int a=$start.getStartIndex();}
@@ -371,30 +270,30 @@ memberExpr
 callExpr
 options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
 	:	{Compiler.funcs.containsKey(input.LT(1).getText())}?
-		ID '(' expr ')' {func($ID);}
+		ID '(' expr ')' {gen.func($ID);}
 	|	(s='super' '.')? ID
 		{gen.emit($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW,
-				  prefixedName($ID.text),
+				  gen.prefixedName($ID.text),
 				  $start.getStartIndex(), $ID.getStopIndex());}
 		'(' args? ')'
 	|	'@' (s='super' '.')? ID '(' rp=')'	// convert <@r()> to <region__enclosingTemplate__r()>
 		{
 		String mangled = STGroup.getMangledRegionName(enclosingTemplateName, $ID.text);
-		gen.defineBlankRegion(prefixedName(mangled));
+		gen.defineBlankRegion(gen.prefixedName(mangled));
 		gen.emit($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW,
-				 prefixedName(mangled),
+				 gen.prefixedName(mangled),
 				 $start.getStartIndex(), $rp.getStartIndex());
 		}
 	|	primary
 	;
 
 primary
-	:	o=ID	  {refAttr($o);}
+	:	o=ID	  {gen.refAttr($o);}
 	|	STRING    {gen.emit(Bytecode.INSTR_LOAD_STR,
 							Misc.strip($STRING.text,1),
 					 		$STRING.getStartIndex(), $STRING.getStopIndex());}
 	|	subtemplate
-		{gen.emit(Bytecode.INSTR_NEW, prefixedName($subtemplate.name),
+		{gen.emit(Bytecode.INSTR_NEW, gen.prefixedName($subtemplate.name),
 				  $subtemplate.start.getStartIndex(),
 				  $subtemplate.stop.getStopIndex());}
 	|	list
@@ -421,9 +320,9 @@ expr:(e)()           convert e to a string template name and apply to expr
 */
 templateRef
 	:	ID  '(' ')'
-		{gen.emit(Bytecode.INSTR_LOAD_STR, prefixedName($ID.text),
+		{gen.emit(Bytecode.INSTR_LOAD_STR, gen.prefixedName($ID.text),
 		 		  $ID.getStartIndex(), $ID.getStopIndex());}
-	|	subtemplate {gen.emit(Bytecode.INSTR_LOAD_STR, prefixedName($subtemplate.name),
+	|	subtemplate {gen.emit(Bytecode.INSTR_LOAD_STR, gen.prefixedName($subtemplate.name),
 							  $subtemplate.start.getStartIndex(),
 							  $subtemplate.stop.getStopIndex());}
 	|	lp='(' mapExpr rp=')' '(' ')'

@@ -29,13 +29,14 @@ package org.stringtemplate.compiler;
 
 import org.antlr.runtime.*;
 import org.stringtemplate.*;
+import org.stringtemplate.misc.ErrorManager;
+import org.stringtemplate.misc.ErrorType;
 import org.stringtemplate.misc.Interval;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /** A compiler for a single template */
-public class Compiler implements CodeGenerator {
+public class Compiler {
     /** Given a template of length n, how much code will result?
      *  For now, let's assume n/5. Later, we can test in practice.
      */
@@ -92,6 +93,39 @@ public class Compiler implements CodeGenerator {
     String enclosingTemplateName;
 
     public static int subtemplateCount = 0; // public for testing access
+    /** used to parse w/o compilation side-effects */
+    public static final Compiler NOOP_GEN = new Compiler() {
+    	public void emit(short opcode) {;}
+    	public void emit(short opcode, int p, int q) {;}
+    	public void emit(short opcode, int arg) {;}
+    	public void emit(short opcode, int arg, int p, int q) {;}
+    	public void emit(short opcode, String s) {;}
+    	public void emit(short opcode, String s, int p, int q) {;}
+        public void emit(short opcode, int arg1, int arg2, int p, int q) {;}
+        public void insert(int addr, short opcode, String s) {;}
+        public void write(int addr, short value) {;}
+    	public int address() { return 0; }
+        public String templateReferencePrefix() { return null; }
+    	public String compileAnonTemplate(String enclosingTemplateName,
+                                          TokenStream input,
+                                          List<Token> ids,
+                                          RecognizerSharedState state)
+        {
+    		Compiler c = new Compiler();
+    		c.compile(input, state);
+    		return null;
+    	}
+        public String compileRegion(String enclosingTemplateName,
+                                    String regionName,
+                                    TokenStream input,
+                                    RecognizerSharedState state)
+        {
+        	Compiler c = new Compiler();
+    		c.compile(input, state);
+    		return null;
+        }
+        public void defineBlankRegion(String fullyQualifiedName) {;}
+    };
 
     public Compiler() { this("/", "<unknown>"); }
 
@@ -193,7 +227,59 @@ public class Compiler implements CodeGenerator {
         return strings.add(s);
     }
 
-    // CodeGenerator interface impl.
+    public String prefixedName(String t) {
+    	if ( t!=null && t.charAt(0)=='/' ) return templateReferencePrefix()+t.substring(1);
+    	return templateReferencePrefix()+t;
+    }
+
+
+    public void refAttr(CommonToken id) {
+        String name = id.getText();
+        if ( Interpreter.predefinedAttributes.contains(name) ) {
+            emit(Bytecode.INSTR_LOAD_LOCAL, name,
+                     id.getStartIndex(), id.getStopIndex());
+        }
+        else {
+            emit(Bytecode.INSTR_LOAD_ATTR, name,
+                     id.getStartIndex(), id.getStopIndex());
+        }
+    }
+
+    public void setOption(CommonToken id) {
+        Interpreter.Option O = Compiler.supportedOptions.get(id.getText());
+        if ( O==null ) {
+            ErrorManager.compileTimeError(ErrorType.NO_SUCH_OPTION, id);
+	        emit(Bytecode.INSTR_POP,
+	                 id.getStartIndex(), id.getStopIndex());
+            return;
+        }
+        emit(Bytecode.INSTR_STORE_OPTION, O.ordinal(),
+                 id.getStartIndex(), id.getStopIndex());
+    }
+
+    public void defaultOption(CommonToken id) {
+        String v = Compiler.defaultOptionValues.get(id.getText());
+        if ( v==null ) {
+            ErrorManager.compileTimeError(ErrorType.NO_DEFAULT_VALUE, id);
+	        emit(Bytecode.INSTR_POP,
+	                 id.getStartIndex(), id.getStopIndex());
+        }
+        emit(Bytecode.INSTR_LOAD_STR, v,
+                 id.getStartIndex(), id.getStopIndex());
+    }
+
+    public void func(CommonToken id) {
+        Short funcBytecode = Compiler.funcs.get(id.getText());
+        if ( funcBytecode==null ) {
+            ErrorManager.compileTimeError(ErrorType.NO_SUCH_FUNCTION, id);
+            emit(Bytecode.INSTR_POP,
+                     id.getStartIndex(), id.getStopIndex());
+        }
+        else {
+            emit(funcBytecode,
+                     id.getStartIndex(), id.getStopIndex());
+        }
+    }
 
     public void emit(short opcode) { emit(opcode,-1,-1); }
 

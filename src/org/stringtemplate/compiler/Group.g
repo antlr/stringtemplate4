@@ -269,7 +269,7 @@ ANONYMOUS_TEMPLATE
 			new STLexer(input, group.delimiterStartChar, group.delimiterStopChar);
 		lexer.subtemplateDepth = 1;
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-        STParser parser = new STParser(tokens, (CodeGenerator)null, null);
+        STParser parser = new STParser(tokens, (Compiler)null, null);
 		parser.template();
 		}
     	// don't match '}' here; subparser matches it to terminate
