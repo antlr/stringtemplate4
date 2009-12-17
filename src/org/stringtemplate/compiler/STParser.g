@@ -41,10 +41,7 @@ import org.stringtemplate.*;
 }
 
 @members {
-/** The name of the template we are compiling or the name of the
- *  enclosing template.  This template could be a subtemplate or region of
- *  an enclosing template.
- */
+/** The name of the template enclosing a subtemplate or region. */
 String enclosingTemplateName;
 Compiler gen = Compiler.NOOP_GEN;
 
