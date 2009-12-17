@@ -211,6 +211,43 @@ public class STGroup {
         return code;
     }
 
+    public void defineTemplateOrRegion(
+        Token templateToken, String template, String prefix,
+        String regionSurroundingTemplateName,
+        Token nameToken,
+        LinkedHashMap<String,FormalArgument> args)
+    {
+        int n = 1; // num char to strip from left, right of template def token text "" <<>>
+        boolean removedNL = false;
+        if ( templateToken.getType()==GroupLexer.BIGSTRING ) {
+            n = 2;
+            if ( template.charAt(0)=='\n' ) {
+                removedNL = true;
+                template = Misc.trimOneStartingNewline(template);
+            }
+        }
+        try {
+            if ( regionSurroundingTemplateName!=null ) {
+                defineRegion(prefix, regionSurroundingTemplateName, nameToken, template);
+            }
+            else {
+                defineTemplate(prefix, nameToken, args, template);
+            }
+        }
+        catch (STException e) {
+            RecognitionException re = (RecognitionException)e.getCause();
+            if ( removedNL ) {
+                re.line = re.line + templateToken.getLine();
+            }
+            else {
+                re.charPositionInLine =
+                    re.charPositionInLine+templateToken.getCharPositionInLine()+n;
+                re.line = re.line + templateToken.getLine() - 1;
+            }
+            ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re, e.getMessage());
+        }
+    }
+
 	protected void defineImplicitlyDefinedTemplates(CompiledST code) {
         if ( code.implicitlyDefinedTemplates !=null ) {
             for (CompiledST sub : code.implicitlyDefinedTemplates) {
