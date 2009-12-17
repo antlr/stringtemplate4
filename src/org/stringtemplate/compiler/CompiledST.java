@@ -32,6 +32,7 @@ import org.stringtemplate.STGroup;
 import org.stringtemplate.ST;
 import org.stringtemplate.misc.Interval;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.io.PrintWriter;
@@ -81,7 +82,12 @@ public class CompiledST {
 
     public String getTemplate() { return template; }
 
-	public boolean isSubtemplate() { return isSubtemplate; } 
+    public void addImplicitlyDefinedTemplate(CompiledST sub) {
+        if ( implicitlyDefinedTemplates == null ) {
+            implicitlyDefinedTemplates = new ArrayList<CompiledST>();
+        }
+        implicitlyDefinedTemplates.add(sub);        
+    }
 
     public String instrs() {
         BytecodeDisassembler dis = new BytecodeDisassembler(this);

@@ -79,10 +79,16 @@ public class Compiler {
         }
     };
 
-    StringTable strings = new StringTable();
-    byte[] instrs;
-    int ip = 0;
+    /** The compiled code implementation to fill in. */
     CompiledST code = new CompiledST();
+
+    /** Track unique strings; copy into CompiledST's String[] after compilation */
+    StringTable strings = new StringTable();
+
+    /** Track instruction location within code.instrs array; this is
+     *  next address to write to.  Byte-addressable memory.
+     */
+    int ip = 0;
 
     /** subdir context.  If we're compiling templates in subdir a/b/c, then
      *  /a/b/c is the path prefix to add to all ID refs; it fully qualifies them.
@@ -90,8 +96,13 @@ public class Compiler {
      */
     String templatePathPrefix;
 
+    /** If we're compiling a region or sub template, we need to know the
+     *  enclosing template's name.  Region r in template t
+     *  is formally called t.r.
+     */
     String enclosingTemplateName;
 
+    /** Name subtemplates /sub1, /sub2, ... */
     public static int subtemplateCount = 0; // public for testing access
     
     /** used to parse w/o compilation side-effects */
@@ -132,7 +143,7 @@ public class Compiler {
 
     /** To compile a template, we need to know what directory level it's at
      *  (if any; most web apps do this but code gen apps don't) and what
-     *  its name is.
+     *  the enclosing template is (if any).
      */
     public Compiler(String templatePathPrefix, String enclosingTemplateName) {
         this.templatePathPrefix = templatePathPrefix;
@@ -143,12 +154,13 @@ public class Compiler {
         return compile(template, '<', '>');
     }
 
+    /** Compile full template */
     public CompiledST compile(String template,
                               char delimiterStartChar,
                               char delimiterStopChar)
     {
         int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
-        instrs = new byte[initialSize];
+        code.instrs = new byte[initialSize];
         code.sourceMap = new Interval[initialSize];
         code.template = template;
 
@@ -157,63 +169,107 @@ public class Compiler {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         STParser parser = new STParser(tokens, this, enclosingTemplateName);
         try {
-            parser.templateAndEOF(); // parse, trigger compile actions for single expr
+            parser.templateAndEOF(); // parse, trigger compile actions
         }
-        catch (RecognitionException re) {
-            throwSTException(tokens, parser, re);
-        }
-
+        catch (RecognitionException re) { throwSTException(tokens, parser, re); }
         if ( strings!=null ) code.strings = strings.toArray();
         code.codeSize = ip;
-        code.instrs = new byte[code.codeSize];
-        System.arraycopy(instrs, 0, code.instrs, 0, code.codeSize);
         return code;
     }
 
-    public CompiledST compile(TokenStream tokens,
-                              RecognizerSharedState state)
+    /** Compile subtemplate or region */
+    protected CompiledST compile(TokenStream tokens,
+                                 RecognizerSharedState state)
     {
-        instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
+        code.instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
         code.sourceMap = new Interval[SUBTEMPLATE_INITIAL_CODE_SIZE];
         STParser parser = new STParser(tokens, state, this, enclosingTemplateName);
         try {
-            parser.template(); // parse, trigger compile actions for single expr
+            parser.template(); // parse, trigger compile actions
         }
-        catch (RecognitionException re) {
-            throwSTException(tokens, parser, re);
-        }
-
+        catch (RecognitionException re) { throwSTException(tokens, parser, re); }
         if ( strings!=null ) code.strings = strings.toArray();
         code.codeSize = ip;
-        code.instrs = new byte[code.codeSize];
-        System.arraycopy(instrs, 0, code.instrs, 0, code.codeSize);
         return code;
+    }
+
+    public String compileAnonTemplate(String enclosingTemplateName,
+                                      TokenStream input,
+                                      List<Token> argIDs,
+                                      RecognizerSharedState state) {
+        subtemplateCount++;
+        String name = templatePathPrefix+ST.SUBTEMPLATE_PREFIX+subtemplateCount;
+        TokenSource tokenSource = input.getTokenSource();
+        STLexer lexer = null;
+        int start=-1, stop=-1;
+        if ( tokenSource instanceof STLexer ) {
+            lexer = (STLexer) tokenSource;
+            start = lexer.input.index();
+        }
+        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
+        CompiledST sub = c.compile(input, state);
+        sub.name = name;
+        sub.isSubtemplate = true;
+        if ( tokenSource instanceof STLexer ) {
+            stop = lexer.input.index();
+            //System.out.println(start+".."+stop);
+            sub.embeddedStart = start;
+            sub.embeddedStop = stop-1;
+            sub.template = lexer.input.substring(0, lexer.input.size()-1);
+        }
+        code.addImplicitlyDefinedTemplate(sub);
+        if ( argIDs!=null ) {
+            sub.formalArguments = new LinkedHashMap<String,FormalArgument>();
+            for (Token arg : argIDs) {
+                String argName = arg.getText();
+                sub.formalArguments.put(argName, new FormalArgument(argName));
+            }
+        }
+        return name;
+    }
+
+    public String compileRegion(String enclosingTemplateName,
+                                String regionName,
+                                TokenStream input,
+                                RecognizerSharedState state)
+    {
+        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
+        CompiledST sub = c.compile(input, state);
+        String fullName =
+            templatePathPrefix+
+            STGroup.getMangledRegionName(enclosingTemplateName, regionName);
+        sub.isRegion = true;
+        sub.regionDefType = ST.RegionType.EMBEDDED;
+        sub.name = fullName;
+        code.addImplicitlyDefinedTemplate(sub);
+        return fullName;
+    }
+
+    public void defineBlankRegion(String enclosingTemplateName, String name) {
+        String mangled = STGroup.getMangledRegionName(enclosingTemplateName, name);
+        String fullName = prefixedName(mangled);
+        CompiledST blank = new CompiledST();
+        blank.isRegion = true;
+        blank.regionDefType = ST.RegionType.IMPLICIT;
+        blank.name = fullName;
+        code.addImplicitlyDefinedTemplate(blank);
     }
 
     protected void throwSTException(TokenStream tokens, STParser parser, RecognitionException re) {
         String msg = parser.getErrorMessage(re, parser.getTokenNames());
-        //String hdr = parser.getErrorHeader(re);
         if ( re.token.getType() == STLexer.EOF_TYPE ) {
-            throw new STException(
-                "premature EOF",
-                re);
+            throw new STException("premature EOF", re);
         }
         else if ( re instanceof NoViableAltException) {
             throw new STException(
-                "'"+re.token.getText()+"' came as a complete surprise to me",
-                re);
+                "'"+re.token.getText()+"' came as a complete surprise to me",re);
         }
-        else if ( tokens.index() == 0 ) {
-            // couldn't parse anything
+        else if ( tokens.index() == 0 ) { // couldn't parse anything
             throw new STException(
-                "this doesn't look like a template: \""+tokens+"\"",
-                re);
+                "this doesn't look like a template: \""+tokens+"\"", re);
         }
-        else if ( tokens.LA(1) == STLexer.LDELIM ) {
-            // couldn't parse anything
-            throw new STException(
-                "doesn't look like an expression",
-                re);
+        else if ( tokens.LA(1) == STLexer.LDELIM ) { // couldn't parse expr            
+            throw new STException("doesn't look like an expression", re);
         }
         else {
             throw new STException(msg, re);
@@ -226,7 +282,6 @@ public class Compiler {
     	if ( t!=null && t.charAt(0)=='/' ) return templateReferencePrefix()+t.substring(1);
     	return templateReferencePrefix()+t;
     }
-
 
     public void refAttr(CommonToken id) {
         String name = id.getText();
@@ -281,7 +336,7 @@ public class Compiler {
     public void emit(short opcode, int p, int q) {
         ensureCapacity(1);
         if ( !(p<0 || q<0) ) code.sourceMap[ip] = new Interval(p, q);
-        instrs[ip++] = (byte)opcode;
+        code.instrs[ip++] = (byte)opcode;
     }
 
     public void emit(short opcode, int arg) { emit(opcode,arg,-1,-1); }
@@ -289,14 +344,14 @@ public class Compiler {
     public void emit(short opcode, int arg, int p, int q) {
         emit(opcode, p, q);
         ensureCapacity(2);
-        writeShort(instrs, ip, (short)arg);
+        writeShort(code.instrs, ip, (short)arg);
         ip += 2;
     }
 
     public void emit(short opcode, int arg1, int arg2, int p, int q) {
         emit(opcode, arg1, p, q);
         ensureCapacity(2);
-        writeShort(instrs, ip, (short)arg2);
+        writeShort(code.instrs, ip, (short)arg2);
         ip += 2;
     }
 
@@ -304,7 +359,7 @@ public class Compiler {
 
     public void insert(int addr, short opcode, String s) {
         ensureCapacity(3);
-        System.arraycopy(instrs, addr, instrs, addr+3, 3); // make room for 3 bytes
+        System.arraycopy(code.instrs, addr, code.instrs, addr+3, 3); // make room for 3 bytes
         int save = ip;
         ip = addr;
         emit(opcode, s);
@@ -317,89 +372,18 @@ public class Compiler {
     }
 
     public void write(int addr, short value) {
-        writeShort(instrs, addr, value);
+        writeShort(code.instrs, addr, value);
     }
 
     public int address() { return ip; }
 
     public String templateReferencePrefix() { return templatePathPrefix; }
 
-    public String compileAnonTemplate(String enclosingTemplateName,
-                                      TokenStream input,
-                                      List<Token> argIDs,
-                                      RecognizerSharedState state) {
-        subtemplateCount++;
-        String name = templatePathPrefix+ST.SUBTEMPLATE_PREFIX+subtemplateCount;
-        TokenSource tokenSource = input.getTokenSource();
-        STLexer lexer = null;
-        int start=-1, stop=-1;
-        if ( tokenSource instanceof STLexer ) {
-            lexer = (STLexer) tokenSource;
-            start = lexer.input.index();
-        }
-        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
-        CompiledST sub = c.compile(input, state);
-        sub.name = name;
-        sub.isSubtemplate = true;
-        if ( tokenSource instanceof STLexer ) {
-            stop = lexer.input.index();
-            // sub.template = lexer.input.substring(start,stop-2);
-            //System.out.println(start+".."+stop);
-            sub.embeddedStart = start;
-            sub.embeddedStop = stop-1;
-            sub.template = lexer.input.substring(0, lexer.input.size()-1);
-        }
-        if ( code.implicitlyDefinedTemplates == null ) {
-            code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();
-        }
-        code.implicitlyDefinedTemplates.add(sub);
-        if ( argIDs!=null ) {
-            sub.formalArguments = new LinkedHashMap<String,FormalArgument>();
-            for (Token arg : argIDs) {
-                String argName = arg.getText();
-                sub.formalArguments.put(argName, new FormalArgument(argName));
-            }
-        }
-        return name;
-    }
-
-    public String compileRegion(String enclosingTemplateName,
-                                String regionName,
-                                TokenStream input,
-                                RecognizerSharedState state)
-    {
-        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
-        CompiledST sub = c.compile(input, state);
-        String fullName =
-            templatePathPrefix+
-            STGroup.getMangledRegionName(enclosingTemplateName, regionName);
-        sub.isRegion = true;
-        sub.regionDefType = ST.RegionType.EMBEDDED;
-        sub.name = fullName;
-        if ( code.implicitlyDefinedTemplates == null ) {
-            code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();
-        }
-        code.implicitlyDefinedTemplates.add(sub);
-        return fullName;
-    }
-
-    public void defineBlankRegion(String fullyQualifiedName) {
-        // TODO: combine with above method
-        CompiledST blank = new CompiledST();
-        blank.isRegion = true;
-        blank.regionDefType = ST.RegionType.IMPLICIT;
-        blank.name = fullyQualifiedName;
-        if ( code.implicitlyDefinedTemplates == null ) {
-            code.implicitlyDefinedTemplates = new ArrayList<CompiledST>();
-        }
-        code.implicitlyDefinedTemplates.add(blank);
-    }
-
     protected void ensureCapacity(int n) {
-        if ( (ip+n) >= instrs.length ) { // ensure room for full instruction
-            byte[] c = new byte[instrs.length*2];
-            System.arraycopy(instrs, 0, c, 0, instrs.length);
-            instrs = c;
+        if ( (ip+n) >= code.instrs.length ) { // ensure room for full instruction
+            byte[] c = new byte[code.instrs.length*2];
+            System.arraycopy(code.instrs, 0, c, 0, code.instrs.length);
+            code.instrs = c;
             Interval[] sm = new Interval[code.sourceMap.length*2];
             System.arraycopy(code.sourceMap, 0, sm, 0, code.sourceMap.length);
             code.sourceMap = sm;

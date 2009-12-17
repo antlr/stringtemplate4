@@ -277,8 +277,8 @@ options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
 		'(' args? ')'
 	|	'@' (s='super' '.')? ID '(' rp=')'	// convert <@r()> to <region__enclosingTemplate__r()>
 						   {
+						   gen.defineBlankRegion(enclosingTemplateName, $ID.text);
 						   String mangled = STGroup.getMangledRegionName(enclosingTemplateName, $ID.text);
-						   gen.defineBlankRegion(gen.prefixedName(mangled));
 						   gen.emit($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW,
 							   	    gen.prefixedName(mangled),
 								    $start.getStartIndex(), $rp.getStartIndex());
