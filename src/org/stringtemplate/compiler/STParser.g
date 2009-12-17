@@ -46,7 +46,7 @@ import org.stringtemplate.*;
  *  an enclosing template.
  */
 String enclosingTemplateName;
-/** used to parse w/o compilation side-effects */
+/** used to parse w/o compilation side-effects; needed by group lexer etc... */
 public static final CodeGenerator NOOP_GEN = new CodeGenerator() {
 	public void emit(short opcode) {;}
 	public void emit(short opcode, int p, int q) {;}
@@ -228,27 +228,17 @@ exprTag
 
 region returns [String name] // match $@foo$...$@end$
 	:	LDELIM '@' ID RDELIM
-		{{ // force exec even when backtracking
-   	    if ( state.backtracking==0 ) {
-			$name = gen.compileRegion(enclosingTemplateName, $ID.text, input, state);
-		}
-		else {
-			$name = NOOP_GEN.compileRegion(enclosingTemplateName, $ID.text, input, state);
-		}
-        }}
+		{
+		$name = gen.compileRegion(enclosingTemplateName, $ID.text, input, state);
+        }
 		LDELIM '@end' RDELIM
 	;
 	
 subtemplate returns [String name]
 	:	'{' ( ids+=ID (',' ids+=ID)* '|' )?
-		{{ // force exec even when backtracking
-   	    if ( state.backtracking==0 ) {
+		{
 			$name = gen.compileAnonTemplate(enclosingTemplateName, input, $ids, state);
-		}
-		else {
-			$name = NOOP_GEN.compileAnonTemplate(enclosingTemplateName, input, $ids, state);
-		}
-        }}
+        }
         '}'
     ;
 

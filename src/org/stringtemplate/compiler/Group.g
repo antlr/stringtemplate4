@@ -25,7 +25,6 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
 grammar Group;
 
 @header {
@@ -57,9 +56,8 @@ public void displayRecognitionError(String[] tokenNames,
     ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
 }
 public String getSourceName() {
-    String fullFileName = super.getSourceName();
-    // strip to simple name
-    File f = new File(fullFileName);
+    String fullFileName = super.getSourceName();    
+    File f = new File(fullFileName); // strip to simple name
     return f.getName();
 }
 public void error(String msg) {
@@ -71,6 +69,7 @@ public void error(String msg) {
 
 @lexer::members {
 protected STGroup group;
+
 public void reportError(RecognitionException e) {
     String msg = null;
     if ( e instanceof NoViableAltException ) {
@@ -86,8 +85,7 @@ public void reportError(RecognitionException e) {
 }
 public String getSourceName() {
     String fullFileName = super.getSourceName();
-    // strip to simple name
-    File f = new File(fullFileName);
+    File f = new File(fullFileName); // strip to simple name
     return f.getName();
 }
 }
@@ -106,7 +104,6 @@ this.group = lexer.group = $group;
  */
 def[String prefix] : templateDef[prefix] | dictDef ;
 	catch[RecognitionException re] {
-		// kill at least current token; it's garbage.
 		// pretend we already saw an error here
 		state.lastErrorIndex = input.index();
 		error("garbled template definition starting at '"+input.LT(1).getText()+"'");
@@ -271,7 +268,6 @@ ANONYMOUS_TEMPLATE
 		STLexer lexer =
 			new STLexer(input, group.delimiterStartChar, group.delimiterStopChar);
 		lexer.subtemplateDepth = 1;
-		//CommonTokenStream tokens = new CommonTokenStream(lexer);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
         STParser parser = new STParser(tokens, (CodeGenerator)null, null);
 		parser.template();
@@ -281,7 +277,7 @@ ANONYMOUS_TEMPLATE
 
 COMMENT
     :   '/*' ( options {greedy=false;} : . )* '*/' {skip();}
-        ;
+    ;
 
 LINE_COMMENT
     :	'//' ~('\n'|'\r')* '\r'? '\n' {skip();}
