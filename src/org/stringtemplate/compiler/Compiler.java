@@ -42,6 +42,7 @@ public class Compiler {
      */
     public static final double CODE_SIZE_FACTOR = 5.0;
     public static final int SUBTEMPLATE_INITIAL_CODE_SIZE = 15;
+    public static final int INITIAL_STRING_TABLE_SIZE = 10;
 
     public static final Map<String, Interpreter.Option> supportedOptions =
         new HashMap<String, Interpreter.Option>() {
@@ -80,7 +81,6 @@ public class Compiler {
 
     StringTable strings = new StringTable();
     byte[] instrs;
-    Interval[] sourceMap;
     int ip = 0;
     CompiledST code = new CompiledST();
 
@@ -93,6 +93,7 @@ public class Compiler {
     String enclosingTemplateName;
 
     public static int subtemplateCount = 0; // public for testing access
+    
     /** used to parse w/o compilation side-effects */
     public static final Compiler NOOP_GEN = new Compiler() {
     	public void emit(short opcode) {;}
@@ -148,7 +149,7 @@ public class Compiler {
     {
         int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
         instrs = new byte[initialSize];
-        sourceMap = new Interval[initialSize];
+        code.sourceMap = new Interval[initialSize];
         code.template = template;
 
         STLexer lexer =
@@ -165,9 +166,7 @@ public class Compiler {
         if ( strings!=null ) code.strings = strings.toArray();
         code.codeSize = ip;
         code.instrs = new byte[code.codeSize];
-        code.sourceMap = new Interval[code.codeSize];
         System.arraycopy(instrs, 0, code.instrs, 0, code.codeSize);
-        System.arraycopy(sourceMap, 0, code.sourceMap, 0, code.codeSize);
         return code;
     }
 
@@ -175,7 +174,7 @@ public class Compiler {
                               RecognizerSharedState state)
     {
         instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
-        sourceMap = new Interval[SUBTEMPLATE_INITIAL_CODE_SIZE];
+        code.sourceMap = new Interval[SUBTEMPLATE_INITIAL_CODE_SIZE];
         STParser parser = new STParser(tokens, state, this, enclosingTemplateName);
         try {
             parser.template(); // parse, trigger compile actions for single expr
@@ -187,9 +186,7 @@ public class Compiler {
         if ( strings!=null ) code.strings = strings.toArray();
         code.codeSize = ip;
         code.instrs = new byte[code.codeSize];
-        code.sourceMap = new Interval[code.codeSize];
         System.arraycopy(instrs, 0, code.instrs, 0, code.codeSize);
-        System.arraycopy(sourceMap, 0, code.sourceMap, 0, code.codeSize);
         return code;
     }
 
@@ -223,10 +220,8 @@ public class Compiler {
         }
     }
 
-    public int defineString(String s) {
-        return strings.add(s);
-    }
-
+    public int defineString(String s) { return strings.add(s); }
+    
     public String prefixedName(String t) {
     	if ( t!=null && t.charAt(0)=='/' ) return templateReferencePrefix()+t.substring(1);
     	return templateReferencePrefix()+t;
@@ -285,7 +280,7 @@ public class Compiler {
 
     public void emit(short opcode, int p, int q) {
         ensureCapacity(1);
-        if ( !(p<0 || q<0) ) sourceMap[ip] = new Interval(p, q);
+        if ( !(p<0 || q<0) ) code.sourceMap[ip] = new Interval(p, q);
         instrs[ip++] = (byte)opcode;
     }
 
@@ -405,9 +400,9 @@ public class Compiler {
             byte[] c = new byte[instrs.length*2];
             System.arraycopy(instrs, 0, c, 0, instrs.length);
             instrs = c;
-            Interval[] sm = new Interval[sourceMap.length*2];
-            System.arraycopy(sourceMap, 0, sm, 0, sourceMap.length);
-            sourceMap = sm;
+            Interval[] sm = new Interval[code.sourceMap.length*2];
+            System.arraycopy(code.sourceMap, 0, sm, 0, code.sourceMap.length);
+            code.sourceMap = sm;
         }
     }
 
