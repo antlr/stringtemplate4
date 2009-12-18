@@ -38,7 +38,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.io.StringWriter;
 
-/** To avoid polluting ST instances with debug info when not debugging. */
+/** To avoid polluting ST instances with debug info when not debugging.
+ *  Setting debug mode in STGroup makes it create these instead of STs.
+ */
 public class DebugST extends ST {
     /** Track all events that occur during rendering. */
     public List<InterpEvent> interpEvents = new ArrayList<InterpEvent>();
