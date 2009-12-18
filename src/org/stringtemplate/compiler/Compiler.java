@@ -123,9 +123,7 @@ public class Compiler {
                                           List<Token> ids,
                                           RecognizerSharedState state)
         {
-    		Compiler c = new Compiler();
-    		c.compile(input, state);
-    		return null;
+    		return compileRegion(enclosingTemplateName, null, input, state);
     	}
         public String compileRegion(String enclosingTemplateName,
                                     String regionName,

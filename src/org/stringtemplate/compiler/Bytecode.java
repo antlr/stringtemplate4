@@ -106,7 +106,6 @@ public class Bytecode {
     public static final short INSTR_POP             = 40;    
 
     /** Used for assembly/disassembly; describes instruction set */
-    // START: instr
     public static Instruction[] instructions = new Instruction[] {
         null, // <INVALID>
         new Instruction("load_str",OperandType.STRING), // index is the opcode
@@ -150,5 +149,4 @@ public class Bytecode {
         new Instruction("noop"),
         new Instruction("pop")        
     };
-    // END: instr
 }

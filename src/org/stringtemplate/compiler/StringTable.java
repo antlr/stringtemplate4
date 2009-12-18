@@ -44,8 +44,6 @@ public class StringTable {
         return i;
     }
 
-    public int getIndex(String s) { return table.get(s); }
-
     public String[] toArray() {
         String[] a = new String[table.size()];
         int i = 0;

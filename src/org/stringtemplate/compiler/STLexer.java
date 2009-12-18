@@ -35,15 +35,29 @@ import org.stringtemplate.misc.ErrorType;
 import java.util.ArrayList;
 import java.util.List;
 
+/** This class represents the tokenizer for templates. It operates in two modes:
+ *  inside and outside of expressions. It behaves like an ANTLR TokenSource,
+ *  implementing nextToken().  Outside of expressions, we can return these
+ *  token types: TEXT, INDENT, LDELIM (start of expr), RCURLY (end of subtemplate),
+ *  and NEWLINE.  Inside of an expression, this lexer returns all of the tokens
+ *  needed by the STParser. From the parser's point of view, it can treat a
+ *  template as a simple stream of elements.
+ *
+ *  This class defines the token types and communicates these values to STParser.g
+ *  via STLexer.tokens file (which must remain consistent).
+ */
 public class STLexer implements TokenSource {
     public static final char EOF = (char)-1;            // EOF char
     public static final int EOF_TYPE = CharStream.EOF;  // EOF token type
 
+    /** We build STToken tokens instead of relying on CommonToken so we
+     *  can override toString(). It just converts token types to
+     *  token names like 23 to LDELIM.
+     */
     public static class STToken extends CommonToken {
         public STToken(CharStream input, int type, int channel, int start, int stop) {
             super(input, type, channel, start, stop);
         }
-
         public STToken(int type, String text) { super(type, text); }
 
         public String toString() {
@@ -92,18 +106,35 @@ public class STLexer implements TokenSource {
     public static final int AT=33;
     public static final int REGION_END=34;
 
+    /** What char starts an expression? */
     char delimiterStartChar = '<';
     char delimiterStopChar = '>';
 
+    /** This keep track of the mode of the lexer. Are we inside or outside
+     *  an ST expression?
+     */
     boolean scanningInsideExpr = false;
+
+    /** To be able to properly track the inside/outside mode, we need to
+     *  track how deeply nested we are in some templates. Otherwise, we
+     *  know whether a '}' and the outermost subtemplate to send this back to
+     *  outside mode.
+     */
 	public int subtemplateDepth = 0; // start out *not* in a {...} subtemplate 
 
     CharStream input;
     char c;        // current character
+
+    /** When we started token, track initial coordinates so we can properly
+     *  build token objects.
+     */
     int startCharIndex;
     int startLine;
     int startCharPositionInLine;
 
+    /** Our lexer routines might have to emit more than a single token. We
+     *  buffer everything through this list.
+     */
     List<Token> tokens = new ArrayList<Token>();
 
     public Token nextToken() {
@@ -111,9 +142,7 @@ public class STLexer implements TokenSource {
         return _nextToken();
     }
 
-    public STLexer(CharStream input) {
-		this(input, '<', '>');
-    }
+    public STLexer(CharStream input) { this(input, '<', '>'); }
 
 	public STLexer(CharStream input, char delimiterStartChar, char delimiterStopChar) {
 		this.input = input;
@@ -267,7 +296,6 @@ public class STLexer implements TokenSource {
 			startCharPositionInLine = curlyPos;
 			return curly;
 		}
-		//System.out.println("no match rewind");
 		input.rewind(m);
 		startCharIndex = curlyStartChar; // reset state
 		startLine = curlyLine;
@@ -304,19 +332,15 @@ public class STLexer implements TokenSource {
         consume();
         char[] chars = new char[4];
         if ( !isUnicodeLetter(c) ) ErrorManager.compileTimeError(ErrorType.LEXER_ERROR, c);
-;
         chars[0] = c;
         consume();
         if ( !isUnicodeLetter(c) ) ErrorManager.compileTimeError(ErrorType.LEXER_ERROR, c);
-;
         chars[1] = c;
         consume();
         if ( !isUnicodeLetter(c) ) ErrorManager.compileTimeError(ErrorType.LEXER_ERROR, c);
-;
         chars[2] = c;
         consume();
         if ( !isUnicodeLetter(c) ) ErrorManager.compileTimeError(ErrorType.LEXER_ERROR, c);
-;
         chars[3] = c;
         // ESCAPE kills final char and >
         char uc = (char)Integer.parseInt(new String(chars), 16);
@@ -424,8 +448,7 @@ public class STLexer implements TokenSource {
 	}
 
     public Token newTokenFromPreviousChar(int ttype) {
-        STToken t =
-            new STToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
+        STToken t = new STToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
                 input.index()-1, input.index()-1);
         t.setLine(input.getLine());
         t.setCharPositionInLine(input.getCharPositionInLine()-1);
