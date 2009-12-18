@@ -1,6 +1,6 @@
 /*
  [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ Copyright (c) 2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
