@@ -42,6 +42,10 @@ import java.net.URL;
 
 // TODO: caching?
 
+/** A directory or directory tree full of templates and/or group files.
+ *  We load files on-demand. If we fail to find a file, we look for it via
+ *  the CLASSPATH as a resource.  I track everything with URLs not file names.
+ */
 public class STGroupDir extends STGroup {
     public String groupDirName;
     public URL root;
@@ -70,22 +74,12 @@ public class STGroupDir extends STGroup {
         catch (Exception e) {
             ErrorManager.internalError(null, "can't load group dir "+dirName, e);
         }
-
-        //System.out.println("STGroupDir("+dirName+") found as "+root);
     }
 
-    public STGroupDir(String fullyQualifiedRootDirName, String encoding) {
-        this(fullyQualifiedRootDirName);
+    public STGroupDir(String dirName, String encoding) {
+        this(dirName);
         this.encoding = encoding;
     }
-
-    /** walk dir and all subdir to load templates, group files */
-/*
-    public void load() {
-        _load("/");
-        alreadyLoaded = true;
-    }
-    */
 
     /** Load a template from dir or group file.  Group file is given
      *  precedence over dir with same name.

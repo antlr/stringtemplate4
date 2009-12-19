@@ -43,13 +43,16 @@ import java.util.*;
  *  it's like a single group file broken into multiple files, one for each template.
  *  ST v3 had just the pure template inside, not the template name and header.
  *  Name inside must match filename (minus suffix).
+ *
+ *  Users can use simple template names like c but, internally, we have to
+ *  know the fully qualified path from the root directory specified when
+ *  we create this object.  If we're compiling templates in subdir a/b, then
+ *  /a/b is the path prefix to add to all template refs.
  */
 public class STGroup {
     /** When we use key as a value in a dictionary, this is how we signify. */
     public static final String DICT_KEY = "key";
     public static final String DEFAULT_KEY = "default";
-
-    //public String fullyQualifiedRootDirName;
 
     /** Load files using what encoding? */
     public String encoding;
@@ -107,7 +110,7 @@ public class STGroup {
         return null;
     }
 
-    public ST getEmbeddedInstanceOf(ST enclosingInstance, int ip, String name) {
+    protected ST getEmbeddedInstanceOf(ST enclosingInstance, int ip, String name) {
         ST st = getInstanceOf(name);
         if ( st==null ) {
             ErrorManager.runTimeError(enclosingInstance, ip, ErrorType.NO_SUCH_TEMPLATE,
@@ -118,7 +121,7 @@ public class STGroup {
         return st;
     }
 
-    public CompiledST lookupTemplate(String name) {
+    protected CompiledST lookupTemplate(String name) {
         CompiledST code = templates.get(name);
         if ( code==NOT_FOUND_ST ) return null;
         // try to load from disk and look up again
@@ -151,7 +154,6 @@ public class STGroup {
                               FormalArgument.UNKNOWN, template);
     }
 
-	// can't trap recog errors here; don't know where in file template is defined
     public CompiledST defineTemplate(String prefix,
                                      Token nameT,
                                      LinkedHashMap<String,FormalArgument> args,
@@ -360,7 +362,7 @@ public class STGroup {
 
     /** StringTemplate object factory; each group can have its own. */
     public ST createStringTemplate() {
-        // TODO: try making a mem pool
+        // TODO: try making a mem pool?
         if ( debug ) {
             return new DebugST();
         }
@@ -368,10 +370,6 @@ public class STGroup {
     }
 
     public String getName() { return "<no name>;"; }
-
-    public LinkedHashMap<String, CompiledST> getTemplates() {
-        return templates;
-    }
 
     public String toString() { return getName(); }
 

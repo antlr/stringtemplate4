@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Essentially a char filter that knows how to auto-indent output
- *  by maintaining a stack of indent levels.  I set a flag upon newline
- *  and then next nonwhitespace char resets flag and spits out indention.
+ *  by maintaining a stack of indent levels.
+ *
  *  The indent stack is a stack of strings so we can repeat original indent
  *  not just the same number of columns (don't have to worry about tabs vs
  *  spaces then).
@@ -46,7 +46,7 @@ import java.util.List;
  *  This is a filter on a Writer.
  *
  *  \n is the proper way to say newline for options and templates.
- *  Templates can mix them but use \n for sure and options like
+ *  Templates can mix \r\n and \n them but use \n for sure in options like
  *  wrap="\n". ST will generate the right thing. Override the default (locale)
  *  newline by passing in a string to the constructor.
  */
@@ -79,8 +79,6 @@ public class AutoIndentWriter implements STWriter {
     protected int charIndex = 0;
 
 	protected int lineWidth = NO_WRAP;
-
-	protected int charPositionOfStartOfExpr = 0;
 
 	public AutoIndentWriter(Writer out, String newline) {
 		this.out = out;
@@ -116,17 +114,6 @@ public class AutoIndentWriter implements STWriter {
 
 	public void popAnchorPoint() {
 		anchors_sp--;
-	}
-
-	public int getIndentationWidth() {
-		int n = 0;
-        for (int i=0; i<indents.size(); i++) {
-            String ind = (String)indents.get(i);
-            if ( ind!=null ) {
-                n+=ind.length();
-			}
-        }
-		return n;
 	}
 
     public int index() { return charIndex; }
@@ -231,12 +218,4 @@ public class AutoIndentWriter implements STWriter {
         charIndex += n;
 		return n;
 	}
-
-    protected StringBuffer getIndentString(int spaces) {
-        StringBuffer buf = new StringBuffer();
-        for (int i=1; i<=spaces; i++) {
-            buf.append(' ');
-        }
-        return buf;
-    }
 }

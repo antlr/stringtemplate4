@@ -30,6 +30,9 @@ package org.stringtemplate;
 import java.net.URLEncoder;
 import java.util.*;
 
+/** This render knows to perform a few operations on String objects:
+ *  upper, lower, cap, url-encode, xml-encode.
+ */
 public class StringRenderer implements AttributeRenderer {
     // trim(s) and strlen(s) built-in funcs; these are format options
     public String toString(Object o, String formatString, Locale locale) {

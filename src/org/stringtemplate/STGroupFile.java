@@ -34,6 +34,10 @@ import org.stringtemplate.misc.Misc;
 import java.io.File;
 import java.net.URL;
 
+/** The internal representation of a single group file (which must end in
+ *  ".stg").  If we fail to find a group file, look for it via the
+ *  CLASSPATH as a resource.
+ */
 public class STGroupFile extends STGroup {
     public String fileName;
     public URL url;

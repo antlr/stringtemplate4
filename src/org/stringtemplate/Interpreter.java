@@ -43,6 +43,23 @@ import java.util.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 
+/** This class knows how to execute template bytecodes relative to a
+ *  particular STGroup. To execute the byte codes, we need an output stream
+ *  and a reference to an ST an instance. That instance's impl field points at
+ *  a CompiledST, which contains all of the byte codes and other information
+ *  relevant to execution.
+ *
+ *  This interpreter is a stack-based bytecode interpreter.  All operands
+ *  go onto an operand stack.
+ *
+ *  If the group we're executed relative to has debug set, we track
+ *  interpreter events. For now, I am only tracking instance creation events.
+ *  These are used by STViz to pair up output chunks with the template
+ *  expressions that generate them.
+ *
+ *  We create a new interpreter for each ST.render(), DebugST.inspect, or
+ *  DebugST.getEvents() invocation.
+ */
 public class Interpreter {
     public enum Option { ANCHOR, FORMAT, NULL, SEPARATOR, WRAP }
 
@@ -53,17 +70,20 @@ public class Interpreter {
 
     /** Operand stack, grows upwards */
     Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
-    int sp = -1;  // stack pointer register
-    int current_ip = 0;
-    int nw = 0;   // how many char written on this template line so far? ("number written" register)
+    int sp = -1;        // stack pointer register
+    int current_ip = 0; // mirrors ip in exec(), but visible to all methods
+    int nw = 0;         // how many char written on this template line so far?
+                        // ("number written" register)
 
     /** Exec st with respect to this group. Once set in ST.toString(),
      *  it should be fixed. ST has group also.
      */
     STGroup group;
-    
+
+    /** For renderers, we have to pass in the locale */
     Locale locale;
-    
+
+    /** Dump bytecode instructions as we execute them? */
     public boolean trace = false;
 
     /** Track everything happening in interp if debug */
@@ -351,6 +371,9 @@ public class Interpreter {
         return n;
     }
 
+    /** Write out an expression result that doesn't use expression options.
+     *  E.g., <name>
+     */
     protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
         int start = out.index(); // track char we're about to write
         int n = writeObject(out, self, o, null);
@@ -364,6 +387,9 @@ public class Interpreter {
         return n;
     }
 
+    /** Write out an expression result that uses expression options.
+     *  E.g., <names; separator=", ">
+     */
     protected int writeObjectWithOptions(STWriter out, ST self, Object o,
                                          Object[] options)
     {
@@ -395,6 +421,9 @@ public class Interpreter {
         return n;
     }
 
+    /** Generic method to emit text for an object. It differentiates
+     *  between templates, iterable objects, and plain old Java objects (POJOs)
+     */
     protected int writeObject(STWriter out, ST self, Object o, String[] options) {
         int n = 0;
         if ( o == null ) {
@@ -474,7 +503,7 @@ public class Interpreter {
         rot_map(self, attr, new ArrayList<String>() {{add(name);}});
     }
 
-    // <names:a,b>
+    // <names:a> or <names:a,b>
     protected void rot_map(ST self, Object attr, List<String> templates) {
         if ( attr==null ) {
             operands[++sp] = null;
@@ -502,7 +531,6 @@ public class Interpreter {
                 i++;
             }
             operands[++sp] = mapped;
-            //System.out.println("mapped="+mapped);
         }
         else { // if only single value, just apply first template to attribute
             ST st = group.getInstanceOf(templates.get(0));
@@ -515,7 +543,6 @@ public class Interpreter {
             else {
                 operands[++sp] = ST.BLANK;
             }
-//            map(self, attr, templates.get(1));
         }
     }
 
@@ -759,8 +786,6 @@ public class Interpreter {
         return i;
     }
 
-    public List<InterpEvent> getEvents() { return events; }
-    
     protected String toString(ST self, Object value) {
         if ( value!=null ) {
             if ( value.getClass()==String.class ) return (String)value;
@@ -975,14 +1000,7 @@ public class Interpreter {
         }
     }
 
-    public static int getInt(byte[] memory, int index) {
-        int b1 = memory[index++]&0xFF; // mask off sign-extended bits
-        int b2 = memory[index++]&0xFF;
-        int b3 = memory[index++]&0xFF;
-        int b4 = memory[index++]&0xFF;
-        int word = b1<<(8*3) | b2<<(8*2) | b3<<(8*1) | b4;
-        return word;
-    }
+    public List<InterpEvent> getEvents() { return events; }
 
     public static int getShort(byte[] memory, int index) {
         int b1 = memory[index++]&0xFF; // mask off sign-extended bits
@@ -990,6 +1008,5 @@ public class Interpreter {
         int word = b1<<(8*1) | b2;
         return word;
     }
-
 }
 

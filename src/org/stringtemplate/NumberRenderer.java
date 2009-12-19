@@ -35,7 +35,8 @@ import java.util.*;
  *
  *  http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html
  *
- *  Can even do longs to date conversions.
+ *  For example, "%10d" emits a number as a decimal int padding to 10 char.
+ *  This can even do long to date conversions using the format string.
  */
 public class NumberRenderer implements AttributeRenderer {
     public String toString(Object o, String formatString, Locale locale) {

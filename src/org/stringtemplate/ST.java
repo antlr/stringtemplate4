@@ -36,6 +36,16 @@ import java.util.*;
 import java.io.StringWriter;
 import java.io.IOException;
 
+/** An instance of the StringTemplate. It consists primarily of
+ *  a reference to its implementation (shared among all instances)
+ *  and a hash table of attributes.  Because of dynamic scoping,
+ *  we also need a reference to any enclosing instance. For example,
+ *  in a deeply nested template for an HTML page body, we could still reference
+ *  the title attribute defined in the outermost page template.
+ *
+ *  To use templates, you create one (usually via STGroup) and then inject
+ *  attributes using add(). To render its attacks, use render().
+ */
 public class ST {
 	public static final String SUBTEMPLATE_PREFIX = "_sub";
 
@@ -76,7 +86,7 @@ public class ST {
 	/** Just an alias for ArrayList, but this way I can track whether a
      *  list is something ST created or it's an incoming list.
      */
-    public static final class AttributeList extends ArrayList {
+    public static final class AttributeList<T> extends ArrayList<T> {
         public AttributeList(int size) { super(size); }
         public AttributeList() { super(); }
     }
@@ -84,21 +94,19 @@ public class ST {
     public ST() {;}
     
     public ST(String template) {
-        //this(STGroup.defaultGroup, template);
-        //code = STGroup.defaultGroup.defineTemplate(UNKNOWN_NAME, template);
         groupThatCreatedThisInstance = STGroup.defaultGroup;
         impl = groupThatCreatedThisInstance.compile("/", null, template);
         impl.name = UNKNOWN_NAME;
         groupThatCreatedThisInstance.defineImplicitlyDefinedTemplates(impl);
     }
 
-    /*
-    public ST(STGroup nativeGroup, String template) {
-        code = nativeGroup.defineTemplate(UNKNOWN_NAME, template);
-        groupThatCreatedThisInstance = nativeGroup;
-    }
+    /** Inject an attribute (name/value pair). If there is already an
+     *  attribute with that name, this method turns the attribute into an
+     *  AttributeList with both the previous and the new attribute as elements.
+     *  This method will never alter a List that you inject.  If you send
+     *  in a List and then inject a single value element, add() copies
+     *  original list and adds the new value.
      */
-
     public void add(String name, Object value) {
         if ( name==null ) return; // allow null value
         if ( name.indexOf('.')>=0 ) {
@@ -118,7 +126,7 @@ public class ST {
         // attribute will be multi-valued for sure now
         // convert current attribute to list if not already
         // copy-on-write semantics; copy a list injected by user to add new value
-        AttributeList multi = convertToAttributeList(curvalue);
+        AttributeList<Object> multi = convertToAttributeList(curvalue);
         rawSetAttribute(name, multi); // replace with list
 
         // now, add incoming value to multi-valued attribute
@@ -139,6 +147,9 @@ public class ST {
         attributes.put(name, value);
     }
 
+    /** Cause an error if we know about this template arguments and
+     *  name is not defined.
+     */
     protected void checkAttributeExists(String name) {
         if ( impl.formalArguments == FormalArgument.UNKNOWN ) return;
         if ( impl.formalArguments == null || impl.formalArguments.get(name) == null ) {
@@ -178,36 +189,34 @@ public class ST {
         return null;
     }
 
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
+    public Map<String, Object> getAttributes() { return attributes; }
 
-    protected static AttributeList convertToAttributeList(Object curvalue) {
-        AttributeList multi;
+    protected static AttributeList<Object> convertToAttributeList(Object curvalue) {
+        AttributeList<Object> multi;
         if ( curvalue == null ) {
-            multi = new AttributeList(); // make list to hold multiple values
-            multi.add(curvalue);         // add previous single-valued attribute
+            multi = new AttributeList<Object>(); // make list to hold multiple values
+            multi.add(curvalue);                 // add previous single-valued attribute
         }
         else if ( curvalue.getClass() == AttributeList.class ) { // already a list made by ST
-            multi = (AttributeList)curvalue;
+            multi = (AttributeList<Object>)curvalue;
         }
         else if ( curvalue instanceof List) { // existing attribute is non-ST List
             // must copy to an ST-managed list before adding new attribute
             // (can't alter incoming attributes)
             List listAttr = (List)curvalue;
-            multi = new AttributeList(listAttr.size());
+            multi = new AttributeList<Object>(listAttr.size());
             multi.addAll(listAttr);
         }
         else if ( curvalue.getClass().isArray() ) { // copy array to list
             Object[] a = (Object[])curvalue;
-            multi = new AttributeList(a.length);
+            multi = new AttributeList<Object>(a.length);
             multi.addAll(Arrays.asList(a)); // asList doesn't copy as far as I can tell
         }
         else {
             // curvalue nonlist and we want to add an attribute
             // must convert curvalue existing to list
-            multi = new AttributeList(); // make list to hold multiple values
-            multi.add(curvalue);         // add previous single-valued attribute
+            multi = new AttributeList<Object>(); // make list to hold multiple values
+            multi.add(curvalue);                 // add previous single-valued attribute
         }
         return multi;
     }
@@ -270,7 +279,7 @@ public class ST {
     }
 
     public String toString() {
-        if ( impl ==null ) return "bad-template()";
+        if ( impl==null ) return "bad-template()";
         return impl.name+"()";
     }
 }
