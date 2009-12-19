@@ -188,8 +188,7 @@ public class STGroup {
         String target = targetT.getText();
         CompiledST targetCode = templates.get(target);
         if ( targetCode==null ){
-            NoViableAltException e = null;
-            ErrorManager.syntaxError(ErrorType.ALIAS_TARGET_UNDEFINED, e, alias, target);
+            ErrorManager.compileTimeError(ErrorType.ALIAS_TARGET_UNDEFINED, aliasT, alias, target);
             return null;
         }
         templates.put(alias, targetCode);
@@ -244,7 +243,7 @@ public class STGroup {
                     re.charPositionInLine+templateToken.getCharPositionInLine()+n;
                 re.line = re.line + templateToken.getLine() - 1;
             }
-            ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re, e.getMessage());
+            ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re.token.getInputStream().getSourceName(), re, e.getMessage());
         }
     }
 
@@ -260,7 +259,7 @@ public class STGroup {
     protected void rawDefineTemplate(String name, CompiledST code, Token defT) {
         CompiledST prev = templates.get(name);
         if ( prev!=null ) {
-            if ( !prev.isRegion ) {
+            if ( !prev.isRegion ) {                
                 ErrorManager.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, defT);
                 return;
             }

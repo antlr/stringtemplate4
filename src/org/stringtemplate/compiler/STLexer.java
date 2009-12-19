@@ -321,7 +321,8 @@ public class STLexer implements TokenSource {
                 break;
             case 'u' : t = UNICODE(); break;
             default :
-                ErrorManager.compileTimeError(ErrorType.LEXER_ERROR, c);
+                NoViableAltException e = new NoViableAltException("",0,0,input);
+                ErrorManager.lexerError(ErrorType.LEXER_ERROR, e, c);
         }
         consume();
         match(delimiterStopChar);
@@ -331,16 +332,28 @@ public class STLexer implements TokenSource {
     Token UNICODE() {
         consume();
         char[] chars = new char[4];
-        if ( !isUnicodeLetter(c) ) ErrorManager.compileTimeError(ErrorType.LEXER_ERROR, c);
+        if ( !isUnicodeLetter(c) ) {
+            NoViableAltException e = new NoViableAltException("",0,0,input);
+            ErrorManager.lexerError(ErrorType.LEXER_ERROR, e, c);
+        }
         chars[0] = c;
         consume();
-        if ( !isUnicodeLetter(c) ) ErrorManager.compileTimeError(ErrorType.LEXER_ERROR, c);
+        if ( !isUnicodeLetter(c) ) {
+            NoViableAltException e = new NoViableAltException("",0,0,input);
+            ErrorManager.lexerError(ErrorType.LEXER_ERROR, e, c);
+        }
         chars[1] = c;
         consume();
-        if ( !isUnicodeLetter(c) ) ErrorManager.compileTimeError(ErrorType.LEXER_ERROR, c);
+        if ( !isUnicodeLetter(c) ) {
+            NoViableAltException e = new NoViableAltException("",0,0,input);
+            ErrorManager.lexerError(ErrorType.LEXER_ERROR, e, c);
+        }
         chars[2] = c;
         consume();
-        if ( !isUnicodeLetter(c) ) ErrorManager.compileTimeError(ErrorType.LEXER_ERROR, c);
+        if ( !isUnicodeLetter(c) ) {
+            NoViableAltException e = new NoViableAltException("",0,0,input);
+            ErrorManager.lexerError(ErrorType.LEXER_ERROR, e, c);
+        }
         chars[3] = c;
         // ESCAPE kills final char and >
         char uc = (char)Integer.parseInt(new String(chars), 16);

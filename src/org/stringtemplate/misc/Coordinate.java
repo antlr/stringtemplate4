@@ -27,6 +27,9 @@
 */
 package org.stringtemplate.misc;
 
+/** A line number and char position within a line.  Used by the source
+ *  mapping stuff to map address to range within a template.
+ */
 public class Coordinate {
     public int line;
     public int charPosition;

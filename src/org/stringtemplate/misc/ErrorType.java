@@ -27,6 +27,7 @@
 */
 package org.stringtemplate.misc;
 
+/** All the errors that can happen and how to generate a message */
 public enum ErrorType {      
     // RUNTIME SEMANTIC ERRORS
     NO_SUCH_TEMPLATE("no such template: %s"),
@@ -47,7 +48,7 @@ public enum ErrorType {
     MAP_REDEFINITION("redefinition of dictionary %s"),
     ALIAS_TARGET_UNDEFINED("cannot alias %s to undefined template: %s"),
     TEMPLATE_REDEFINITION_AS_MAP("redefinition of template %s as a map"),
-    LEXER_ERROR("lexer there are add character %s"),
+    LEXER_ERROR("lexer error or bad character %s"),
     NO_DEFAULT_VALUE("missing dictionary default value"),
     NO_SUCH_FUNCTION("no such function: %s"),
     NO_SUCH_OPTION("no such option: %s"),
@@ -58,8 +59,7 @@ public enum ErrorType {
     CANT_LOAD_GROUP_FILE("can't load group file %s"),
     CANT_LOAD_TEMPLATE_FILE("can't load template file %s");
 
-    public String messageTemplate;
+    public String message;
 
-    ErrorType(String m) { messageTemplate = m; }
-
+    ErrorType(String m) { message = m; }
 }

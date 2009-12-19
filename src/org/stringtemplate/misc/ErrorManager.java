@@ -31,10 +31,6 @@ import org.antlr.runtime.Token;
 import org.antlr.runtime.RecognitionException;
 import org.stringtemplate.ST;
 import org.stringtemplate.STErrorListener;
-import org.stringtemplate.misc.STCompiletimeMessage;
-import org.stringtemplate.misc.STMessage;
-import org.stringtemplate.misc.STRuntimeMessage;
-import org.stringtemplate.misc.STSyntaxErrorMessage;
 
 /** Track errors per thread; e.g., one server transaction's errors
  *  will go in one grouping since each has it's own thread.
@@ -81,38 +77,47 @@ public class ErrorManager {
         protected STErrorListener initialValue() { return DEFAULT_ERROR_LISTENER; }
     };
 
-    /** Backward compatibility for tombu, co-designer.  Don't check missing
-     *  args against formal arg lists and don't require template headers in .st
-     *  files.
+    /** Backward compatibility for tombu, co-designer.  Don't require template
+     *  headers in .st files.
      */
     public static boolean v3_mode = false;
 
     public static void setErrorListener(STErrorListener listener) { ErrorManager.listener.set(listener); }
 
     public static void compileTimeError(ErrorType error, Token t) {
-        listener.get().compileTimeError(new STCompiletimeMessage(error,t,null,t.getText()));
+        String srcName = t.getInputStream().getSourceName();
+        if ( srcName!=null ) srcName = Misc.getFileName(srcName);
+        listener.get().compileTimeError(
+            new STCompiletimeMessage(error,srcName,t,null,t.getText())
+        );
     }
 
-    public static void compileTimeError(ErrorType error, Object arg) {
-        listener.get().compileTimeError(new STCompiletimeMessage(error,null,null,arg));
+    public static void lexerError(ErrorType error, RecognitionException e, Object arg) {
+        listener.get().compileTimeError(
+            new STCompiletimeMessage(error,null,null,e,arg)
+        );
     }
 
     public static void compileTimeError(ErrorType error, Token t, Object arg) {
-        listener.get().compileTimeError(new STCompiletimeMessage(error,t,null,arg));
+        String srcName = t.getInputStream().getSourceName();
+        srcName = Misc.getFileName(srcName);
+        listener.get().compileTimeError(
+            new STCompiletimeMessage(error,srcName,t,null,arg)
+        );
     }
 
-/*
-    public static void compileTimeError(ErrorType error, Object arg, Object arg2) {
-        listener.get().compileTimeError(new STMessage(error,null,null,arg,arg2));
-    }
-     */
-
-    public static void syntaxError(ErrorType error, RecognitionException e, String msg) {
-        listener.get().compileTimeError(new STSyntaxErrorMessage(error,e.token,e,msg));
+    public static void compileTimeError(ErrorType error, Token t, Object arg, Object arg2) {
+        String srcName = t.getInputStream().getSourceName();
+        srcName = Misc.getFileName(srcName);
+        listener.get().compileTimeError(
+            new STCompiletimeMessage(error,srcName,t,null,arg,arg2)
+        );
     }
 
-    public static void syntaxError(ErrorType error, RecognitionException e, String msg, Object arg) {
-        listener.get().compileTimeError(new STSyntaxErrorMessage(error, e.token, e,msg,arg));
+    public static void syntaxError(ErrorType error, String srcName, RecognitionException e, String msg) {
+        listener.get().compileTimeError(
+            new STCompiletimeMessage(error,srcName,e.token,e,msg)
+        );
     }
 
     public static void runTimeError(ST self, int ip, ErrorType error) {

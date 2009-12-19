@@ -79,18 +79,9 @@ public class Misc {
         return f.substring(0,f.lastIndexOf('.'));
     }
 
-    public static String readLines(String file) throws IOException {
-        Reader r = new InputStreamReader(new FileInputStream(file));
-        BufferedReader br = new BufferedReader(r);
-        StringBuilder buf = new StringBuilder();
-        String line = br.readLine();
-        while (line != null) {
-            buf.append(line);
-            buf.append('\n');
-            line = br.readLine();
-        }
-        br.close();
-        return buf.toString();
+    public static String getFileName(String fullFileName) {
+        File f = new File(fullFileName); // strip to simple name
+        return f.getName();
     }
 
     public static String replaceEscapes(String s) {

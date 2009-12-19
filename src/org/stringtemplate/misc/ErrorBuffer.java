@@ -32,6 +32,7 @@ import org.stringtemplate.misc.STMessage;
 import java.util.List;
 import java.util.ArrayList;
 
+/** Used during tests to track all errors */
 public class ErrorBuffer implements STErrorListener {
     public List<STMessage> errors = new ArrayList<STMessage>();
 

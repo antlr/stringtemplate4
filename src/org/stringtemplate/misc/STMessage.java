@@ -28,12 +28,17 @@
 package org.stringtemplate.misc;
 
 import org.antlr.runtime.Token;
-import org.stringtemplate.misc.ErrorType;
 import org.stringtemplate.ST;
 
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
+/** Upon error, ST creates an STMessage or subclass instance and notifies
+ *  the listener.  This root class is used for IO and internal errors.
+ *
+ *  @see STRuntimeMessage
+ *  @see STCompiletimeMessage
+ */
 public class STMessage {
     /** if in debug mode, has create instance, add attr events and eval
      *  template events.
@@ -42,7 +47,6 @@ public class STMessage {
     public ErrorType error;
     public Object arg;
     public Object arg2;
-    public Token where;
     public Throwable cause;
 
     public STMessage(ErrorType error) {
@@ -55,11 +59,6 @@ public class STMessage {
     public STMessage(ErrorType error, ST self, Throwable cause) {
         this(error,self);
         this.cause = cause;
-    }
-    public STMessage(ErrorType error, ST self, Throwable cause, Token where) {
-        this(error,self);
-        this.cause = cause;
-        this.where = where;
     }
     public STMessage(ErrorType error, ST self, Throwable cause, Object arg) {
         this(error,self,cause);
@@ -78,7 +77,7 @@ public class STMessage {
     public String toString() {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        String msg = String.format(error.messageTemplate, arg, arg2);
+        String msg = String.format(error.message, arg, arg2);
         pw.print(msg);
         if ( cause!=null ) {
             pw.print("\nCaused by: ");

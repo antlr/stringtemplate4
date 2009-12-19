@@ -30,12 +30,9 @@ package org.stringtemplate.test;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.stringtemplate.*;
-import org.stringtemplate.misc.ErrorBuffer;
+import org.stringtemplate.misc.*;
 import org.stringtemplate.compiler.STException;
 import org.antlr.runtime.RecognitionException;
-import org.stringtemplate.misc.ErrorManager;
-import org.stringtemplate.misc.ErrorType;
-import org.stringtemplate.misc.STSyntaxErrorMessage;
 
 public class TestSyntaxErrors extends BaseTest {
     @Test public void testEmptyExpr() throws Exception {
@@ -47,7 +44,9 @@ public class TestSyntaxErrors extends BaseTest {
 		}
 		catch (STException se) {
             RecognitionException re = (RecognitionException)se.getCause();
-            result = new STSyntaxErrorMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
+            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,
+                                              re.token.getInputStream().getSourceName(),
+                                              re.token,re,se.getMessage()).toString();
 		}
         String expected = "1:0: this doesn't look like a template: \" <> \"";
         assertEquals(expected, result);
@@ -62,7 +61,9 @@ public class TestSyntaxErrors extends BaseTest {
 		}
 		catch (STException se) {
             RecognitionException re = (RecognitionException)se.getCause();
-            result = new STSyntaxErrorMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
+            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,
+                                              re.token.getInputStream().getSourceName(),
+                                              re.token,re,se.getMessage()).toString();
 		}
         String expected = "1:3: doesn't look like an expression";
         assertEquals(expected, result);
@@ -77,7 +78,9 @@ public class TestSyntaxErrors extends BaseTest {
 		}
 		catch (STException se) {
             RecognitionException re = (RecognitionException)se.getCause();
-            result = new STSyntaxErrorMessage(ErrorType.SYNTAX_ERROR,re.token,re,se.getMessage()).toString();
+            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,
+                                              null,
+                                              re.token,re,se.getMessage()).toString();
 		}
         String expected = "1:4: invalid character: *";
         assertEquals(expected, result);

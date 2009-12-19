@@ -53,7 +53,7 @@ public void displayRecognitionError(String[] tokenNames,
                                     RecognitionException e)
 {
     String msg = getErrorMessage(e, tokenNames);
-    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
+    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 }
 public String getSourceName() {
     String fullFileName = super.getSourceName();    
@@ -62,7 +62,7 @@ public String getSourceName() {
 }
 public void error(String msg) {
     NoViableAltException e = new NoViableAltException("", 0, 0, input);
-    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
+    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
     recover(input, null);
 }
 }
@@ -81,7 +81,7 @@ public void reportError(RecognitionException e) {
     else {
         msg = getErrorMessage(e, getTokenNames());
     }
-    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
+    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 }
 public String getSourceName() {
     String fullFileName = super.getSourceName();
@@ -126,7 +126,7 @@ templateDef[String prefix]
 	    	template = "";
 	    	String msg = "missing template at '"+input.LT(1).getText()+"'";
             NoViableAltException e = new NoViableAltException("", 0, 0, input);
-    	    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
+    	    ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
     	    }
 	    )
 	    {
@@ -217,7 +217,7 @@ STRING
 		|	{
 			String msg = "\\n in string";
     		NoViableAltException e = new NoViableAltException("", 0, 0, input);
-			ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, e, msg, getSourceName());
+			ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 			}
 			'\n'
 		|	~('\\'|'"'|'\n')

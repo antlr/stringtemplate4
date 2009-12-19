@@ -27,13 +27,9 @@
 */
 package org.stringtemplate.misc;
 
-import org.stringtemplate.misc.ErrorType;
 import org.stringtemplate.ST;
-import org.stringtemplate.misc.Interval;
-import org.stringtemplate.misc.Coordinate;
-import org.stringtemplate.misc.Misc;
-import org.stringtemplate.misc.STMessage;
 
+/** Used to track errors that occur in the ST interpreter. */
 public class STRuntimeMessage extends STMessage {
     /** Where error occurred in bytecode memory */
     public int ip = -1;
