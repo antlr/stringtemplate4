@@ -214,8 +214,8 @@ andConditional
 	;
 
 notConditional
-	:	'!' primary  {gen.emit(Bytecode.INSTR_NOT);}
-	|	primary
+	:	'!' memberExpr  {gen.emit(Bytecode.INSTR_NOT);}
+	|	memberExpr
 	;
 	
 exprOptions

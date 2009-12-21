@@ -191,6 +191,11 @@ public class ST {
 
     public Map<String, Object> getAttributes() { return attributes; }
 
+    /** Useful if you want to set all attributes at once, w/o using add() */
+    public void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
+    }
+
     protected static AttributeList<Object> convertToAttributeList(Object curvalue) {
         AttributeList<Object> multi;
         if ( curvalue == null ) {

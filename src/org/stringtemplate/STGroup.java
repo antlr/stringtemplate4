@@ -110,6 +110,12 @@ public class STGroup {
         return null;
     }
 
+    public ST getInstanceOf(String name, Map<String,Object> attributes) {
+        ST st = getInstanceOf(name);
+        if ( st!=null ) st.setAttributes(attributes);
+        return st;
+    }
+
     protected ST getEmbeddedInstanceOf(ST enclosingInstance, int ip, String name) {
         ST st = getInstanceOf(name);
         if ( st==null ) {
@@ -245,7 +251,9 @@ public class STGroup {
                     re.charPositionInLine+templateToken.getCharPositionInLine()+n;
                 re.line = re.line + templateToken.getLine() - 1;
             }
-            ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, re.token.getInputStream().getSourceName(), re, e.getMessage());
+            ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR,
+                                     Misc.getFileName(templateToken.getInputStream().getSourceName()),
+                                     re, e.getMessage());
         }
     }
 
