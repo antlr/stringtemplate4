@@ -95,12 +95,10 @@ public class TestGroups extends BaseTest {
         writeFile(dir+"/subdir", "b.st", b);
         STGroup group = new STGroupDir(dir);
         ST st = group.getInstanceOf("a");
-        st.impl.dump();
         String expected = " bar ";
         String result = st.render();
         assertEquals(expected, result);
     }
-
 
     @Test public void testGroupFileInDir() throws Exception {
         // /randomdir/a and /randomdir/group.stg with b and c templates
@@ -426,4 +424,105 @@ public class TestGroups extends BaseTest {
         ST st = group1.getInstanceOf("/group/a"); // can't see
         assertEquals(null, st);
     }
+
+    // test fully-qualified template refs
+
+    @Test public void testFullyQualifiedGetInstanceOf() throws Exception {
+        String dir = getRandomDir();
+        String a =
+            "a(x) ::= <<"+newline+
+            "foo"+newline+
+            ">>"+newline;
+        writeFile(dir, "a.st", a);
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("/a");
+        String expected = "foo";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testFullyQualifiedTemplateRef() throws Exception {
+        // /randomdir/a and /randomdir/subdir/b
+        String dir = getRandomDir();
+        String a = "a() ::= << </subdir/b()> >>\n";
+        String b = "b() ::= <<bar>>\n";
+        writeFile(dir+"/subdir", "a.st", a);
+        writeFile(dir+"/subdir", "b.st", b);
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("/subdir/a");
+        String expected = " bar ";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testFullyQualifiedTemplateRef2() throws Exception {
+        // /randomdir/a and /randomdir/group.stg with b and c templates
+        String dir = getRandomDir();
+        String a =
+            "a(x) ::= << </group/b()> >>\n";
+        writeFile(dir, "a.st", a);
+        String groupFile =
+            "b() ::= \"bar\"\n"+
+            "c() ::= \"</a()>\"\n";
+        writeFile(dir, "group.stg", groupFile);
+        STGroup group = new STGroupDir(dir);
+        ST st1 = group.getInstanceOf("a");
+        ST st2 = group.getInstanceOf("/group/c"); // invokes /a
+        String expected = " bar  bar ";
+        String result = st1.render()+st2.render();
+        assertEquals(expected, result);
+    }
+
+    // test fully-qualified template refs in v3 compatibility mode
+    // where /a/b/c is specified via a/b/c
+
+    @Test public void testv3FullyQualifiedGetInstanceOf() throws Exception {
+        ErrorManager.v3_mode = true;
+        String dir = getRandomDir();
+        String a = "foo\n";
+        writeFile(dir, "a.st", a);
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("a");
+        String expected = "foo";
+        String result = st.render();
+        assertEquals(expected, result);
+        ErrorManager.v3_mode = false;
+    }
+
+    @Test public void testv3FullyQualifiedTemplateRef() throws Exception {
+        ErrorManager.v3_mode = true;
+        // /randomdir/a and /randomdir/subdir/b
+        String dir = getRandomDir();
+        String a = "<subdir/b()>\n"; // pretend we meant </subdir/b()>
+        String b = "bar\n";
+        writeFile(dir+"/subdir", "a.st", a);
+        writeFile(dir+"/subdir", "b.st", b);
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("subdir/a");
+        String expected = "bar";
+        String result = st.render();
+        assertEquals(expected, result);
+        ErrorManager.v3_mode = false;
+    }
+
+    @Test public void testv3FullyQualifiedTemplateRef2() throws Exception {
+        ErrorManager.v3_mode = true;
+        // /randomdir/a and /randomdir/group.stg with b and c templates
+        String dir = getRandomDir();
+        String a =
+            "<group/b()>\n";
+        writeFile(dir, "a.st", a);
+        String groupFile =
+            "b() ::= \"bar\"\n"+
+            "c() ::= \"</a()>\"\n";
+        writeFile(dir, "group.stg", groupFile);
+        STGroup group = new STGroupDir(dir);
+        ST st1 = group.getInstanceOf("a");
+        ST st2 = group.getInstanceOf("group/c"); // invokes /a
+        String expected = "barbar";
+        String result = st1.render()+st2.render();
+        assertEquals(expected, result);
+        ErrorManager.v3_mode = false;
+    }
+
 }
