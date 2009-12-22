@@ -56,12 +56,12 @@ public class STGroupFile extends STGroup {
             }
             else { // try in classpath
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                URL groupFileURL = cl.getResource(fileName);
-                if ( groupFileURL==null ) {
+                url = cl.getResource(fileName);
+                if ( url==null ) {
                     cl = this.getClass().getClassLoader();
-                    groupFileURL = cl.getResource(fileName);
+                    url = cl.getResource(fileName);
                 }
-                if ( groupFileURL==null ) {
+                if ( url==null ) {
                     throw new IllegalArgumentException("No such group file: "+
                                                        fileName);
                 }
