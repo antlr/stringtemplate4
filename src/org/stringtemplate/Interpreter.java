@@ -72,8 +72,7 @@ public class Interpreter {
     Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
     int sp = -1;        // stack pointer register
     int current_ip = 0; // mirrors ip in exec(), but visible to all methods
-    int nw = 0;         // how many char written on this template line so far?
-                        // ("number written" register)
+    int nwline = 0;     // how many char written on this template LINE so far?
 
     /** Exec st with respect to this group. Once set in ST.toString(),
      *  it should be fixed. ST has group also.
@@ -86,8 +85,20 @@ public class Interpreter {
     /** Dump bytecode instructions as we execute them? */
     public boolean trace = false;
 
-    /** Track everything happening in interp if debug */
+    /** Track everything happening in interp if debug across all templates */
     protected List<InterpEvent> events;
+
+    /** If debug mode, track trace here */
+    // TODO: track the pieces not a string and track what it contributes to output
+    protected List<String> executeTrace;
+
+    /** Interpetering in debug mode has side-effects; we add interpEvents
+     *  to each ST. This set tracks whether we've added events to a
+     *  particular ST before.  If we've not seen it during this execution,
+     *  wipe it's interpEvents before adding new events.
+     *  TODO: necessary but kind of a gross implementation; clean up?
+     */
+    protected Set<ST> templateInterpEventsInitialized;
 
     public Interpreter(STGroup group) {
         this(group,Locale.getDefault());
@@ -96,9 +107,14 @@ public class Interpreter {
     public Interpreter(STGroup group, Locale locale) {
         this.group = group;
         this.locale = locale;
-        if ( group.debug ) events = new ArrayList<InterpEvent>();
+        if ( group.debug ) {
+            events = new ArrayList<InterpEvent>();
+            templateInterpEventsInitialized = new HashSet<ST>();
+            executeTrace = new ArrayList<String>();
+        }
     }
 
+    /** Execute template self and return how many characters it wrote to out */
     public int exec(STWriter out, ST self) {
         int start = out.index(); // track char we're about to write
         int prevOpcode = 0;
@@ -112,7 +128,7 @@ public class Interpreter {
         byte[] code = self.impl.instrs;        // which code block are we executing
         int ip = 0;
         while ( ip < self.impl.codeSize ) {
-            if ( trace ) trace(self, ip);
+            if ( trace || group.debug ) trace(self, ip);
             short opcode = code[ip];
             current_ip = ip;
             ip++; //jump to next instruction or first byte of operand
@@ -216,14 +232,16 @@ public class Interpreter {
                 break;
             case Bytecode.INSTR_WRITE :
                 o = operands[sp--];
-                nw = writeObjectNoOptions(out, self, o);
-                n += nw;
+                int n1 = writeObjectNoOptions(out, self, o);
+                n += n1;
+                nwline += n1;
                 break;
 			case Bytecode.INSTR_WRITE_OPT :
 				options = (Object[])operands[sp--]; // get options
 				o = operands[sp--];                 // get option to write
-				nw = writeObjectWithOptions(out, self, o, options);
-                n += nw;
+				int n2 = writeObjectWithOptions(out, self, o, options);
+                n += n2;
+                nwline += n2;
 				break;
             case Bytecode.INSTR_MAP :
                 name = (String)operands[sp--];
@@ -338,11 +356,11 @@ public class Interpreter {
                 try {
                     if ( prevOpcode==Bytecode.INSTR_NEWLINE ||
                          prevOpcode==Bytecode.INSTR_INDENT ||
-                         nw>0 )
+                         nwline>0 )
                     {
                         out.write(Misc.newline);
                     }
-                    nw = -1; // indicate nothing written but no WRITE yet
+                    nwline = 0;
                 }
                 catch (IOException ioe) {
                     ErrorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
@@ -362,10 +380,15 @@ public class Interpreter {
         if ( group.debug ) {
 			int stop = out.index() - 1;
 			EvalTemplateEvent e = new EvalTemplateEvent((DebugST)self, start, stop);
-			//System.out.println(e);
+			//System.out.println("eval template "+self+": "+e);
             events.add(e);
             if ( self.enclosingInstance!=null ) {
-                ((DebugST)self.enclosingInstance).interpEvents.add(e);
+                DebugST parent = (DebugST)self.enclosingInstance;
+                if ( !templateInterpEventsInitialized.contains(parent) ) { // seen this ST before
+                    parent.interpEvents.clear();
+                    templateInterpEventsInitialized.add(parent);
+                }
+                parent.interpEvents.add(e);
             }
         }
         return n;
@@ -844,8 +867,19 @@ public class Interpreter {
             return null;
         }
 
+        if ( !(property instanceof String) ) {
+            ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+                                      "property name isn't a string; type="+o.getClass().getName());
+            return null;
+        }
+
         Object value = null;
 
+        if ( o instanceof ST ) {
+            ST st = (ST)o;
+            return st.getAttribute((String)property);
+        }
+        
         if (o instanceof Map) {
             Map map = (Map)o;
             if ( value == STGroup.DICT_KEY ) value = property;
@@ -962,45 +996,49 @@ public class Interpreter {
     }
     
     protected void trace(ST self, int ip) {
+        StringBuilder tr = new StringBuilder();
         BytecodeDisassembler dis = new BytecodeDisassembler(self.impl);
         StringBuilder buf = new StringBuilder();
         dis.disassembleInstruction(buf,ip);
         String name = self.impl.name+":";
         if ( self.impl.name==ST.UNKNOWN_NAME) name = "";
-        System.out.printf("%-40s",name+buf);
-        System.out.print("\tstack=[");
+        tr.append(String.format("%-40s",name+buf));
+        tr.append("\tstack=[");
         for (int i = 0; i <= sp; i++) {
             Object o = operands[i];
-            printForTrace(o);
+            printForTrace(tr,o);
         }
-        System.out.print(" ], calls=");
-        System.out.print(self.getEnclosingInstanceStackString());
-        System.out.print(", sp="+sp+", nw="+nw);
-        System.out.println();
+        tr.append(" ], calls=");
+        tr.append(self.getEnclosingInstanceStackString());
+        tr.append(", sp="+sp+", nw="+ nwline);
+        String s = tr.toString();
+        if ( group.debug ) executeTrace.add(s);
+        if ( trace ) System.out.println(s);
     }
 
-    protected void printForTrace(Object o) {
+    protected void printForTrace(StringBuilder tr, Object o) {
         if ( o instanceof ST ) {
-            if ( ((ST)o).impl ==null ) System.out.print("bad-template()");
-            else System.out.print(" "+((ST)o).impl.name+"()");
+            if ( ((ST)o).impl ==null ) tr.append("bad-template()");
+            else tr.append(" "+((ST)o).impl.name+"()");
             return;
         }
         o = convertAnythingIteratableToIterator(o);
         if ( o instanceof Iterator ) {
             Iterator it = (Iterator)o;
-            System.out.print(" [");
+            tr.append(" [");
             while ( it.hasNext() ) {
                 Object iterValue = it.next();
-                printForTrace(iterValue);
+                printForTrace(tr, iterValue);
             }
-            System.out.print(" ]");
+            tr.append(" ]");
         }
         else {
-            System.out.print(" "+o);
+            tr.append(" "+o);
         }
     }
 
     public List<InterpEvent> getEvents() { return events; }
+    public List<String> getExecutionTrace() { return executeTrace; }
 
     public static int getShort(byte[] memory, int index) {
         int b1 = memory[index++]&0xFF; // mask off sign-extended bits

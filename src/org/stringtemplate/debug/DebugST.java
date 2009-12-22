@@ -70,7 +70,12 @@ public class DebugST extends ST {
         super.setAttributes(attributes);
     }
 
-    // LAUNCH A WINDOW TO INSPECT TEMPLATE HIERARCHY
+    @Override
+    public String render(Locale locale, int lineWidth) {
+        return super.render(locale, lineWidth);
+    }
+
+// LAUNCH A WINDOW TO INSPECT TEMPLATE HIERARCHY
 
     public List<InterpEvent> inspect() { return inspect(Locale.getDefault()); }
 
@@ -86,7 +91,8 @@ public class DebugST extends ST {
         wr.setLineWidth(lineWidth);
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
         interp.exec(wr, this); // render and track events
-        new STViz(this, out.toString(), interp.getEvents(), errors.errors);
+        new STViz(this, out.toString(), interp.getEvents(),
+                  interp.getExecutionTrace(), errors.errors);
         return interp.getEvents();
     }
 

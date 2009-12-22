@@ -119,6 +119,16 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
+    @Test public void testEmptyLine() throws Exception {
+        ST t = new ST(
+            "begin\n" +
+            "\n" +
+            "end\n");
+        String expecting="begin"+newline+newline+"end"+newline;
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
+
     @Test public void testSizeZeroOnLineByItselfGetsNoOutput() throws Exception {
         ST t = new ST(
             "begin\n"+

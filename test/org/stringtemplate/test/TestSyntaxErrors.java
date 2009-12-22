@@ -95,7 +95,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroupFile group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-        String expected = "1:15: doesn't look like an expression"+newline;
+        String expected = "t.stg 1:15: doesn't look like an expression"+newline;
         String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -110,7 +110,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroupFile group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:15: \\n in string, 1:14: doesn't look like an expression]";
+		String expected = "[t.stg 1:15: \\n in string, t.stg 1:14: doesn't look like an expression]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
@@ -125,7 +125,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "1:29: '!' came as a complete surprise to me"+newline;
+		String expected = "t.stg 1:29: '!' came as a complete surprise to me"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -140,7 +140,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "1:32: premature EOF"+newline;
+		String expected = "t.stg 1:32: premature EOF"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -155,7 +155,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "1:19: mismatched input '>' expecting RPAREN"+newline;
+		String expected = "t.stg 1:19: mismatched input '>' expecting RPAREN"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}

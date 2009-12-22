@@ -153,7 +153,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "[1:15: 'b' came as a complete surprise to me]";
+		String expected = "[t.stg 1:15: 'b' came as a complete surprise to me]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
