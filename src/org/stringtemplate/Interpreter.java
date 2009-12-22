@@ -27,21 +27,21 @@
 */
 package org.stringtemplate;
 
+import org.stringtemplate.compiler.*;
+import org.stringtemplate.compiler.Compiler;
+import org.stringtemplate.debug.DebugST;
+import org.stringtemplate.debug.EvalTemplateEvent;
+import org.stringtemplate.debug.InterpEvent;
+import org.stringtemplate.misc.ArrayIterator;
 import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.misc.ErrorType;
 import org.stringtemplate.misc.Misc;
-import org.stringtemplate.misc.ArrayIterator;
-import org.stringtemplate.debug.InterpEvent;
-import org.stringtemplate.debug.EvalTemplateEvent;
-import org.stringtemplate.debug.DebugST;
-import org.stringtemplate.compiler.*;
-import org.stringtemplate.compiler.Compiler;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.*;
-import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /** This class knows how to execute template bytecodes relative to a
  *  particular STGroup. To execute the byte codes, we need an output stream

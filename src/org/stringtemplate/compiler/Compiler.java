@@ -28,12 +28,17 @@
 package org.stringtemplate.compiler;
 
 import org.antlr.runtime.*;
-import org.stringtemplate.*;
+import org.stringtemplate.Interpreter;
+import org.stringtemplate.ST;
+import org.stringtemplate.STGroup;
 import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.misc.ErrorType;
 import org.stringtemplate.misc.Interval;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /** A compiler for a single template */
 public class Compiler {

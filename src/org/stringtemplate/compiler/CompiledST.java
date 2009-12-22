@@ -27,16 +27,15 @@
 */
 package org.stringtemplate.compiler;
 
-import org.stringtemplate.compiler.FormalArgument;
-import org.stringtemplate.STGroup;
 import org.stringtemplate.ST;
+import org.stringtemplate.STGroup;
 import org.stringtemplate.misc.Interval;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 /** The result of compiling an ST.  Contains all the bytecode instructions,
  *  string table, bytecode address to source code map, and other bookkeeping

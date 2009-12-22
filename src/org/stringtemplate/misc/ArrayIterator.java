@@ -27,9 +27,9 @@
 */
 package org.stringtemplate.misc;
 
+import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.lang.reflect.Array;
 
 /** Iterator for an array so I don't have to copy the array to a List
  *  just to make it iteratable.

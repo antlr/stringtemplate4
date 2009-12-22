@@ -27,8 +27,8 @@
 */
 package org.stringtemplate.misc;
 
-import org.antlr.runtime.Token;
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
 import org.stringtemplate.ST;
 import org.stringtemplate.STErrorListener;
 

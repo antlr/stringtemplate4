@@ -28,12 +28,12 @@
 package org.stringtemplate;
 
 import org.antlr.runtime.*;
+import org.stringtemplate.compiler.*;
+import org.stringtemplate.compiler.Compiler;
+import org.stringtemplate.debug.DebugST;
 import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.misc.ErrorType;
 import org.stringtemplate.misc.Misc;
-import org.stringtemplate.debug.DebugST;
-import org.stringtemplate.compiler.*;
-import org.stringtemplate.compiler.Compiler;
 import org.stringtemplate.misc.SynchronizedLinkedHashMap;
 
 import java.net.URL;

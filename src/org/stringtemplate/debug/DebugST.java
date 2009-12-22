@@ -27,16 +27,19 @@
 */
 package org.stringtemplate.debug;
 
+import org.stringtemplate.AutoIndentWriter;
+import org.stringtemplate.Interpreter;
+import org.stringtemplate.ST;
+import org.stringtemplate.STWriter;
+import org.stringtemplate.gui.STViz;
+import org.stringtemplate.misc.ErrorBuffer;
 import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.misc.MultiMap;
-import org.stringtemplate.misc.ErrorBuffer;
-import org.stringtemplate.*;
-import org.stringtemplate.gui.STViz;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Locale;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /** To avoid polluting ST instances with debug info when not debugging.

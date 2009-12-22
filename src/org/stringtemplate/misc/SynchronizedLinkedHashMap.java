@@ -27,7 +27,9 @@
  */
 package org.stringtemplate.misc;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 /** A synchronized version of LinkedHashMap. Not in Collections (why?) */
 public class SynchronizedLinkedHashMap<K,V> {

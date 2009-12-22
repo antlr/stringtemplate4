@@ -27,14 +27,15 @@
 */
 package org.stringtemplate;
 
-import org.stringtemplate.compiler.*;
+import org.stringtemplate.compiler.CompiledST;
+import org.stringtemplate.compiler.FormalArgument;
 import org.stringtemplate.misc.BlankST;
 import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.misc.ErrorType;
 
-import java.util.*;
-import java.io.StringWriter;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.util.*;
 
 /** An instance of the StringTemplate. It consists primarily of
  *  a reference to its implementation (shared among all instances)

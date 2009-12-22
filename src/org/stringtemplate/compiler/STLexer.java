@@ -28,9 +28,9 @@
 package org.stringtemplate.compiler;
 
 import org.antlr.runtime.*;
-import org.stringtemplate.misc.Misc;
 import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.misc.ErrorType;
+import org.stringtemplate.misc.Misc;
 
 import java.util.ArrayList;
 import java.util.List;

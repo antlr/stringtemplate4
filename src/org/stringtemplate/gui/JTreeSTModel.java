@@ -27,11 +27,12 @@
 */
 package org.stringtemplate.gui;
 
-import org.stringtemplate.debug.InterpEvent;
 import org.stringtemplate.debug.DebugST;
+import org.stringtemplate.debug.InterpEvent;
 
-import javax.swing.tree.*;
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 
 public class JTreeSTModel implements TreeModel {
     Wrapper root;

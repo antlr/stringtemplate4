@@ -27,8 +27,8 @@
 */
 package org.stringtemplate;
 
-import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /** A renderer for java.util.Date and Calendar objects. It understands a

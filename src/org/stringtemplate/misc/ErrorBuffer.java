@@ -28,9 +28,9 @@
 package org.stringtemplate.misc;
 
 import org.stringtemplate.STErrorListener;
-import org.stringtemplate.misc.STMessage;
-import java.util.List;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /** Used during tests to track all errors */
 public class ErrorBuffer implements STErrorListener {

@@ -27,8 +27,13 @@
 */
 package org.stringtemplate;
 
-import org.antlr.runtime.*;
-import org.stringtemplate.compiler.*;
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.CommonTokenStream;
+import org.stringtemplate.compiler.CompiledST;
+import org.stringtemplate.compiler.GroupLexer;
+import org.stringtemplate.compiler.GroupParser;
 import org.stringtemplate.misc.ErrorManager;
 import org.stringtemplate.misc.ErrorType;
 import org.stringtemplate.misc.Misc;

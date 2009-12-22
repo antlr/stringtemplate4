@@ -28,7 +28,7 @@
 package org.stringtemplate;
 
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.Locale;
 
 /** This render knows to perform a few operations on String objects:
  *  upper, lower, cap, url-encode, xml-encode.

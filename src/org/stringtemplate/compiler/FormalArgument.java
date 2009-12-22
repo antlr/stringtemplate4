@@ -28,7 +28,6 @@
 package org.stringtemplate.compiler;
 
 import org.antlr.runtime.Token;
-import org.stringtemplate.compiler.CompiledST;
 
 import java.util.LinkedHashMap;
 

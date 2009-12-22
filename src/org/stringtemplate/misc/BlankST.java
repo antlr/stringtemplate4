@@ -27,8 +27,8 @@
 */
 package org.stringtemplate.misc;
 
-import org.stringtemplate.compiler.CompiledST;
 import org.stringtemplate.STWriter;
+import org.stringtemplate.compiler.CompiledST;
 import org.stringtemplate.debug.DebugST;
 
 import java.io.IOException;

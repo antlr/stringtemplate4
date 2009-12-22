@@ -27,24 +27,26 @@
 */
 package org.stringtemplate.gui;
 
-import org.stringtemplate.*;
-import org.stringtemplate.debug.InterpEvent;
+import org.stringtemplate.ST;
+import org.stringtemplate.STGroup;
+import org.stringtemplate.STGroupFile;
 import org.stringtemplate.debug.AddAttributeEvent;
-import org.stringtemplate.debug.EvalTemplateEvent;
 import org.stringtemplate.debug.DebugST;
+import org.stringtemplate.debug.EvalTemplateEvent;
+import org.stringtemplate.debug.InterpEvent;
 import org.stringtemplate.misc.*;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
-import javax.swing.text.Highlighter;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
 import javax.swing.event.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.JTextComponent;
+import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
-import java.awt.*;
 
 public class STViz {
 	public DebugST currentST;

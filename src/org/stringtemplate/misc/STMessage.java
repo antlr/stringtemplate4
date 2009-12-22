@@ -30,8 +30,8 @@ package org.stringtemplate.misc;
 import org.antlr.runtime.Token;
 import org.stringtemplate.ST;
 
-import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /** Upon error, ST creates an STMessage or subclass instance and notifies
  *  the listener.  This root class is used for IO and internal errors.

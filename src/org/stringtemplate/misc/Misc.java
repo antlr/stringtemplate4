@@ -27,14 +27,11 @@
 */
 package org.stringtemplate.misc;
 
-import java.io.*;
-import java.util.Iterator;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
+import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Iterator;
 
 public class Misc {
     public static final String newline = System.getProperty("line.separator");

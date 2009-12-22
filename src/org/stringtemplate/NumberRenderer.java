@@ -27,7 +27,8 @@
 */
 package org.stringtemplate;
 
-import java.util.*;
+import java.util.Formatter;
+import java.util.Locale;
 
 /** Works with Byte, Short, Integer, Long, and BigInteger as well as
  *  Float, Double, and BigDecimal.  You pass in a format string suitable

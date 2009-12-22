@@ -27,8 +27,8 @@
 */
 package org.stringtemplate;
 
-import java.io.Writer;
 import java.io.IOException;
+import java.io.Writer;
 
 /** Just pass through the text */
 public class NoIndentWriter extends AutoIndentWriter {
