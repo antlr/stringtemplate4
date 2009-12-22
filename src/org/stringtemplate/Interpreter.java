@@ -866,13 +866,6 @@ public class Interpreter {
                                       "property name of "+o.getClass().getName()+" is null");
             return null;
         }
-
-        if ( !(property instanceof String) ) {
-            ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
-                                      "property name isn't a string; type="+o.getClass().getName());
-            return null;
-        }
-
         Object value = null;
 
         if ( o instanceof ST ) {
