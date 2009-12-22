@@ -47,7 +47,6 @@ public class Compiler {
      */
     public static final double CODE_SIZE_FACTOR = 5.0;
     public static final int SUBTEMPLATE_INITIAL_CODE_SIZE = 15;
-    public static final int INITIAL_STRING_TABLE_SIZE = 10;
 
     public static final Map<String, Interpreter.Option> supportedOptions =
         new HashMap<String, Interpreter.Option>() {
@@ -348,13 +347,6 @@ public class Compiler {
         emit(opcode, p, q);
         ensureCapacity(2);
         writeShort(code.instrs, ip, (short)arg);
-        ip += 2;
-    }
-
-    public void emit(short opcode, int arg1, int arg2, int p, int q) {
-        emit(opcode, arg1, p, q);
-        ensureCapacity(2);
-        writeShort(code.instrs, ip, (short)arg2);
         ip += 2;
     }
 

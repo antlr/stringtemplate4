@@ -38,7 +38,6 @@ import java.io.IOException;
  */
 public class BlankST extends DebugST { // extend DebugST not just ST in case we're debugging
     public BlankST() { impl = new CompiledST(); }
-    public BlankST(String template) { this(); }
 
     public String getName() { return "blank"; }
 

@@ -33,8 +33,8 @@ import java.util.LinkedHashMap;
  *  We can also get them back out in original order. 
  */
 public class StringTable {
-    LinkedHashMap<String,Integer> table = new LinkedHashMap<String,Integer>();
-    int i = -1;
+    protected LinkedHashMap<String,Integer> table = new LinkedHashMap<String,Integer>();
+    protected int i = -1;
 
     public int add(String s) {
         Integer I = table.get(s);

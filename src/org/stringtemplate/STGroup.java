@@ -344,7 +344,7 @@ public class STGroup {
         GroupParser parser = null;
         try {
             URL f = new URL(fileName);
-            ANTLRInputStream fs = new ANTLRInputStream(f.openStream());
+            ANTLRInputStream fs = new ANTLRInputStream(f.openStream(), encoding);
             GroupLexer lexer = new GroupLexer(fs);
             fs.name = fileName;
             CommonTokenStream tokens = new CommonTokenStream(lexer);

@@ -36,16 +36,17 @@ public class STRuntimeMessage extends STMessage {
     
     public STRuntimeMessage(ErrorType error, int ip) { this(error, ip, null); }
     public STRuntimeMessage(ErrorType error, int ip, ST self) { this(error,ip,self,null); }
-    public STRuntimeMessage(ErrorType error, int ip, ST self, Throwable cause) {
-        this(error, ip, self, cause, null);
+    public STRuntimeMessage(ErrorType error, int ip, ST self, Object arg) {
+        this(error, ip, self, null, arg, null);
     }
-    public STRuntimeMessage(ErrorType error, int ip, ST self, Throwable cause, Object arg) {
-        this(error, ip, self, cause, arg, null);
+    public STRuntimeMessage(ErrorType error, int ip, ST self, Throwable e, Object arg) {
+        this(error, ip, self, e, arg, null);
     }
-    public STRuntimeMessage(ErrorType error, int ip, ST self, Throwable cause, Object arg, Object arg2) {
-        super(error, self, cause, arg, arg2);
+    public STRuntimeMessage(ErrorType error, int ip, ST self, Throwable e, Object arg, Object arg2) {
+        super(error, self, e, arg, arg2);
         this.ip = ip;
     }
+
 
     /** Given an ip (code location), get it's range in source template then
      *  return it's template line:col.

@@ -65,9 +65,6 @@ public class ErrorManager {
                     e.printStackTrace(System.err);
                 }
             }
-            public void warning(String s) {
-                System.out.println(s);
-            }
         };
 
     /** Gives us a new listener per thread.  If your server reuses threads,
@@ -125,7 +122,7 @@ public class ErrorManager {
     }
 
     public static void runTimeError(ST self, int ip, ErrorType error, Object arg) {
-        listener.get().runTimeError(new STRuntimeMessage(error,ip,self,null,arg));
+        listener.get().runTimeError(new STRuntimeMessage(error,ip,self,arg));
     }
 
     public static void runTimeError(ST self, int ip, ErrorType error, Throwable e, Object arg) {

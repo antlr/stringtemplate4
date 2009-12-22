@@ -129,7 +129,7 @@ public class STGroupDir extends STGroup {
         try {
             String templateName = Misc.getFileNameNoSuffix(fileName);
             URL f = new URL(root+fileName);
-            CharStream fs = new ANTLRInputStream(f.openStream());
+            CharStream fs = new ANTLRInputStream(f.openStream(), encoding);
             if ( ErrorManager.v3_mode) {
                 String template = fs.toString(); // needs > ANTLR 3.2
                 template = template.trim();
