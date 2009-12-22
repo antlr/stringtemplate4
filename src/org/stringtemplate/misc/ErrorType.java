@@ -51,6 +51,7 @@ public enum ErrorType {
     LEXER_ERROR("lexer error or bad character %s"),
     NO_DEFAULT_VALUE("missing dictionary default value"),
     NO_SUCH_FUNCTION("no such function: %s"),
+    NO_SUCH_REGION("template %s doesn't have a region called %s"),
     NO_SUCH_OPTION("no such option: %s"),
 
     // INTERNAL ERRORS

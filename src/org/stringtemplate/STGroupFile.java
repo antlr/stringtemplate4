@@ -89,8 +89,8 @@ public class STGroupFile extends STGroup {
 
     protected void _load(String prefix) {
         if ( alreadyLoaded ) return;
+        alreadyLoaded = true; // do before actual load to say we're doing it
         loadGroupFile(prefix, url.toString());
-        alreadyLoaded = true;
     }
 
     public String show() {

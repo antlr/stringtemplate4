@@ -33,9 +33,7 @@ import org.stringtemplate.misc.Interval;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /** The result of compiling an ST.  Contains all the bytecode instructions,
  *  string table, bytecode address to source code map, and other bookkeeping
@@ -90,7 +88,7 @@ public class CompiledST {
         if ( implicitlyDefinedTemplates == null ) {
             implicitlyDefinedTemplates = new ArrayList<CompiledST>();
         }
-        implicitlyDefinedTemplates.add(sub);        
+        implicitlyDefinedTemplates.add(sub);
     }
 
     public String instrs() {

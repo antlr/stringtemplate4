@@ -16,6 +16,11 @@ public class STDump {
     ST self;
     public STDump(ST self) { this.self = self; }
 
+    public static String toString(ST self) {
+        STDump d = new STDump(self);
+        return d.toString();
+    }
+
     public String toString() { return toString(0); }
 
     protected String toString(int n) {
@@ -78,7 +83,9 @@ public class STDump {
         buf.append("<");
         buf.append(self.getName());
         buf.append("(");
-        buf.append(self.impl.formalArguments.keySet());
+        if ( self.impl.formalArguments!=null ) {
+            buf.append(self.impl.formalArguments.keySet());
+        }
         buf.append(")@");
         buf.append(String.valueOf(hashCode()));
         buf.append(">");

@@ -31,10 +31,7 @@ import org.antlr.runtime.*;
 import org.stringtemplate.compiler.*;
 import org.stringtemplate.compiler.Compiler;
 import org.stringtemplate.debug.DebugST;
-import org.stringtemplate.misc.ErrorManager;
-import org.stringtemplate.misc.ErrorType;
-import org.stringtemplate.misc.Misc;
-import org.stringtemplate.misc.SynchronizedLinkedHashMap;
+import org.stringtemplate.misc.*;
 
 import java.net.URL;
 import java.util.*;
@@ -213,7 +210,13 @@ public class STGroup {
     {
         String name = regionT.getText();
         CompiledST code = compile(prefix, enclosingTemplateName, template);
-        code.name = prefix+getMangledRegionName(enclosingTemplateName, name);
+        String mangled = prefix + getMangledRegionName(enclosingTemplateName, name);
+        if ( lookupTemplate(mangled)==null ) {
+            ErrorManager.compileTimeError(ErrorType.NO_SUCH_REGION, regionT,
+                                          enclosingTemplateName, name);
+            return new CompiledST();
+        }
+        code.name = mangled;
         code.isRegion = true;
         code.regionDefType = ST.RegionType.EXPLICIT;
 
@@ -231,10 +234,11 @@ public class STGroup {
         boolean removedNL = false;
         if ( templateToken.getType()==GroupLexer.BIGSTRING ) {
             n = 2;
-            if ( template.charAt(0)=='\n' ) {
-                removedNL = true;
-                template = Misc.trimOneStartingNewline(template);
-            }
+            /*
+            if ( template.charAt(0)=='\n' ) removedNL = true;
+            template = Misc.trimOneStartingNewline(template);
+            template = Misc.trimOneTrailingNewline(template);
+            */
         }
         try {
             if ( regionSurroundingTemplateName!=null ) {

@@ -192,7 +192,10 @@ public class Interpreter {
                 nameIndex = getShort(code, ip);
                 ip += 2;
                 name = self.impl.strings[nameIndex];
-                CompiledST imported = group.lookupImportedTemplate(name);
+                // super.foo refers to the foo in the imported group
+                // relative to the native group of self (i.e., where self
+                // was defined).
+                CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
                 if ( imported==null ) {
                     ErrorManager.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
                                               STGroup.getSimpleName(name));
