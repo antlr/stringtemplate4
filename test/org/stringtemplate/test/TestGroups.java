@@ -42,7 +42,7 @@ public class TestGroups extends BaseTest {
         writeFile(dir, "a.st", a);
         STGroup group = new STGroupDir(dir);
         ST st = group.getInstanceOf("a");
-        String expected = "foo"+newline;
+        String expected = "foo";
         String result = st.render();
         assertEquals(expected, result);
     }
@@ -60,7 +60,7 @@ public class TestGroups extends BaseTest {
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");
         ST st2 = group.getInstanceOf("b");
-        String expected = "foo"+newline+"bar";
+        String expected = "foobar";
         String result = st1.render()+st2.render();
         assertEquals(expected, result);
     }
@@ -79,7 +79,7 @@ public class TestGroups extends BaseTest {
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");
         ST st2 = group.getInstanceOf("subdir/b");
-        String expected = "foo"+newline+"bar";
+        String expected = "foobar";
         String result = st1.render()+st2.render();
         assertEquals(expected, result);
     }
@@ -118,7 +118,7 @@ public class TestGroups extends BaseTest {
         ST st1 = group.getInstanceOf("a");
         ST st2 = group.getInstanceOf("group/b");
         ST st3 = group.getInstanceOf("group/c");
-        String expected = "foo"+newline+"barduh";
+        String expected = "foobarduh";
         String result = st1.render()+st2.render()+st3.render();
         assertEquals(expected, result);
     }
@@ -137,7 +137,7 @@ public class TestGroups extends BaseTest {
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");
         ST st2 = group.getInstanceOf("sub1/sub2/b");
-        String expected = "foo"+newline+"bar";
+        String expected = "foobar";
         String result = st1.render()+st2.render();
         assertEquals(expected, result);
     }
@@ -158,7 +158,7 @@ public class TestGroups extends BaseTest {
         ST st1 = group.getInstanceOf("a");
         ST st2 = group.getInstanceOf("subdir/group/b");
         ST st3 = group.getInstanceOf("subdir/group/c");
-        String expected = "foo"+newline+"barduh";
+        String expected = "foobarduh";
         String result = st1.render()+st2.render()+st3.render();
         assertEquals(expected, result);
     }
@@ -225,7 +225,7 @@ public class TestGroups extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/group.stg");
         ST b = group.getInstanceOf("method");
         b.add("name", "foo");
-        String expecting = "x=99; // foo"+newline;
+        String expecting = "x=99; // foo";
         String result = b.render();
         assertEquals(expecting, result);
     }
@@ -261,7 +261,7 @@ public class TestGroups extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/group.stg");
         ST m = group.getInstanceOf("method");
         m.add("fields", new Field());
-        String expecting = "x=parrt; // parrt"+newline;
+        String expecting = "x=parrt; // parrt";
         String result = m.render();
         assertEquals(expecting, result);
     }
@@ -295,7 +295,7 @@ public class TestGroups extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/group.stg");
         ST m = group.getInstanceOf("method");
         m.add("fields", new Field());
-        String expecting = "x=parrt; // parrt"+newline;
+        String expecting = "x=parrt; // parrt";
         String result = m.render();
         assertEquals(expecting, result);
     }
@@ -318,7 +318,7 @@ public class TestGroups extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/group.stg");
         ST m = group.getInstanceOf("method");
         m.add("fields", new Field());
-        String expecting = "x=parrt; // parrt"+newline;
+        String expecting = "x=parrt; // parrt";
         String result = m.render();
         assertEquals(expecting, result);
     }
@@ -335,7 +335,7 @@ public class TestGroups extends BaseTest {
         ST b = group.getInstanceOf("method");
         b.add("name", "foo");
         b.add("size", "2");
-        String expecting = "x=foo; // foo"+newline;
+        String expecting = "x=foo; // foo";
         String result = b.render();
         //System.err.println("result='"+result+"'");
         assertEquals(expecting, result);
@@ -353,7 +353,7 @@ public class TestGroups extends BaseTest {
         ST b = group.getInstanceOf("method");
         b.add("name", "foo");
         b.add("size", "2");
-        String expecting = "x=[foo] ; // foo"+newline; // won't see ' ' after '=' since it's an indent not simple string
+        String expecting = "x=[foo] ; // foo"; // won't see ' ' after '=' since it's an indent not simple string
         String result = b.render();
         //System.err.println("result='"+result+"'");
         assertEquals(expecting, result);
@@ -370,7 +370,7 @@ public class TestGroups extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/group.stg");
         ST b = group.getInstanceOf("method");
         b.add("name", "foo");
-        String expecting = "x=34; // foo"+newline;
+        String expecting = "x=34; // foo";
         String result = b.render();
         assertEquals(expecting, result);
     }

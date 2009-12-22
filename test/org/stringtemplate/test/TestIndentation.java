@@ -52,7 +52,7 @@ public class TestIndentation extends BaseTest {
 		String expecting =
 				"  Terence"+newline+
 				"  Jim"+newline+
-				"  Sriram"+newline;
+				"  Sriram";
 		assertEquals(expecting, t.render());
 	}
 
@@ -77,7 +77,7 @@ public class TestIndentation extends BaseTest {
 				"  Jim"+newline+
 				"  Sriram"+newline+
 				"  is"+newline+
-				"  cool"+newline;
+				"  cool";
 		assertEquals(expecting, t.render());
 	}
 
@@ -95,7 +95,7 @@ public class TestIndentation extends BaseTest {
 		String expecting =
 				"  Terence"+newline+
 				""+newline+ // no indent on blank line
-				"  is a maniac"+newline;
+				"  is a maniac";
 		assertEquals(expecting, t.render());
 	}
 
@@ -119,7 +119,7 @@ public class TestIndentation extends BaseTest {
 				"  Terence"+newline+
 				"  Jim"+newline+
 				"  Sriram"+newline+
-				"after"+newline;
+				"after";
 		assertEquals(expecting, t.render());
 	}
 
@@ -165,7 +165,7 @@ public class TestIndentation extends BaseTest {
 				"\t  y=x+y;"+newline+
 				"\t  z=4;"+newline+
 				"\t}"+newline+
-				"}"+newline;
+				"}";
 		assertEquals(expecting, t.render());
 	}	
 

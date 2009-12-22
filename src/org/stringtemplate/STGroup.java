@@ -169,6 +169,8 @@ public class STGroup {
         if ( name!=null && (name.length()==0 || name.indexOf('.')>=0) ) {
             throw new IllegalArgumentException("cannot have '.' in template names");
         }
+        template = Misc.trimOneStartingNewline(template);
+        template = Misc.trimOneTrailingNewline(template);
         CompiledST code = compile(prefix, name, template);
         code.name = name;
         code.formalArguments = args;

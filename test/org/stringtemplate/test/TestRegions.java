@@ -44,7 +44,7 @@ public class TestRegions extends BaseTest {
         writeFile(dir, "group.stg", groupFile);
         STGroup group = new STGroupFile(dir+"/group.stg");
         ST st = group.getInstanceOf("a");
-        String expected = "[bar]"+newline;
+        String expected = "[bar]";
         String result = st.render();
         assertEquals(expected, result);
     }
@@ -58,7 +58,7 @@ public class TestRegions extends BaseTest {
         writeFile(dir, "group.stg", groupFile);
         STGroup group = new STGroupFile(dir+"/group.stg");
         ST st = group.getInstanceOf("a");
-        String expected = "[]"+newline;
+        String expected = "[]";
         String result = st.render();
         assertEquals(expected, result);
     }
