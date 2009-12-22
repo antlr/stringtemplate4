@@ -827,7 +827,7 @@ public class Interpreter {
         return null;
     }
     
-    protected static Object convertAnythingIteratableToIterator(Object o) {
+    public static Object convertAnythingIteratableToIterator(Object o) {
         Iterator iter = null;
         if ( o == null ) return null;
         if ( o instanceof Collection)      iter = ((Collection)o).iterator();
@@ -838,7 +838,7 @@ public class Interpreter {
         return iter;
     }
 
-    protected static Iterator convertAnythingToIterator(Object o) {
+    public static Iterator convertAnythingToIterator(Object o) {
         o = convertAnythingIteratableToIterator(o);
         if ( o instanceof Iterator ) return (Iterator)o;
         List singleton = new ST.AttributeList(1);

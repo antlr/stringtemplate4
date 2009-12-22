@@ -288,55 +288,5 @@ public class ST {
         return impl.name+"()";
     }
 
-    public String toDebugString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append(getTemplateDeclaratorString()+":");
-        buf.append("attributes=[");
-        if ( attributes!=null ) {
-            Set attrNames = attributes.keySet();
-            int n=0;
-            for (Iterator iter = attrNames.iterator(); iter.hasNext();) {
-                if ( n>0 ) {
-                    buf.append(',');
-                }
-                String name = (String) iter.next();
-                buf.append(name+"=");
-                Object value = attributes.get(name);
-                buf.append( foo(value) );
-                n++;
-            }
-            buf.append("]");
-        }
-        return buf.toString();
-    }
 
-    protected String foo(Object value) {
-        StringBuffer buf = new StringBuffer();
-        value = Interpreter.convertAnythingIteratableToIterator(value);
-        if ( value instanceof ST ) {
-            buf.append(((ST)value).toDebugString());
-        }
-        else if ( value instanceof Iterator ) {
-            Iterator it = (Iterator)value;
-            while ( it.hasNext() ) {
-                buf.append( foo(it.next()) );        
-            }
-        }
-        else {
-            buf.append(value);
-        }
-        return buf.toString();
-    }
-
-    public String getTemplateDeclaratorString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append("<");
-        buf.append(getName());
-        buf.append("(");
-        buf.append(impl.formalArguments.keySet());
-        buf.append(")@");
-        buf.append(String.valueOf(hashCode()));
-        buf.append(">");
-        return buf.toString();
-    }
 }
