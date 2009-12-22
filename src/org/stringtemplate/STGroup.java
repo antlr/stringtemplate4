@@ -34,6 +34,7 @@ import org.stringtemplate.misc.Misc;
 import org.stringtemplate.debug.DebugST;
 import org.stringtemplate.compiler.*;
 import org.stringtemplate.compiler.Compiler;
+import org.stringtemplate.misc.SynchronizedLinkedHashMap;
 
 import java.net.URL;
 import java.util.*;
@@ -64,8 +65,8 @@ public class STGroup {
     public char delimiterStopChar = '>';
 
     /** Maps template name to StringTemplate object */
-    protected LinkedHashMap<String, CompiledST> templates =
-        new LinkedHashMap<String,CompiledST>();
+    protected SynchronizedLinkedHashMap<String, CompiledST> templates =
+        new SynchronizedLinkedHashMap<String,CompiledST>();
 
     /** Maps dict names to HashMap objects.  This is the list of dictionaries
      *  defined by the user like typeInitMap ::= ["int":"0"]
