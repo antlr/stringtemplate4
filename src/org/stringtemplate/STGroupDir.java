@@ -27,10 +27,7 @@
 */
 package org.stringtemplate;
 
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonToken;
-import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.*;
 import org.stringtemplate.compiler.CompiledST;
 import org.stringtemplate.compiler.GroupLexer;
 import org.stringtemplate.compiler.GroupParser;
@@ -129,7 +126,7 @@ public class STGroupDir extends STGroup {
         try {
             String templateName = Misc.getFileNameNoSuffix(fileName);
             URL f = new URL(root+fileName);
-            CharStream fs = new ANTLRInputStream(f.openStream(), encoding);
+            ANTLRInputStream fs = new ANTLRInputStream(f.openStream(), encoding);
             if ( ErrorManager.v3_mode) {
                 String template = fs.toString(); // needs > ANTLR 3.2
                 template = template.trim();
@@ -141,6 +138,7 @@ public class STGroupDir extends STGroup {
             }
             else {
                 GroupLexer lexer = new GroupLexer(fs);
+                fs.name = fileName;
                 CommonTokenStream tokens = new CommonTokenStream(lexer);
                 GroupParser parser = new GroupParser(tokens);
                 parser.group = this;

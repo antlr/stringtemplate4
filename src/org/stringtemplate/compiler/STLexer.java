@@ -367,6 +367,11 @@ public class STLexer implements TokenSource {
 			if ( c=='\r' || c=='\n') break;
 			if ( c=='}' && subtemplateDepth>0 ) break;
             if ( c=='\\' ) {
+                if ( input.LA(2)=='\\' ) { // convert \\ to \
+                    consume(); consume(); buf.append('\\');
+                    modifiedText = true;
+                    continue;
+                }
                 if ( input.LA(2)==delimiterStartChar ||
 					 input.LA(2)=='}' )
 				{
@@ -375,6 +380,7 @@ public class STLexer implements TokenSource {
                     buf.append(c); consume();
                 }
                 else {
+                    buf.append(c);
                     consume();
                 }
                 continue;

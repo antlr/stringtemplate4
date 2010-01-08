@@ -34,6 +34,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TestNullAndEmptyValues extends BaseTest {
     @Test public void testSeparatorWithNullFirstValue() throws Exception {
@@ -124,4 +125,35 @@ public class TestNullAndEmptyValues extends BaseTest {
         String result = t.render();
         assertEquals(expecting, result);
     }
+
+    @Test public void testMissingDictionaryValue() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "<m.foo>");
+        ST t = group.getInstanceOf("test");
+        t.add("m", new HashMap());
+        String expecting="";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testMissingDictionaryValue2() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "<if(m.foo)>[<m.foo>]<endif>");
+        ST t = group.getInstanceOf("test");
+        t.add("m", new HashMap());
+        String expecting="";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testMissingDictionaryValue3() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "<if(m.foo)>[<m.foo>]<endif>");
+        ST t = group.getInstanceOf("test");
+        t.add("m", new HashMap() {{put("foo",null);}});
+        String expecting="";
+        String result = t.render();
+        assertEquals(expecting, result);
+    }
+
 }

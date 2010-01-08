@@ -37,9 +37,7 @@ import org.stringtemplate.compiler.GroupParser;
 import org.stringtemplate.misc.ErrorBuffer;
 import org.stringtemplate.misc.ErrorManager;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.io.StringWriter;
 
 public class TestCoreBasics extends BaseTest {
@@ -403,6 +401,17 @@ public class TestCoreBasics extends BaseTest {
 		String result = st.render();
 		assertEquals(expected, result);
 	}
+
+    @Test public void testMapConditionAndEscapeInside() throws Exception {
+        String template = "<if(m.name)>works \\\\<endif>";
+        ST st = new ST(template);
+        Map m = new HashMap();
+        m.put("name", "Ter");
+        st.add("m", m);
+        String expected = "works \\";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
 	@Test public void testAnd() throws Exception {
 		String template = "<if(name&&notThere)>fail<else>works<endif>";
