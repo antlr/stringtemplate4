@@ -101,6 +101,17 @@ public class ST {
         groupThatCreatedThisInstance.defineImplicitlyDefinedTemplates(impl);
     }
 
+    /** Create ST using non-default delimiters; each one of these will live
+     *  in it's own group since you're overriding a default; don't want to
+     *  alter STGroup.defaultGroup.
+     */
+    public ST(String template, char delimiterStartChar, char delimiterStopChar) {
+        groupThatCreatedThisInstance = new STGroup(delimiterStartChar, delimiterStopChar);
+        impl = groupThatCreatedThisInstance.compile("/", null, template);
+        impl.name = UNKNOWN_NAME;
+        groupThatCreatedThisInstance.defineImplicitlyDefinedTemplates(impl);
+    }
+
     /** Inject an attribute (name/value pair). If there is already an
      *  attribute with that name, this method turns the attribute into an
      *  AttributeList with both the previous and the new attribute as elements.
