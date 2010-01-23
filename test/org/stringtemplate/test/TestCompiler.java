@@ -324,7 +324,7 @@ public class TestCompiler extends BaseTest {
     @Test public void testEmbeddedRegion() throws Exception {
         String template = "<@r>foo<@end>";
         // compile as if in root dir and in template 'a'
-        CompiledST code = new Compiler("/", "a").compile(template);
+        CompiledST code = new Compiler("/", "a", '<', '>').compile(template);
         String asmExpected =
             "new 0, write";
         String asmResult = code.instrs();
@@ -337,7 +337,7 @@ public class TestCompiler extends BaseTest {
     @Test public void testRegion() throws Exception {
         String template = "x:<@r()>";
         // compile as if in root dir and in template 'a'
-        CompiledST code = new Compiler("/", "a").compile(template);
+        CompiledST code = new Compiler("/", "a", '<', '>').compile(template);
         String asmExpected =
             "load_str 0, write, new 1, write";
         String asmResult = code.instrs();

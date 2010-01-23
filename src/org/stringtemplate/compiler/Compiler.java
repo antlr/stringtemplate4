@@ -48,6 +48,13 @@ public class Compiler {
     public static final double CODE_SIZE_FACTOR = 5.0;
     public static final int SUBTEMPLATE_INITIAL_CODE_SIZE = 15;
 
+    /** The compiler needs to know how to delimit expressions.
+     *  The STGroup normally passes in this information, but we
+     *  can set some defaults.
+     */
+    public char delimiterStartChar = '<'; // Use <expr> by default
+    public char delimiterStopChar = '>';
+
     public static final Map<String, Interpreter.Option> supportedOptions =
         new HashMap<String, Interpreter.Option>() {
             {
@@ -141,33 +148,32 @@ public class Compiler {
         public void defineBlankRegion(String fullyQualifiedName) {;}
     };
 
-    public Compiler() { this("/", "<unknown>"); }
+    public Compiler() { this("/", "<unknown>", '<', '>'); }
 
     /** To compile a template, we need to know what directory level it's at
      *  (if any; most web apps do this but code gen apps don't) and what
      *  the enclosing template is (if any).
      */
-    public Compiler(String templatePathPrefix, String enclosingTemplateName) {
+    public Compiler(String templatePathPrefix,
+                    String enclosingTemplateName,
+                    char delimiterStartChar,
+                    char delimiterStopChar)
+    {
         this.templatePathPrefix = templatePathPrefix;
         this.enclosingTemplateName = enclosingTemplateName;
-    }
-
-    public CompiledST compile(String template) {
-        return compile(template, '<', '>');
+        this.delimiterStartChar = delimiterStartChar;
+        this.delimiterStopChar = delimiterStopChar;
     }
 
     /** Compile full template */
-    public CompiledST compile(String template,
-                              char delimiterStartChar,
-                              char delimiterStopChar)
-    {
+    public CompiledST compile(String template) {
         int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
         code.instrs = new byte[initialSize];
         code.sourceMap = new Interval[initialSize];
         code.template = template;
 
-        STLexer lexer =
-            new STLexer(new ANTLRStringStream(template), delimiterStartChar, delimiterStopChar);
+        STLexer lexer = new STLexer(new ANTLRStringStream(template),
+                                    delimiterStartChar, delimiterStopChar);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         STParser parser = new STParser(tokens, this, enclosingTemplateName);
         try {
@@ -208,7 +214,8 @@ public class Compiler {
             lexer = (STLexer) tokenSource;
             start = lexer.input.index();
         }
-        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
+        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName,
+                                  delimiterStartChar, delimiterStopChar);
         CompiledST sub = c.compile(input, state);
         sub.name = name;
         sub.isSubtemplate = true;
@@ -235,7 +242,8 @@ public class Compiler {
                                 TokenStream input,
                                 RecognizerSharedState state)
     {
-        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName);
+        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName,
+                                  delimiterStartChar, delimiterStopChar);
         CompiledST sub = c.compile(input, state);
         String fullName =
             templatePathPrefix+

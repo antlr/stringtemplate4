@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-public class TestDollarDelimiters extends BaseTest {
+public class TestTokensForDollarDelimiters extends BaseTest {
     @Test public void testSimpleAttr() throws Exception {
         String template = "hi $name$";
         String expected = "[[@0,0:2='hi ',<TEXT>,1:0], [@1,3:3='$',<LDELIM>,1:3], [@2,4:7='name',<ID>,1:4], [@3,8:8='$',<RDELIM>,1:8]]";

@@ -92,6 +92,11 @@ public class STGroup {
 
     public STGroup() { ; }
 
+    public STGroup(char delimiterStartChar, char delimiterStopChar) {
+        this.delimiterStartChar = delimiterStartChar;
+        this.delimiterStopChar = delimiterStopChar;
+    }
+
     /** The primary means of getting an instance of a template from this
      *  group. Must be absolute name like /a/b
      */
@@ -177,7 +182,8 @@ public class STGroup {
             for (String a : args.keySet()) {
                 FormalArgument fa = args.get(a);
                 if ( fa.defaultValueToken !=null ) {
-                    Compiler c2 = new Compiler(prefix, name);
+                    Compiler c2 = new Compiler(prefix, name,
+                                               delimiterStartChar, delimiterStopChar);
                     String defArgTemplate = Misc.strip(fa.defaultValueToken.getText(), 1);
                     fa.compiledDefaultValue = c2.compile(defArgTemplate);
                     fa.compiledDefaultValue.name = fa.name+"-default-value";
@@ -296,8 +302,12 @@ public class STGroup {
         templates.put(name, code);
     }
 
-    protected CompiledST compile(String prefix, String enclosingTemplateName, String template) {
-        Compiler c = new org.stringtemplate.compiler.Compiler(prefix, enclosingTemplateName);
+    protected CompiledST compile(String prefix,
+                                 String enclosingTemplateName,
+                                 String template)
+    {
+        Compiler c = new Compiler(prefix, enclosingTemplateName,
+                                  delimiterStartChar, delimiterStopChar);
         CompiledST code = c.compile(template);
         code.nativeGroup = this;
         code.template = template;
