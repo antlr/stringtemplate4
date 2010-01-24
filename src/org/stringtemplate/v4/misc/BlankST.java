@@ -25,14 +25,31 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.stringtemplate;
+package org.stringtemplate.v4.misc;
 
-import org.stringtemplate.v4.misc.STMessage;
+import org.stringtemplate.STWriter;
+import org.stringtemplate.v4.compiler.CompiledST;
+import org.stringtemplate.v4.debug.DebugST;
 
-/** How to handle messages */
-public interface STErrorListener {
-    public void compileTimeError(STMessage msg);
-    public void runTimeError(STMessage msg);
-    public void IOError(STMessage msg);
-    public void internalError(STMessage msg);
+import java.io.IOException;
+
+/** A singleton no-op ST that renders to "" and doesn't set attributes etc...
+ *  Used to prevent error propogation when we can't find a template.
+ */
+public class BlankST extends DebugST { // extend DebugST not just ST in case we're debugging
+    public BlankST() { impl = new CompiledST(); }
+
+    public String getName() { return "blank"; }
+
+    public void add(String name, Object value) { }
+
+    public void rawSetAttribute(String name, Object value) { }
+
+    public Object getAttribute(String name) { return null; }
+
+    public String getEnclosingInstanceStackString() { return null; }
+
+    public int write(STWriter out) throws IOException { return 0; }
+
+    public String render() { return ""; }
 }

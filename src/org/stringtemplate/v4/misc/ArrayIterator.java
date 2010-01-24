@@ -25,14 +25,40 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.stringtemplate;
+package org.stringtemplate.v4.misc;
 
-import org.stringtemplate.v4.misc.STMessage;
+import java.lang.reflect.Array;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-/** How to handle messages */
-public interface STErrorListener {
-    public void compileTimeError(STMessage msg);
-    public void runTimeError(STMessage msg);
-    public void IOError(STMessage msg);
-    public void internalError(STMessage msg);
+/** Iterator for an array so I don't have to copy the array to a List
+ *  just to make it iteratable.
+ */
+public class ArrayIterator implements Iterator {
+	/** Index into the data array */
+	protected int i = -1;
+	protected Object array = null;
+	/** Arrays are fixed size; precompute. */
+	protected int n;
+
+	public ArrayIterator(Object array) {
+		this.array = array;
+		n = Array.getLength(array);
+	}
+
+	public boolean hasNext() {
+		return (i+1)<n && n>0;
+	}
+
+	public Object next() {
+		i++; // move to next element
+		if ( i >= n ) {
+			throw new NoSuchElementException();
+		}
+		return Array.get(array, i);
+	}
+
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

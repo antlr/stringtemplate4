@@ -27,9 +27,9 @@
  */
 package org.stringtemplate;
 
-import org.stringtemplate.compiler.CompiledST;
-import org.stringtemplate.misc.ErrorManager;
-import org.stringtemplate.misc.Misc;
+import org.stringtemplate.v4.compiler.CompiledST;
+import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.Misc;
 
 import java.io.File;
 import java.net.URL;

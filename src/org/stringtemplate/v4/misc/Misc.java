@@ -1,0 +1,146 @@
+/*
+ [The "BSD license"]
+ Copyright (c) 2009 Terence Parr
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+ 3. The name of the author may not be used to endorse or promote products
+     derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.stringtemplate.v4.misc;
+
+import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Iterator;
+
+public class Misc {
+    public static final String newline = System.getProperty("line.separator");
+
+    // Seriously: why isn't this built in to java?
+    public static String join(Iterator iter, String separator) {
+        StringBuilder buf = new StringBuilder();
+        while ( iter.hasNext() ) {
+            buf.append(iter.next());
+            if ( iter.hasNext() ) {
+                buf.append(separator);
+            }
+        }
+        return buf.toString();
+    }
+
+    public static String join(Object[] a, String separator, int start, int stop) {
+        StringBuilder buf = new StringBuilder();
+        for (int i = start; i < stop; i++) {
+            if ( i>start ) buf.append(separator);
+            buf.append(a[i].toString());
+        }
+        return buf.toString();
+    }
+
+    public static String strip(String s, int n) {
+        return s.substring(n, s.length()-n);
+    }
+
+    public static String stripRight(String s, int n) {
+        return s.substring(0, s.length()-n);
+    }
+
+    // strip newline from front but just one
+    public static String trimOneStartingNewline(String s) {
+        if ( s.startsWith("\r\n") ) s = s.substring(2);
+        else if ( s.startsWith("\n") ) s = s.substring(1);
+        return s;
+    }
+
+    // strip newline from end but just one
+    public static String trimOneTrailingNewline(String s) {
+        if ( s.endsWith("\r\n") ) s = s.substring(0, s.length()-2);
+        else if ( s.endsWith("\n") ) s = s.substring(0, s.length()-1);
+        return s;
+    }
+
+    public static String getFileNameNoSuffix(String f) {
+        return f.substring(0,f.lastIndexOf('.'));
+    }
+
+    public static String getFileName(String fullFileName) {
+        File f = new File(fullFileName); // strip to simple name
+        return f.getName();
+    }
+
+    public static String replaceEscapes(String s) {
+        s = s.replaceAll("\n", "\\\\n");
+        s = s.replaceAll("\r", "\\\\r");
+        s = s.replaceAll("\t", "\\\\t");
+        return s;
+    }
+
+    /** Given index into string, compute the line and char position in line */
+    public static Coordinate getLineCharPosition(String s, int index) {
+        int line = 1;
+        int charPos = 0;
+        int p = 0;
+        while ( p < index ) { // don't care about s[index] itself; count before
+            if ( s.charAt(p)=='\n' ) { line++; charPos=0; }
+            else charPos++;
+            p++;
+        }
+        
+        return new Coordinate(line,charPos);
+    }
+
+    public static Object accessField(Field f, Object o, Object value) throws IllegalAccessException {
+        try {
+            // make sure it's accessible (stupid java)
+            f.setAccessible(true);
+        }
+        catch (SecurityException se) {
+            ; // oh well; security won't let us
+        }
+        value = f.get(o);
+        return value;
+    }
+
+    public static Object invokeMethod(Method m, Object o, Object value) throws IllegalAccessException, InvocationTargetException {
+        try {
+            // make sure it's accessible (stupid java)
+            m.setAccessible(true);
+        }
+        catch (SecurityException se) {
+            ; // oh well; security won't let us
+        }
+        value = m.invoke(o,(Object[])null);
+        return value;
+    }
+
+    public static Method getMethod(Class c, String methodName) {
+        Method m;
+        try {
+            m = c.getMethod(methodName, (Class[])null);
+        }
+        catch (NoSuchMethodException nsme) {
+            m = null;
+        }
+        return m;
+    }
+}

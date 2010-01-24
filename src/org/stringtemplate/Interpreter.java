@@ -27,15 +27,15 @@
  */
 package org.stringtemplate;
 
-import org.stringtemplate.compiler.*;
-import org.stringtemplate.compiler.Compiler;
-import org.stringtemplate.debug.DebugST;
-import org.stringtemplate.debug.EvalTemplateEvent;
-import org.stringtemplate.debug.InterpEvent;
-import org.stringtemplate.misc.ArrayIterator;
-import org.stringtemplate.misc.ErrorManager;
-import org.stringtemplate.misc.ErrorType;
-import org.stringtemplate.misc.Misc;
+import org.stringtemplate.v4.compiler.*;
+import org.stringtemplate.v4.compiler.Compiler;
+import org.stringtemplate.v4.debug.DebugST;
+import org.stringtemplate.v4.debug.EvalTemplateEvent;
+import org.stringtemplate.v4.debug.InterpEvent;
+import org.stringtemplate.v4.misc.ArrayIterator;
+import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.ErrorType;
+import org.stringtemplate.v4.misc.Misc;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -279,7 +279,7 @@ public class Interpreter {
                 if ( !testAttributeTrue(o) ) ip = addr; // jump
                 break;
             case Bytecode.INSTR_OPTIONS :
-                operands[++sp] = new Object[org.stringtemplate.compiler.Compiler.NUM_OPTIONS];
+                operands[++sp] = new Object[org.stringtemplate.v4.compiler.Compiler.NUM_OPTIONS];
                 break;
             case Bytecode.INSTR_LIST :
                 operands[++sp] = new ArrayList<Object>();

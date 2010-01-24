@@ -27,11 +27,11 @@
  */
 package org.stringtemplate;
 
-import org.stringtemplate.compiler.CompiledST;
-import org.stringtemplate.compiler.FormalArgument;
-import org.stringtemplate.misc.BlankST;
-import org.stringtemplate.misc.ErrorManager;
-import org.stringtemplate.misc.ErrorType;
+import org.stringtemplate.v4.compiler.CompiledST;
+import org.stringtemplate.v4.compiler.FormalArgument;
+import org.stringtemplate.v4.misc.BlankST;
+import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.ErrorType;
 
 import java.io.IOException;
 import java.io.StringWriter;

@@ -25,14 +25,23 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.stringtemplate;
+package org.stringtemplate.v4.debug;
 
-import org.stringtemplate.v4.misc.STMessage;
+public class ConstructionEvent {
+    public Throwable stack;
+    public ConstructionEvent() { stack = new Throwable(); }
 
-/** How to handle messages */
-public interface STErrorListener {
-    public void compileTimeError(STMessage msg);
-    public void runTimeError(STMessage msg);
-    public void IOError(STMessage msg);
-    public void internalError(STMessage msg);
+    public String getFileName() { return getSTEntryPoint().getFileName(); }
+	public int getLine() { return getSTEntryPoint().getLineNumber(); }
+	
+	public StackTraceElement getSTEntryPoint() {
+		StackTraceElement[] trace = stack.getStackTrace();
+		for (StackTraceElement e : trace) {
+			String name = e.toString();
+			// TODO: remove special after testing
+			if ( name.indexOf("main(")>0 ) return e;
+			if ( !name.startsWith("org.stringtemplate") ) return e;
+		}
+		return trace[0];
+	}
 }

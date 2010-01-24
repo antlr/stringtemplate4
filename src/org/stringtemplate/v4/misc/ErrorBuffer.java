@@ -25,14 +25,39 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.stringtemplate;
+package org.stringtemplate.v4.misc;
 
-import org.stringtemplate.v4.misc.STMessage;
+import org.stringtemplate.STErrorListener;
 
-/** How to handle messages */
-public interface STErrorListener {
-    public void compileTimeError(STMessage msg);
-    public void runTimeError(STMessage msg);
-    public void IOError(STMessage msg);
-    public void internalError(STMessage msg);
+import java.util.ArrayList;
+import java.util.List;
+
+/** Used during tests to track all errors */
+public class ErrorBuffer implements STErrorListener {
+    public List<STMessage> errors = new ArrayList<STMessage>();
+
+    public void compileTimeError(STMessage msg) {
+        errors.add(msg);
+    }
+
+    public void runTimeError(STMessage msg) {
+        if ( msg.error != ErrorType.NO_SUCH_PROPERTY ) { // ignore these
+            errors.add(msg);
+        }
+    }
+
+    public void IOError(STMessage msg) {
+        errors.add(msg);
+    }
+
+    public void internalError(STMessage msg) {
+        errors.add(msg);
+    }
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        for (STMessage m : errors) {
+            buf.append(m.toString()+Misc.newline);
+        }
+        return buf.toString();
+    }
 }

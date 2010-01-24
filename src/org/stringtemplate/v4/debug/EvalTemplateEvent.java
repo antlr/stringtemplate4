@@ -25,14 +25,10 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.stringtemplate;
+package org.stringtemplate.v4.debug;
 
-import org.stringtemplate.v4.misc.STMessage;
-
-/** How to handle messages */
-public interface STErrorListener {
-    public void compileTimeError(STMessage msg);
-    public void runTimeError(STMessage msg);
-    public void IOError(STMessage msg);
-    public void internalError(STMessage msg);
+public class EvalTemplateEvent extends InterpEvent {
+    public EvalTemplateEvent(DebugST self, int start, int stop) {
+        super(self, start, stop);
+    }
 }

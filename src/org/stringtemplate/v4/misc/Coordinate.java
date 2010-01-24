@@ -25,14 +25,14 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.stringtemplate;
+package org.stringtemplate.v4.misc;
 
-import org.stringtemplate.v4.misc.STMessage;
-
-/** How to handle messages */
-public interface STErrorListener {
-    public void compileTimeError(STMessage msg);
-    public void runTimeError(STMessage msg);
-    public void IOError(STMessage msg);
-    public void internalError(STMessage msg);
+/** A line number and char position within a line.  Used by the source
+ *  mapping stuff to map address to range within a template.
+ */
+public class Coordinate {
+    public int line;
+    public int charPosition;
+    public Coordinate(int a, int b) { this.line=a; this.charPosition=b; }
+    public String toString() { return line+":"+charPosition; }        
 }

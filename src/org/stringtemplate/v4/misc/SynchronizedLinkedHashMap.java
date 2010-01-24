@@ -25,14 +25,32 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.stringtemplate;
+package org.stringtemplate.v4.misc;
 
-import org.stringtemplate.v4.misc.STMessage;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
-/** How to handle messages */
-public interface STErrorListener {
-    public void compileTimeError(STMessage msg);
-    public void runTimeError(STMessage msg);
-    public void IOError(STMessage msg);
-    public void internalError(STMessage msg);
+/** A synchronized version of LinkedHashMap. Not in Collections (why?) */
+public class SynchronizedLinkedHashMap<K,V> {
+    private LinkedHashMap<K,V> m;
+    private Object mutex = new Object();
+
+    public SynchronizedLinkedHashMap() { m = new LinkedHashMap<K,V>(); }
+
+    public int size() { synchronized(mutex) {return m.size();} }
+
+    public V get(K key) {
+        synchronized(mutex) {return m.get(key);}
+    }
+
+    public V put(K key, V value) {
+        synchronized(mutex) {return m.put(key, value);}
+    }
+
+    public Set<K> keySet() {
+        synchronized(mutex) { return Collections.synchronizedSet(m.keySet()); }
+    }
+
+    public String toString() { synchronized(mutex) {return m.toString();} }
 }

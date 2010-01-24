@@ -25,14 +25,14 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.stringtemplate;
+package org.stringtemplate.v4.misc;
 
-import org.stringtemplate.v4.misc.STMessage;
-
-/** How to handle messages */
-public interface STErrorListener {
-    public void compileTimeError(STMessage msg);
-    public void runTimeError(STMessage msg);
-    public void IOError(STMessage msg);
-    public void internalError(STMessage msg);
+/** An inclusive interval a..b.  Used to track ranges in output and
+ *  template patterns (for debugging).
+ */
+public class Interval {
+    public int a;
+    public int b;
+    public Interval(int a, int b) { this.a=a; this.b=b; }
+    public String toString() { return a+".."+b; }    
 }

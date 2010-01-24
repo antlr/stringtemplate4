@@ -28,10 +28,10 @@
 package org.stringtemplate;
 
 import org.antlr.runtime.*;
-import org.stringtemplate.compiler.*;
-import org.stringtemplate.compiler.Compiler;
-import org.stringtemplate.debug.DebugST;
-import org.stringtemplate.misc.*;
+import org.stringtemplate.v4.compiler.*;
+import org.stringtemplate.v4.compiler.Compiler;
+import org.stringtemplate.v4.debug.DebugST;
+import org.stringtemplate.v4.misc.*;
 
 import java.net.URL;
 import java.util.*;
