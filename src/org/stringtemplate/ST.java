@@ -59,7 +59,10 @@ public class ST {
     /** The implementation for this template among all instances of same tmpelate . */
     public CompiledST impl;
 
-    /** Map an attribute name to its value(s). */
+    /** Map an attribute name to its value(s).
+     *  rawSetAttribute makes a synchronized map so multiple threads can
+     *  write to this table.
+     */
     protected Map<String,Object> attributes;
 
     /** Enclosing instance if I'm embedded within another template.
@@ -155,7 +158,9 @@ public class ST {
     }
 
     protected void rawSetAttribute(String name, Object value) {
-        if ( attributes==null ) attributes = new HashMap<String,Object>();
+        if ( attributes==null ) {
+            attributes = Collections.synchronizedMap(new HashMap<String,Object>());
+        }
         attributes.put(name, value);
     }
 

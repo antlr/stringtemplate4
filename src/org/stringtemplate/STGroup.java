@@ -55,13 +55,15 @@ public class STGroup {
     /** Load files using what encoding? */
     public String encoding;
 
-    /** Every group can import templates/dictionaries from other groups */
+    /** Every group can import templates/dictionaries from other groups.
+     *  The list must be synchronized (see importTemplates).
+     */
     protected List<STGroup> imports;
 
     public char delimiterStartChar = '<'; // Use <expr> by default
     public char delimiterStopChar = '>';
 
-    /** Maps template name to StringTemplate object */
+    /** Maps template name to StringTemplate object. synchronized. */
     protected SynchronizedLinkedHashMap<String, CompiledST> templates =
         new SynchronizedLinkedHashMap<String,CompiledST>();
 
@@ -69,7 +71,7 @@ public class STGroup {
      *  defined by the user like typeInitMap ::= ["int":"0"]
      */
     protected Map<String, Map<String,Object>> dictionaries =
-        new HashMap<String, Map<String,Object>>();
+        Collections.synchronizedMap(new HashMap<String, Map<String,Object>>());
 
     /** A dictionary that allows people to register a renderer for
      *  a particular kind of object for any template evaluated relative to this
@@ -78,6 +80,8 @@ public class STGroup {
      *  toString(Object) method properly formats a Date attribute
      *  according to locale.  Or you can have a different renderer object
      *  for each locale.
+     *
+     *  This structure is synchronized.
      */
     protected Map<Class,AttributeRenderer> renderers;
 
