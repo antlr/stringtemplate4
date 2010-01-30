@@ -30,18 +30,17 @@ package org.stringtemplate.v4.test;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
-import org.stringtemplate.STGroupFile;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 
 import java.util.ArrayList;
 
 public class TestSubtemplates extends BaseTest {
 
     @Test public void testSimpleIteration() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new STGroup();
         group.defineTemplate("test", "<names:{<it>}>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
         st.add("names", "Sumana");
@@ -53,7 +52,7 @@ public class TestSubtemplates extends BaseTest {
     @Test public void testSimpleIterationWithArg() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "<names:{n | <n>}>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
         st.add("names", "Sumana");
@@ -63,9 +62,9 @@ public class TestSubtemplates extends BaseTest {
     }
 
     @Test public void test_it_NotDefinedWithArg() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "<names:{n | <it>}>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
         st.add("names", "Sumana");
@@ -75,9 +74,9 @@ public class TestSubtemplates extends BaseTest {
     }
 
     @Test public void test_it_NotDefinedWithArgSingleValue() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "<names:{n | <it>}>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         String expected = "!";
         String result = st.render();
@@ -85,9 +84,9 @@ public class TestSubtemplates extends BaseTest {
     }
 
     @Test public void testNestedIterationWithArg() throws Exception {
-        STGroup group = new STGroup();
+        STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "<users:{u | <u.id:{id | <id>=}><u.name>}>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("users", new TestCoreBasics.User(1, "parrt"));
         st.add("users", new TestCoreBasics.User(2, "tombu"));
         st.add("users", new TestCoreBasics.User(3, "sri"));
@@ -97,7 +96,7 @@ public class TestSubtemplates extends BaseTest {
     }
 
     @Test public void testParallelAttributeIteration() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<names,phones,salaries:{n,p,s | <n>@<p>: <s>\n}>"
             );
         e.add("names", "Ter");
@@ -111,7 +110,7 @@ public class TestSubtemplates extends BaseTest {
     }
 
     @Test public void testParallelAttributeIterationWithNullValue() throws Exception {
-        ST e = new ST(
+        ST e = new org.stringtemplate.v4.ST(
                 "<names,phones,salaries:{n,p,s | <n>@<p>: <s>\n}>"
             );
         e.add("names", "Ter");
@@ -128,7 +127,7 @@ public class TestSubtemplates extends BaseTest {
     }
 
     @Test public void testParallelAttributeIterationHasI() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<names,phones,salaries:{n,p,s | <i0>. <n>@<p>: <s>\n}>"
             );
         e.add("names", "Ter");
@@ -144,7 +143,7 @@ public class TestSubtemplates extends BaseTest {
     }
 
     @Test public void testParallelAttributeIterationWithDifferentSizes() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<names,phones,salaries:{n,p,s | <n>@<p>: <s>}; separator=\", \">"
             );
         e.add("names", "Ter");
@@ -158,7 +157,7 @@ public class TestSubtemplates extends BaseTest {
     }
 
     @Test public void testParallelAttributeIterationWithSingletons() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<names,phones,salaries:{n,p,s | <n>@<p>: <s>}; separator=\", \">"
             );
         e.add("names", "Ter");
@@ -175,8 +174,8 @@ public class TestSubtemplates extends BaseTest {
                 "value(x=\"n/a\") ::= \"<x>\"" +newline;
         writeFile(tmpdir, "g.stg", templates);
 
-        STGroup group = new STGroupFile(tmpdir+"/g.stg");
-        ST p = group.getInstanceOf("page");
+        STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/g.stg");
+        org.stringtemplate.v4.ST p = group.getInstanceOf("page");
         p.add("names", "Ter");
         p.add("names", "Tom");
         p.add("names", "Sriram");

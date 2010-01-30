@@ -28,9 +28,9 @@
 package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.*;
-import org.stringtemplate.Interpreter;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
+import org.stringtemplate.v4.Interpreter;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Interval;
@@ -56,13 +56,13 @@ public class Compiler {
     public char delimiterStopChar = '>';
 
     public static final Map<String, Interpreter.Option> supportedOptions =
-        new HashMap<String, Interpreter.Option>() {
+        new HashMap<String, org.stringtemplate.v4.Interpreter.Option>() {
             {
                 put("anchor",       Interpreter.Option.ANCHOR);
-                put("format",       Interpreter.Option.FORMAT);
+                put("format",       org.stringtemplate.v4.Interpreter.Option.FORMAT);
                 put("null",         Interpreter.Option.NULL);
                 put("separator",    Interpreter.Option.SEPARATOR);
-                put("wrap",         Interpreter.Option.WRAP);
+                put("wrap",         org.stringtemplate.v4.Interpreter.Option.WRAP);
             }
         };
 
@@ -256,7 +256,7 @@ public class Compiler {
     }
 
     public void defineBlankRegion(String enclosingTemplateName, String name) {
-        String mangled = STGroup.getMangledRegionName(enclosingTemplateName, name);
+        String mangled = org.stringtemplate.v4.STGroup.getMangledRegionName(enclosingTemplateName, name);
         String fullName = prefixedName(mangled);
         CompiledST blank = new CompiledST();
         blank.isRegion = true;
@@ -297,7 +297,7 @@ public class Compiler {
 
     public void refAttr(CommonToken id) {
         String name = id.getText();
-        if ( Interpreter.predefinedAttributes.contains(name) ) {
+        if ( org.stringtemplate.v4.Interpreter.predefinedAttributes.contains(name) ) {
             emit(Bytecode.INSTR_LOAD_LOCAL, name, id.getStartIndex(), id.getStopIndex());
         }
         else {

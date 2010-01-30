@@ -29,7 +29,7 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.*;
+
 import org.stringtemplate.v4.misc.*;
 import org.stringtemplate.v4.compiler.STException;
 import org.antlr.runtime.RecognitionException;
@@ -37,7 +37,7 @@ import org.antlr.runtime.RecognitionException;
 public class TestSyntaxErrors extends BaseTest {
     @Test public void testEmptyExpr() throws Exception {
         String template = " <> ";
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
 		String result = null;
 		try {
         	group.defineTemplate("test", template);
@@ -54,7 +54,7 @@ public class TestSyntaxErrors extends BaseTest {
 
     @Test public void testEmptyExpr2() throws Exception {
         String template = "hi <> ";
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
 		String result = null;
 		try {
         	group.defineTemplate("test", template);
@@ -71,7 +71,7 @@ public class TestSyntaxErrors extends BaseTest {
 
     @Test public void testWeirdChar() throws Exception {
         String template = "   <*>";
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
 		String result = null;
 		try {
         	group.defineTemplate("test", template);
@@ -91,8 +91,8 @@ public class TestSyntaxErrors extends BaseTest {
             "foo() ::= <<hi <.> mom>>\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STErrorListener errors = new ErrorBuffer();
-		STGroupFile group = new STGroupFile(tmpdir+"/"+"t.stg");
+		org.stringtemplate.v4.STErrorListener errors = new ErrorBuffer();
+		org.stringtemplate.v4.STGroupFile group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
         String expected = "t.stg 1:15: doesn't look like an expression"+newline;
@@ -107,7 +107,7 @@ public class TestSyntaxErrors extends BaseTest {
 		writeFile(tmpdir, "t.stg", templates);
 
 		ErrorBuffer errors = new ErrorBuffer();
-		STGroupFile group = new STGroupFile(tmpdir+"/"+"t.stg");
+		org.stringtemplate.v4.STGroupFile group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
 		String expected = "[t.stg 1:15: \\n in string, t.stg 1:14: doesn't look like an expression]";
@@ -120,9 +120,9 @@ public class TestSyntaxErrors extends BaseTest {
             "foo() ::= \"hi <name:{[<aaa.bb!>]}> mom\"\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
-		STErrorListener errors = new ErrorBuffer();
-		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		org.stringtemplate.v4.STGroupFile group = null;
+		org.stringtemplate.v4.STErrorListener errors = new ErrorBuffer();
+		group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:29: '!' came as a complete surprise to me"+newline;
@@ -135,9 +135,9 @@ public class TestSyntaxErrors extends BaseTest {
             "foo() ::= \"hi <name:{[<aaa.bb>]}\"\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
-		STErrorListener errors = new ErrorBuffer();
-		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		org.stringtemplate.v4.STGroupFile group = null;
+		org.stringtemplate.v4.STErrorListener errors = new ErrorBuffer();
+		group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:32: premature EOF"+newline;
@@ -150,9 +150,9 @@ public class TestSyntaxErrors extends BaseTest {
             "foo() ::= \"hi <foo(>\"\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
-		STErrorListener errors = new ErrorBuffer();
-		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		org.stringtemplate.v4.STGroupFile group = null;
+		org.stringtemplate.v4.STErrorListener errors = new ErrorBuffer();
+		group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:19: mismatched input '>' expecting RPAREN"+newline;

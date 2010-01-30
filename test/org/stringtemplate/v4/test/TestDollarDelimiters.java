@@ -29,17 +29,16 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
-import org.stringtemplate.STGroupDir;
-import org.stringtemplate.STGroupFile;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestDollarDelimiters extends BaseTest {
     @Test public void testAttr() throws Exception {
         String template = "hi $name$!";
-        ST st = new ST(template, '$', '$');
+        ST st = new org.stringtemplate.v4.ST(template, '$', '$');
         st.add("name", "Ter");
         String expected = "hi Ter!";
         String result = st.render();
@@ -47,7 +46,7 @@ public class TestDollarDelimiters extends BaseTest {
     }
 
     @Test public void testParallelMap() throws Exception {
-        STGroup group = new STGroup('$', '$');
+        STGroup group = new org.stringtemplate.v4.STGroup('$', '$');
         group.defineTemplate("test", "hi $names,phones:{n,p | $n$:$p$;}$");
         ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
@@ -68,8 +67,8 @@ public class TestDollarDelimiters extends BaseTest {
         String b = "b() ::= <<bar>>\n";
         writeFile(dir, "a.st", a);
         writeFile(dir, "b.st", b);
-        STGroup group = new STGroupDir(dir, '$', '$');
-        ST st = group.getInstanceOf("a");
+        STGroup group = new org.stringtemplate.v4.STGroupDir(dir, '$', '$');
+        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
         String expected = " bar ";
         String result = st.render();
         assertEquals(expected, result);
@@ -83,8 +82,8 @@ public class TestDollarDelimiters extends BaseTest {
                 "stat(name,value=\"99\") ::= \"x=$value$; // $name$\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/group.stg", '$', '$');
-        ST b = group.getInstanceOf("method");
+        org.stringtemplate.v4.STGroup group = new STGroupFile(tmpdir+"/group.stg", '$', '$');
+        org.stringtemplate.v4.ST b = group.getInstanceOf("method");
         b.add("name", "foo");
         String expecting = "x=99; // foo";
         String result = b.render();

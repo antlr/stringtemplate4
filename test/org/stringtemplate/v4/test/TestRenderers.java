@@ -29,7 +29,6 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.*;
 
 import java.util.*;
 
@@ -38,9 +37,9 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "dateThing(created) ::= \"datetime: <created>\"\n";
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
-        ST st = group.getInstanceOf("dateThing");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(GregorianCalendar.class, new org.stringtemplate.v4.DateRenderer());
+        org.stringtemplate.v4.ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = "datetime: 7/5/05 12:00 AM";
         String result = st.render();
@@ -51,9 +50,9 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "dateThing(created) ::= << date: <created; format=\"yyyy.MM.dd\"> >>\n";
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
-        ST st = group.getInstanceOf("dateThing");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(GregorianCalendar.class, new org.stringtemplate.v4.DateRenderer());
+        org.stringtemplate.v4.ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = " date: 2005.07.05 ";
         String result = st.render();
@@ -64,9 +63,9 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "dateThing(created) ::= << datetime: <created; format=\"short\"> >>\n";
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
-        ST st = group.getInstanceOf("dateThing");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(GregorianCalendar.class, new org.stringtemplate.v4.DateRenderer());
+        org.stringtemplate.v4.ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = " datetime: 7/5/05 12:00 AM ";
         String result = st.render();
@@ -77,9 +76,9 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "dateThing(created) ::= << datetime: <created; format=\"full\"> >>\n";
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
-        ST st = group.getInstanceOf("dateThing");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(GregorianCalendar.class, new org.stringtemplate.v4.DateRenderer());
+        org.stringtemplate.v4.ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = " datetime: Tuesday, July 5, 2005 12:00:00 AM PDT ";
         String result = st.render();
@@ -91,9 +90,9 @@ public class TestRenderers extends BaseTest {
                 "dateThing(created) ::= << date: <created; format=\"date:medium\"> >>\n";
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
-        ST st = group.getInstanceOf("dateThing");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(GregorianCalendar.class, new org.stringtemplate.v4.DateRenderer());
+        org.stringtemplate.v4.ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = " date: Jul 5, 2005 ";
         String result = st.render();
@@ -105,9 +104,9 @@ public class TestRenderers extends BaseTest {
                 "dateThing(created) ::= << time: <created; format=\"time:medium\"> >>\n";
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
-        ST st = group.getInstanceOf("dateThing");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(GregorianCalendar.class, new org.stringtemplate.v4.DateRenderer());
+        org.stringtemplate.v4.ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = " time: 12:00:00 AM ";
         String result = st.render();
@@ -119,9 +118,9 @@ public class TestRenderers extends BaseTest {
                 "foo(x) ::= << <x; format=\"%6s\"> >>\n";
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(String.class, new StringRenderer());
-        ST st = group.getInstanceOf("foo");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(String.class, new org.stringtemplate.v4.StringRenderer());
+        org.stringtemplate.v4.ST st = group.getInstanceOf("foo");
         st.add("x", "hi");
         String expecting = "     hi ";
         String result = st.render();
@@ -133,10 +132,10 @@ public class TestRenderers extends BaseTest {
                 "foo(x,y) ::= << <x; format=\"%d\"> <y; format=\"%2.3f\"> >>\n";
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(Integer.class, new NumberRenderer());
-        group.registerRenderer(Double.class, new NumberRenderer());
-        ST st = group.getInstanceOf("foo");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(Integer.class, new org.stringtemplate.v4.NumberRenderer());
+        group.registerRenderer(Double.class, new org.stringtemplate.v4.NumberRenderer());
+        org.stringtemplate.v4.ST st = group.getInstanceOf("foo");
         st.add("x", -2100);
         st.add("y", 3.14159);
         String expecting = " -2100 3.142 ";
@@ -149,10 +148,10 @@ public class TestRenderers extends BaseTest {
                 "foo(x,y) ::= << <x; format=\"%,d\"> <y; format=\"%,2.3f\"> >>\n";
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(Integer.class, new NumberRenderer());
-        group.registerRenderer(Double.class, new NumberRenderer());
-        ST st = group.getInstanceOf("foo");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(Integer.class, new org.stringtemplate.v4.NumberRenderer());
+        group.registerRenderer(Double.class, new org.stringtemplate.v4.NumberRenderer());
+        org.stringtemplate.v4.ST st = group.getInstanceOf("foo");
         st.add("x", -2100);
         st.add("y", 3.14159);
         // Polish uses ' ' for ',' and ',' for '.'
@@ -164,9 +163,9 @@ public class TestRenderers extends BaseTest {
     @Test public void testRendererWithFormatAndList() throws Exception {
         String template =
                 "The names: <names; format=\"upper\">";
-        STGroup group = new STGroup();
-        group.registerRenderer(String.class, new StringRenderer());
-        ST st = new ST(template);
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
+        group.registerRenderer(String.class, new org.stringtemplate.v4.StringRenderer());
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.groupThatCreatedThisInstance = group;
         st.add("names", "ter");
         st.add("names", "tom");
@@ -179,9 +178,9 @@ public class TestRenderers extends BaseTest {
     @Test public void testRendererWithFormatAndSeparator() throws Exception {
         String template =
                 "The names: <names; separator=\" and \", format=\"upper\">";
-        STGroup group = new STGroup();
-        group.registerRenderer(String.class, new StringRenderer());
-        ST st = new ST(template);
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
+        group.registerRenderer(String.class, new org.stringtemplate.v4.StringRenderer());
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.groupThatCreatedThisInstance = group;
         st.add("names", "ter");
         st.add("names", "tom");
@@ -194,9 +193,9 @@ public class TestRenderers extends BaseTest {
     @Test public void testRendererWithFormatAndSeparatorAndNull() throws Exception {
         String template =
                 "The names: <names; separator=\" and \", null=\"n/a\", format=\"upper\">";
-        STGroup group = new STGroup();
-        group.registerRenderer(String.class, new StringRenderer());
-        ST st = new ST(template);
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
+        group.registerRenderer(String.class, new org.stringtemplate.v4.StringRenderer());
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.groupThatCreatedThisInstance = group;
         List names = new ArrayList();
         names.add("ter");

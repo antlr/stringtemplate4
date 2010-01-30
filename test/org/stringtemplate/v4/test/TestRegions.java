@@ -28,7 +28,6 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
 
@@ -42,8 +41,8 @@ public class TestRegions extends BaseTest {
             "[<@r>bar<@end>]\n" +
             ">>\n";
         writeFile(dir, "group.stg", groupFile);
-        STGroup group = new STGroupFile(dir+"/group.stg");
-        ST st = group.getInstanceOf("a");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(dir+"/group.stg");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
         String expected = "[bar]";
         String result = st.render();
         assertEquals(expected, result);
@@ -56,8 +55,8 @@ public class TestRegions extends BaseTest {
             "[<@r()>]\n" +
             ">>\n";
         writeFile(dir, "group.stg", groupFile);
-        STGroup group = new STGroupFile(dir+"/group.stg");
-        ST st = group.getInstanceOf("a");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(dir+"/group.stg");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
         String expected = "[]";
         String result = st.render();
         assertEquals(expected, result);
@@ -70,10 +69,10 @@ public class TestRegions extends BaseTest {
         String g2 = "@a.r() ::= <<foo>>\n";
         writeFile(dir, "g2.stg", g2);
 
-        STGroup group1 = new STGroupFile(dir+"/g1.stg");
-        STGroup group2 = new STGroupFile(dir+"/g2.stg");
+        org.stringtemplate.v4.STGroup group1 = new org.stringtemplate.v4.STGroupFile(dir+"/g1.stg");
+        org.stringtemplate.v4.STGroup group2 = new org.stringtemplate.v4.STGroupFile(dir+"/g2.stg");
         group2.importTemplates(group1); // define r in g2
-        ST st = group2.getInstanceOf("a");
+        org.stringtemplate.v4.ST st = group2.getInstanceOf("a");
         String expected = "[foo]";
         String result = st.render();
         assertEquals(expected, result);
@@ -86,10 +85,10 @@ public class TestRegions extends BaseTest {
         String g2 = "@a.r() ::= <<(<@super.r()>)>>\n";
         writeFile(dir, "g2.stg", g2);
 
-        STGroup group1 = new STGroupFile(dir+"/g1.stg");
-        STGroup group2 = new STGroupFile(dir+"/g2.stg");
+        org.stringtemplate.v4.STGroup group1 = new org.stringtemplate.v4.STGroupFile(dir+"/g1.stg");
+        org.stringtemplate.v4.STGroup group2 = new org.stringtemplate.v4.STGroupFile(dir+"/g2.stg");
         group2.importTemplates(group1); // define r in g2
-        ST st = group2.getInstanceOf("a");
+        org.stringtemplate.v4.ST st = group2.getInstanceOf("a");
         String expected = "[(foo)]";
         String result = st.render();
         assertEquals(expected, result);
@@ -102,10 +101,10 @@ public class TestRegions extends BaseTest {
         String g2 = "@a.r() ::= <<foo>>>\n";
         writeFile(dir, "g2.stg", g2);
 
-        STGroup group1 = new STGroupFile(dir+"/g1.stg");
-        STGroup group2 = new STGroupFile(dir+"/g2.stg");
+        org.stringtemplate.v4.STGroup group1 = new org.stringtemplate.v4.STGroupFile(dir+"/g1.stg");
+        org.stringtemplate.v4.STGroup group2 = new org.stringtemplate.v4.STGroupFile(dir+"/g2.stg");
         group1.importTemplates(group2); // opposite of previous; g1 imports g2
-        ST st = group1.getInstanceOf("a");
+        org.stringtemplate.v4.ST st = group1.getInstanceOf("a");
         String expected = "[]"; // @a.r implicitly defined in g1; can't see g2's
         String result = st.render();
         assertEquals(expected, result);
@@ -117,8 +116,8 @@ public class TestRegions extends BaseTest {
                    "@a.r() ::= <<foo>>\n";
         writeFile(dir, "g.stg", g);
 
-        STGroup group = new STGroupFile(dir+"/g.stg");
-        ST st = group.getInstanceOf("a");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(dir+"/g.stg");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
         String expected = "[foo]";
         String result = st.render();
         assertEquals(expected, result);
@@ -130,7 +129,7 @@ public class TestRegions extends BaseTest {
                    "@a.r() ::= <<bar>>\n"; // error; dup
         writeFile(dir, "g.stg", g);
 
-        STGroupFile group = new STGroupFile(dir+"/g.stg");
+        org.stringtemplate.v4.STGroupFile group = new org.stringtemplate.v4.STGroupFile(dir+"/g.stg");
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
         group.load();
@@ -147,15 +146,15 @@ public class TestRegions extends BaseTest {
                 "a() ::= \"X<@r()>Y\"" +
                 "@a.r() ::= \"foo\"" +newline;
         writeFile(dir, "g.stg", g);
-        STGroupFile group = new STGroupFile(dir+"/g.stg");
+        org.stringtemplate.v4.STGroupFile group = new org.stringtemplate.v4.STGroupFile(dir+"/g.stg");
 
         String sub =
                 "@a.r() ::= \"A<@super.r()>B\"" +newline;
         writeFile(dir, "sub.stg", sub);
-        STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
+        org.stringtemplate.v4.STGroupFile subGroup = new org.stringtemplate.v4.STGroupFile(dir+"/sub.stg");
         subGroup.importTemplates(group);
 
-        ST st = subGroup.getInstanceOf("a");
+        org.stringtemplate.v4.ST st = subGroup.getInstanceOf("a");
         String result = st.render();
         String expecting = "XAfooBY";
         assertEquals(expecting, result);
@@ -180,21 +179,21 @@ public class TestRegions extends BaseTest {
                 "a() ::= \"X<@r()>Y\"" +
                 "@a.r() ::= \"foo\"" +newline;
         writeFile(dir, "g.stg", g);
-        STGroupFile group = new STGroupFile(dir+"/g.stg");
+        org.stringtemplate.v4.STGroupFile group = new org.stringtemplate.v4.STGroupFile(dir+"/g.stg");
 
         String sub =
                 "@a.r() ::= \"<@super.r()>2\"" +newline;
         writeFile(dir, "sub.stg", sub);
-        STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
+        org.stringtemplate.v4.STGroupFile subGroup = new org.stringtemplate.v4.STGroupFile(dir+"/sub.stg");
         subGroup.importTemplates(group);
 
         String subsub =
                 "@a.r() ::= \"<@super.r()>3\"" +newline;
         writeFile(dir, "subsub.stg", subsub);
-        STGroupFile subSubGroup = new STGroupFile(dir+"/subsub.stg");
+        org.stringtemplate.v4.STGroupFile subSubGroup = new org.stringtemplate.v4.STGroupFile(dir+"/subsub.stg");
         subSubGroup.importTemplates(subGroup);
 
-        ST st = subSubGroup.getInstanceOf("a");
+        org.stringtemplate.v4.ST st = subSubGroup.getInstanceOf("a");
 
         String result = st.render();
         String expecting = "Xfoo23Y";
@@ -206,15 +205,15 @@ public class TestRegions extends BaseTest {
         String g =
                 "a() ::= \"X<@r>foo<@end>Y\""+newline;
         writeFile(dir, "g.stg", g);
-        STGroupFile group = new STGroupFile(dir+"/g.stg");
+        org.stringtemplate.v4.STGroupFile group = new org.stringtemplate.v4.STGroupFile(dir+"/g.stg");
 
         String sub =
                 "@a.r() ::= \"A<@super.r()>\"" +newline;
         writeFile(dir, "sub.stg", sub);
-        STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
+        org.stringtemplate.v4.STGroupFile subGroup = new org.stringtemplate.v4.STGroupFile(dir+"/sub.stg");
         subGroup.importTemplates(group);
 
-        ST st = subGroup.getInstanceOf("a");
+        org.stringtemplate.v4.ST st = subGroup.getInstanceOf("a");
         String result = st.render();
         String expecting = "XAfooY";
         assertEquals(expecting, result);
@@ -227,11 +226,11 @@ public class TestRegions extends BaseTest {
                 "X<@r()>Y" +
                 ">>\n"+
                 "@a.q() ::= \"foo\"" +newline;
-        STErrorListener errors = new ErrorBuffer();
+        org.stringtemplate.v4.STErrorListener errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
         writeFile(dir, "g.stg", g);
-        STGroupFile group = new STGroupFile(dir+"/g.stg");
-        ST st = group.getInstanceOf("a");
+        org.stringtemplate.v4.STGroupFile group = new org.stringtemplate.v4.STGroupFile(dir+"/g.stg");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
         st.render();
         String result = errors.toString();
         String expecting = "g.stg 3:3: template a doesn't have a region called q"+newline;
@@ -244,17 +243,17 @@ public class TestRegions extends BaseTest {
             "a() ::= \"X<@r()>Y\"" +
             "@a.r() ::= \"foo\"" +newline;
         writeFile(dir, "g.stg", g);
-        STGroupFile group = new STGroupFile(dir+"/g.stg");
+        org.stringtemplate.v4.STGroupFile group = new org.stringtemplate.v4.STGroupFile(dir+"/g.stg");
 
         String sub =
             "@a.r() ::= \"A<@super.q()>B\"" +newline; // allow this; trap at runtime
-        STErrorListener errors = new ErrorBuffer();
+        org.stringtemplate.v4.STErrorListener errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
         writeFile(dir, "sub.stg", sub);
-        STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
+        org.stringtemplate.v4.STGroupFile subGroup = new org.stringtemplate.v4.STGroupFile(dir+"/sub.stg");
         subGroup.importTemplates(group);
 
-        ST st = subGroup.getInstanceOf("a");
+        org.stringtemplate.v4.ST st = subGroup.getInstanceOf("a");
         String result = st.render();
         String expecting = "XABY";
         assertEquals(expecting, result);

@@ -27,7 +27,7 @@
  */
 package org.stringtemplate.v4.misc;
 
-import org.stringtemplate.ST;
+import org.stringtemplate.v4.ST;
 
 /** Used to track errors that occur in the ST interpreter. */
 public class STRuntimeMessage extends STMessage {
@@ -36,13 +36,13 @@ public class STRuntimeMessage extends STMessage {
     
     public STRuntimeMessage(ErrorType error, int ip) { this(error, ip, null); }
     public STRuntimeMessage(ErrorType error, int ip, ST self) { this(error,ip,self,null); }
-    public STRuntimeMessage(ErrorType error, int ip, ST self, Object arg) {
+    public STRuntimeMessage(ErrorType error, int ip, org.stringtemplate.v4.ST self, Object arg) {
         this(error, ip, self, null, arg, null);
     }
-    public STRuntimeMessage(ErrorType error, int ip, ST self, Throwable e, Object arg) {
+    public STRuntimeMessage(ErrorType error, int ip, org.stringtemplate.v4.ST self, Throwable e, Object arg) {
         this(error, ip, self, e, arg, null);
     }
-    public STRuntimeMessage(ErrorType error, int ip, ST self, Throwable e, Object arg, Object arg2) {
+    public STRuntimeMessage(ErrorType error, int ip, org.stringtemplate.v4.ST self, Throwable e, Object arg, Object arg2) {
         super(error, self, e, arg, arg2);
         this.ip = ip;
     }

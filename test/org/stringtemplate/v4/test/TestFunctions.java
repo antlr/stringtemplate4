@@ -29,9 +29,8 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
-import org.stringtemplate.STGroupFile;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ import java.util.HashMap;
 public class TestFunctions extends BaseTest {
     @Test public void testFirst() throws Exception {
         String template = "<first(names)>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new ST(template);
         List names = new ArrayList() {
             {add("Ter"); add("Tom");}
         };
@@ -53,7 +52,7 @@ public class TestFunctions extends BaseTest {
 
     @Test public void testLength() throws Exception {
         String template = "<length(names)>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         List names = new ArrayList() {
             {add("Ter"); add("Tom");}
         };
@@ -64,7 +63,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testFirstOp() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<first(names)>"
             );
         e.add("names", "Ter");
@@ -75,7 +74,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testTruncOp() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<trunc(names); separator=\", \">"
             );
         e.add("names", "Ter");
@@ -86,7 +85,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testRestOp() throws Exception {
-        ST e = new ST(
+        ST e = new org.stringtemplate.v4.ST(
                 "<rest(names); separator=\", \">"
             );
         e.add("names", "Ter");
@@ -97,7 +96,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testRestOpEmptyList() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<rest(names); separator=\", \">"
             );
         e.add("names", new ArrayList());
@@ -111,8 +110,8 @@ public class TestFunctions extends BaseTest {
             "b(x) ::= \"<x>, <x>\""+newline
             ;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        ST e = group.getInstanceOf("a");
+        STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.ST e = group.getInstanceOf("a");
         List names = new ArrayList();
         names.add("Ter");
         names.add("Tom");
@@ -133,7 +132,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testStripOp() throws Exception {
-        ST e = new ST(
+        ST e = new org.stringtemplate.v4.ST(
                 "<strip(names); null=\"n/a\">"
             );
         e.add("names", null);
@@ -148,7 +147,7 @@ public class TestFunctions extends BaseTest {
 
     @Test public void testCombinedOp() throws Exception {
         // replace first of yours with first of mine
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<[first(mine),rest(yours)]; separator=\", \">"
             );
         e.add("mine", "1");
@@ -162,7 +161,7 @@ public class TestFunctions extends BaseTest {
 
     @Test public void testCatListAndSingleAttribute() throws Exception {
         // replace first of yours with first of mine
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<[mine,yours]; separator=\", \">"
             );
         e.add("mine", "1");
@@ -179,8 +178,8 @@ public class TestFunctions extends BaseTest {
             "b(x) ::= \"<x>, <x>\""+newline
             ;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        ST e = group.getInstanceOf("a");
+        STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.ST e = group.getInstanceOf("a");
         List mine = new ArrayList();
         mine.add("Ter");
         mine.add("Tom");
@@ -197,7 +196,7 @@ public class TestFunctions extends BaseTest {
         // two operands (from left to right) determine which way it
         // goes.  In this case, x+mine is a list so everything from their
         // to the right becomes list cat.
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<[x,mine,y,yours,z]; separator=\", \">"
             );
         e.add("mine", "1");
@@ -209,7 +208,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testNestedOp() throws Exception {
-        ST e = new ST(
+        ST e = new org.stringtemplate.v4.ST(
                 "<first(rest(names))>" // gets 2nd element
             );
         e.add("names", "Ter");
@@ -220,7 +219,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testFirstWithOneAttributeOp() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<first(names)>"
             );
         e.add("names", "Ter");
@@ -229,7 +228,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testLastWithOneAttributeOp() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<last(names)>"
             );
         e.add("names", "Ter");
@@ -238,7 +237,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testLastWithLengthOneListAttributeOp() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new ST(
                 "<last(names)>"
             );
         e.add("names", new ArrayList() {{add("Ter");}});
@@ -247,7 +246,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testRestWithOneAttributeOp() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<rest(names)>"
             );
         e.add("names", "Ter");
@@ -256,7 +255,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testRestWithLengthOneListAttributeOp() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<rest(names)>"
             );
         e.add("names", new ArrayList() {{add("Ter");}});
@@ -265,7 +264,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testRepeatedRestOp() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<rest(names)>, <rest(names)>" // gets 2nd element
             );
         e.add("names", "Ter");
@@ -275,7 +274,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testIncomingLists() throws Exception {
-        ST e = new ST(
+        ST e = new org.stringtemplate.v4.ST(
                 "<rest(names)>, <rest(names)>" // gets 2nd element
             );
         e.add("names", "Ter");
@@ -285,7 +284,7 @@ public class TestFunctions extends BaseTest {
     }
 
 	@Test public void testFirstWithCatAttribute() throws Exception {
-		ST e = new ST(
+		ST e = new org.stringtemplate.v4.ST(
 				"<first([names,phones])>"
 			);
 		e.add("names", "Ter");
@@ -297,7 +296,7 @@ public class TestFunctions extends BaseTest {
 	}
 
 	@Test public void testFirstWithListOfMaps() throws Exception {
-		ST e = new ST(
+		org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
 				"<first(maps).Ter>"
 			);
 		final Map m1 = new HashMap();
@@ -316,7 +315,7 @@ public class TestFunctions extends BaseTest {
 	}
 
 	@Test public void testFirstWithListOfMaps2() throws Exception {
-		ST e = new ST(
+		org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
 				"<first(maps):{ m | <m>!}>"
 			);
 		final Map m1 = new HashMap();
@@ -334,7 +333,7 @@ public class TestFunctions extends BaseTest {
 	}
 
     @Test public void testTrim() throws Exception {
-        ST e = new ST(
+        ST e = new org.stringtemplate.v4.ST(
                 "<trim(name)>"
             );
         e.add("name", " Ter  \n");
@@ -343,7 +342,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testStrlen() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<strlen(name)>"
             );
         e.add("name", "012345");
@@ -352,7 +351,7 @@ public class TestFunctions extends BaseTest {
     }
 
     @Test public void testReverse() throws Exception {
-        ST e = new ST(
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<reverse(names); separator=\", \">"
             );
         e.add("names", "Ter");

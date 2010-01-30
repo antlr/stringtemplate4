@@ -27,7 +27,7 @@
  */
 package org.stringtemplate.v4.misc;
 
-import org.stringtemplate.STWriter;
+import org.stringtemplate.v4.STWriter;
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.debug.DebugST;
 

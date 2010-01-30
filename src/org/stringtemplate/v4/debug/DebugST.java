@@ -27,10 +27,9 @@
  */
 package org.stringtemplate.v4.debug;
 
-import org.stringtemplate.AutoIndentWriter;
-import org.stringtemplate.Interpreter;
-import org.stringtemplate.ST;
-import org.stringtemplate.STWriter;
+import org.stringtemplate.v4.AutoIndentWriter;
+import org.stringtemplate.v4.Interpreter;
+import org.stringtemplate.v4.STWriter;
 import org.stringtemplate.v4.gui.STViz;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
@@ -45,7 +44,7 @@ import java.util.Map;
 /** To avoid polluting ST instances with debug info when not debugging.
  *  Setting debug mode in STGroup makes it create these instead of STs.
  */
-public class DebugST extends ST {
+public class DebugST extends org.stringtemplate.v4.ST {
     /** Track all events that occur during rendering. */
     public List<InterpEvent> interpEvents = new ArrayList<InterpEvent>();
 
@@ -92,7 +91,7 @@ public class DebugST extends ST {
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
+        org.stringtemplate.v4.Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
         interp.exec(wr, this); // render and track events
         new STViz(this, out.toString(), interp.getEvents(),
                   interp.getExecutionTrace(), errors.errors);
@@ -111,7 +110,7 @@ public class DebugST extends ST {
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
+        org.stringtemplate.v4.Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
         interp.exec(wr, this); // render and track events
         return interp.getEvents();
     }

@@ -29,9 +29,8 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
-import org.stringtemplate.STGroupDir;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupDir;
 import org.stringtemplate.v4.misc.Misc;
 
 import static org.junit.Assert.assertEquals;
@@ -57,7 +56,7 @@ public class TestClasspathLoading extends BaseTest {
     @Test
     public void test() {
         STGroup group = new STGroupDir(dir);
-        ST st = group.getInstanceOf("a");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
         String expected = "a";
         String result = st.render();
         assertEquals(expected, result);

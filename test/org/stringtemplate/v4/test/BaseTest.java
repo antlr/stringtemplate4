@@ -32,7 +32,7 @@ import org.antlr.runtime.Token;
 import org.antlr.runtime.CommonTokenStream;
 import org.junit.Before;
 import org.stringtemplate.v4.misc.Misc;
-import org.stringtemplate.STGroup;
+import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.compiler.STLexer;
 
 import java.io.File;

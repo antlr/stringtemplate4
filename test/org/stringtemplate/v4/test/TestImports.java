@@ -28,10 +28,10 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
-import org.stringtemplate.STGroupDir;
-import org.stringtemplate.STGroupFile;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupDir;
+import org.stringtemplate.v4.STGroupFile;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,7 +46,7 @@ public class TestImports extends BaseTest {
         a = "a() ::= << <b()> >>\n";
         writeFile(dir2, "a.st", a);
 
-        STGroup group1 = new STGroupDir(dir1);
+        org.stringtemplate.v4.STGroup group1 = new STGroupDir(dir1);
         STGroup group2 = new STGroupDir(dir2);
         group2.importTemplates(group1);
         ST st = group2.getInstanceOf("b");
@@ -93,10 +93,10 @@ public class TestImports extends BaseTest {
             "c() ::= \"g2 c\"\n";
         writeFile(dir, "y/group.stg", groupFile);
 
-        STGroup group1 = new STGroupFile(dir+"/x/group.stg");
+        org.stringtemplate.v4.STGroup group1 = new org.stringtemplate.v4.STGroupFile(dir+"/x/group.stg");
         STGroup group2 = new STGroupFile(dir+"/y/group.stg");
         group1.importTemplates(group2);
-        ST st = group1.getInstanceOf("/b");
+        org.stringtemplate.v4.ST st = group1.getInstanceOf("/b");
         String expected = "g2 c";
         String result = st.render();
         assertEquals(expected, result);
@@ -110,7 +110,7 @@ public class TestImports extends BaseTest {
         writeFile(dir, "x/subdir/a.st", a);
         writeFile(dir, "y/subdir/b.st", b);
 
-        STGroup group1 = new STGroupDir(dir+"/x");
+        org.stringtemplate.v4.STGroup group1 = new STGroupDir(dir+"/x");
         STGroup group2 = new STGroupDir(dir+"/y");
         group1.importTemplates(group2);
         ST st = group1.getInstanceOf("/subdir/a");
@@ -130,10 +130,10 @@ public class TestImports extends BaseTest {
             "b() ::= \"group file b\"\n";
         writeFile(dir, "y/subdir.stg", groupFile);
 
-        STGroup group1 = new STGroupDir(dir+"/x");
-        STGroup group2 = new STGroupDir(dir+"/y");
+        org.stringtemplate.v4.STGroup group1 = new org.stringtemplate.v4.STGroupDir(dir+"/x");
+        org.stringtemplate.v4.STGroup group2 = new org.stringtemplate.v4.STGroupDir(dir+"/y");
         group1.importTemplates(group2);
-        ST st = group1.getInstanceOf("/subdir/a");
+        org.stringtemplate.v4.ST st = group1.getInstanceOf("/subdir/a");
         String expected = " group file b ";
         String result = st.render();
         assertEquals(expected, result);
@@ -149,8 +149,8 @@ public class TestImports extends BaseTest {
         writeFile(dir2, "a.st", a);
         writeFile(dir2, "b.st", b);
 
-        STGroup group1 = new STGroupDir(dir1);
-        STGroup group2 = new STGroupDir(dir2);
+        STGroup group1 = new org.stringtemplate.v4.STGroupDir(dir1);
+        STGroup group2 = new org.stringtemplate.v4.STGroupDir(dir2);
         group1.importTemplates(group2);
 
         // normal lookup; a created from dir2 calls dir2.b
@@ -176,7 +176,7 @@ public class TestImports extends BaseTest {
         a = "a() ::= << [<super.a()>] >>\n";
         writeFile(dir2, "a.st", a);
 
-        STGroup group1 = new STGroupDir(dir1);
+        org.stringtemplate.v4.STGroup group1 = new STGroupDir(dir1);
         STGroup group2 = new STGroupDir(dir2);
         group2.importTemplates(group1);
         ST st = group2.getInstanceOf("a");

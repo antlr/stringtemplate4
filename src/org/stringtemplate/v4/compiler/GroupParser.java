@@ -3,8 +3,8 @@
 package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.*;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
@@ -55,7 +55,7 @@ public class GroupParser extends Parser {
     public String getGrammarFileName() { return "Group.g"; }
 
 
-    public STGroup group;
+    public org.stringtemplate.v4.STGroup group;
 
     public void displayRecognitionError(String[] tokenNames,
                                         RecognitionException e)
@@ -78,7 +78,7 @@ public class GroupParser extends Parser {
 
     // $ANTLR start "group"
     // Group.g:93:1: group[STGroup group, String prefix] : ( def[prefix] )+ ;
-    public final void group(STGroup group, String prefix) throws RecognitionException {
+    public final void group(org.stringtemplate.v4.STGroup group, String prefix) throws RecognitionException {
 
         GroupLexer lexer = (GroupLexer)input.getTokenSource();
         this.group = lexer.group = group;
@@ -761,7 +761,7 @@ public class GroupParser extends Parser {
 
             state._fsp--;
 
-            mapping.put(STGroup.DEFAULT_KEY, keyValue7);
+            mapping.put(org.stringtemplate.v4.STGroup.DEFAULT_KEY, keyValue7);
 
             }
 
@@ -848,7 +848,7 @@ public class GroupParser extends Parser {
                     // Group.g:200:4: BIGSTRING
                     {
                     BIGSTRING10=(Token)match(input,BIGSTRING,FOLLOW_BIGSTRING_in_keyValue466); 
-                    value = new ST(Misc.strip((BIGSTRING10!=null?BIGSTRING10.getText():null),2));
+                    value = new org.stringtemplate.v4.ST(Misc.strip((BIGSTRING10!=null?BIGSTRING10.getText():null),2));
 
                     }
                     break;

@@ -31,15 +31,15 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import org.stringtemplate.v4.misc.ErrorManager;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
 public class TestOptions extends BaseTest {
     @Test public void testSeparator() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "hi <name; separator=\", \">!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", "Sumana");
@@ -49,7 +49,7 @@ public class TestOptions extends BaseTest {
     }
 
     @Test public void testAttrSeparator() throws Exception {
-        STGroup group = new STGroup();
+        STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "hi <name; separator=sep>!");
         ST st = group.getInstanceOf("test");
         st.add("sep", ", ");
@@ -62,7 +62,7 @@ public class TestOptions extends BaseTest {
     }
 
     @Test public void testIncludeSeparator() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("foo", "|");
         group.defineTemplate("test", "hi <name; separator=foo()>!");
         ST st = group.getInstanceOf("test");
@@ -76,9 +76,9 @@ public class TestOptions extends BaseTest {
     }
 
     @Test public void testSubtemplateSeparator() throws Exception {
-        STGroup group = new STGroup();
+        STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "hi <name; separator={<sep> _}>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("sep", ",");
         st.add("name", "Ter");
         st.add("name", "Tom");
@@ -89,7 +89,7 @@ public class TestOptions extends BaseTest {
     }
 
     @Test public void testSeparatorWithNullFirstValueAndNullOption() throws Exception {
-        STGroup group = new STGroup();
+        STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "hi <name; null=\"n/a\", separator=\", \">!");
         ST st = group.getInstanceOf("test");
         st.add("name", null);
@@ -103,7 +103,7 @@ public class TestOptions extends BaseTest {
     @Test public void testSeparatorWithNull2ndValueAndNullOption() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "hi <name; null=\"n/a\", separator=\", \">!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", null);
         st.add("name", "Sumana");
@@ -113,9 +113,9 @@ public class TestOptions extends BaseTest {
     }
 
     @Test public void testNullValueAndNullOption() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "<name; null=\"n/a\">");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", null);
         String expected = "n/a";
         String result = st.render();
@@ -123,16 +123,16 @@ public class TestOptions extends BaseTest {
     }
 
     @Test public void testMissingValueAndNullOption() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "<name; null=\"n/a\">");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         String expected = "n/a";
         String result = st.render();
         assertEquals(expected, result);
     }
 
     @Test public void testOptionDoesntApplyToNestedTemplate() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new STGroup();
         group.defineTemplate("foo", "<zippo>");
         group.defineTemplate("test", "<foo(); null=\"n/a\">");
         ST st = group.getInstanceOf("test");
@@ -145,7 +145,7 @@ public class TestOptions extends BaseTest {
     @Test public void testIllegalOption() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "<name; bad=\"ugly\">");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");

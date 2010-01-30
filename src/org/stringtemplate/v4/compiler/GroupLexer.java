@@ -3,7 +3,6 @@
 package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.*;
-import org.stringtemplate.STGroup;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 
@@ -30,7 +29,7 @@ public class GroupLexer extends Lexer {
     public static final int COMMENT=8;
     public static final int STRING=5;
 
-    protected STGroup group;
+    protected org.stringtemplate.v4.STGroup group;
 
     public void reportError(RecognitionException e) {
         String msg = null;

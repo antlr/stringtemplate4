@@ -29,9 +29,9 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
-import org.stringtemplate.STGroupFile;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 
 public class TestIndentation extends BaseTest {
 	@Test public void testSimpleIndentOfAttributeList()
@@ -43,7 +43,7 @@ public class TestIndentation extends BaseTest {
 				">>"+newline;
 
 		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		org.stringtemplate.v4.STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ST t = group.getInstanceOf("list");
 		t.add("names", "Terence");
 		t.add("names", "Jim");

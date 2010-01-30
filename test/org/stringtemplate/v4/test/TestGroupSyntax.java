@@ -29,7 +29,7 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.*;
+
 import org.stringtemplate.v4.misc.Misc;
 
 public class TestGroupSyntax extends BaseTest {
@@ -38,7 +38,7 @@ public class TestGroupSyntax extends BaseTest {
             "t() ::= <<foo>>" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
         String expected =
             "t() ::= <<" + Misc.newline+
             "foo" + Misc.newline+
@@ -54,7 +54,7 @@ public class TestGroupSyntax extends BaseTest {
             "wow() ::= <<last>>" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
         String expected =
             "ta() ::= <<" +Misc.newline+
             "[<it>]" +Misc.newline+
@@ -74,7 +74,7 @@ public class TestGroupSyntax extends BaseTest {
             "t(a,b) ::= \"[<a>]\"" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
         String expected =
             "t(a,b) ::= <<" + Misc.newline+
             "[<a>]" + Misc.newline+
@@ -88,7 +88,7 @@ public class TestGroupSyntax extends BaseTest {
             "t(a={def1},b=\"def2\") ::= \"[<a>]\"" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
         String expected =
             "t(a={def1},b=\"def2\") ::= <<" + Misc.newline+
             "[<a>]" + Misc.newline+
@@ -102,7 +102,7 @@ public class TestGroupSyntax extends BaseTest {
             "t(a={x | 2*<x>}) ::= \"[<a>]\"" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
         String expected =
             "t(a={x | 2*<x>}) ::= <<" + Misc.newline+
             "[<a>]" + Misc.newline+
@@ -116,7 +116,7 @@ public class TestGroupSyntax extends BaseTest {
 			"t(a) ::= \"<a:{x | <x:{<it>}>}>\"" + Misc.newline;
 
 		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 		String expected =
 			"t(a) ::= <<\n" +
 			"<a:{x | <x:{<it>}>}>\n" +
@@ -130,7 +130,7 @@ public class TestGroupSyntax extends BaseTest {
 			"t(a={x | <x:{<it>}>}) ::= \"ick\"" + Misc.newline;
 
 		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 		String expected =
 			"t(a={x | <x:{<it>}>}) ::= <<\n" +
 			"ick\n" +
@@ -144,7 +144,7 @@ public class TestGroupSyntax extends BaseTest {
 			"t(a={x | \\< <x:{<it>\\}}>}) ::= \"[<a>]\"" + Misc.newline;
 
 		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 		String expected =
 			"t(a={x | \\< <x:{<it>\\}}>}) ::= <<" + Misc.newline+
 			"[<a>]" + Misc.newline+

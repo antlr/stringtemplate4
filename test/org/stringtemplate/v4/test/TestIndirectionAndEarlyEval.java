@@ -29,8 +29,8 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.ST;
-import org.stringtemplate.STGroup;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ import java.util.HashMap;
 public class TestIndirectionAndEarlyEval extends BaseTest {
     @Test public void testEarlyEval() throws Exception {
         String template = "<(name)>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new ST(template);
         st.add("name", "Ter");
         String expected = "Ter";
         String result = st.render();
@@ -50,7 +50,7 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
         group.defineTemplate("foo", "bar");
         String template = "<(name)()>";
         group.defineTemplate("test", template);
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", "foo");
         String expected = "bar";
         String result = st.render();
@@ -58,12 +58,12 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
     }
 
     @Test public void testIndirectTemplateIncludeViaTemplate() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new STGroup();
         group.defineTemplate("foo", "bar");
         group.defineTemplate("tname", "foo");
         String template = "<(tname())()>";
         group.defineTemplate("test", template);
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         String expected = "bar";
         String result = st.render();
         assertEquals(expected, result);
@@ -83,7 +83,7 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("a", "[<it>]");
         group.defineTemplate("test", "hi <names:(templateName)()>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
         st.add("names", "Sumana");
@@ -96,7 +96,7 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
 
     @Test public void testNonStringDictLookup() throws Exception {
         String template = "<m.(intkey)>";
-        ST st = new ST(template);
+        ST st = new org.stringtemplate.v4.ST(template);
         Map<Integer, String> m = new HashMap<Integer, String>();
         m.put(36, "foo");
         st.add("m", m);

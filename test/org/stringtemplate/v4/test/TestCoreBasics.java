@@ -31,7 +31,7 @@ import org.antlr.runtime.CommonToken;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import org.stringtemplate.*;
+
 import org.stringtemplate.v4.compiler.FormalArgument;
 import org.stringtemplate.v4.compiler.GroupParser;
 import org.stringtemplate.v4.misc.ErrorBuffer;
@@ -43,7 +43,7 @@ import java.io.StringWriter;
 public class TestCoreBasics extends BaseTest {
     @Test public void testNullAttr() throws Exception {
         String template = "hi <name>!";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         String expected =
             "hi !";
         String result = st.render();
@@ -52,7 +52,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testAttr() throws Exception {
         String template = "hi <name>!";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.add("name", "Ter");
         String expected = "hi Ter!";
         String result = st.render();
@@ -65,8 +65,8 @@ public class TestCoreBasics extends BaseTest {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        ST st = group.getInstanceOf("t");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("t");
         st.add("name", "Ter");
         String expected = "hi Ter!";
         String result = st.render();
@@ -80,7 +80,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testMultiAttr() throws Exception {
         String template = "hi <name>!";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.add("name", "Ter");
         st.add("name", "Tom");
         String expected =
@@ -91,7 +91,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testAttrIsList() throws Exception {
         String template = "hi <name>!";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         List names = new ArrayList() {{add("Ter"); add("Tom");}};
         st.add("name", names);
         st.add("name", "Sumana"); // shouldn't alter my version of names list!
@@ -105,7 +105,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testAttrIsArray() throws Exception {
         String template = "hi <name>!";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         String[] names = new String[] {"Ter", "Tom"};
         st.add("name", names);
         st.add("name", "Sumana"); // shouldn't alter my version of names list!
@@ -117,7 +117,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testProp() throws Exception {
         String template = "<u.id>: <u.name>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.add("u", new User(1, "parrt"));
         String expected = "1: parrt";
         String result = st.render();
@@ -126,7 +126,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testInclude() throws Exception {
         String template = "load <box()>;";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.impl.nativeGroup.defineTemplate("box",
                                 "kewl\n" +
                                 "daddy"
@@ -141,7 +141,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testIncludeWithArg() throws Exception {
         String template = "load <box(x=\"arg\")>;";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.impl.nativeGroup.defineTemplate("box", "kewl <x> daddy");
         st.add("name", "Ter");
         String expected = "load kewl arg daddy;";
@@ -151,7 +151,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testIncludeWithSingleUnnamedArg() throws Exception {
         String template = "load <box(\"arg\")>;";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         LinkedHashMap<String,FormalArgument> args =
             new LinkedHashMap<String,FormalArgument>();
         args.put("x", new FormalArgument("x"));
@@ -166,7 +166,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testIncludeWithArg2() throws Exception {
         String template = "load <box(x=\"arg\", y=foo())>;";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.impl.nativeGroup.defineTemplate("box", "kewl <x> <y> daddy");
         st.impl.nativeGroup.defineTemplate("foo", "blech");
         st.add("name", "Ter");
@@ -177,7 +177,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testIncludeWithNestedArgs() throws Exception {
         String template = "load <box(y=foo(x=\"arg\"))>;";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.impl.nativeGroup.defineTemplate("box", "kewl <y> daddy");
         st.impl.nativeGroup.defineTemplate("foo", "blech <x>");
         st.add("name", "Ter");
@@ -187,10 +187,10 @@ public class TestCoreBasics extends BaseTest {
     }
 
     @Test public void testDefineTemplate() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("inc", "<it>+1");
         group.defineTemplate("test", "hi <name>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", "Sumana");
@@ -201,10 +201,10 @@ public class TestCoreBasics extends BaseTest {
     }
 
     @Test public void testMap() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("inc", "[<it>]");
         group.defineTemplate("test", "hi <name:inc()>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", "Sumana");
@@ -220,8 +220,8 @@ public class TestCoreBasics extends BaseTest {
             "test() ::= \"<name:(d.foo)()>\"\n" +
             "bold() ::= <<*<it>*>>\n";
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", "Sumana");
@@ -231,9 +231,9 @@ public class TestCoreBasics extends BaseTest {
     }
 
     @Test public void testParallelMap() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "hi <names,phones:{n,p | <n>:<p>;}>");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
         st.add("names", "Sumana");
@@ -247,9 +247,9 @@ public class TestCoreBasics extends BaseTest {
     }
 
     @Test public void testParallelMapWith3Versus2Elements() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test", "hi <names,phones:{n,p | <n>:<p>;}>");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
         st.add("names", "Sumana");
@@ -262,10 +262,10 @@ public class TestCoreBasics extends BaseTest {
     }
 
     @Test public void testMapIndexes() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("inc", "<i>:<it>");
         group.defineTemplate("test", "<name:inc(); separator=\", \">");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", null); // don't count this one
@@ -277,10 +277,10 @@ public class TestCoreBasics extends BaseTest {
     }
 
     @Test public void testMapSingleValue() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("a", "[<it>]");
         group.defineTemplate("test", "hi <name:a()>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         String expected = "hi [Ter]!";
         String result = st.render();
@@ -288,11 +288,11 @@ public class TestCoreBasics extends BaseTest {
     }
 
     @Test public void testRepeatedMap() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("a", "[<it>]");
         group.defineTemplate("b", "(<it>)");
         group.defineTemplate("test", "hi <name:a():b()>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", "Sumana");
@@ -303,11 +303,11 @@ public class TestCoreBasics extends BaseTest {
     }
 
     @Test public void testRoundRobinMap() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("a", "[<it>]");
         group.defineTemplate("b", "(<it>)");
         group.defineTemplate("test", "hi <name:a(),b()>!");
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", "Sumana");
@@ -319,7 +319,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testTrueCond() throws Exception {
         String template = "<if(name)>works<endif>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.add("name", "Ter");
         String expected = "works";
         String result = st.render();
@@ -328,7 +328,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testFalseCond() throws Exception {
         String template = "<if(name)>works<endif>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         String expected = "";
         String result = st.render();
         assertEquals(expected, result);
@@ -336,7 +336,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testNotTrueCond() throws Exception {
         String template = "<if(!name)>works<endif>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.add("name", "Ter");
         String expected = "";
         String result = st.render();
@@ -345,7 +345,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testNotFalseCond() throws Exception {
         String template = "<if(!name)>works<endif>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         String expected = "works";
         String result = st.render();
         assertEquals(expected, result);
@@ -353,7 +353,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testTrueCondWithElse() throws Exception {
         String template = "<if(name)>works<else>fail<endif>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.add("name", "Ter");
         String expected = "works";
         String result = st.render();
@@ -362,7 +362,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testFalseCondWithElse() throws Exception {
         String template = "<if(name)>fail<else>works<endif>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         String expected = "works";
         String result = st.render();
         assertEquals(expected, result);
@@ -370,7 +370,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testElseIf() throws Exception {
         String template = "<if(name)>fail<elseif(id)>works<else>fail<endif>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         st.add("id", "2DF3DF");
         String expected = "works";
         String result = st.render();
@@ -379,7 +379,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testElseIfNoElseAllFalse() throws Exception {
         String template = "<if(name)>fail<elseif(id)>fail<endif>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         String expected = "";
         String result = st.render();
         assertEquals(expected, result);
@@ -387,7 +387,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testElseIfAllExprFalse() throws Exception {
         String template = "<if(name)>fail<elseif(id)>fail<else>works<endif>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         String expected = "works";
         String result = st.render();
         assertEquals(expected, result);
@@ -395,7 +395,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testOr() throws Exception {
 		String template = "<if(name||notThere)>works<else>fail<endif>";
-		ST st = new ST(template);
+		org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
 		st.add("name", "Ter");
 		String expected = "works";
 		String result = st.render();
@@ -404,7 +404,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testMapConditionAndEscapeInside() throws Exception {
         String template = "<if(m.name)>works \\\\<endif>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         Map m = new HashMap();
         m.put("name", "Ter");
         st.add("m", m);
@@ -415,7 +415,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testAnd() throws Exception {
 		String template = "<if(name&&notThere)>fail<else>works<endif>";
-		ST st = new ST(template);
+		org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
 		st.add("name", "Ter");
 		String expected = "works";
 		String result = st.render();
@@ -424,7 +424,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testAndNot() throws Exception {
 		String template = "<if(name&&!notThere)>works<else>fail<endif>";
-		ST st = new ST(template);
+		org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
 		st.add("name", "Ter");
 		String expected = "works";
 		String result = st.render();
@@ -432,11 +432,11 @@ public class TestCoreBasics extends BaseTest {
 	}
 
     @Test public void testITDoesntPropagate() throws Exception {
-        STGroup group = new STGroup();
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("foo", "<it>");   // <it> not visible
         String template = "<names:{<foo()>}>"; // <it> visible only to {...} here
         group.defineTemplate("test", template);
-        ST st = group.getInstanceOf("test");
+        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
         String expected = "";
@@ -445,47 +445,47 @@ public class TestCoreBasics extends BaseTest {
     }
 
     @Test public void testCharLiterals() throws Exception {
-        ST st = new ST(
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(
                 "Foo <\\n><\\n><\\t> bar\n"
                 );
         StringWriter sw = new StringWriter();
-        st.write(new AutoIndentWriter(sw,"\n")); // force \n as newline
+        st.write(new org.stringtemplate.v4.AutoIndentWriter(sw,"\n")); // force \n as newline
         String result = sw.toString();
         String expecting ="Foo \n\n\t bar\n";     // expect \n in output
         assertEquals(expecting, result);
 
-        st = new ST(
+        st = new org.stringtemplate.v4.ST(
                 "Foo <\\n><\\t> bar" +newline);
         sw = new StringWriter();
-        st.write(new AutoIndentWriter(sw,"\n")); // force \n as newline
+        st.write(new org.stringtemplate.v4.AutoIndentWriter(sw,"\n")); // force \n as newline
         expecting ="Foo \n\t bar\n";     // expect \n in output
         result = sw.toString();
         assertEquals(expecting, result);
 
-        st = new ST(
+        st = new org.stringtemplate.v4.ST(
                 "Foo<\\ >bar<\\n>");
         sw = new StringWriter();
-        st.write(new AutoIndentWriter(sw,"\n")); // force \n as newline
+        st.write(new org.stringtemplate.v4.AutoIndentWriter(sw,"\n")); // force \n as newline
         result = sw.toString();
         expecting ="Foo bar\n"; // forced \n
         assertEquals(expecting, result);
     }
 
     @Test public void testUnicodeLiterals() throws Exception {
-        ST st = new ST(
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(
                 "Foo <\\uFEA5><\\n><\\u00C2> bar\n"
                 );
         String expecting ="Foo \ufea5"+newline+"\u00C2 bar"+newline;
         String result = st.render();
         assertEquals(expecting, result);
 
-        st = new ST(
+        st = new org.stringtemplate.v4.ST(
                 "Foo <\\uFEA5><\\n><\\u00C2> bar" +newline);
         expecting ="Foo \ufea5"+newline+"\u00C2 bar"+newline;
         result = st.render();
         assertEquals(expecting, result);
 
-        st = new ST(
+        st = new org.stringtemplate.v4.ST(
                 "Foo<\\ >bar<\\n>");
         expecting ="Foo bar"+newline;
         result = st.render();
@@ -494,7 +494,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testSubtemplateExpr() throws Exception {
         String template = "<{name\n}>";
-        ST st = new ST(template);
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
         String expected =
             "name"+newline;
         String result = st.render();

@@ -3,7 +3,7 @@
 package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.*;
-import org.stringtemplate.STGroup;
+import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.Misc;
 
 import java.util.ArrayList;

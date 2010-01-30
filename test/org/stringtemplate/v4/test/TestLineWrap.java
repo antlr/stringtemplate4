@@ -29,7 +29,6 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import org.stringtemplate.*;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -39,9 +38,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
 				"array(values) ::= <<int[] a = { <values; wrap=\"\\n\", separator=\",\"> };>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("array");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("array");
 		a.add("values",
 					   new int[] {3,9,20,2,1,4,6,32,5,6,77,888,2,1,6,32,5,6,77,
 						4,9,20,2,1,4,63,9,20,2,1,4,6,32,5,6,77,6,32,5,6,77,
@@ -53,7 +52,7 @@ public class TestLineWrap extends BaseTest {
 			"32,5,6,77,888,1,6,32,5 };";
 
 		StringWriter sw = new StringWriter();
-		STWriter stw = new AutoIndentWriter(sw,"\n"); // force \n as newline
+		org.stringtemplate.v4.STWriter stw = new org.stringtemplate.v4.AutoIndentWriter(sw,"\n"); // force \n as newline
 		stw.setLineWidth(40);
 		a.write(stw); 
 		String result = sw.toString();
@@ -64,9 +63,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
             "array(values) ::= <<int[] a = { <values; anchor, wrap, separator=\",\"> };>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("array");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("array");
 		a.add("values",
             new int[] {3,9,20,2,1,4,6,32,5,6,77,888,2,1,6,32,5,6,77,
             4,9,20,2,1,4,63,9,20,2,1,4,6,32,5,6,77,6,32,5,6,77,
@@ -84,14 +83,14 @@ public class TestLineWrap extends BaseTest {
         String templates =
                 "array(values) ::= <<{ <values; anchor, separator=\", \"> }>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-        final ST x = new ST("<\\n>{ <stuff; anchor, separator=\",\\n\"> }<\\n>");
+        final org.stringtemplate.v4.ST x = new org.stringtemplate.v4.ST("<\\n>{ <stuff; anchor, separator=\",\\n\"> }<\\n>");
         x.groupThatCreatedThisInstance = group;
         x.add("stuff", "1");
         x.add("stuff", "2");
         x.add("stuff", "3");
-        ST a = group.getInstanceOf("array");
+        org.stringtemplate.v4.ST a = group.getInstanceOf("array");
         a.add("values", new ArrayList() {{
             add("a"); add(x); add("b");
         }});
@@ -108,9 +107,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
 				"func(args) ::= <<       FUNCTION line( <args; wrap=\"\\n      c\", separator=\",\"> )>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("func");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("func");
 		a.add("args",
 					   new String[] {"a","b","c","d","e","f"});
 		String expecting =
@@ -123,9 +122,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
 				"array(values) ::= <<int[] a = { <{1,9,2,<values; wrap, separator=\",\">}; anchor> };>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("array");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("array");
 		a.add("values",
 					   new int[] {3,9,20,2,1,4,6,32,5,6,77,888,2,1,6,32,5,6,77,
 						4,9,20,2,1,4,63,9,20,2,1,4,6});
@@ -142,9 +141,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
 				"duh(chars) ::= <<<chars; wrap=\"\\n\"\\>>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("duh");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
 		a.add("chars", new String[] {"a","b","c","d","e"});
 		// lineWidth==3 implies that we can have 3 characters at most
 		String expecting =
@@ -157,9 +156,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
 				"duh(chars) ::= <<<chars; wrap=\"\\n\"\\>>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("duh");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
 		a.add("chars", new String[] {"a","b","\n","d","e"});
 		// don't do \n if it's last element anyway
 		String expecting =
@@ -172,9 +171,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
 				"duh(chars) ::= <<<chars; wrap=\"\\n\"\\>>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("duh");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
 		a.add("chars", new String[] {"a","b","c","\n","d","e"});
 		// Once we wrap, we must dump chars as we see them.  A newline right
 		// after a wrap is just an "unfortunate" event.  People will expect
@@ -190,9 +189,9 @@ public class TestLineWrap extends BaseTest {
         String templates =
                 "duh(data) ::= <<!<data; wrap>!>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-        ST a = group.getInstanceOf("duh");
+        org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
         a.add("data", new int[] {1,2,3,4,5,6,7,8,9});
         String expecting =
             "!123\n" +
@@ -205,9 +204,9 @@ public class TestLineWrap extends BaseTest {
         String templates =
                 "duh(data) ::= <<!<data:{v|[<v>]}; wrap>!>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-        ST a = group.getInstanceOf("duh");
+        org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
         a.add("data", new int[] {1,2,3,4,5,6,7,8,9});
         String expecting =
             "![1][2][3]\n" + // width=9 is the 3 char; don't break til after ]
@@ -220,9 +219,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
 				"duh(data) ::= <<!<data:{v|[<v>]}; anchor, wrap>!>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("duh");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
 		a.add("data", new int[] {1,2,3,4,5,6,7,8,9});
 		String expecting =
 			"![1][2][3]\n" +
@@ -236,10 +235,10 @@ public class TestLineWrap extends BaseTest {
 				"top(s) ::= <<  <s>.>>"+
 				"str(data) ::= <<!<data:{v|[<v>]}; wrap=\"!+\\n!\">!>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST t = group.getInstanceOf("top");
-		ST s = group.getInstanceOf("str");
+		org.stringtemplate.v4.ST t = group.getInstanceOf("top");
+		org.stringtemplate.v4.ST s = group.getInstanceOf("str");
 		s.add("data", new int[] {1,2,3,4,5,6,7,8,9});
 		t.add("s", s);
 		String expecting =
@@ -255,9 +254,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
 				"duh(chars) ::= <<    <chars; wrap=\"\\n\"\\>>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("duh");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
 		a.add("chars", new String[] {"a","b","c","d","e"});
 		//
 		String expecting =
@@ -273,9 +272,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
 				"duh(chars) ::= <<    <chars; wrap=\"\\n\"\\>>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("duh");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
 		a.add("chars", new String[] {"a","b","c","d","e"});
 		//
 		String expecting =
@@ -291,10 +290,10 @@ public class TestLineWrap extends BaseTest {
 				"top(d) ::= <<  <d>!>>"+newline+
 				"duh(chars) ::= <<  <chars; wrap=\"\\n\"\\>>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST top = group.getInstanceOf("top");
-		ST duh = group.getInstanceOf("duh");
+		org.stringtemplate.v4.ST top = group.getInstanceOf("top");
+		org.stringtemplate.v4.ST duh = group.getInstanceOf("duh");
 		duh.add("chars", new String[] {"a","b","c","d","e"});
 		top.add("d", duh);
 		String expecting =
@@ -310,10 +309,10 @@ public class TestLineWrap extends BaseTest {
 				"top(d) ::= <<  <d>!>>"+newline+
 				"duh(chars) ::= <<x: <chars; anchor, wrap=\"\\n\"\\>>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST top = group.getInstanceOf("top");
-		ST duh = group.getInstanceOf("duh");
+		org.stringtemplate.v4.ST top = group.getInstanceOf("top");
+		org.stringtemplate.v4.ST duh = group.getInstanceOf("duh");
 		duh.add("chars", new String[] {"a","b","c","d","e"});
 		top.add("d", duh);
 		//
@@ -328,9 +327,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
 				"m(args,body) ::= <<@Test public voidfoo(<args; wrap=\"\\n\",separator=\", \">) throws Ick { <body> }>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST a = group.getInstanceOf("m");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("m");
 		a.add("args",
 					   new String[] {"a", "b", "c"});
 		a.add("body", "i=3;");
@@ -345,9 +344,9 @@ public class TestLineWrap extends BaseTest {
 		String templates =
 				"m(args,body) ::= <<{ <body; anchor, wrap=\"\\n\"> }>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST m = group.getInstanceOf("m");
+		org.stringtemplate.v4.ST m = group.getInstanceOf("m");
 		m.add("body", "i=3;");
 		// make it wrap because of ") throws Ick { " literal
 		String expecting =
@@ -361,10 +360,10 @@ public class TestLineWrap extends BaseTest {
 				"top(arrays) ::= <<Arrays: <arrays>done>>"+newline+
 				"array(values) ::= <<int[] a = { <values; anchor, wrap=\"\\n\", separator=\",\"> };<\\n\\>>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
-		ST top = group.getInstanceOf("top");
-		ST a = group.getInstanceOf("array");
+		org.stringtemplate.v4.ST top = group.getInstanceOf("top");
+		org.stringtemplate.v4.ST a = group.getInstanceOf("array");
 		a.add("values",
 					   new int[] {3,9,20,2,1,4,6,32,5,6,77,888,2,1,6,32,5,6,77,
 						4,9,20,2,1,4,63,9,20,2,1,4,6,32,5,6,77,6,32,5,6,77,
