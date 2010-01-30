@@ -306,6 +306,10 @@ public class STGroup {
         templates.put(name, code);
     }
 
+    public void undefineTemplate(String name) {
+        templates.remove(name);
+    }
+
     protected CompiledST compile(String prefix,
                                  String enclosingTemplateName,
                                  String template)

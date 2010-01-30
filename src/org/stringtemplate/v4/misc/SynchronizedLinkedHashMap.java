@@ -48,6 +48,10 @@ public class SynchronizedLinkedHashMap<K,V> {
         synchronized(mutex) {return m.put(key, value);}
     }
 
+    public V remove(Object key) {
+        return m.remove(key);
+    }
+    
     public Set<K> keySet() {
         synchronized(mutex) { return Collections.synchronizedSet(m.keySet()); }
     }
