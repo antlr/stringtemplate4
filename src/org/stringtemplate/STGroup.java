@@ -134,6 +134,8 @@ public class STGroup {
         return st;
     }
 
+    public boolean isDefined(String name) { return lookupTemplate(name)!=null; }
+
     protected CompiledST lookupTemplate(String name) {
         CompiledST code = templates.get(name);
         if ( code==NOT_FOUND_ST ) return null;
