@@ -25,19 +25,26 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.stringtemplate;
+package org.stringtemplate.v4;
 
+import java.util.Formatter;
 import java.util.Locale;
 
-/** This interface describes an object that knows how to format or otherwise
- *  render an object appropriately.  There is one renderer registered per
- *  group for a given Java type.
+/** Works with Byte, Short, Integer, Long, and BigInteger as well as
+ *  Float, Double, and BigDecimal.  You pass in a format string suitable
+ *  for Formatter object:
  *
- *  If the format string passed to the renderer is not recognized then simply
- *  call toString().
+ *  http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html
  *
- *  formatString can be null but locale will at least be Locale.getDefault()
+ *  For example, "%10d" emits a number as a decimal int padding to 10 char.
+ *  This can even do long to date conversions using the format string.
  */
-public interface AttributeRenderer {
-    public String toString(Object o, String formatString, Locale locale);
+public class NumberRenderer implements AttributeRenderer {
+    public String toString(Object o, String formatString, Locale locale) {
+        // o will be instanceof Number
+        if ( formatString==null ) return o.toString();
+        Formatter f = new Formatter(locale);
+        f.format(formatString, o);
+        return f.toString();
+    }
 }

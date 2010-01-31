@@ -1,5 +1,5 @@
 /*
- [The "BSD license"]
+ [The "BSD licence"]
  Copyright (c) 2009 Terence Parr
  All rights reserved.
 
@@ -7,12 +7,12 @@
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-     notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-     notice, this list of conditions and the following disclaimer in the
-     documentation and/or other materials provided with the distribution.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-     derived from this software without specific prior written permission.
+    derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,27 +24,20 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-package org.stringtemplate;
+*/
+package org.stringtemplate.v4;
 
-import java.util.Formatter;
-import java.util.Locale;
+import java.io.IOException;
+import java.io.Writer;
 
-/** Works with Byte, Short, Integer, Long, and BigInteger as well as
- *  Float, Double, and BigDecimal.  You pass in a format string suitable
- *  for Formatter object:
- *
- *  http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html
- *
- *  For example, "%10d" emits a number as a decimal int padding to 10 char.
- *  This can even do long to date conversions using the format string.
- */
-public class NumberRenderer implements AttributeRenderer {
-    public String toString(Object o, String formatString, Locale locale) {
-        // o will be instanceof Number
-        if ( formatString==null ) return o.toString();
-        Formatter f = new Formatter(locale);
-        f.format(formatString, o);
-        return f.toString();
+/** Just pass through the text */
+public class NoIndentWriter extends AutoIndentWriter {
+    public NoIndentWriter(Writer out) {
+        super(out);
+    }
+
+    public int write(String str) throws IOException {
+	    out.write(str);
+		return str.length();
     }
 }

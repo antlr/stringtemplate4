@@ -25,7 +25,7 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.stringtemplate;
+package org.stringtemplate.v4;
 
 import org.antlr.runtime.*;
 import org.stringtemplate.v4.compiler.*;
@@ -83,7 +83,7 @@ public class STGroup {
      *
      *  This structure is synchronized.
      */
-    protected Map<Class,AttributeRenderer> renderers;
+    protected Map<Class, org.stringtemplate.v4.AttributeRenderer> renderers;
 
 	public static STGroup defaultGroup = new STGroup();
 
@@ -104,12 +104,12 @@ public class STGroup {
     /** The primary means of getting an instance of a template from this
      *  group. Must be absolute name like /a/b
      */
-    public ST getInstanceOf(String name) {
+    public org.stringtemplate.v4.ST getInstanceOf(String name) {
         if ( name.charAt(0)!='/' ) name = "/"+name;
         //System.out.println("getInstanceOf("+name+")");
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
-            ST instanceST = createStringTemplate();
+            org.stringtemplate.v4.ST instanceST = createStringTemplate();
             instanceST.groupThatCreatedThisInstance = this;
             instanceST.impl = c;
             return instanceST;
@@ -117,18 +117,18 @@ public class STGroup {
         return null;
     }
 
-    public ST getInstanceOf(String name, Map<String,Object> attributes) {
-        ST st = getInstanceOf(name);
+    public org.stringtemplate.v4.ST getInstanceOf(String name, Map<String,Object> attributes) {
+        org.stringtemplate.v4.ST st = getInstanceOf(name);
         if ( st!=null ) st.setAttributes(attributes);
         return st;
     }
 
-    protected ST getEmbeddedInstanceOf(ST enclosingInstance, int ip, String name) {
-        ST st = getInstanceOf(name);
+    protected org.stringtemplate.v4.ST getEmbeddedInstanceOf(org.stringtemplate.v4.ST enclosingInstance, int ip, String name) {
+        org.stringtemplate.v4.ST st = getInstanceOf(name);
         if ( st==null ) {
             ErrorManager.runTimeError(enclosingInstance, ip, ErrorType.NO_SUCH_TEMPLATE,
                                       STGroup.getSimpleName(name));
-            return ST.BLANK;
+            return org.stringtemplate.v4.ST.BLANK;
         }
         st.enclosingInstance = enclosingInstance;
         return st;
@@ -230,7 +230,7 @@ public class STGroup {
         }
         code.name = mangled;
         code.isRegion = true;
-        code.regionDefType = ST.RegionType.EXPLICIT;
+        code.regionDefType = org.stringtemplate.v4.ST.RegionType.EXPLICIT;
 
         rawDefineTemplate(code.name, code, regionT);
         return code;
@@ -292,13 +292,13 @@ public class STGroup {
                 ErrorManager.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, defT);
                 return;
             }
-            if ( prev.isRegion && prev.regionDefType==ST.RegionType.EMBEDDED ) {
+            if ( prev.isRegion && prev.regionDefType== org.stringtemplate.v4.ST.RegionType.EMBEDDED ) {
                 ErrorManager.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
                                               defT,
                                               getUnMangledTemplateName(name));
                 return;
             }
-            else if ( prev.isRegion && prev.regionDefType==ST.RegionType.EXPLICIT ) {
+            else if ( prev.isRegion && prev.regionDefType== org.stringtemplate.v4.ST.RegionType.EXPLICIT ) {
                 ErrorManager.compileTimeError(ErrorType.REGION_REDEFINITION,
                                               defT,
                                               getUnMangledTemplateName(name));
@@ -383,25 +383,25 @@ public class STGroup {
     /** Register a renderer for all objects of a particular type for all
      *  templates evaluated relative to this group.
      */
-    public void registerRenderer(Class attributeType, AttributeRenderer r) {
+    public void registerRenderer(Class attributeType, org.stringtemplate.v4.AttributeRenderer r) {
         if ( renderers ==null ) {
-            renderers = Collections.synchronizedMap(new HashMap<Class,AttributeRenderer>());
+            renderers = Collections.synchronizedMap(new HashMap<Class, org.stringtemplate.v4.AttributeRenderer>());
         }
         renderers.put(attributeType, r);
     }
 
-    public AttributeRenderer getAttributeRenderer(Class attributeType) {
+    public org.stringtemplate.v4.AttributeRenderer getAttributeRenderer(Class attributeType) {
         if ( renderers==null ) return null;
         return renderers.get(attributeType);
     }
 
     /** StringTemplate object factory; each group can have its own. */
-    public ST createStringTemplate() {
+    public org.stringtemplate.v4.ST createStringTemplate() {
         // TODO: try making a mem pool?
         if ( debug ) {
             return new DebugST();
         }
-        return new ST();
+        return new org.stringtemplate.v4.ST();
     }
 
     public String getName() { return "<no name>;"; }

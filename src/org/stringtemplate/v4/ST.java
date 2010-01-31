@@ -25,7 +25,7 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.stringtemplate;
+package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.FormalArgument;
@@ -275,13 +275,13 @@ public class ST {
 	public boolean isSubtemplate() { return impl.isSubtemplate; }
 
     public int write(STWriter out) throws IOException {
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance);
+        org.stringtemplate.v4.Interpreter interp = new org.stringtemplate.v4.Interpreter(groupThatCreatedThisInstance);
         interp.setDefaultArguments(this);
         return interp.exec(out, this);
     }
 
     public int write(STWriter out, Locale locale) {
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
+        org.stringtemplate.v4.Interpreter interp = new org.stringtemplate.v4.Interpreter(groupThatCreatedThisInstance, locale);
         interp.setDefaultArguments(this);
         return interp.exec(out, this);
     }
@@ -294,7 +294,7 @@ public class ST {
 
     public String render(Locale locale, int lineWidth) {
         StringWriter out = new StringWriter();
-        STWriter wr = new AutoIndentWriter(out);
+        STWriter wr = new org.stringtemplate.v4.AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
         write(wr, locale);
         return out.toString();
