@@ -38,7 +38,7 @@ import org.stringtemplate.v4.STErrorListener;
 public class ErrorManager {
     
     public static STErrorListener DEFAULT_ERROR_LISTENER =
-        new org.stringtemplate.v4.STErrorListener() {
+        new STErrorListener() {
             public void compileTimeError(STMessage msg) {
                 System.err.println(msg);
             }
@@ -70,8 +70,8 @@ public class ErrorManager {
     /** Gives us a new listener per thread.  If your server reuses threads,
      *  these thread locals might not go away.  Might need to manually reset.
      */
-    static ThreadLocal<STErrorListener> listener = new ThreadLocal<org.stringtemplate.v4.STErrorListener>() {
-        protected org.stringtemplate.v4.STErrorListener initialValue() { return DEFAULT_ERROR_LISTENER; }
+    static ThreadLocal<STErrorListener> listener = new ThreadLocal<STErrorListener>() {
+        protected STErrorListener initialValue() { return DEFAULT_ERROR_LISTENER; }
     };
 
     /** Backward compatibility for tombu, co-designer.  Don't require template
@@ -79,7 +79,7 @@ public class ErrorManager {
      */
     public static boolean v3_mode = false;
 
-    public static void setErrorListener(org.stringtemplate.v4.STErrorListener listener) { ErrorManager.listener.set(listener); }
+    public static void setErrorListener(STErrorListener listener) { ErrorManager.listener.set(listener); }
 
     public static void compileTimeError(ErrorType error, Token t) {
         String srcName = t.getInputStream().getSourceName();
@@ -117,11 +117,11 @@ public class ErrorManager {
         );
     }
 
-    public static void runTimeError(org.stringtemplate.v4.ST self, int ip, ErrorType error) {
+    public static void runTimeError(ST self, int ip, ErrorType error) {
         listener.get().runTimeError(new STRuntimeMessage(error,ip,self));
     }
 
-    public static void runTimeError(org.stringtemplate.v4.ST self, int ip, ErrorType error, Object arg) {
+    public static void runTimeError(ST self, int ip, ErrorType error, Object arg) {
         listener.get().runTimeError(new STRuntimeMessage(error,ip,self,arg));
     }
 
@@ -133,7 +133,7 @@ public class ErrorManager {
         listener.get().runTimeError(new STRuntimeMessage(error,ip,self,null,arg,arg2));
     }
 
-    public static void IOError(org.stringtemplate.v4.ST self, ErrorType error, Throwable e) {
+    public static void IOError(ST self, ErrorType error, Throwable e) {
         listener.get().IOError(new STMessage(error, self, e));
     }
 
@@ -141,7 +141,7 @@ public class ErrorManager {
         listener.get().IOError(new STMessage(error, self, e, arg));
     }
 
-    public static void internalError(org.stringtemplate.v4.ST self, String msg, Throwable e) {
+    public static void internalError(ST self, String msg, Throwable e) {
         listener.get().internalError(new STMessage(ErrorType.INTERNAL_ERROR, self, e, msg));
     }
 }

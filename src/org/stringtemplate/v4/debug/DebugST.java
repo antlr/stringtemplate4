@@ -91,7 +91,7 @@ public class DebugST extends org.stringtemplate.v4.ST {
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
-        org.stringtemplate.v4.Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
+        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
         interp.exec(wr, this); // render and track events
         new STViz(this, out.toString(), interp.getEvents(),
                   interp.getExecutionTrace(), errors.errors);
@@ -110,7 +110,7 @@ public class DebugST extends org.stringtemplate.v4.ST {
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
-        org.stringtemplate.v4.Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
+        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
         interp.exec(wr, this); // render and track events
         return interp.getEvents();
     }

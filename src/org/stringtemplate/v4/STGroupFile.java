@@ -29,9 +29,11 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 /** The internal representation of a single group file (which must end in
@@ -87,11 +89,13 @@ public class STGroupFile extends STGroup {
         this.encoding = encoding;
     }
 
+    public boolean isDefined(String name) {
+        if ( !alreadyLoaded ) load();
+        return super.isDefined(name);
+    }
+
     protected CompiledST load(String name) {
-        String prefix = new File(name).getParent();
-        if ( prefix==null ) prefix = ".";
-        if ( !prefix.endsWith("/") ) prefix += "/";
-        _load(prefix);
+        if ( !alreadyLoaded ) load();
         return templates.get(name);
     }
 

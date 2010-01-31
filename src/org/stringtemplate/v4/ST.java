@@ -275,13 +275,13 @@ public class ST {
 	public boolean isSubtemplate() { return impl.isSubtemplate; }
 
     public int write(STWriter out) throws IOException {
-        org.stringtemplate.v4.Interpreter interp = new org.stringtemplate.v4.Interpreter(groupThatCreatedThisInstance);
+        Interpreter interp = new Interpreter(groupThatCreatedThisInstance);
         interp.setDefaultArguments(this);
         return interp.exec(out, this);
     }
 
     public int write(STWriter out, Locale locale) {
-        org.stringtemplate.v4.Interpreter interp = new org.stringtemplate.v4.Interpreter(groupThatCreatedThisInstance, locale);
+        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
         interp.setDefaultArguments(this);
         return interp.exec(out, this);
     }
@@ -294,7 +294,7 @@ public class ST {
 
     public String render(Locale locale, int lineWidth) {
         StringWriter out = new StringWriter();
-        STWriter wr = new org.stringtemplate.v4.AutoIndentWriter(out);
+        STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
         write(wr, locale);
         return out.toString();

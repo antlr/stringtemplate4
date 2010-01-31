@@ -30,8 +30,8 @@ package org.stringtemplate.v4.test;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-import org.stringtemplate.v4.misc.*;
 import org.stringtemplate.v4.compiler.STException;
+import org.stringtemplate.v4.misc.*;
 import org.antlr.runtime.RecognitionException;
 
 public class TestSyntaxErrors extends BaseTest {

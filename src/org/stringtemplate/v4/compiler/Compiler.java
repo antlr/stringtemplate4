@@ -34,6 +34,7 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Interval;
+import org.stringtemplate.v4.compiler.STException;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -56,13 +57,13 @@ public class Compiler {
     public char delimiterStopChar = '>';
 
     public static final Map<String, Interpreter.Option> supportedOptions =
-        new HashMap<String, org.stringtemplate.v4.Interpreter.Option>() {
+        new HashMap<String, Interpreter.Option>() {
             {
                 put("anchor",       Interpreter.Option.ANCHOR);
-                put("format",       org.stringtemplate.v4.Interpreter.Option.FORMAT);
+                put("format",       Interpreter.Option.FORMAT);
                 put("null",         Interpreter.Option.NULL);
                 put("separator",    Interpreter.Option.SEPARATOR);
-                put("wrap",         org.stringtemplate.v4.Interpreter.Option.WRAP);
+                put("wrap",         Interpreter.Option.WRAP);
             }
         };
 
@@ -256,7 +257,7 @@ public class Compiler {
     }
 
     public void defineBlankRegion(String enclosingTemplateName, String name) {
-        String mangled = org.stringtemplate.v4.STGroup.getMangledRegionName(enclosingTemplateName, name);
+        String mangled = STGroup.getMangledRegionName(enclosingTemplateName, name);
         String fullName = prefixedName(mangled);
         CompiledST blank = new CompiledST();
         blank.isRegion = true;
@@ -297,7 +298,7 @@ public class Compiler {
 
     public void refAttr(CommonToken id) {
         String name = id.getText();
-        if ( org.stringtemplate.v4.Interpreter.predefinedAttributes.contains(name) ) {
+        if ( Interpreter.predefinedAttributes.contains(name) ) {
             emit(Bytecode.INSTR_LOAD_LOCAL, name, id.getStartIndex(), id.getStopIndex());
         }
         else {

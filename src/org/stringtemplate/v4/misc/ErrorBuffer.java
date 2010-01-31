@@ -27,11 +27,13 @@
  */
 package org.stringtemplate.v4.misc;
 
+import org.stringtemplate.v4.STErrorListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /** Used during tests to track all errors */
-public class ErrorBuffer implements org.stringtemplate.v4.STErrorListener {
+public class ErrorBuffer implements STErrorListener {
     public List<STMessage> errors = new ArrayList<STMessage>();
 
     public void compileTimeError(STMessage msg) {

@@ -41,8 +41,8 @@ import java.util.*;
  *     System.out.println(d.toString());
  */
 public class STDump {
-    org.stringtemplate.v4.ST self;
-    public STDump(org.stringtemplate.v4.ST self) { this.self = self; }
+    ST self;
+    public STDump(ST self) { this.self = self; }
 
     public static String toString(ST self) {
         STDump d = new STDump(self);
@@ -87,7 +87,7 @@ public class STDump {
         StringBuffer buf = new StringBuffer();
         value = Interpreter.convertAnythingIteratableToIterator(value);
         if ( value instanceof ST ) {
-            STDump d = new STDump((org.stringtemplate.v4.ST)value);
+            STDump d = new STDump((ST)value);
             buf.append(d.toString(n));
         }
         else if ( value instanceof Iterator ) {

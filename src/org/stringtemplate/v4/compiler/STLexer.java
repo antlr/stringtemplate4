@@ -31,6 +31,7 @@ import org.antlr.runtime.*;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.compiler.STException;
 
 import java.util.ArrayList;
 import java.util.List;

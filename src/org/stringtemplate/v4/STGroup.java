@@ -33,6 +33,7 @@ import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.debug.DebugST;
 import org.stringtemplate.v4.misc.*;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -83,7 +84,7 @@ public class STGroup {
      *
      *  This structure is synchronized.
      */
-    protected Map<Class, org.stringtemplate.v4.AttributeRenderer> renderers;
+    protected Map<Class, AttributeRenderer> renderers;
 
 	public static STGroup defaultGroup = new STGroup();
 
@@ -102,14 +103,15 @@ public class STGroup {
     }
 
     /** The primary means of getting an instance of a template from this
-     *  group. Must be absolute name like /a/b
+     *  group. Names must be absolute, fully-qualified names like /a/b
+     *  As a convenience, I'll add / on front for you.
      */
-    public org.stringtemplate.v4.ST getInstanceOf(String name) {
+    public ST getInstanceOf(String name) {
         if ( name.charAt(0)!='/' ) name = "/"+name;
         //System.out.println("getInstanceOf("+name+")");
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
-            org.stringtemplate.v4.ST instanceST = createStringTemplate();
+            ST instanceST = createStringTemplate();
             instanceST.groupThatCreatedThisInstance = this;
             instanceST.impl = c;
             return instanceST;
@@ -117,24 +119,31 @@ public class STGroup {
         return null;
     }
 
-    public org.stringtemplate.v4.ST getInstanceOf(String name, Map<String,Object> attributes) {
-        org.stringtemplate.v4.ST st = getInstanceOf(name);
+    public ST getInstanceOf(String name, Map<String,Object> attributes) {
+        ST st = getInstanceOf(name);
         if ( st!=null ) st.setAttributes(attributes);
         return st;
     }
 
-    protected org.stringtemplate.v4.ST getEmbeddedInstanceOf(org.stringtemplate.v4.ST enclosingInstance, int ip, String name) {
-        org.stringtemplate.v4.ST st = getInstanceOf(name);
+    protected ST getEmbeddedInstanceOf(ST enclosingInstance, int ip, String name) {
+        ST st = getInstanceOf(name);
         if ( st==null ) {
             ErrorManager.runTimeError(enclosingInstance, ip, ErrorType.NO_SUCH_TEMPLATE,
                                       STGroup.getSimpleName(name));
-            return org.stringtemplate.v4.ST.BLANK;
+            return ST.BLANK;
         }
         st.enclosingInstance = enclosingInstance;
         return st;
     }
 
-    public boolean isDefined(String name) { return lookupTemplate(name)!=null; }
+    /** Is this template defined in this group or from this group below?
+     *  Names must be absolute, fully-qualified names like /a/b
+     *  As a convenience, I'll add / on front for you.
+     */
+    public boolean isDefined(String name) {
+        if ( name.charAt(0)!='/' ) name = "/"+name;
+        return lookupTemplate(name)!=null;
+    }
 
     protected CompiledST lookupTemplate(String name) {
         CompiledST code = templates.get(name);
@@ -148,7 +157,13 @@ public class STGroup {
         return code;
     }
 
+    /** Load st from disk if dir or load whole group file if .stg file (then
+     *  return just one template).
+     */
     protected CompiledST load(String name) { return null; }
+
+    /** Force a load if it makes sense for the group */
+    public void load() { ; }
 
     protected CompiledST lookupImportedTemplate(String name) {
         //System.out.println("look for "+name+" in "+imports);
@@ -230,7 +245,7 @@ public class STGroup {
         }
         code.name = mangled;
         code.isRegion = true;
-        code.regionDefType = org.stringtemplate.v4.ST.RegionType.EXPLICIT;
+        code.regionDefType = ST.RegionType.EXPLICIT;
 
         rawDefineTemplate(code.name, code, regionT);
         return code;
@@ -292,13 +307,13 @@ public class STGroup {
                 ErrorManager.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, defT);
                 return;
             }
-            if ( prev.isRegion && prev.regionDefType== org.stringtemplate.v4.ST.RegionType.EMBEDDED ) {
+            if ( prev.isRegion && prev.regionDefType== ST.RegionType.EMBEDDED ) {
                 ErrorManager.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
                                               defT,
                                               getUnMangledTemplateName(name));
                 return;
             }
-            else if ( prev.isRegion && prev.regionDefType== org.stringtemplate.v4.ST.RegionType.EXPLICIT ) {
+            else if ( prev.isRegion && prev.regionDefType== ST.RegionType.EXPLICIT ) {
                 ErrorManager.compileTimeError(ErrorType.REGION_REDEFINITION,
                                               defT,
                                               getUnMangledTemplateName(name));
@@ -383,25 +398,25 @@ public class STGroup {
     /** Register a renderer for all objects of a particular type for all
      *  templates evaluated relative to this group.
      */
-    public void registerRenderer(Class attributeType, org.stringtemplate.v4.AttributeRenderer r) {
+    public void registerRenderer(Class attributeType, AttributeRenderer r) {
         if ( renderers ==null ) {
-            renderers = Collections.synchronizedMap(new HashMap<Class, org.stringtemplate.v4.AttributeRenderer>());
+            renderers = Collections.synchronizedMap(new HashMap<Class, AttributeRenderer>());
         }
         renderers.put(attributeType, r);
     }
 
-    public org.stringtemplate.v4.AttributeRenderer getAttributeRenderer(Class attributeType) {
+    public AttributeRenderer getAttributeRenderer(Class attributeType) {
         if ( renderers==null ) return null;
         return renderers.get(attributeType);
     }
 
     /** StringTemplate object factory; each group can have its own. */
-    public org.stringtemplate.v4.ST createStringTemplate() {
+    public ST createStringTemplate() {
         // TODO: try making a mem pool?
         if ( debug ) {
             return new DebugST();
         }
-        return new org.stringtemplate.v4.ST();
+        return new ST();
     }
 
     public String getName() { return "<no name>;"; }

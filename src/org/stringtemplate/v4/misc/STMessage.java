@@ -64,7 +64,7 @@ public class STMessage {
         this(error,self,cause);
         this.arg = arg;
     }
-    public STMessage(ErrorType error, org.stringtemplate.v4.ST self, Throwable cause, Token where, Object arg) {
+    public STMessage(ErrorType error, ST self, Throwable cause, Token where, Object arg) {
         this(error,self,cause,where);
         this.arg = arg;
     }

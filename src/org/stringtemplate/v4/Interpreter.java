@@ -279,7 +279,7 @@ public class Interpreter {
                 if ( !testAttributeTrue(o) ) ip = addr; // jump
                 break;
             case Bytecode.INSTR_OPTIONS :
-                operands[++sp] = new Object[org.stringtemplate.v4.compiler.Compiler.NUM_OPTIONS];
+                operands[++sp] = new Object[Compiler.NUM_OPTIONS];
                 break;
             case Bytecode.INSTR_LIST :
                 operands[++sp] = new ArrayList<Object>();

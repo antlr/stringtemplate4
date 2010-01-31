@@ -30,6 +30,10 @@ package org.stringtemplate.v4.test;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupDir;
+import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorManager;
 
 public class TestGroups extends BaseTest {
@@ -40,8 +44,8 @@ public class TestGroups extends BaseTest {
             "foo"+newline+
             ">>"+newline;
         writeFile(dir, "a.st", a);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
+        org.stringtemplate.v4.STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("a");
         String expected = "foo";
         String result = st.render();
         assertEquals(expected, result);
@@ -57,9 +61,9 @@ public class TestGroups extends BaseTest {
         String b =
             "b() ::= \"bar\""+newline;
         writeFile(dir, "b.st", b);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st1 = group.getInstanceOf("a");
-        org.stringtemplate.v4.ST st2 = group.getInstanceOf("b");
+        STGroup group = new STGroupDir(dir);
+        ST st1 = group.getInstanceOf("a");
+        ST st2 = group.getInstanceOf("b");
         String expected = "foobar";
         String result = st1.render()+st2.render();
         assertEquals(expected, result);
@@ -76,11 +80,15 @@ public class TestGroups extends BaseTest {
         String b =
             "b() ::= \"bar\""+newline;
         writeFile(dir+"/subdir", "b.st", b);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st1 = group.getInstanceOf("a");
-        org.stringtemplate.v4.ST st2 = group.getInstanceOf("subdir/b");
+        STGroup group = new STGroupDir(dir);
+        ST st1 = group.getInstanceOf("a");
+        ST st2 = group.getInstanceOf("subdir/b");
         String expected = "foobar";
         String result = st1.render()+st2.render();
+        assertEquals(expected, result);
+        st2 = group.getInstanceOf("/subdir/b"); // should work with / in front too
+        expected = "bar";
+        result = st2.render();
         assertEquals(expected, result);
     }
 
@@ -93,8 +101,8 @@ public class TestGroups extends BaseTest {
         String b =
             "b() ::= <<bar>>\n";
         writeFile(dir+"/subdir", "b.st", b);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("a");
         String expected = " bar ";
         String result = st.render();
         assertEquals(expected, result);
@@ -112,10 +120,10 @@ public class TestGroups extends BaseTest {
             "b() ::= \"bar\"\n"+
             "c() ::= \"duh\"\n";
         writeFile(dir, "group.stg", groupFile);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st1 = group.getInstanceOf("a");
-        org.stringtemplate.v4.ST st2 = group.getInstanceOf("group/b");
-        org.stringtemplate.v4.ST st3 = group.getInstanceOf("group/c");
+        STGroup group = new STGroupDir(dir);
+        ST st1 = group.getInstanceOf("a");
+        ST st2 = group.getInstanceOf("group/b");
+        ST st3 = group.getInstanceOf("group/c");
         String expected = "foobarduh";
         String result = st1.render()+st2.render()+st3.render();
         assertEquals(expected, result);
@@ -132,9 +140,9 @@ public class TestGroups extends BaseTest {
         String b =
             "b() ::= \"bar\""+newline;
         writeFile(dir+"/sub1/sub2", "b.st", b);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st1 = group.getInstanceOf("a");
-        org.stringtemplate.v4.ST st2 = group.getInstanceOf("sub1/sub2/b");
+        STGroup group = new STGroupDir(dir);
+        ST st1 = group.getInstanceOf("a");
+        ST st2 = group.getInstanceOf("sub1/sub2/b");
         String expected = "foobar";
         String result = st1.render()+st2.render();
         assertEquals(expected, result);
@@ -152,10 +160,10 @@ public class TestGroups extends BaseTest {
             "b() ::= \"bar\"\n"+
             "c() ::= \"duh\"\n";
         writeFile(dir, "subdir/group.stg", groupFile);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st1 = group.getInstanceOf("a");
-        org.stringtemplate.v4.ST st2 = group.getInstanceOf("subdir/group/b");
-        org.stringtemplate.v4.ST st3 = group.getInstanceOf("subdir/group/c");
+        STGroup group = new STGroupDir(dir);
+        ST st1 = group.getInstanceOf("a");
+        ST st2 = group.getInstanceOf("subdir/group/b");
+        ST st3 = group.getInstanceOf("subdir/group/c");
         String expected = "foobarduh";
         String result = st1.render()+st2.render()+st3.render();
         assertEquals(expected, result);
@@ -167,8 +175,8 @@ public class TestGroups extends BaseTest {
         String b = "b() ::= <<bar>>\n";
         writeFile(dir, "a.st", a);
         writeFile(dir, "b.st", b);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("a");
         String expected = " bar ";
         String result = st.render();
         assertEquals(expected, result);
@@ -181,8 +189,8 @@ public class TestGroups extends BaseTest {
         String b = "b() ::= <<bar>>\n";
         writeFile(dir+"/subdir", "a.st", a);
         writeFile(dir+"/subdir", "b.st", b);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("subdir/a");
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("subdir/a");
         st.impl.dump();
         String expected = " bar ";
         String result = st.render();
@@ -195,7 +203,7 @@ public class TestGroups extends BaseTest {
             "b() ::= \"bar\"\n"+
             "b() ::= \"duh\"\n";
         writeFile(dir, "group.stg", groupFile);
-        org.stringtemplate.v4.STGroupFile group = new org.stringtemplate.v4.STGroupFile(dir+"/group.stg");
+        STGroupFile group = new STGroupFile(dir+"/group.stg");
         group.load();
     }
 
@@ -205,8 +213,8 @@ public class TestGroups extends BaseTest {
         String b = "b(x=\"foo\") ::= \"<x>\"\n";
         writeFile(dir, "a.st", a);
         writeFile(dir, "b.st", b);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("a");
         String expected = " foo ";
         String result = st.render();
         assertEquals(expected, result);
@@ -220,8 +228,8 @@ public class TestGroups extends BaseTest {
                 "stat(name,value=\"99\") ::= \"x=<value>; // <name>\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/group.stg");
-        org.stringtemplate.v4.ST b = group.getInstanceOf("method");
+        STGroup group = new STGroupFile(tmpdir+"/group.stg");
+        ST b = group.getInstanceOf("method");
         b.add("name", "foo");
         String expecting = "x=99; // foo";
         String result = b.render();
@@ -233,8 +241,8 @@ public class TestGroups extends BaseTest {
                 "stat(name,value=\"99\") ::= \"x=<value>; // <name>\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/group.stg");
-        org.stringtemplate.v4.ST b = group.getInstanceOf("stat");
+        STGroup group = new STGroupFile(tmpdir+"/group.stg");
+        ST b = group.getInstanceOf("stat");
         b.add("name", "foo");
         String expecting = "x=99; // foo";
         String result = b.render();
@@ -256,8 +264,8 @@ public class TestGroups extends BaseTest {
                 "stat(f,value={<f.name>}) ::= \"x=<value>; // <f.name>\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/group.stg");
-        org.stringtemplate.v4.ST m = group.getInstanceOf("method");
+        STGroup group = new STGroupFile(tmpdir+"/group.stg");
+        ST m = group.getInstanceOf("method");
         m.add("fields", new Field());
         String expecting = "x=parrt; // parrt";
         String result = m.render();
@@ -290,8 +298,8 @@ public class TestGroups extends BaseTest {
                 "stat(f,value={<f.name>}) ::= \"x=<value>; // <f.name>\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/group.stg");
-        org.stringtemplate.v4.ST m = group.getInstanceOf("method");
+        STGroup group = new STGroupFile(tmpdir+"/group.stg");
+        ST m = group.getInstanceOf("method");
         m.add("fields", new Field());
         String expecting = "x=parrt; // parrt";
         String result = m.render();
@@ -313,8 +321,8 @@ public class TestGroups extends BaseTest {
                 "stat(f,value={<f.name>}) ::= \"x=<value>; // <f.name>\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/group.stg");
-        org.stringtemplate.v4.ST m = group.getInstanceOf("method");
+        STGroup group = new STGroupFile(tmpdir+"/group.stg");
+        ST m = group.getInstanceOf("method");
         m.add("fields", new Field());
         String expecting = "x=parrt; // parrt";
         String result = m.render();
@@ -329,8 +337,8 @@ public class TestGroups extends BaseTest {
                 "stat(name,value={<name>}) ::= \"x=<value>; // <name>\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/group.stg");
-        org.stringtemplate.v4.ST b = group.getInstanceOf("method");
+        STGroup group = new STGroupFile(tmpdir+"/group.stg");
+        ST b = group.getInstanceOf("method");
         b.add("name", "foo");
         b.add("size", "2");
         String expecting = "x=foo; // foo";
@@ -347,8 +355,8 @@ public class TestGroups extends BaseTest {
                 "stat(name,value={ [<name>] }) ::= \"x=<value>; // <name>\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/group.stg");
-        org.stringtemplate.v4.ST b = group.getInstanceOf("method");
+        STGroup group = new STGroupFile(tmpdir+"/group.stg");
+        ST b = group.getInstanceOf("method");
         b.add("name", "foo");
         b.add("size", "2");
         String expecting = "x=[foo] ; // foo"; // won't see ' ' after '=' since it's an indent not simple string
@@ -365,8 +373,8 @@ public class TestGroups extends BaseTest {
                 "stat(name,value=\"99\") ::= \"x=<value>; // <name>\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/group.stg");
-        org.stringtemplate.v4.ST b = group.getInstanceOf("method");
+        STGroup group = new STGroupFile(tmpdir+"/group.stg");
+        ST b = group.getInstanceOf("method");
         b.add("name", "foo");
         String expecting = "x=34; // foo";
         String result = b.render();
@@ -385,8 +393,8 @@ public class TestGroups extends BaseTest {
                 "B(y={<(x)>}) ::= \"<y> <x> <x> <y>\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/group.stg");
-        org.stringtemplate.v4.ST b = group.getInstanceOf("A");
+        STGroup group = new STGroupFile(tmpdir+"/group.stg");
+        ST b = group.getInstanceOf("A");
         b.add("x", new Counter());
         String expecting = "0 1 2 0"; // trace must be false to get these numbers
         String result = b.render();
@@ -401,8 +409,8 @@ public class TestGroups extends BaseTest {
             "foo\n"+
             "bar\n";
         writeFile(dir, "a.st", a);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("a");
         String expected =
             "foo"+newline+
             "bar";
@@ -420,8 +428,8 @@ public class TestGroups extends BaseTest {
             "b() ::= \"group file b\"\n";
         writeFile(dir, "group.stg", groupFile);
 
-        org.stringtemplate.v4.STGroup group1 = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st = group1.getInstanceOf("/group/a"); // can't see
+        STGroup group1 = new STGroupDir(dir);
+        ST st = group1.getInstanceOf("/group/a"); // can't see
         assertEquals(null, st);
     }
 
@@ -434,8 +442,8 @@ public class TestGroups extends BaseTest {
             "foo"+newline+
             ">>"+newline;
         writeFile(dir, "a.st", a);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("/a");
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("/a");
         String expected = "foo";
         String result = st.render();
         assertEquals(expected, result);
@@ -448,8 +456,8 @@ public class TestGroups extends BaseTest {
         String b = "b() ::= <<bar>>\n";
         writeFile(dir+"/subdir", "a.st", a);
         writeFile(dir+"/subdir", "b.st", b);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("/subdir/a");
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("/subdir/a");
         String expected = " bar ";
         String result = st.render();
         assertEquals(expected, result);
@@ -465,9 +473,9 @@ public class TestGroups extends BaseTest {
             "b() ::= \"bar\"\n"+
             "c() ::= \"</a()>\"\n";
         writeFile(dir, "group.stg", groupFile);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st1 = group.getInstanceOf("a");
-        org.stringtemplate.v4.ST st2 = group.getInstanceOf("/group/c"); // invokes /a
+        STGroup group = new STGroupDir(dir);
+        ST st1 = group.getInstanceOf("a");
+        ST st2 = group.getInstanceOf("/group/c"); // invokes /a
         String expected = " bar  bar ";
         String result = st1.render()+st2.render();
         assertEquals(expected, result);
@@ -481,8 +489,8 @@ public class TestGroups extends BaseTest {
         String dir = getRandomDir();
         String a = "foo\n";
         writeFile(dir, "a.st", a);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("a");
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("a");
         String expected = "foo";
         String result = st.render();
         assertEquals(expected, result);
@@ -497,8 +505,8 @@ public class TestGroups extends BaseTest {
         String b = "bar\n";
         writeFile(dir+"/subdir", "a.st", a);
         writeFile(dir+"/subdir", "b.st", b);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("subdir/a");
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("subdir/a");
         String expected = "bar";
         String result = st.render();
         assertEquals(expected, result);
@@ -516,9 +524,9 @@ public class TestGroups extends BaseTest {
             "b() ::= \"bar\"\n"+
             "c() ::= \"</a()>\"\n";
         writeFile(dir, "group.stg", groupFile);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupDir(dir);
-        org.stringtemplate.v4.ST st1 = group.getInstanceOf("a");
-        org.stringtemplate.v4.ST st2 = group.getInstanceOf("group/c"); // invokes /a
+        STGroup group = new STGroupDir(dir);
+        ST st1 = group.getInstanceOf("a");
+        ST st2 = group.getInstanceOf("group/c"); // invokes /a
         String expected = "barbar";
         String result = st1.render()+st2.render();
         assertEquals(expected, result);

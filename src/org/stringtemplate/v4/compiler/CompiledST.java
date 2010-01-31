@@ -28,6 +28,7 @@
 package org.stringtemplate.v4.compiler;
 
 import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.Interval;
 
 import java.io.PrintWriter;
@@ -59,7 +60,7 @@ public class CompiledST {
      *  interpretation via ST.toString().  From there, it becomes field 'group'
      *  in interpreter and is fixed until rendering completes.
      */
-    public org.stringtemplate.v4.STGroup nativeGroup = org.stringtemplate.v4.STGroup.defaultGroup;
+    public STGroup nativeGroup = STGroup.defaultGroup;
 
     /** Does this template come from a <@region>...<@end> embedded in
      *  another template?

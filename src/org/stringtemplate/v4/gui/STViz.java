@@ -28,6 +28,8 @@
 package org.stringtemplate.v4.gui;
 
 import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.debug.AddAttributeEvent;
 import org.stringtemplate.v4.debug.DebugST;
 import org.stringtemplate.v4.debug.EvalTemplateEvent;
@@ -286,7 +288,7 @@ public class STViz {
 
         String tmpdir = System.getProperty("java.io.tmpdir");
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         group.debug = true;
         DebugST st = (DebugST)group.getInstanceOf("method");
         st.impl.dump();
