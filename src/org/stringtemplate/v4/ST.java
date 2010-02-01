@@ -98,10 +98,7 @@ public class ST {
     public ST() {;}
     
     public ST(String template) {
-        groupThatCreatedThisInstance = STGroup.defaultGroup;
-        impl = groupThatCreatedThisInstance.compile("/", null, template);
-        impl.name = UNKNOWN_NAME;
-        groupThatCreatedThisInstance.defineImplicitlyDefinedTemplates(impl);
+        this(STGroup.defaultGroup, template);
     }
 
     /** Create ST using non-default delimiters; each one of these will live
@@ -109,7 +106,11 @@ public class ST {
      *  alter STGroup.defaultGroup.
      */
     public ST(String template, char delimiterStartChar, char delimiterStopChar) {
-        groupThatCreatedThisInstance = new STGroup(delimiterStartChar, delimiterStopChar);
+        this(new STGroup(delimiterStartChar, delimiterStopChar), template);
+    }
+
+    public ST(STGroup group, String template) {
+        groupThatCreatedThisInstance = group;
         impl = groupThatCreatedThisInstance.compile("/", null, template);
         impl.name = UNKNOWN_NAME;
         groupThatCreatedThisInstance.defineImplicitlyDefinedTemplates(impl);
