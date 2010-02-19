@@ -31,9 +31,11 @@ import org.antlr.runtime.*;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.debug.DebugST;
-import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.ErrorType;
+import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.misc.SynchronizedLinkedHashMap;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -107,6 +109,7 @@ public class STGroup {
      *  As a convenience, I'll add / on front for you.
      */
     public ST getInstanceOf(String name) {
+		if ( name==null ) return null;
         if ( name.charAt(0)!='/' ) name = "/"+name;
         //System.out.println("getInstanceOf("+name+")");
         CompiledST c = lookupTemplate(name);
@@ -120,6 +123,7 @@ public class STGroup {
     }
 
     public ST getInstanceOf(String name, Map<String,Object> attributes) {
+		if ( name==null ) return null;
         ST st = getInstanceOf(name);
         if ( st!=null ) st.setAttributes(attributes);
         return st;
