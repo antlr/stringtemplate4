@@ -27,7 +27,9 @@
 */
 package org.stringtemplate.v4;
 
-import org.antlr.runtime.*;
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.CommonTokenStream;
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.GroupLexer;
 import org.stringtemplate.v4.compiler.GroupParser;
@@ -91,6 +93,14 @@ public class STGroupDir extends STGroup {
         this(dirName, delimiterStartChar, delimiterStopChar);
         this.encoding = encoding;
     }
+
+	public STGroupDir(URL root, String encoding,
+					  char delimiterStartChar, char delimiterStopChar)
+	{
+		super(delimiterStartChar, delimiterStopChar);
+		this.root = root;
+		this.encoding = encoding;
+	}
 
     /** Load a template from dir or group file.  Group file is given
      *  precedence over dir with same name.

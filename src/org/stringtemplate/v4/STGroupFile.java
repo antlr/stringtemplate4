@@ -29,11 +29,9 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.misc.ErrorManager;
-import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 
 /** The internal representation of a single group file (which must end in
@@ -88,6 +86,14 @@ public class STGroupFile extends STGroup {
         this(fullyQualifiedFileName, delimiterStartChar, delimiterStopChar);
         this.encoding = encoding;
     }
+
+	public STGroupFile(URL url, String encoding,
+					   char delimiterStartChar, char delimiterStopChar)
+	{
+		super(delimiterStartChar, delimiterStopChar);
+		this.url = url;
+		this.encoding = encoding;
+	}
 
     public boolean isDefined(String name) {
         if ( !alreadyLoaded ) load();
