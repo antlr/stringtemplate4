@@ -28,12 +28,16 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.stringtemplate.v4.misc.ErrorManager;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestSubtemplates extends BaseTest {
 
@@ -185,4 +189,29 @@ public class TestSubtemplates extends BaseTest {
         String expecting = " Ter@1: big, Tom@2: n/a, Sriram@n/a: n/a ";
         assertEquals(expecting, p.render());
     }
+
+	@Test public void testBugFromANTLRv4() throws Exception {
+		class OO { public LinkedHashMap<Integer,List<String>> m; }
+
+		ErrorBuffer errors = new ErrorBuffer();
+		ErrorManager.setErrorListener(errors);
+		STGroup group = new STGroup();
+		group.defineTemplate("test",
+							 "<o.m.keys:{alt | alt <alt> via tokens <o.m.(alt); separator=\",\"><\\n>}>");
+		ST st = group.getInstanceOf("test");
+		OO o = new OO();
+		o.m = new LinkedHashMap<Integer,List<String>>();
+		o.m.put(1, new ArrayList<String>() {{add("foo");}});
+		o.m.put(2, new ArrayList<String>() {{add("bar");}});
+		st.add("o", o);
+		String expected = "alt 1 via tokens foo\n" +
+						  "alt 2 via tokens bar\n";
+		String result = st.render();
+
+		assertEquals(errors.errors.size(), 0); // ignores no such prop errors
+
+		assertEquals(expected, result);
+	}
+
+
 }
