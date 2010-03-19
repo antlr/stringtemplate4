@@ -551,7 +551,7 @@ public class Interpreter {
             operands[++sp] = mapped;
         }
         else { // if only single value, just apply first template to attribute
-            ST st = group.getInstanceOf(templates.get(0));
+			ST st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, templates.get(0));
             if ( st!=null ) {
                 setSoleArgument(self, st, attr);
                 st.rawSetAttribute("i0", 0);

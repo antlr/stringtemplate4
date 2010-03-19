@@ -210,6 +210,28 @@ public class TestSubtemplates extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testEvalSTIteratingSubtemplateInSTFromAnotherGroupSingleValue() throws Exception {
+		ErrorBuffer errors = new ErrorBuffer();
+		ErrorManager.setErrorListener(errors);
+		STGroup innerGroup = new STGroup();
+		innerGroup.defineTemplate("test", "<m:samegroup()>");
+		innerGroup.defineTemplate("samegroup", "hi ");
+		ST st = innerGroup.getInstanceOf("test");
+		st.add("m", 10);
+
+		STGroup outerGroup = new STGroup();
+		outerGroup.defineTemplate("errorMessage", "<x>");
+		ST outerST = outerGroup.getInstanceOf("errorMessage");
+		outerST.add("x", st);
+
+		String expected = "hi ";
+		String result = outerST.render();
+
+		assertEquals(errors.errors.size(), 0); // ignores no such prop errors
+
+		assertEquals(expected, result);
+	}
+
 	@Test public void testEvalSTFromAnotherGroup() throws Exception {
 		ErrorBuffer errors = new ErrorBuffer();
 		ErrorManager.setErrorListener(errors);
