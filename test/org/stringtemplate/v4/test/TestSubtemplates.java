@@ -34,8 +34,6 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -190,23 +188,44 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expecting, p.render());
     }
 
-	@Test public void testBugFromANTLRv4() throws Exception {
-		class OO { public LinkedHashMap<Integer,List<String>> m; }
-
+	@Test public void testEvalSTIteratingSubtemplateInSTFromAnotherGroup() throws Exception {
 		ErrorBuffer errors = new ErrorBuffer();
 		ErrorManager.setErrorListener(errors);
-		STGroup group = new STGroup();
-		group.defineTemplate("test",
-							 "<o.m.keys:{alt | alt <alt> via tokens <o.m.(alt); separator=\",\"><\\n>}>");
-		ST st = group.getInstanceOf("test");
-		OO o = new OO();
-		o.m = new LinkedHashMap<Integer,List<String>>();
-		o.m.put(1, new ArrayList<String>() {{add("foo");}});
-		o.m.put(2, new ArrayList<String>() {{add("bar");}});
-		st.add("o", o);
-		String expected = "alt 1 via tokens foo\n" +
-						  "alt 2 via tokens bar\n";
-		String result = st.render();
+		STGroup innerGroup = new STGroup();
+		innerGroup.defineTemplate("test", "<m:samegroup()>");
+		innerGroup.defineTemplate("samegroup", "hi ");
+		ST st = innerGroup.getInstanceOf("test");
+		st.add("m", new int[] {1,2,3});
+
+		STGroup outerGroup = new STGroup();
+		outerGroup.defineTemplate("errorMessage", "<x>");
+		ST outerST = outerGroup.getInstanceOf("errorMessage");
+		outerST.add("x", st);
+
+		String expected = "hi hi hi ";
+		String result = outerST.render();
+
+		assertEquals(errors.errors.size(), 0); // ignores no such prop errors
+
+		assertEquals(expected, result);
+	}
+
+	@Test public void testEvalSTFromAnotherGroup() throws Exception {
+		ErrorBuffer errors = new ErrorBuffer();
+		ErrorManager.setErrorListener(errors);
+		STGroup innerGroup = new STGroup();
+		innerGroup.defineTemplate("test", "<bob()>");
+		innerGroup.defineTemplate("bob", "inner");
+		ST st = innerGroup.getInstanceOf("test");
+
+		STGroup outerGroup = new STGroup();
+		outerGroup.defineTemplate("errorMessage", "<x>");
+		outerGroup.defineTemplate("bob", "outer"); // should not be visible to test() in innerGroup
+		ST outerST = outerGroup.getInstanceOf("errorMessage");
+		outerST.add("x", st);
+
+		String expected = "inner";
+		String result = outerST.render();
 
 		assertEquals(errors.errors.size(), 0); // ignores no such prop errors
 

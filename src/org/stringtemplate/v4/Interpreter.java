@@ -170,22 +170,14 @@ public class Interpreter {
                 nameIndex = getShort(code, ip);
                 ip += 2;
                 name = self.impl.strings[nameIndex];
-                st = group.getEmbeddedInstanceOf(self, ip, name);
-                if ( st == null ) {
-                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_TEMPLATE,
-                                              STGroup.getSimpleName(name));
-                    st = ST.BLANK;
-                }
+				// look up in original hierarchy not enclosing template (variable group)
+				// see TestSubtemplates.testEvalSTFromAnotherGroup()
+                st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, ip, name);
                 operands[++sp] = st;
                 break;
             case Bytecode.INSTR_NEW_IND:
                 name = (String)operands[sp--];
-                st = group.getEmbeddedInstanceOf(self, ip, name);
-                if ( st == null ) {
-                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_TEMPLATE,
-                                              STGroup.getSimpleName(name));
-                    st = ST.BLANK;
-                }
+                st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, ip, name);
                 operands[++sp] = st;
                 break;
             case Bytecode.INSTR_SUPER_NEW :
@@ -548,7 +540,7 @@ public class Interpreter {
                 int templateIndex = ti % templates.size(); // rotate through
                 ti++;
                 String name = templates.get(templateIndex);
-                ST st = group.getEmbeddedInstanceOf(self, current_ip, name);
+                ST st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, name);
                 setSoleArgument(self, st, iterValue);
                 st.rawSetAttribute("i0", i0);
                 st.rawSetAttribute("i", i);
@@ -616,7 +608,7 @@ public class Interpreter {
         while ( true ) {
             // get a value for each attribute in list; put into ST instance
             int numEmpty = 0;
-            ST embedded = group.getEmbeddedInstanceOf(self, current_ip, template);
+            ST embedded = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, template);
             embedded.rawSetAttribute("i0", i);
             embedded.rawSetAttribute("i", i+1);
             for (int a = 0; a < numAttributes; a++) {
