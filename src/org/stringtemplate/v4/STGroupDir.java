@@ -106,7 +106,7 @@ public class STGroupDir extends STGroup {
      *  precedence over dir with same name.
      */
     protected CompiledST load(String name) {
-        String parent = new File(name).getParent();
+        String parent = Misc.getUnixStyleParent(name);
         String prefix = parent;
         if ( !prefix.endsWith("/") ) prefix += "/";
 
@@ -140,7 +140,7 @@ public class STGroupDir extends STGroup {
 
     public CompiledST loadTemplateFile(String fileName) {
         //System.out.println("load "+fileName+" from "+root);
-        String prefix = new File(fileName).getParent();
+        String prefix = Misc.getUnixStyleParent(fileName);
         if ( !prefix.endsWith("/") ) prefix += "/";
         try {
             String templateName = Misc.getFileNameNoSuffix(fileName);

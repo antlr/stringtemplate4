@@ -88,6 +88,18 @@ public class Misc {
         return f.getName();
     }
 
+	public static String getUnixStyleParent(String name) {
+//		String p = new File(name).getParent();
+		String p;
+		//System.out.println("getParent("+name+")="+p);
+		if (name==null) return null;
+		int lastSlash=name.lastIndexOf('/');
+		if (lastSlash<=0) p = "/";
+		else p = name.substring(0, lastSlash);
+		//System.out.println("getUnixStyleParent("+name+")="+p);
+		return p;
+	}
+
     public static String replaceEscapes(String s) {
         s = s.replaceAll("\n", "\\\\n");
         s = s.replaceAll("\r", "\\\\r");
