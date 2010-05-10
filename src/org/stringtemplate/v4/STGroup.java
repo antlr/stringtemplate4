@@ -225,6 +225,8 @@ public class STGroup {
     public CompiledST defineTemplateAlias(Token aliasT, Token targetT) {
         String alias = aliasT.getText();
         String target = targetT.getText();
+		if ( target.charAt(0)!='/' ) target = "/"+target;
+		if ( alias.charAt(0)!='/' ) alias = "/"+alias;
         CompiledST targetCode = templates.get(target);
         if ( targetCode==null ){
             ErrorManager.compileTimeError(ErrorType.ALIAS_TARGET_UNDEFINED, aliasT, alias, target);

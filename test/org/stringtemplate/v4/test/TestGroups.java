@@ -28,13 +28,13 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupDir;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorManager;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestGroups extends BaseTest {
     @Test public void testSimpleGroup() throws Exception {
@@ -206,6 +206,19 @@ public class TestGroups extends BaseTest {
         STGroupFile group = new STGroupFile(dir+"/group.stg");
         group.load();
     }
+
+	@Test public void testAlias() throws Exception {
+		String dir = getRandomDir();
+		String groupFile =
+			"a() ::= \"bar\"\n"+
+			"b ::= a\n";
+		writeFile(dir, "group.stg", groupFile);
+		STGroupFile group = new STGroupFile(dir+"/group.stg");
+		ST st = group.getInstanceOf("b");
+		String expected = "bar";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testSimpleDefaultArg() throws Exception {
         String dir = getRandomDir();
