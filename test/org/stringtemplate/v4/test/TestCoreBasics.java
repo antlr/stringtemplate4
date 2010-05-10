@@ -29,16 +29,17 @@ package org.stringtemplate.v4.test;
 
 import org.antlr.runtime.CommonToken;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
+import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.compiler.FormalArgument;
 import org.stringtemplate.v4.compiler.GroupParser;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
 
-import java.util.*;
 import java.io.StringWriter;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestCoreBasics extends BaseTest {
     @Test public void testNullAttr() throws Exception {
@@ -501,4 +502,26 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
+	@Test public void testSeparator() throws Exception {
+		org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
+		group.defineTemplate("test", "<names:{case <it>}; separator=\", \">");
+		ST st = group.getInstanceOf("test");
+		st.add("names", "Ter");
+		st.add("names", "Tom");
+		String expected =
+			"case Ter, case Tom";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testSeparatorInList() throws Exception {
+		org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
+		group.defineTemplate("test", "<names:{case <it>}; separator=\", \">");
+		ST st = group.getInstanceOf("test");
+		st.add("names", new ArrayList<String>() {{add("Ter"); add("Tom");}});
+		String expected =
+			"case Ter, case Tom";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 }
