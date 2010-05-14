@@ -34,7 +34,6 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Interval;
-import org.stringtemplate.v4.compiler.STException;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -357,12 +356,33 @@ public class Compiler {
     public void emit(short opcode, String s) { emit(opcode,s,-1,-1);}
 
     public void insert(int addr, short opcode, String s) {
+		//System.out.println("before insert of "+opcode+"("+s+"):"+ Arrays.toString(code.instrs));
         ensureCapacity(3);
-        System.arraycopy(code.instrs, addr, code.instrs, addr+3, 3); // make room for 3 bytes
+        System.arraycopy(code.instrs, addr, code.instrs, addr+3, ip-addr); // make room for 3 bytes
+//		int dest = addr+3;
+//		int n = ip-addr;
+//		for (int i=ip; i>=addr; i--) {
+//			code.instrs[i+2] = code.instrs[i-1];
+//			code.instrs[i+1] = code.instrs[i-2];
+//			code.instrs[i] = code.instrs[i-3];
+//		}
         int save = ip;
         ip = addr;
         emit(opcode, s);
-        ip = save;
+        ip = save+3;
+		//System.out.println("after  insert of "+opcode+"("+s+"):"+ Arrays.toString(code.instrs));
+		// adjust addresses for BR and BRF
+		int a=addr+3;
+		while ( a < ip ) {
+			byte op = code.instrs[a];
+			Bytecode.Instruction I = Bytecode.instructions[op];
+			if ( op == Bytecode.INSTR_BR || op == Bytecode.INSTR_BRF ) {
+				int opnd = BytecodeDisassembler.getShort(code.instrs, a+1);
+				writeShort(code.instrs, a+1, (short)(opnd+3));				
+			}
+			a += I.n*Bytecode.OPND_SIZE_IN_BYTES+1;
+		}
+		//System.out.println("after  insert of "+opcode+"("+s+"):"+ Arrays.toString(code.instrs));
     }
 
     public void emit(short opcode, String s, int p, int q) {
