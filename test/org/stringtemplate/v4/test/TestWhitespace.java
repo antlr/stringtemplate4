@@ -28,12 +28,13 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.AutoIndentWriter;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 
 import java.io.StringWriter;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestWhitespace extends BaseTest {
     @Test public void testTrimmedSubtemplates() throws Exception {
@@ -85,19 +86,35 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testLeaveNewlineOnEndInSubtemplates() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "<names:{n |\n" +
-                                     "<n>\n" +
-                                     "}>!");
-        ST st = group.getInstanceOf("test");
-        st.add("names", "Ter");
-        st.add("names", "Tom");
-        st.add("names", "Sumana");
-        String expected = "Ter"+newline+"Tom"+newline+"Sumana"+newline+"!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testLeaveNewlineOnEndInSubtemplates() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "<names:{n |\n" +
+									 "<n>\n" +
+									 "}>!");
+		ST st = group.getInstanceOf("test");
+		st.add("names", "Ter");
+		st.add("names", "Tom");
+		st.add("names", "Sumana");
+		String expected = "Ter"+newline+"Tom"+newline+"Sumana"+newline+"!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testTabBeforeEndInSubtemplates() throws Exception {
+		// fails since it counts indent from outer too
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "  <names:{n |\n" +
+									 "    <n>\n" +
+									 "  }>!");
+		ST st = group.getInstanceOf("test");
+		st.add("names", "Ter");
+		st.add("names", "Tom");
+		st.add("names", "Sumana");
+		String expected = "    Ter"+newline+"    Tom"+newline+"    Sumana"+newline+"!";
+		String result = st.render();
+		st.impl.dump();
+		assertEquals(expected, result);
+	}
 
     @Test public void testEmptyExprAsFirstLineGetsNoOutput() throws Exception {
         ST t = new ST(

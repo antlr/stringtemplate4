@@ -35,9 +35,10 @@ options {
 }
 
 @header {
-package org.stringtemplate.compiler;
-import org.stringtemplate.misc.*;
-import org.stringtemplate.*;
+package org.stringtemplate.v4.compiler;
+
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.misc.Misc;
 }
 
 @members {
@@ -143,6 +144,7 @@ region returns [String name] // match $@foo$...$@end$
 subtemplate returns [String name]
 	:	'{' ( ids+=ID (',' ids+=ID)* '|' )?
 		{$name = gen.compileAnonTemplate(enclosingTemplateName, input, $ids, state);}
+        INDENT? // ignore final INDENT before } as it's not part of outer indent 
         '}'
     ;
 

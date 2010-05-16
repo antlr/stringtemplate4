@@ -28,7 +28,7 @@
 grammar Group;
 
 @header {
-package org.stringtemplate.compiler;
+package org.stringtemplate.v4.compiler;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
