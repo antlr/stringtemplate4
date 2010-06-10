@@ -28,12 +28,12 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-
-import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.stringtemplate.v4.misc.ErrorManager;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestOptions extends BaseTest {
     @Test public void testSeparator() throws Exception {
@@ -103,7 +103,8 @@ public class TestOptions extends BaseTest {
     @Test public void testSeparatorWithNull2ndValueAndNullOption() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "hi <name; null=\"n/a\", separator=\", \">!");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
+        ST st = group.getInstanceOf("test");
+		st.impl.dump();
         st.add("name", "Ter");
         st.add("name", null);
         st.add("name", "Sumana");
@@ -112,27 +113,54 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNullValueAndNullOption() throws Exception {
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
-        group.defineTemplate("test", "<name; null=\"n/a\">");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
-        st.add("name", null);
-        String expected = "n/a";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testNullValueAndNullOption() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "<name; null=\"n/a\">");
+		ST st = group.getInstanceOf("test");
+		st.add("name", null);
+		String expected = "n/a";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testListApplyWithNullValueAndNullOption() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "<name:{n | <n>}; null=\"n/a\">");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		st.add("name", null);
+		st.add("name", "Sumana");
+		String expected = "Tern/aSumana";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testDoubleListApplyWithNullValueAndNullOption() throws Exception {
+		// first apply sends [ST, null, ST] to second apply, which puts [] around
+		// the value.  This verifies that null not blank comes out of first apply
+		// since we don't get [null].
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "<name:{n | <n>}:{n | [<n>]}; null=\"n/a\">");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		st.add("name", null);
+		st.add("name", "Sumana");
+		String expected = "[Ter]n/a[Sumana]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testMissingValueAndNullOption() throws Exception {
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
+        STGroup group = new STGroup();
         group.defineTemplate("test", "<name; null=\"n/a\">");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
+        ST st = group.getInstanceOf("test");
         String expected = "n/a";
         String result = st.render();
         assertEquals(expected, result);
     }
 
     @Test public void testOptionDoesntApplyToNestedTemplate() throws Exception {
-        org.stringtemplate.v4.STGroup group = new STGroup();
+        STGroup group = new STGroup();
         group.defineTemplate("foo", "<zippo>");
         group.defineTemplate("test", "<foo(); null=\"n/a\">");
         ST st = group.getInstanceOf("test");
@@ -145,7 +173,7 @@ public class TestOptions extends BaseTest {
     @Test public void testIllegalOption() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
+        STGroup group = new STGroup();
         group.defineTemplate("test", "<name; bad=\"ugly\">");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");

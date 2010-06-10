@@ -536,7 +536,7 @@ public class Interpreter {
             int ti = 0;
             while ( iter.hasNext() ) {
                 Object iterValue = iter.next();
-                if ( iterValue == null ) continue;
+                if ( iterValue == null ) { mapped.add(null); continue; }
                 int templateIndex = ti % templates.size(); // rotate through
                 ti++;
                 String name = templates.get(templateIndex);
@@ -559,7 +559,8 @@ public class Interpreter {
                 operands[++sp] = st;
             }
             else {
-                operands[++sp] = ST.BLANK;
+//				operands[++sp] = ST.BLANK;
+				operands[++sp] = null;
             }
         }
     }

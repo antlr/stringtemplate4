@@ -265,31 +265,69 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMapIndexes() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("inc", "<i>:<it>");
-        group.defineTemplate("test", "<name:inc(); separator=\", \">");
-        ST st = group.getInstanceOf("test");
-        st.add("name", "Ter");
-        st.add("name", "Tom");
-        st.add("name", null); // don't count this one
-        st.add("name", "Sumana");
-        String expected =
-            "1:Ter, 2:Tom, 3:Sumana";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testMapIndexes() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("inc", "<i>:<it>");
+		group.defineTemplate("test", "<name:inc(); separator=\", \">");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		st.add("name", "Tom");
+		st.add("name", null); // don't count this one
+		st.add("name", "Sumana");
+		String expected =
+			"1:Ter, 2:Tom, 3:Sumana";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
-    @Test public void testMapSingleValue() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("a", "[<it>]");
-        group.defineTemplate("test", "hi <name:a()>!");
-        ST st = group.getInstanceOf("test");
-        st.add("name", "Ter");
-        String expected = "hi [Ter]!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testMapIndexes2() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "<name:{n | <i>:<n>}; separator=\", \">");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		st.add("name", "Tom");
+		st.add("name", null); // don't count this one. still can't apply subtemplate to null value
+		st.add("name", "Sumana");
+		String expected =
+			"1:Ter, 2:Tom, 3:Sumana";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testMapSingleValue() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("a", "[<it>]");
+		group.defineTemplate("test", "hi <name:a()>!");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		String expected = "hi [Ter]!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testMapNullValue() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("a", "[<it>]");
+		group.defineTemplate("test", "hi <name:a()>!");
+		ST st = group.getInstanceOf("test");
+		String expected = "hi !";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testMapNullValueInList() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "<name; separator=\", \">");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		st.add("name", "Tom");
+		st.add("name", null); // don't print this one
+		st.add("name", "Sumana");
+		String expected =
+			"Ter, Tom, Sumana";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testRepeatedMap() throws Exception {
         STGroup group = new STGroup();
