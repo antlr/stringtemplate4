@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2009 Terence Parr
  All rights reserved.
 
@@ -27,13 +27,14 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.ST;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestNullAndEmptyValues extends BaseTest {
     @Test public void testSeparatorWithNullFirstValue() throws Exception {

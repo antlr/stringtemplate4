@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2009 Terence Parr
  All rights reserved.
 
@@ -28,7 +28,6 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
 public class TestTokensForDollarDelimiters extends BaseTest {
     @Test public void testSimpleAttr() throws Exception {

@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2009 Terence Parr
  All rights reserved.
 
@@ -28,12 +28,13 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestIndirectionAndEarlyEval extends BaseTest {
     @Test public void testEarlyEval() throws Exception {

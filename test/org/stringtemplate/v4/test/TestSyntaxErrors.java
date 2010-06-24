@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2009 Terence Parr
  All rights reserved.
 
@@ -27,12 +27,15 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-
-import org.stringtemplate.v4.compiler.STException;
-import org.stringtemplate.v4.misc.*;
 import org.antlr.runtime.RecognitionException;
+import org.junit.Test;
+import org.stringtemplate.v4.compiler.STException;
+import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.ErrorType;
+import org.stringtemplate.v4.misc.STCompiletimeMessage;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestSyntaxErrors extends BaseTest {
     @Test public void testEmptyExpr() throws Exception {

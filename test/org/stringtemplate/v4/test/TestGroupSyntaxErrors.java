@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2009 Terence Parr
  All rights reserved.
 
@@ -28,12 +28,12 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-
 import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroupFile;
-import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.stringtemplate.v4.misc.ErrorManager;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestGroupSyntaxErrors extends BaseTest {
     @Test public void testMissingTemplate() throws Exception {

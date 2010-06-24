@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2009 Terence Parr
  All rights reserved.
 
@@ -28,16 +28,16 @@
 package org.stringtemplate.v4.test;
 
 import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.Token;
 import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.Token;
 import org.junit.Before;
-import org.stringtemplate.v4.misc.Misc;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.compiler.STLexer;
+import org.stringtemplate.v4.misc.Misc;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.BufferedWriter;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;

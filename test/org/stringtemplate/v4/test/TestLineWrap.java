@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2009 Terence Parr
  All rights reserved.
 
@@ -28,10 +28,11 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestLineWrap extends BaseTest {
 	@Test public void testLineWrap() throws Exception {

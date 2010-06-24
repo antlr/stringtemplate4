@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2009 Terence Parr
  All rights reserved.
 
@@ -28,16 +28,16 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.misc.ErrorManager;
-import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.stringtemplate.v4.misc.ErrorManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.Map;
-import java.util.HashMap;
 
 public class TestDictionaries extends BaseTest {
     @Test public void testDict() throws Exception {

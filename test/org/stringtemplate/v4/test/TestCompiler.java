@@ -1,5 +1,5 @@
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2009 Terence Parr
  All rights reserved.
 
@@ -26,7 +26,7 @@
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*
- [The "BSD licence"]
+ [The "BSD license"]
  Copyright (c) 2009 Terence Parr
  All rights reserved.
 
@@ -54,13 +54,14 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
 import org.junit.Before;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.Compiler;
-import org.stringtemplate.v4.compiler.*;
 
 import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestCompiler extends BaseTest {
     @Before
