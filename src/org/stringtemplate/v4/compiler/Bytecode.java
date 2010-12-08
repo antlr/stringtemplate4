@@ -36,22 +36,22 @@ public class Bytecode {
     public static class Instruction {
         String name; // E.g., "load_str", "new"
         OperandType[] type = new OperandType[MAX_OPNDS];
-        int n = 0;
+        int nopnds = 0;
         public Instruction(String name) {
-            this(name,OperandType.NONE,OperandType.NONE,OperandType.NONE); n=0;
+            this(name,OperandType.NONE,OperandType.NONE,OperandType.NONE); nopnds =0;
         }
         public Instruction(String name, OperandType a) {
-            this(name,a,OperandType.NONE,OperandType.NONE); n=1;
+            this(name,a,OperandType.NONE,OperandType.NONE); nopnds =1;
         }
         public Instruction(String name, OperandType a, OperandType b) {
-            this(name,a,b,OperandType.NONE); n=2;
+            this(name,a,b,OperandType.NONE); nopnds =2;
         }
         public Instruction(String name, OperandType a, OperandType b, OperandType c) {
             this.name = name;
             type[0] = a;
             type[1] = b;
             type[2] = c;
-            n = MAX_OPNDS;
+            nopnds = MAX_OPNDS;
         }
     }
 

@@ -135,12 +135,12 @@ public class Interpreter {
             switch (opcode) {
             case Bytecode.INSTR_LOAD_STR :
                 int strIndex = getShort(code, ip);
-                ip += 2;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
                 operands[++sp] = self.impl.strings[strIndex];
                 break;
             case Bytecode.INSTR_LOAD_ATTR :
                 nameIndex = getShort(code, ip);
-                ip += 2;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
                 name = self.impl.strings[nameIndex];
                 o = self.getAttribute(name);
                 operands[++sp] = o;
@@ -148,7 +148,7 @@ public class Interpreter {
                 break;
             case Bytecode.INSTR_LOAD_LOCAL:
                 nameIndex = getShort(code, ip);
-                ip += 2;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
                 name = self.impl.strings[nameIndex];
                 if ( self.attributes!=null ) o = self.attributes.get(name);
                 else o = null;
@@ -156,7 +156,7 @@ public class Interpreter {
                 break;
             case Bytecode.INSTR_LOAD_PROP :
                 nameIndex = getShort(code, ip);
-                ip += 2;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
                 o = operands[sp--];
                 name = self.impl.strings[nameIndex];
                 operands[++sp] = getObjectProperty(self, o, name);
@@ -168,7 +168,7 @@ public class Interpreter {
                 break;
             case Bytecode.INSTR_NEW :
                 nameIndex = getShort(code, ip);
-                ip += 2;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
                 name = self.impl.strings[nameIndex];
 				// look up in original hierarchy not enclosing template (variable group)
 				// see TestSubtemplates.testEvalSTFromAnotherGroup()
@@ -182,7 +182,7 @@ public class Interpreter {
                 break;
             case Bytecode.INSTR_SUPER_NEW :
                 nameIndex = getShort(code, ip);
-                ip += 2;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
                 name = self.impl.strings[nameIndex];
                 // super.foo refers to the foo in the imported group
                 // relative to the native group of self (i.e., where self
@@ -202,7 +202,7 @@ public class Interpreter {
             case Bytecode.INSTR_STORE_ATTR:
                 nameIndex = getShort(code, ip);
                 name = self.impl.strings[nameIndex];
-                ip += 2;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
                 o = operands[sp--];    // value to store
                 st = (ST)operands[sp]; // store arg in ST on top of stack
                 st.checkAttributeExists(name);
@@ -220,7 +220,7 @@ public class Interpreter {
                 break;
             case Bytecode.INSTR_STORE_OPTION:
                 int optionIndex = getShort(code, ip);
-                ip += 2;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
                 o = operands[sp--];    // value to store
                 options = (Object[])operands[sp]; // get options
                 options[optionIndex] = o; // store value into options on stack
@@ -245,7 +245,7 @@ public class Interpreter {
                 break;
             case Bytecode.INSTR_ROT_MAP :
                 int nmaps = getShort(code, ip);
-                ip += 2;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
                 List<String> templates = new ArrayList<String>();
                 for (int i=nmaps-1; i>=0; i--) templates.add((String)operands[sp-i]);
                 sp -= nmaps;
@@ -255,7 +255,7 @@ public class Interpreter {
             case Bytecode.INSTR_PAR_MAP :
                 name = (String)operands[sp--];
                 nmaps = getShort(code, ip);
-                ip += 2;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
                 List<Object> exprs = new ArrayList<Object>();
                 for (int i=nmaps-1; i>=0; i--) exprs.add(operands[sp-i]);
                 sp -= nmaps;
@@ -266,7 +266,7 @@ public class Interpreter {
                 break;
             case Bytecode.INSTR_BRF :
                 addr = getShort(code, ip);
-                ip += 2;
+                ip += Bytecode.OPND_SIZE_IN_BYTES;
                 o = operands[sp--]; // <if(expr)>...<endif>
                 if ( !testAttributeTrue(o) ) ip = addr; // jump
                 break;
@@ -341,7 +341,7 @@ public class Interpreter {
 				break;
 			case Bytecode.INSTR_INDENT :
 				strIndex = getShort(code, ip);
-				ip += 2;
+				ip += Bytecode.OPND_SIZE_IN_BYTES;
 				out.pushIndentation(self.impl.strings[strIndex]);
 				break;
 			case Bytecode.INSTR_DEDENT :

@@ -350,37 +350,33 @@ public class Compiler {
         emit(opcode, p, q);
         ensureCapacity(2);
         writeShort(code.instrs, ip, (short)arg);
-        ip += 2;
+        ip += Bytecode.OPND_SIZE_IN_BYTES;
     }
 
     public void emit(short opcode, String s) { emit(opcode,s,-1,-1);}
 
     public void insert(int addr, short opcode, String s) {
 		//System.out.println("before insert of "+opcode+"("+s+"):"+ Arrays.toString(code.instrs));
-        ensureCapacity(3);
-        System.arraycopy(code.instrs, addr, code.instrs, addr+3, ip-addr); // make room for 3 bytes
-//		int dest = addr+3;
-//		int n = ip-addr;
-//		for (int i=ip; i>=addr; i--) {
-//			code.instrs[i+2] = code.instrs[i-1];
-//			code.instrs[i+1] = code.instrs[i-2];
-//			code.instrs[i] = code.instrs[i-3];
-//		}
+        ensureCapacity(1+Bytecode.OPND_SIZE_IN_BYTES);
+		int instrSize = 1 + Bytecode.OPND_SIZE_IN_BYTES;
+		System.arraycopy(code.instrs, addr,
+						 code.instrs, addr + instrSize,
+						 ip-addr); // make room for opcode, opnd
         int save = ip;
         ip = addr;
         emit(opcode, s);
-        ip = save+3;
+        ip = save+instrSize;
 		//System.out.println("after  insert of "+opcode+"("+s+"):"+ Arrays.toString(code.instrs));
 		// adjust addresses for BR and BRF
-		int a=addr+3;
+		int a=addr+instrSize;
 		while ( a < ip ) {
 			byte op = code.instrs[a];
 			Bytecode.Instruction I = Bytecode.instructions[op];
 			if ( op == Bytecode.INSTR_BR || op == Bytecode.INSTR_BRF ) {
 				int opnd = BytecodeDisassembler.getShort(code.instrs, a+1);
-				writeShort(code.instrs, a+1, (short)(opnd+3));				
+				writeShort(code.instrs, a+1, (short)(opnd+instrSize));				
 			}
-			a += I.n*Bytecode.OPND_SIZE_IN_BYTES+1;
+			a += I.nopnds * Bytecode.OPND_SIZE_IN_BYTES + 1;
 		}
 		//System.out.println("after  insert of "+opcode+"("+s+"):"+ Arrays.toString(code.instrs));
     }

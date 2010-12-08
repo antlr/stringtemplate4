@@ -47,7 +47,7 @@ public class BytecodeDisassembler {
             Bytecode.Instruction I = Bytecode.instructions[opcode];
             buf.append(I.name);
             ip++;
-            for (int opnd=0; opnd<I.n; opnd++) {
+            for (int opnd=0; opnd<I.nopnds; opnd++) {
                 buf.append(' ');
                 buf.append(getShort(code.instrs, ip));
                 ip += Bytecode.OPND_SIZE_IN_BYTES;
@@ -80,12 +80,12 @@ public class BytecodeDisassembler {
         String instrName = I.name;
         buf.append( String.format("%04d:\t%-14s", ip, instrName) );
         ip++;
-        if ( I.n==0 ) {
+        if ( I.nopnds ==0 ) {
             buf.append("  ");
             return ip;
         }
         List<String> operands = new ArrayList<String>();
-        for (int i=0; i<I.n; i++) {
+        for (int i=0; i<I.nopnds; i++) {
             int opnd = getShort(code.instrs, ip);
             ip += Bytecode.OPND_SIZE_IN_BYTES;
             switch ( I.type[i] ) {
