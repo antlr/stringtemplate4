@@ -30,6 +30,7 @@ package org.stringtemplate.v4;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.GroupLexer;
 import org.stringtemplate.v4.compiler.GroupParser;
@@ -138,39 +139,54 @@ public class STGroupDir extends STGroup {
         return templates.get(name);
     }
 
-    public CompiledST loadTemplateFile(String fileName) {
-        //System.out.println("load "+fileName+" from "+root);
-        String prefix = Misc.getUnixStyleParent(fileName);
-        if ( !prefix.endsWith("/") ) prefix += "/";
-        try {
-            String templateName = Misc.getFileNameNoSuffix(fileName);
-            URL f = new URL(root+fileName);
-            ANTLRInputStream fs = new ANTLRInputStream(f.openStream(), encoding);
-            if ( ErrorManager.v3_mode) {
-                String template = fs.toString(); // needs > ANTLR 3.2
-                template = template.trim();
-                String justName = new File(templateName).getName();
-                defineTemplate(prefix,
-                               new CommonToken(GroupParser.ID,justName),
-                               null,
-                               template);
-            }
-            else {
-                GroupLexer lexer = new GroupLexer(fs);
-                fs.name = fileName;
-                CommonTokenStream tokens = new CommonTokenStream(lexer);
-                GroupParser parser = new GroupParser(tokens);
-                parser.group = this;
-                parser.templateDef(prefix);
-            }
-            return templates.get(templateName);
-        }
-        catch (Exception e) {
-            ErrorManager.IOError(null, ErrorType.CANT_LOAD_TEMPLATE_FILE, e, root + fileName);
-            e.printStackTrace(System.err);
-        }
-        return null;
-    }
+	public CompiledST loadTemplateFile(String fileName) {
+		//System.out.println("load "+fileName+" from "+root);
+		String prefix = Misc.getUnixStyleParent(fileName);
+		if ( !prefix.endsWith("/") ) prefix += "/";
+		String templateName = Misc.getFileNameNoSuffix(fileName);
+		URL f = null;
+		try {
+			f = new URL(root+fileName);
+		}
+		catch (MalformedURLException me) {
+			ErrorManager.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
+									 me, Misc.getFileName(f.getFile()));
+			return null;
+		}
+		ANTLRInputStream fs = null;
+		try {
+			fs = new ANTLRInputStream(f.openStream(), encoding);
+		}
+		catch (IOException ioe) {
+			// doesn't exist; just return null to say not found
+			return null;
+		}
+		if ( ErrorManager.v3_mode ) {
+			String template = fs.toString(); // needs > ANTLR 3.2
+			template = template.trim();
+			String justName = new File(templateName).getName();
+			defineTemplate(prefix,
+						   new CommonToken(GroupParser.ID,justName),
+						   null,
+						   template);
+		}
+		else {
+			GroupLexer lexer = new GroupLexer(fs);
+			fs.name = fileName;
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			GroupParser parser = new GroupParser(tokens);
+			parser.group = this;
+			try {
+				parser.templateDef(prefix);
+			}
+			catch (RecognitionException re) {
+				ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR,
+										 Misc.getFileName(f.getFile()),
+										 re, re.getMessage());
+			}
+		}
+		return templates.get(templateName);
+	}
 
-    public String getName() { return groupDirName; }
+	public String getName() { return groupDirName; }
 }

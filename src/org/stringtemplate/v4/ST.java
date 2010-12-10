@@ -169,7 +169,7 @@ public class ST {
      *  name is not defined.
      */
     protected void checkAttributeExists(String name) {
-        if ( impl.formalArguments == FormalArgument.UNKNOWN ) return;
+        if ( ErrorManager.v3_mode || impl.formalArguments == FormalArgument.UNKNOWN ) return;
         if ( impl.formalArguments == null || impl.formalArguments.get(name) == null ) {
             ErrorManager.runTimeError(this, -1, ErrorType.CANT_SET_ATTRIBUTE, name, getName());
         }
@@ -305,6 +305,5 @@ public class ST {
         if ( impl==null ) return "bad-template()";
         return impl.name+"()";
     }
-
 
 }

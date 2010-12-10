@@ -53,12 +53,13 @@ public enum ErrorType {
     NO_SUCH_FUNCTION("no such function: %s"),
     NO_SUCH_REGION("template %s doesn't have a region called %s"),
     NO_SUCH_OPTION("no such option: %s"),
+	INVALID_TEMPLATE_NAME("invalid template name or path: %s"),
 
     // INTERNAL ERRORS
     INTERNAL_ERROR("%s"),
     WRITE_IO_ERROR("error writing output caused by"),
-    CANT_LOAD_GROUP_FILE("can't load group file %s"),
-    CANT_LOAD_TEMPLATE_FILE("can't load template file %s");
+    CANT_LOAD_GROUP_FILE("can't load group file %s");
+    //CANT_LOAD_TEMPLATE_FILE("can't load template file %s");
 
     public String message;
 

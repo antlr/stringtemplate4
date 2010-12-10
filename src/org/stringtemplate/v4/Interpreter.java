@@ -970,7 +970,7 @@ public class Interpreter {
      *  Don't generate error if template has no formal arguments.
      */
     protected void checkNullAttributeAgainstFormalArguments(ST self, String name) {
-        if ( self.impl.formalArguments == FormalArgument.UNKNOWN ) return;
+        if ( ErrorManager.v3_mode || self.impl.formalArguments == FormalArgument.UNKNOWN ) return;
         
         ST p = self;
         while ( p!=null ) {
