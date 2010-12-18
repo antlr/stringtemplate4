@@ -86,7 +86,7 @@ public class TestGroups extends BaseTest {
         String expected = "foobar";
         String result = st1.render()+st2.render();
         assertEquals(expected, result);
-        st2 = group.getInstanceOf("/subdir/b"); // should work with / in front too
+        st2 = group.getInstanceOf("subdir/b"); // should work with / in front too
         expected = "bar";
         result = st2.render();
         assertEquals(expected, result);
@@ -96,7 +96,7 @@ public class TestGroups extends BaseTest {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
         String a =
-            "a(x) ::= << </subdir/b()> >>\n";
+            "a(x) ::= << <subdir/b()> >>\n";
         writeFile(dir, "a.st", a);
         String b =
             "b() ::= <<bar>>\n";
@@ -185,7 +185,7 @@ public class TestGroups extends BaseTest {
     @Test public void testRefToAnotherTemplateInSameSubdir() throws Exception {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
-        String a = "a() ::= << <b()> >>\n";
+        String a = "a() ::= << <subdir/b()> >>\n";
         String b = "b() ::= <<bar>>\n";
         writeFile(dir+"/subdir", "a.st", a);
         writeFile(dir+"/subdir", "b.st", b);
@@ -442,7 +442,7 @@ public class TestGroups extends BaseTest {
         writeFile(dir, "group.stg", groupFile);
 
         STGroup group1 = new STGroupDir(dir);
-        ST st = group1.getInstanceOf("/group/a"); // can't see
+        ST st = group1.getInstanceOf("group/a"); // can't see
         assertEquals(null, st);
     }
 
@@ -456,7 +456,7 @@ public class TestGroups extends BaseTest {
             ">>"+newline;
         writeFile(dir, "a.st", a);
         STGroup group = new STGroupDir(dir);
-        ST st = group.getInstanceOf("/a");
+        ST st = group.getInstanceOf("a");
         String expected = "foo";
         String result = st.render();
         assertEquals(expected, result);
@@ -465,12 +465,12 @@ public class TestGroups extends BaseTest {
     @Test public void testFullyQualifiedTemplateRef() throws Exception {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
-        String a = "a() ::= << </subdir/b()> >>\n";
+        String a = "a() ::= << <subdir/b()> >>\n";
         String b = "b() ::= <<bar>>\n";
         writeFile(dir+"/subdir", "a.st", a);
         writeFile(dir+"/subdir", "b.st", b);
         STGroup group = new STGroupDir(dir);
-        ST st = group.getInstanceOf("/subdir/a");
+        ST st = group.getInstanceOf("subdir/a");
         String expected = " bar ";
         String result = st.render();
         assertEquals(expected, result);
@@ -480,15 +480,15 @@ public class TestGroups extends BaseTest {
         // /randomdir/a and /randomdir/group.stg with b and c templates
         String dir = getRandomDir();
         String a =
-            "a(x) ::= << </group/b()> >>\n";
+            "a(x) ::= << <group/b()> >>\n";
         writeFile(dir, "a.st", a);
         String groupFile =
             "b() ::= \"bar\"\n"+
-            "c() ::= \"</a()>\"\n";
+            "c() ::= \"<a()>\"\n";
         writeFile(dir, "group.stg", groupFile);
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");
-        ST st2 = group.getInstanceOf("/group/c"); // invokes /a
+        ST st2 = group.getInstanceOf("group/c"); // invokes /a
         String expected = " bar  bar ";
         String result = st1.render()+st2.render();
         assertEquals(expected, result);
@@ -514,7 +514,7 @@ public class TestGroups extends BaseTest {
         ErrorManager.v3_mode = true;
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
-        String a = "<subdir/b()>\n"; // pretend we meant </subdir/b()>
+        String a = "<subdir/b()>\n";
         String b = "bar\n";
         writeFile(dir+"/subdir", "a.st", a);
         writeFile(dir+"/subdir", "b.st", b);
@@ -535,7 +535,7 @@ public class TestGroups extends BaseTest {
         writeFile(dir, "a.st", a);
         String groupFile =
             "b() ::= \"bar\"\n"+
-            "c() ::= \"</a()>\"\n";
+            "c() ::= \"<a()>\"\n";
         writeFile(dir, "group.stg", groupFile);
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");

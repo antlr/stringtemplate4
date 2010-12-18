@@ -34,6 +34,7 @@ import org.stringtemplate.v4.debug.DebugST;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
+import sun.net.idn.StringPrep;
 
 import java.net.URL;
 import java.util.*;
@@ -43,11 +44,6 @@ import java.util.*;
  *  it's like a single group file broken into multiple files, one for each template.
  *  ST v3 had just the pure template inside, not the template name and header.
  *  Name inside must match filename (minus suffix).
- *
- *  Users can use simple template names like c but, internally, we have to
- *  know the fully qualified path from the root directory specified when
- *  we create this object.  If we're compiling templates in subdir a/b, then
- *  /a/b is the path prefix to add to all template refs.
  */
 public class STGroup {
     /** When we use key as a value in a dictionary, this is how we signify. */
@@ -67,7 +63,7 @@ public class STGroup {
 
     /** Maps template name to StringTemplate object. synchronized. */
     protected Map<String, CompiledST> templates =
-		Collections.synchronizedMap(new LinkedHashMap<String, CompiledST>());		
+		Collections.synchronizedMap(new LinkedHashMap<String, CompiledST>());
         //new SynchronizedLinkedHashMap<String,CompiledST>();
 
     /** Maps dict names to HashMap objects.  This is the list of dictionaries
@@ -95,7 +91,7 @@ public class STGroup {
      */
     protected static final CompiledST NOT_FOUND_ST = new CompiledST();
 
-    public boolean debug = false;    
+    public boolean debug = false;
 
     public STGroup() { ; }
 
@@ -106,11 +102,9 @@ public class STGroup {
 
     /** The primary means of getting an instance of a template from this
      *  group. Names must be absolute, fully-qualified names like /a/b
-     *  As a convenience, I'll add / on front for you.
      */
     public ST getInstanceOf(String name) {
 		if ( name==null ) return null;
-        if ( name.charAt(0)!='/' ) name = "/"+name;
         //System.out.println("getInstanceOf("+name+")");
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
@@ -133,7 +127,7 @@ public class STGroup {
         ST st = getInstanceOf(name);
         if ( st==null ) {
             ErrorManager.runTimeError(enclosingInstance, ip, ErrorType.NO_SUCH_TEMPLATE,
-                                      STGroup.getSimpleName(name));
+                                      name);
             return ST.BLANK;
         }
         st.enclosingInstance = enclosingInstance;
@@ -142,13 +136,12 @@ public class STGroup {
 
     /** Is this template defined in this group or from this group below?
      *  Names must be absolute, fully-qualified names like /a/b
-     *  As a convenience, I'll add / on front for you.
      */
     public boolean isDefined(String name) {
-        if ( name.charAt(0)!='/' ) name = "/"+name;
         return lookupTemplate(name)!=null;
     }
 
+	/** Look up a fully-qualified name */
     protected CompiledST lookupTemplate(String name) {
         CompiledST code = templates.get(name);
         if ( code==NOT_FOUND_ST ) return null;
@@ -162,7 +155,7 @@ public class STGroup {
     }
 
     /** Load st from disk if dir or load whole group file if .stg file (then
-     *  return just one template).
+     *  return just one template). name is fully-qualified.
      */
     protected CompiledST load(String name) { return null; }
 
@@ -183,31 +176,37 @@ public class STGroup {
     public Map<String,Object> rawGetDictionary(String name) { return dictionaries.get(name); }
 
     // for testing
-    public CompiledST defineTemplate(String name, String template) {
-        return defineTemplate("/", new CommonToken(GroupParser.ID,name),
+	public CompiledST defineTemplate(String name, String template) {
+		return defineTemplate(name, name, template);
+	}
+
+    public CompiledST defineTemplate(String templateName, String name, String template) {
+        return defineTemplate(templateName, new CommonToken(GroupParser.ID,name),
                               FormalArgument.UNKNOWN, template);
     }
 
-    public CompiledST defineTemplate(String prefix,
-                                     Token nameT,
+    public CompiledST defineTemplate(String templateName, Token nameT,
                                      LinkedHashMap<String,FormalArgument> args,
                                      String template)
     {
-        String name = nameT.getText();
-        if ( name!=null && (name.length()==0 || name.indexOf('.')>=0) ) {
-            throw new IllegalArgumentException("cannot have '.' in template names");
-        }
+//        String name = nameT.getText();
+		if ( templateName==null || templateName.length()==0 ) {
+			throw new IllegalArgumentException("empty template name");
+		}
+		if ( templateName.indexOf('.')>=0 ) {
+			throw new IllegalArgumentException("cannot have '.' in template names");
+		}
         template = Misc.trimOneStartingNewline(template);
         template = Misc.trimOneTrailingNewline(template);
-        CompiledST code = compile(prefix, name, template);
-        code.name = name;
+        CompiledST code = compile(templateName, template);
+        code.name = templateName;
         code.formalArguments = args;
-        rawDefineTemplate(prefix+name, code, nameT);
+        rawDefineTemplate(templateName, code, nameT);
         if ( args!=null ) { // compile any default args
             for (String a : args.keySet()) {
                 FormalArgument fa = args.get(a);
                 if ( fa.defaultValueToken !=null ) {
-                    Compiler c2 = new Compiler(prefix, name,
+                    Compiler c2 = new Compiler(templateName,
                                                delimiterStartChar, delimiterStopChar);
                     String defArgTemplate = Misc.strip(fa.defaultValueToken.getText(), 1);
                     fa.compiledDefaultValue = c2.compile(defArgTemplate);
@@ -225,8 +224,6 @@ public class STGroup {
     public CompiledST defineTemplateAlias(Token aliasT, Token targetT) {
         String alias = aliasT.getText();
         String target = targetT.getText();
-		if ( target.charAt(0)!='/' ) target = "/"+target;
-		if ( alias.charAt(0)!='/' ) alias = "/"+alias;
         CompiledST targetCode = templates.get(target);
         if ( targetCode==null ){
             ErrorManager.compileTimeError(ErrorType.ALIAS_TARGET_UNDEFINED, aliasT, alias, target);
@@ -236,14 +233,14 @@ public class STGroup {
         return targetCode;
     }
 
-    public CompiledST defineRegion(String prefix,
-                                   String enclosingTemplateName,
+    public CompiledST defineRegion(String templateName,
+								   String enclosingTemplateName,
                                    Token regionT,
                                    String template)
     {
         String name = regionT.getText();
-        CompiledST code = compile(prefix, enclosingTemplateName, template);
-        String mangled = prefix + getMangledRegionName(enclosingTemplateName, name);
+        CompiledST code = compile(enclosingTemplateName, template);
+        String mangled = getMangledRegionName(enclosingTemplateName, name);
         if ( lookupTemplate(mangled)==null ) {
             ErrorManager.compileTimeError(ErrorType.NO_SUCH_REGION, regionT,
                                           enclosingTemplateName, name);
@@ -258,47 +255,35 @@ public class STGroup {
     }
 
     public void defineTemplateOrRegion(
-        Token templateToken, String template, String prefix,
-        String regionSurroundingTemplateName,
+		String templateName,
+		String regionSurroundingTemplateName,
+        Token templateToken, String template,
         Token nameToken,
         LinkedHashMap<String,FormalArgument> args)
     {
         int n = 1; // num char to strip from left, right of template def token text "" <<>>
-        boolean removedNL = false;
-        if ( templateToken.getType()==GroupLexer.BIGSTRING ) {
-            n = 2;
-            /*
-            if ( template.charAt(0)=='\n' ) removedNL = true;
-            template = Misc.trimOneStartingNewline(template);
-            template = Misc.trimOneTrailingNewline(template);
-            */
-        }
+        if ( templateToken.getType()==GroupLexer.BIGSTRING ) n=2;
         try {
             if ( regionSurroundingTemplateName!=null ) {
-                defineRegion(prefix, regionSurroundingTemplateName, nameToken, template);
+                defineRegion(templateName, regionSurroundingTemplateName, nameToken, template);
             }
             else {
-                defineTemplate(prefix, nameToken, args, template);
+                defineTemplate(templateName, nameToken, args, template);
             }
-        }
-        catch (STException e) {
-            RecognitionException re = (RecognitionException)e.getCause();
-            if ( removedNL ) {
-                re.line = re.line + templateToken.getLine();
-            }
-            else {
-                re.charPositionInLine =
-                    re.charPositionInLine+templateToken.getCharPositionInLine()+n;
-                re.line = re.line + templateToken.getLine() - 1;
-            }
-            ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR,
-                                     Misc.getFileName(templateToken.getInputStream().getSourceName()),
-                                     re, e.getMessage());
-        }
-    }
+		}
+		catch (STException e) {
+			RecognitionException re = (RecognitionException)e.getCause();
+			re.charPositionInLine =
+				re.charPositionInLine+templateToken.getCharPositionInLine()+n;
+			re.line = re.line + templateToken.getLine() - 1;
+			ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR,
+				Misc.getFileName(templateToken.getInputStream().getSourceName()),
+				re, e.getMessage());
+		}
+	}
 
 	protected void defineImplicitlyDefinedTemplates(CompiledST code) {
-        if ( code.implicitlyDefinedTemplates !=null ) {
+		if ( code.implicitlyDefinedTemplates !=null ) {
             for (CompiledST sub : code.implicitlyDefinedTemplates) {
                 rawDefineTemplate(sub.name, sub, null);
                 defineImplicitlyDefinedTemplates(sub);
@@ -309,7 +294,7 @@ public class STGroup {
     protected void rawDefineTemplate(String name, CompiledST code, Token defT) {
         CompiledST prev = templates.get(name);
         if ( prev!=null ) {
-            if ( !prev.isRegion ) {                
+            if ( !prev.isRegion ) {
                 ErrorManager.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, defT);
                 return;
             }
@@ -333,11 +318,10 @@ public class STGroup {
         templates.remove(name);
     }
 
-    protected CompiledST compile(String prefix,
-                                 String enclosingTemplateName,
+    protected CompiledST compile(String enclosingTemplateName,
                                  String template)
     {
-        Compiler c = new Compiler(prefix, enclosingTemplateName,
+        Compiler c = new Compiler(enclosingTemplateName,
                                   delimiterStartChar, delimiterStopChar);
         CompiledST code = c.compile(template);
         code.nativeGroup = this;
@@ -354,19 +338,11 @@ public class STGroup {
 
     /** Return "t.foo" from "region__t__foo" */
     public static String getUnMangledTemplateName(String mangledName) {
-        String t = mangledName.substring("region__".length()+1,
+        String t = mangledName.substring("region__".length(),
                                          mangledName.lastIndexOf("__"));
         String r = mangledName.substring(mangledName.lastIndexOf("__")+2,
                                          mangledName.length());
         return t+'.'+r;
-    }
-
-    /** Convert template names like /foo to foo */
-    public static String getSimpleName(String name) {
-        if ( name.charAt(0)=='/' && name.lastIndexOf('/')==0 ) {
-            return name.substring(1);
-        }
-        return name;
     }
 
     /** Define a map for this group; not thread safe...do not keep adding
@@ -384,6 +360,7 @@ public class STGroup {
     }
 
     // TODO: make this happen in background then flip ptr to new list of templates/dictionaries?
+	/** Load a group file with full path fileName; it's relative to root by prefix. */
     public void loadGroupFile(String prefix, String fileName) {
         //System.out.println("load group file prefix="+prefix+", fileName="+fileName);
         GroupParser parser = null;

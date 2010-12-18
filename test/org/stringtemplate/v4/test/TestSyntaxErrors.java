@@ -85,7 +85,7 @@ public class TestSyntaxErrors extends BaseTest {
                                               null,
                                               re.token,re,se.getMessage()).toString();
 		}
-        String expected = "1:4: invalid character: *";
+        String expected = "1:4: invalid character '*' at 1:4";
         assertEquals(expected, result);
     }
 

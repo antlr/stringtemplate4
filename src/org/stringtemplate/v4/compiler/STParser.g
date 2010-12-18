@@ -274,7 +274,7 @@ options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
 		ID '(' expr ')'    {gen.func($ID);}
 	|	(s='super' '.')? ID
 						   {gen.emit($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW,
-								     gen.prefixedName($ID.text),
+								     $ID.text,
 								     $start.getStartIndex(), $ID.getStopIndex());}
 		'(' args? ')'
 	|	'@' (s='super' '.')? ID '(' rp=')'	// convert <@r()> to <region__enclosingTemplate__r()>
@@ -282,7 +282,7 @@ options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
 						   gen.defineBlankRegion(enclosingTemplateName, $ID.text);
 						   String mangled = STGroup.getMangledRegionName(enclosingTemplateName, $ID.text);
 						   gen.emit($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW,
-							   	    gen.prefixedName(mangled),
+							   	    mangled,
 								    $start.getStartIndex(), $rp.getStartIndex());
 						   }
 	|	primary
@@ -294,7 +294,7 @@ primary
 									 Misc.strip($STRING.text,1),
 							 		 $STRING.getStartIndex(), $STRING.getStopIndex());}
 	|	subtemplate
-		                   {gen.emit(Bytecode.INSTR_NEW, gen.prefixedName($subtemplate.name),
+		                   {gen.emit(Bytecode.INSTR_NEW, $subtemplate.name,
 									 $subtemplate.start.getStartIndex(),
 									 $subtemplate.stop.getStopIndex());}
 	|	list
@@ -322,10 +322,10 @@ expr:{arg | ...}     apply subtemplate to expr
 expr:(e)()           convert e to a string template name and apply to expr
 */
 templateRef
-	:	ID  '(' ')'		   {gen.emit(Bytecode.INSTR_LOAD_STR,gen.prefixedName($ID.text),
+	:	ID  '(' ')'		   {gen.emit(Bytecode.INSTR_LOAD_STR,$ID.text,
                    		 		     $ID.getStartIndex(), $ID.getStopIndex());}
 	|	subtemplate        {gen.emit(Bytecode.INSTR_LOAD_STR,
-	                                 gen.prefixedName($subtemplate.name),
+	                                 $subtemplate.name,
 									 $subtemplate.start.getStartIndex(),
 									 $subtemplate.stop.getStopIndex());}
 	|	lp='(' mapExpr rp=')' '(' ')'

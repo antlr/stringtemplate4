@@ -66,7 +66,7 @@ import static org.junit.Assert.assertEquals;
 public class TestCompiler extends BaseTest {
     @Before
     public void setUp() { Compiler.subtemplateCount = 0; }
-    
+
     @Test public void testAttr() throws Exception {
         String template = "hi <name>";
         CompiledST code = new Compiler().compile(template);
@@ -89,7 +89,7 @@ public class TestCompiler extends BaseTest {
             "load_str 0, write, new 1, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , /foo]";
+        String stringsExpected = "[hi , foo]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -126,7 +126,7 @@ public class TestCompiler extends BaseTest {
             "load_str 0, write, load_attr 1, load_str 2, map, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, /bold]";
+        String stringsExpected = "[hi , name, bold]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -145,7 +145,7 @@ public class TestCompiler extends BaseTest {
             "write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, /bold, /italics]";
+        String stringsExpected = "[hi , name, bold, italics]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -157,7 +157,7 @@ public class TestCompiler extends BaseTest {
             "load_str 0, write, load_attr 1, load_str 2, load_str 3, rot_map 2, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, /bold, /italics]";
+        String stringsExpected = "[hi , name, bold, italics]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -169,7 +169,7 @@ public class TestCompiler extends BaseTest {
             "load_str 0, write, load_attr 1, load_str 2, map, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, /_sub1]";
+        String stringsExpected = "[hi , name, _sub1]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -227,7 +227,7 @@ public class TestCompiler extends BaseTest {
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
-    
+
     @Test public void testElseIfElse() throws Exception {
         String template = "go: <if(name)>hi, foo<elseif(user)>a user<else>bye<endif>";
         CompiledST code = new org.stringtemplate.v4.compiler.Compiler().compile(template);
@@ -252,7 +252,7 @@ public class TestCompiler extends BaseTest {
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
-    
+
     @Test public void testOption() throws Exception {
         String template = "hi <name; separator=\"x\">";
         CompiledST code = new Compiler().compile(template);
@@ -272,7 +272,7 @@ public class TestCompiler extends BaseTest {
             "load_str 0, write, load_attr 1, options, new 2, store_option 3, write_opt";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, /_sub1]";
+        String stringsExpected = "[hi , name, _sub1]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -293,7 +293,7 @@ public class TestCompiler extends BaseTest {
             "store_option 3, " +
             "write_opt";
         String stringsExpected = // the ", , ," is the ", " separator string
-            "[hi , name, true, /foo, , ]";
+            "[hi , name, true, foo, , ]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
         String asmResult = code.instrs();
@@ -325,12 +325,12 @@ public class TestCompiler extends BaseTest {
     @Test public void testEmbeddedRegion() throws Exception {
         String template = "<@r>foo<@end>";
         // compile as if in root dir and in template 'a'
-        CompiledST code = new Compiler("/", "a", '<', '>').compile(template);
+        CompiledST code = new Compiler("a", '<', '>').compile(template);
         String asmExpected =
             "new 0, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[/region__a__r]";
+        String stringsExpected = "[region__a__r]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -338,12 +338,12 @@ public class TestCompiler extends BaseTest {
     @Test public void testRegion() throws Exception {
         String template = "x:<@r()>";
         // compile as if in root dir and in template 'a'
-        CompiledST code = new Compiler("/", "a", '<', '>').compile(template);
+        CompiledST code = new Compiler("a", '<', '>').compile(template);
         String asmExpected =
             "load_str 0, write, new 1, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[x:, /region__a__r]";
+        String stringsExpected = "[x:, region__a__r]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }

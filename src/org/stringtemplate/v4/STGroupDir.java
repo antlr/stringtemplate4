@@ -107,9 +107,7 @@ public class STGroupDir extends STGroup {
      *  precedence over dir with same name.
      */
     protected CompiledST load(String name) {
-        String parent = Misc.getUnixStyleParent(name);
-        String prefix = parent;
-        if ( !prefix.endsWith("/") ) prefix += "/";
+        String parent = Misc.getPrefix(name);
 
         URL groupFileURL = null;
         try { // see if parent of template name is a group file
@@ -124,7 +122,7 @@ public class STGroupDir extends STGroup {
         }
         catch (FileNotFoundException fnfe) {
             // must not be in a group file
-            return loadTemplateFile(name+".st"); // load /prefix/t.st file
+            return loadTemplateFile(parent, name+".st"); // load t.st file
         }
         catch (IOException ioe) {
             ErrorManager.internalError(null, "can't load template file "+name, ioe);
@@ -135,14 +133,13 @@ public class STGroupDir extends STGroup {
         catch (IOException ioe) {
             ErrorManager.internalError(null, "can't close template file stream "+name, ioe);
         }
-        loadGroupFile(prefix, root+parent+".stg");
+        loadGroupFile(parent, root+parent+".stg");
         return templates.get(name);
     }
 
-	public CompiledST loadTemplateFile(String fileName) {
-		//System.out.println("load "+fileName+" from "+root);
-		String prefix = Misc.getUnixStyleParent(fileName);
-		if ( !prefix.endsWith("/") ) prefix += "/";
+	/** Load full path name .st file relative to root by prefix */
+	public CompiledST loadTemplateFile(String prefix, String fileName) {
+		System.out.println("load "+fileName+" from "+root+" prefix="+prefix);
 		String templateName = Misc.getFileNameNoSuffix(fileName);
 		URL f = null;
 		try {
@@ -165,7 +162,7 @@ public class STGroupDir extends STGroup {
 			String template = fs.toString(); // needs > ANTLR 3.2
 			template = template.trim();
 			String justName = new File(templateName).getName();
-			defineTemplate(prefix,
+			defineTemplate(templateName,
 						   new CommonToken(GroupParser.ID,justName),
 						   null,
 						   template);

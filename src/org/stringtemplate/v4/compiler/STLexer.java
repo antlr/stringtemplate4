@@ -261,7 +261,7 @@ public class STLexer implements TokenSource {
 						throw new STException("EOF inside ST expression at "+
 							re.line+":"+re.charPositionInLine, re);
 					}
-                    throw new STException("invalid character '"+c+" at "+
+                    throw new STException("invalid character '"+c+"' at "+
 							re.line+":"+re.charPositionInLine, re);
             }
         }
@@ -466,7 +466,7 @@ public class STLexer implements TokenSource {
         return;
     }
 
-    public static boolean isIDStartLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c=='_' || c=='/'; }
+    public static boolean isIDStartLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c=='_'; }
 	public static boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9' || c=='_' || c=='/'; }
     public static boolean isWS(char c) { return c==' ' || c=='\t' || c=='\n' || c=='\r'; }
     public static boolean isUnicodeLetter(char c) { return c>='a'&&c<='f' || c>='A'&&c<='F' || c>='0'&&c<='9'; }

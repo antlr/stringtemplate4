@@ -215,22 +215,22 @@ public class TestDictionaries extends BaseTest {
         String result = st.render();
         assertEquals(expecting, result);
     }
-    
+
     /**
      * Test that a map can return a <b>string</b> with the word: default.
      */
     @Test public void testDictDefaultIsDefaultString() throws Exception {
         String templates =
                 "map ::= [default: \"default\"] "+newline+
-                "t() ::= << <map.(\"1\")> >>"+newline                
+                "t() ::= << <map.(\"1\")> >>"+newline
                 ;
         writeFile(tmpdir, "test.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
         org.stringtemplate.v4.ST st = group.getInstanceOf("t");
         String expecting = " default ";
-        String result = st.render();        
+        String result = st.render();
         assertEquals(expecting, result);
-    }    
+    }
 
     @Test public void testDictViaEnclosingTemplates() throws Exception {
         String templates =
@@ -264,5 +264,5 @@ public class TestDictionaries extends BaseTest {
         String expecting = "int x = 0;";
         String result = interm.render();
         assertEquals(expecting, result);
-    }    
+    }
 }

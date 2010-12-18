@@ -159,8 +159,7 @@ public class TestCoreBasics extends BaseTest {
         LinkedHashMap<String,FormalArgument> args =
             new LinkedHashMap<String,FormalArgument>();
         args.put("x", new FormalArgument("x"));
-        st.impl.nativeGroup.defineTemplate("/",
-                                           new CommonToken(GroupParser.ID, "box"),
+        st.impl.nativeGroup.defineTemplate("box", new CommonToken(GroupParser.ID, "box"),
                                            args, "kewl <x> daddy");
         st.add("name", "Ter");
         String expected = "load kewl arg daddy;";

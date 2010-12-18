@@ -190,7 +190,7 @@ public class Interpreter {
                 CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
                 if ( imported==null ) {
                     ErrorManager.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
-                                              STGroup.getSimpleName(name));
+                                              name);
                     operands[++sp] = ST.BLANK;
                     break;
                 }
@@ -370,7 +370,7 @@ public class Interpreter {
                 ErrorManager.internalError(self, "invalid bytecode @ "+(ip-1)+": "+opcode, null);
                 self.impl.dump();
             }
-            prevOpcode = opcode;            
+            prevOpcode = opcode;
         }
         if ( group.debug ) {
 			int stop = out.index() - 1;
@@ -425,7 +425,7 @@ public class Interpreter {
         }
 
         int n = writeObject(out, self, o, optionStrings);
-        
+
         if ( options!=null && options[Option.ANCHOR.ordinal()]!=null ) {
             out.popAnchorPoint();
         }
@@ -707,7 +707,7 @@ public class Interpreter {
             if ( elems.size()<=1 ) return null;
             return elems.subList(1, elems.size());
         }
-        Object theRest = v; // else iterate and copy 
+        Object theRest = v; // else iterate and copy
         v = convertAnythingIteratableToIterator(v);
         if ( v instanceof Iterator ) {
             List a = new ArrayList();
@@ -822,7 +822,7 @@ public class Interpreter {
         }
         return null;
     }
-    
+
     public static Object convertAnythingIteratableToIterator(Object o) {
         Iterator iter = null;
         if ( o == null ) return null;
@@ -841,7 +841,7 @@ public class Interpreter {
         singleton.add(o);
         return singleton.iterator();
     }
-    
+
     protected boolean testAttributeTrue(Object a) {
         if ( a==null ) return false;
         if ( a instanceof Boolean ) return ((Boolean)a).booleanValue();
@@ -868,7 +868,7 @@ public class Interpreter {
             ST st = (ST)o;
             return st.getAttribute((String)property);
         }
-        
+
         if (o instanceof Map) {
             Map map = (Map)o;
             if ( value == STGroup.DICT_KEY ) value = property;
@@ -971,7 +971,7 @@ public class Interpreter {
      */
     protected void checkNullAttributeAgainstFormalArguments(ST self, String name) {
         if ( ErrorManager.v3_mode || self.impl.formalArguments == FormalArgument.UNKNOWN ) return;
-        
+
         ST p = self;
         while ( p!=null ) {
             if ( p.impl.formalArguments!=null && p.impl.formalArguments.get(name)!=null ) {
@@ -983,7 +983,7 @@ public class Interpreter {
 
         ErrorManager.runTimeError(self, current_ip, ErrorType.NO_ATTRIBUTE_DEFINITION, name);
     }
-    
+
     protected void trace(ST self, int ip) {
         StringBuilder tr = new StringBuilder();
         BytecodeDisassembler dis = new BytecodeDisassembler(self.impl);

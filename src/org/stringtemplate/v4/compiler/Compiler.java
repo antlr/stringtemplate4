@@ -101,12 +101,6 @@ public class Compiler {
      */
     int ip = 0;
 
-    /** subdir context.  If we're compiling templates in subdir a/b/c, then
-     *  /a/b/c is the path prefix to add to all ID refs; it fully qualifies them.
-     *  It's like resolving x to this.x in Java for field x. 
-     */
-    String templatePathPrefix;
-
     /** If we're compiling a region or sub template, we need to know the
      *  enclosing template's name.  Region r in template t
      *  is formally called t.r.
@@ -128,7 +122,6 @@ public class Compiler {
         public void insert(int addr, short opcode, String s) {;}
         public void write(int addr, short value) {;}
         public int address() { return 0; }
-        public String templateReferencePrefix() { return null; }
         public String compileAnonTemplate(String enclosingTemplateName,
                                           TokenStream input,
                                           List<Token> ids,
@@ -148,18 +141,15 @@ public class Compiler {
         public void defineBlankRegion(String fullyQualifiedName) {;}
     };
 
-    public Compiler() { this("/", "<unknown>", '<', '>'); }
+    public Compiler() { this("<unknown>", '<', '>'); }
 
-    /** To compile a template, we need to know what directory level it's at
-     *  (if any; most web apps do this but code gen apps don't) and what
+    /** To compile a template, we need to know what
      *  the enclosing template is (if any).
      */
-    public Compiler(String templatePathPrefix,
-                    String enclosingTemplateName,
+    public Compiler(String enclosingTemplateName,
                     char delimiterStartChar,
                     char delimiterStopChar)
     {
-        this.templatePathPrefix = templatePathPrefix;
         this.enclosingTemplateName = enclosingTemplateName;
         this.delimiterStartChar = delimiterStartChar;
         this.delimiterStopChar = delimiterStopChar;
@@ -206,7 +196,7 @@ public class Compiler {
                                       List<Token> argIDs,
                                       RecognizerSharedState state) {
         subtemplateCount++;
-        String name = templatePathPrefix+ST.SUBTEMPLATE_PREFIX+subtemplateCount;
+        String name = ST.SUBTEMPLATE_PREFIX+subtemplateCount;
         TokenSource tokenSource = input.getTokenSource();
         STLexer lexer = null;
         int start=-1, stop=-1;
@@ -214,7 +204,7 @@ public class Compiler {
             lexer = (STLexer) tokenSource;
             start = lexer.input.index();
         }
-        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName,
+        Compiler c = new Compiler(enclosingTemplateName,
                                   delimiterStartChar, delimiterStopChar);
         CompiledST sub = c.compile(input, state);
         sub.name = name;
@@ -242,11 +232,10 @@ public class Compiler {
                                 TokenStream input,
                                 RecognizerSharedState state)
     {
-        Compiler c = new Compiler(templatePathPrefix, enclosingTemplateName,
+        Compiler c = new Compiler(enclosingTemplateName,
                                   delimiterStartChar, delimiterStopChar);
         CompiledST sub = c.compile(input, state);
         String fullName =
-            templatePathPrefix+
             STGroup.getMangledRegionName(enclosingTemplateName, regionName);
         sub.isRegion = true;
         sub.regionDefType = ST.RegionType.EMBEDDED;
@@ -257,11 +246,10 @@ public class Compiler {
 
     public void defineBlankRegion(String enclosingTemplateName, String name) {
         String mangled = STGroup.getMangledRegionName(enclosingTemplateName, name);
-        String fullName = prefixedName(mangled);
         CompiledST blank = new CompiledST();
         blank.isRegion = true;
         blank.regionDefType = ST.RegionType.IMPLICIT;
-        blank.name = fullName;
+		blank.name = mangled;
         code.addImplicitlyDefinedTemplate(blank);
     }
 
@@ -278,7 +266,7 @@ public class Compiler {
             throw new STException(
                 "this doesn't look like a template: \""+tokens+"\"", re);
         }
-        else if ( tokens.LA(1) == STLexer.LDELIM ) { // couldn't parse expr            
+        else if ( tokens.LA(1) == STLexer.LDELIM ) { // couldn't parse expr
             throw new STException("doesn't look like an expression", re);
         }
         else {
@@ -287,13 +275,6 @@ public class Compiler {
     }
 
     public int defineString(String s) { return strings.add(s); }
-
-    public String prefixedName(String t) {
-        if ( ErrorManager.v3_mode ) return t; // assume a/b/c is /a/b/c
-        if ( t==null ) return t;
-        if ( t.charAt(0)=='/' ) return t;     // already fully-qualified
-        return templateReferencePrefix()+t;   // else add /prefix/
-    }
 
     public void refAttr(CommonToken id) {
         String name = id.getText();
@@ -374,7 +355,7 @@ public class Compiler {
 			Bytecode.Instruction I = Bytecode.instructions[op];
 			if ( op == Bytecode.INSTR_BR || op == Bytecode.INSTR_BRF ) {
 				int opnd = BytecodeDisassembler.getShort(code.instrs, a+1);
-				writeShort(code.instrs, a+1, (short)(opnd+instrSize));				
+				writeShort(code.instrs, a+1, (short)(opnd+instrSize));
 			}
 			a += I.nopnds * Bytecode.OPND_SIZE_IN_BYTES + 1;
 		}
@@ -391,8 +372,6 @@ public class Compiler {
     }
 
     public int address() { return ip; }
-
-    public String templateReferencePrefix() { return templatePathPrefix; }
 
     protected void ensureCapacity(int n) {
         if ( (ip+n) >= code.instrs.length ) { // ensure room for full instruction

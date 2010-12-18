@@ -43,7 +43,7 @@ public class STGroupFile extends STGroup {
     public URL url;
 
     protected boolean alreadyLoaded = false;
-        
+
     /** Load a file relative to current dir or from root or via CLASSPATH. */
     public STGroupFile(String fileName) { this(fileName, '<', '>'); }
 
@@ -105,12 +105,12 @@ public class STGroupFile extends STGroup {
         return templates.get(name);
     }
 
-    public void load() { _load("/"); }
-
-    protected void _load(String prefix) {
+    public void load() {
         if ( alreadyLoaded ) return;
         alreadyLoaded = true; // do before actual load to say we're doing it
-        loadGroupFile(prefix, url.toString());
+		// no prefix since this group file is the entire group, nothing lives
+		// beneath it.
+        loadGroupFile("", url.toString());
     }
 
     public String show() {

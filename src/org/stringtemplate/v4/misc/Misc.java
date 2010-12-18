@@ -88,16 +88,15 @@ public class Misc {
         return f.getName();
     }
 
-	public static String getUnixStyleParent(String name) {
+	public static String getPrefix(String name) {
 //		String p = new File(name).getParent();
 		String p;
 		//System.out.println("getParent("+name+")="+p);
 		if (name==null) return null;
 		int lastSlash=name.lastIndexOf('/');
-		if (lastSlash<=0) p = "/";
-		else p = name.substring(0, lastSlash);
-		//System.out.println("getUnixStyleParent("+name+")="+p);
-		return p;
+		if (lastSlash>0) return name.substring(0, lastSlash);
+		//System.out.println("getPrefix("+name+")="+p);
+		return "";
 	}
 
     public static String replaceEscapes(String s) {
@@ -117,7 +116,7 @@ public class Misc {
             else charPos++;
             p++;
         }
-        
+
         return new Coordinate(line,charPos);
     }
 

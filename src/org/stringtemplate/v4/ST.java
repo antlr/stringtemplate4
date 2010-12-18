@@ -51,11 +51,11 @@ public class ST {
 	public static final String SUBTEMPLATE_PREFIX = "_sub";
 
     /** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
-    public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT };    
+    public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT };
 
     public static final String UNKNOWN_NAME = "anonymous";
     public static final ST BLANK = new BlankST();
-    
+
     /** The implementation for this template among all instances of same tmpelate . */
     public CompiledST impl;
 
@@ -85,7 +85,7 @@ public class ST {
      *  the data.  Use notation now: <otherTemplate(...)> to say "pass in
      *  all data".  Works great.  Can also say <otherTemplate(foo="xxx",...)>
      */
-    protected boolean passThroughAttributes = false;    
+    protected boolean passThroughAttributes = false;
 
 	/** Just an alias for ArrayList, but this way I can track whether a
      *  list is something ST created or it's an incoming list.
@@ -94,9 +94,9 @@ public class ST {
         public AttributeList(int size) { super(size); }
         public AttributeList() { super(); }
     }
-    
+
     public ST() {;}
-    
+
     public ST(String template) {
         this(STGroup.defaultGroup, template);
     }
@@ -111,7 +111,7 @@ public class ST {
 
     public ST(STGroup group, String template) {
         groupThatCreatedThisInstance = group;
-        impl = groupThatCreatedThisInstance.compile("/", null, template);
+        impl = groupThatCreatedThisInstance.compile(null, template);
         impl.name = UNKNOWN_NAME;
         groupThatCreatedThisInstance.defineImplicitlyDefinedTemplates(impl);
     }
@@ -174,7 +174,7 @@ public class ST {
             ErrorManager.runTimeError(this, -1, ErrorType.CANT_SET_ATTRIBUTE, name, getName());
         }
     }
-    
+
     /** Find an attr with dynamic scoping up enclosing ST chain.
      *  If not found, look for a map.  So attributes sent in to a template
      *  override dictionary names.
@@ -183,7 +183,7 @@ public class ST {
         Object o = null;
         if ( attributes!=null ) o = attributes.get(name);
         if ( o!=null ) return o;
-        
+
         if ( impl.formalArguments!=null &&
              impl.formalArguments.get(name)!=null &&  // no local value && it's a formal arg
              !passThroughAttributes )                 // but no ... in arg list
