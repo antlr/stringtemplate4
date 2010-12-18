@@ -34,15 +34,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import org.stringtemplate.misc.*;
-import org.stringtemplate.*;
+import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.*;
 import java.io.File;
 }
 
 @lexer::header {
-package org.stringtemplate.compiler;
-import org.stringtemplate.*;
-import org.stringtemplate.misc.*;
+package org.stringtemplate.v4.compiler;
+import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.misc.*;
 import java.io.File;
 }
 
@@ -56,7 +56,7 @@ public void displayRecognitionError(String[] tokenNames,
     ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 }
 public String getSourceName() {
-    String fullFileName = super.getSourceName();    
+    String fullFileName = super.getSourceName();
     File f = new File(fullFileName); // strip to simple name
     return f.getName();
 }
@@ -136,7 +136,7 @@ templateDef[String prefix]
 	    }
 	|   alias=ID '::=' target=ID  {group.defineTemplateAlias($alias, $target);}
 	;
-		
+
 formalArgs returns[LinkedHashMap<String,FormalArgument> args]
 @init {$args = new LinkedHashMap<String,FormalArgument>();}
     :	formalArg[$args] ( ',' formalArg[$args] )*
@@ -144,7 +144,7 @@ formalArgs returns[LinkedHashMap<String,FormalArgument> args]
 
 formalArg[LinkedHashMap<String,FormalArgument> args]
 	:	ID
-		(	'=' a=STRING			
+		(	'=' a=STRING
 		|	'=' a=ANONYMOUS_TEMPLATE
 		)?
 		{$args.put($ID.text, new FormalArgument($ID.text, $a));}
@@ -152,9 +152,9 @@ formalArg[LinkedHashMap<String,FormalArgument> args]
 
 /*
 suffix returns [int cardinality=FormalArgument.REQUIRED]
-    :   OPTIONAL 
-    |   STAR     
-    |   PLUS     
+    :   OPTIONAL
+    |   STAR
+    |   PLUS
 	|
     ;
         */
@@ -178,16 +178,16 @@ dict returns [Map<String,Object> mapping]
 @init {mapping=new HashMap<String,Object>();}
 	:   '[' dictPairs[mapping] ']'
 	;
-	
+
 dictPairs[Map<String,Object> mapping]
     :	keyValuePair[mapping]
     	(',' keyValuePair[mapping])* (',' defaultValuePair[mapping])?
-    |	defaultValuePair[mapping] 
-    ;	
+    |	defaultValuePair[mapping]
+    ;
  	catch[RecognitionException re] {
 		error("missing dictionary entry at '"+input.LT(1).getText()+"'");
 	}
-	
+
 defaultValuePair[Map<String,Object> mapping]
 	:	'default' ':' keyValue {mapping.put(STGroup.DEFAULT_KEY, $keyValue.value);}
 	;

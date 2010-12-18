@@ -1,0 +1,83 @@
+<!-- Created by Jean Bovet -->
+
+<project name="distribution" default="distribute" basedir=".">
+
+    <property file="build.properties" />
+
+    <property name="dist.dir" value="${basedir}/dist" />
+    <property name="build.dir" value="${basedir}/build" />
+    <property name="lib.dir" value="${basedir}/lib" />
+    <property name="src.dist.dir" value="${dist.dir}/src" />
+    <property name="osx.dir" value="${basedir}/osx" />
+    <property name="osx.build.dir" value="${build.dir}/osx" />
+
+    <property name="jar.file" value="${dist.dir}/ST-${version}.jar" />
+
+    <path id="classpath">
+        <fileset dir="${lib}" includes="*.jar"/>
+    </path>
+
+    <condition property="is-macos">
+        <os family="mac" />
+    </condition>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    <target name="compile" unless="is-macos" description="Compile for generic OS">
+        <mkdir dir="${build.dir}"/>
+        <javac
+                destdir="${build.dir}"
+                source="1.5"
+                target="1.5"
+                debug="true"
+                excludes="org/antlr/works/test/**">
+            <classpath refid="classpath"/>
+            <src path="${source}"/>
+        </javac>
+    </target>
+
+    <target name="build" depends="compile" description="Build ST4.jar">
+        <mkdir dir="${dist.dir}"/>
+
+        <jar jarfile="${jar.file}">
+            <fileset dir="${build.dir}" includes="**/*.class"/>
+
+            <zipfileset src="${lib}/${antlr3.jar}" excludes="**/*.txt"/>
+
+            <manifest>
+                <attribute name="Version" value="${version}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="zip-source">
+        <mkdir dir="${src.dist.dir}"/>
+
+        <copy todir="${src.dist.dir}">
+            <fileset dir=".">
+                <include name="build.properties"/>
+                <include name="build.xml"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${src.dist.dir}/src">
+            <fileset dir="${source}"/>
+        </copy>
+
+        <copy todir="${src.dist.dir}/lib">
+            <fileset dir="${lib.dir}" excludes="junit.jar"/>
+        </copy>
+
+        <zip destfile="${dist.dir}/ST4-${version}-src.zip"
+             basedir="${src.dist.dir}"
+                >
+        </zip>
+    </target>
+
+    <target name="distribute" depends="clean, zip-source, build">
+    </target>
+
+</project>
