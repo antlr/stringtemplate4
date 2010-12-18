@@ -111,12 +111,11 @@ def[String prefix] : templateDef[prefix] | dictDef ;
 
 templateDef[String prefix]
 @init {
-    String template=null, fullName=null;
+    String template=null;
     int n=0; // num char to strip from left, right of template def
 }
 	:	(	'@' enclosing=ID '.' name=ID '(' ')'
-			{fullName = STGroup.getMangledRegionName($enclosing.text, $name.text);}
-		|	name=ID '(' formalArgs? ')' {fullName = $name.text;}
+		|	name=ID '(' formalArgs? ')'
 		)
 	    '::='
 	    {Token templateToken = input.LT(1);}

@@ -233,14 +233,14 @@ public class STGroup {
         return targetCode;
     }
 
-    public CompiledST defineRegion(String templateName,
-								   String enclosingTemplateName,
+    public CompiledST defineRegion(String enclosingTemplateName,
                                    Token regionT,
                                    String template)
     {
         String name = regionT.getText();
         CompiledST code = compile(enclosingTemplateName, template);
         String mangled = getMangledRegionName(enclosingTemplateName, name);
+
         if ( lookupTemplate(mangled)==null ) {
             ErrorManager.compileTimeError(ErrorType.NO_SUCH_REGION, regionT,
                                           enclosingTemplateName, name);
@@ -250,7 +250,7 @@ public class STGroup {
         code.isRegion = true;
         code.regionDefType = ST.RegionType.EXPLICIT;
 
-        rawDefineTemplate(code.name, code, regionT);
+        rawDefineTemplate(mangled, code, regionT);
         return code;
     }
 
@@ -265,7 +265,7 @@ public class STGroup {
         if ( templateToken.getType()==GroupLexer.BIGSTRING ) n=2;
         try {
             if ( regionSurroundingTemplateName!=null ) {
-                defineRegion(templateName, regionSurroundingTemplateName, nameToken, template);
+                defineRegion(regionSurroundingTemplateName, nameToken, template);
             }
             else {
                 defineTemplate(templateName, nameToken, args, template);
