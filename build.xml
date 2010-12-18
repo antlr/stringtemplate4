@@ -1,5 +1,3 @@
-<!-- Created by Jean Bovet -->
-
 <project name="distribution" default="distribute" basedir=".">
 
     <property file="build.properties" />
