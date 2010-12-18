@@ -28,10 +28,8 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupDir;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +42,7 @@ public class TestGroups extends BaseTest {
             "foo"+newline+
             ">>"+newline;
         writeFile(dir, "a.st", a);
-        org.stringtemplate.v4.STGroup group = new STGroupDir(dir);
+        STGroup group = new STGroupDir(dir);
         ST st = group.getInstanceOf("a");
         String expected = "foo";
         String result = st.render();
@@ -203,8 +201,13 @@ public class TestGroups extends BaseTest {
             "b() ::= \"bar\"\n"+
             "b() ::= \"duh\"\n";
         writeFile(dir, "group.stg", groupFile);
+		STErrorListener errors = new ErrorBuffer();
+		ErrorManager.setErrorListener(errors);
         STGroupFile group = new STGroupFile(dir+"/group.stg");
         group.load();
+		String expected = "group.stg 2:0: redefinition of template b"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
     }
 
 	@Test public void testAlias() throws Exception {
@@ -216,6 +219,21 @@ public class TestGroups extends BaseTest {
 		STGroupFile group = new STGroupFile(dir+"/group.stg");
 		ST st = group.getInstanceOf("b");
 		String expected = "bar";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testAliasWithArgs() throws Exception {
+		String dir = getRandomDir();
+		String groupFile =
+			"a(x,y) ::= \"<x><y>\"\n"+
+			"b ::= a\n";
+		writeFile(dir, "group.stg", groupFile);
+		STGroupFile group = new STGroupFile(dir+"/group.stg");
+		ST st = group.getInstanceOf("b");
+		st.add("x", 1);
+		st.add("y", 2);
+		String expected = "12";
 		String result = st.render();
 		assertEquals(expected, result);
 	}
@@ -270,6 +288,7 @@ public class TestGroups extends BaseTest {
                 return "Field";
             }
         }
+		// set arg f manually for stat(f=f)
         String templates =
                 "method(fields) ::= <<"+newline+
                 "<fields:{f | <stat(f=f)>}>" +newline+
@@ -285,18 +304,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    /** This fails because checkNullAttributeAgainstFormalArguments looks
-     *  for a formal argument at the current level not of the original embedded
-     *  template. We have defined it all the way in the embedded, but there is
-     *  no value so we try to look upwards ala dynamic scoping. When it reaches
-     *  the top, it doesn't find a value but it will miss the
-     *  formal argument down in the embedded.
-     *
-     *  By definition, though, the formal parameter exists if we have
-     *  a default value. look up the value to see if it's null without
-     *  checking checkNullAttributeAgainstFormalArguments.
-     */
-    @Test public void testDefaultArgumentImplicitlySet() throws Exception {
+    @Test public void testDefaultArgumentSeesVarFromDynamicScoping() throws Exception {
         class Field {
             public String name = "parrt";
             public int n = 0;
@@ -327,6 +335,7 @@ public class TestGroups extends BaseTest {
                 return "Field";
             }
         }
+		// f of stat is implicit first arg
         String templates =
                 "method(fields) ::= <<"+newline+
                 "<fields:{f | <f:stat()>}>" +newline+

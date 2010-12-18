@@ -56,7 +56,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "foo( ::= << >>\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		org.stringtemplate.v4.STGroupFile group = null;
+		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
@@ -72,7 +72,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
 
 		STGroupFile group = null;
-		org.stringtemplate.v4.STErrorListener errors = new ErrorBuffer();
+		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
@@ -88,7 +88,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
 
 		STGroupFile group = null;
-		org.stringtemplate.v4.STErrorListener errors = new ErrorBuffer();
+		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
@@ -103,7 +103,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
 
 		STGroupFile group = null;
-		org.stringtemplate.v4.STErrorListener errors = new ErrorBuffer();
+		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
@@ -135,7 +135,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 
 		STGroupFile group = null;
 		ErrorBuffer errors = new ErrorBuffer();
-		group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
 		String expected = "[t.stg 1:6: extraneous input 'b' expecting ')']";
@@ -178,9 +178,9 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "d ::= [\"k\":]\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		org.stringtemplate.v4.STGroupFile group = null;
+		STGroupFile group = null;
 		ErrorBuffer errors = new ErrorBuffer();
-		group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
 		String expected = "[t.stg 1:11: missing value for key at ']']";
