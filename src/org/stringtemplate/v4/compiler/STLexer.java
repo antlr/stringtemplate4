@@ -27,6 +27,7 @@
  */
 package org.stringtemplate.v4.compiler;
 
+import antlr.MismatchedCharException;
 import org.antlr.runtime.*;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
@@ -121,7 +122,7 @@ public class STLexer implements TokenSource {
      *  know whether a '}' and the outermost subtemplate to send this back to
      *  outside mode.
      */
-	public int subtemplateDepth = 0; // start out *not* in a {...} subtemplate 
+	public int subtemplateDepth = 0; // start out *not* in a {...} subtemplate
 
     CharStream input;
     char c;        // current character
@@ -252,13 +253,16 @@ public class STLexer implements TokenSource {
                         else if ( name.equals("super") ) return newToken(SUPER);
 						return id;
 					}
-					RecognitionException re = new NoViableAltException("", 0, 0, input);
+					RecognitionException re =
+						new NoViableAltException("",0,0,input);
                     re.line = startLine;
                     re.charPositionInLine = startCharPositionInLine;
 					if ( c==EOF ) {
-						throw new STException("EOF inside ST expression", re);
+						throw new STException("EOF inside ST expression at "+
+							re.line+":"+re.charPositionInLine, re);
 					}
-                    throw new STException("invalid character: "+c, re);
+                    throw new STException("invalid character '"+c+" at "+
+							re.line+":"+re.charPositionInLine, re);
             }
         }
     }
@@ -427,6 +431,14 @@ public class STLexer implements TokenSource {
             }
             buf.append(c);
             consume();
+			if ( c==EOF ) {
+				RecognitionException re =
+					new MismatchedTokenException((int)'"', input);
+				re.line = input.getLine();
+				re.charPositionInLine = input.getCharPositionInLine();
+				throw new STException("EOF inside string/template at "+
+					startLine+":"+startCharPositionInLine, re);
+			}
         }
         buf.append(c);
         consume();
@@ -453,7 +465,7 @@ public class STLexer implements TokenSource {
         while ( c==' ' || c=='\t' ) consume(); // scarf any indent
         return;
     }
-    
+
     public static boolean isIDStartLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c=='_' || c=='/'; }
 	public static boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9' || c=='_' || c=='/'; }
     public static boolean isWS(char c) { return c==' ' || c=='\t' || c=='\n' || c=='\r'; }
