@@ -30,6 +30,7 @@ package org.stringtemplate.v4.compiler;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.Interval;
+import org.stringtemplate.v4.misc.OrderedHashMap;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -51,7 +52,7 @@ public class CompiledST {
     /** Where within a template does the subtemplate start? */
     public int embeddedStart=-1, embeddedStop=-1; // if subtemplate
 
-    public LinkedHashMap<String, FormalArgument> formalArguments = FormalArgument.UNKNOWN;
+    public OrderedHashMap<String, FormalArgument> formalArguments = FormalArgument.UNKNOWN;
 
     /** A list of all regions and subtemplates */
     public List<CompiledST> implicitlyDefinedTemplates;
