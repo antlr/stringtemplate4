@@ -156,12 +156,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testIncludeWithSingleUnnamedArg() throws Exception {
         String template = "load <box(\"arg\")>;";
         ST st = new ST(template);
-        LinkedHashMap<String,FormalArgument> args =
-            new LinkedHashMap<String,FormalArgument>();
-        args.put("x", new FormalArgument("x"));
-        st.impl.nativeGroup.defineTemplate("box", new CommonToken(GroupParser.ID, "box"),
-                                           args, "kewl <x> daddy");
-        st.add("name", "Ter");
+        st.impl.nativeGroup.defineTemplate("box", "kewl <x> daddy");
         String expected = "load kewl arg daddy;";
         String result = st.render();
         assertEquals(expected, result);
@@ -170,7 +165,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testIncludeWithArg2() throws Exception {
         String template = "load <box(x=\"arg\", y=foo())>;";
         ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box", "kewl <x> <y> daddy");
+        st.impl.nativeGroup.defineTemplate("box", "x,y", "kewl <x> <y> daddy");
         st.impl.nativeGroup.defineTemplate("foo", "blech");
         st.add("name", "Ter");
         String expected = "load kewl arg blech daddy;";

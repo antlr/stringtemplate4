@@ -165,11 +165,10 @@ public class ST {
         attributes.put(name, value);
     }
 
-    /** Cause an error if we know about this template arguments and
-     *  name is not defined.
+    /** Cause an error if name is not defined.
      */
     protected void checkAttributeExists(String name) {
-        if ( ErrorManager.v3_mode || impl.formalArguments == FormalArgument.UNKNOWN ) return;
+		if ( impl.formalArguments == FormalArgument.UNKNOWN ) return;
         if ( impl.formalArguments == null || impl.formalArguments.get(name) == null ) {
             ErrorManager.runTimeError(this, -1, ErrorType.CANT_SET_ATTRIBUTE, name, getName());
         }

@@ -966,12 +966,9 @@ public class Interpreter {
     /** A reference to an attribute with no value must be compared against
      *  the formal parameters up the enclosing chain to see if it exists;
      *  if it exists all is well, but if not, record an error.
-     *
-     *  Don't generate error if template has no formal arguments.
      */
     protected void checkNullAttributeAgainstFormalArguments(ST self, String name) {
-        if ( ErrorManager.v3_mode || self.impl.formalArguments == FormalArgument.UNKNOWN ) return;
-
+		if ( self.impl.formalArguments == FormalArgument.UNKNOWN ) return;
         ST p = self;
         while ( p!=null ) {
             if ( p.impl.formalArguments!=null && p.impl.formalArguments.get(name)!=null ) {

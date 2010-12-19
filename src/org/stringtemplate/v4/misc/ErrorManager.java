@@ -36,7 +36,7 @@ import org.stringtemplate.v4.STErrorListener;
  *  will go in one grouping since each has it's own thread.
  */
 public class ErrorManager {
-    
+
     public static STErrorListener DEFAULT_ERROR_LISTENER =
         new STErrorListener() {
             public void compileTimeError(STMessage msg) {
@@ -73,11 +73,6 @@ public class ErrorManager {
     static ThreadLocal<STErrorListener> listener = new ThreadLocal<STErrorListener>() {
         protected STErrorListener initialValue() { return DEFAULT_ERROR_LISTENER; }
     };
-
-    /** Backward compatibility for tombu, co-designer.  Don't require template
-     *  headers in .st files.
-     */
-    public static boolean v3_mode = false;
 
     public static void setErrorListener(STErrorListener listener) { ErrorManager.listener.set(listener); }
 

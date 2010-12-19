@@ -158,29 +158,18 @@ public class STGroupDir extends STGroup {
 			// doesn't exist; just return null to say not found
 			return null;
 		}
-		if ( ErrorManager.v3_mode ) {
-			String template = fs.toString(); // needs > ANTLR 3.2
-			template = template.trim();
-			String justName = new File(templateName).getName();
-			defineTemplate(templateName,
-						   new CommonToken(GroupParser.ID,justName),
-						   null,
-						   template);
+		GroupLexer lexer = new GroupLexer(fs);
+		fs.name = fileName;
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		GroupParser parser = new GroupParser(tokens);
+		parser.group = this;
+		try {
+			parser.templateDef(prefix);
 		}
-		else {
-			GroupLexer lexer = new GroupLexer(fs);
-			fs.name = fileName;
-			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			GroupParser parser = new GroupParser(tokens);
-			parser.group = this;
-			try {
-				parser.templateDef(prefix);
-			}
-			catch (RecognitionException re) {
-				ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR,
-										 Misc.getFileName(f.getFile()),
-										 re, re.getMessage());
-			}
+		catch (RecognitionException re) {
+			ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR,
+									 Misc.getFileName(f.getFile()),
+									 re, re.getMessage());
 		}
 		return templates.get(templateName);
 	}

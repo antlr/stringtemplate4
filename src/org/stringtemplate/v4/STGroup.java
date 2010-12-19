@@ -176,14 +176,21 @@ public class STGroup {
     public Map<String,Object> rawGetDictionary(String name) { return dictionaries.get(name); }
 
     // for testing
-	public CompiledST defineTemplate(String name, String template) {
-		return defineTemplate(name, name, template);
-	}
-
-    public CompiledST defineTemplate(String templateName, String name, String template) {
-        return defineTemplate(templateName, new CommonToken(GroupParser.ID,name),
+    public CompiledST defineTemplate(String templateName, String template) {
+        return defineTemplate(templateName, new CommonToken(GroupParser.ID,templateName),
                               FormalArgument.UNKNOWN, template);
     }
+
+	public CompiledST defineTemplate(String name, String argsS, String template) {
+		String[] args = argsS.split(",");
+		LinkedHashMap<String, FormalArgument> a =
+			new LinkedHashMap<String,FormalArgument>();
+		for (int i = 0; i  < args.length; i ++) {
+			a.put(args[i], new FormalArgument(args[i]));
+		}
+		return defineTemplate(name, new CommonToken(GroupParser.ID, name),
+							  a, template);
+	}
 
     public CompiledST defineTemplate(String templateName, Token nameT,
                                      LinkedHashMap<String,FormalArgument> args,

@@ -64,7 +64,7 @@ public class FormalArgument {
     protected int cardinality = REQUIRED;
      */
 
-    /** When template arguments are not available such as when the user
+    /** When template arguments are not available, when the user
      *  uses "new ST(...)", then the list of formal arguments
      *  must be distinguished from the case where a template can specify
      *  args and there just aren't any such as the t() template above.
