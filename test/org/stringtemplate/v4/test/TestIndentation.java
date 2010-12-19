@@ -35,6 +35,25 @@ import org.stringtemplate.v4.STGroupFile;
 import static org.junit.Assert.assertEquals;
 
 public class TestIndentation extends BaseTest {
+	@Test public void testIndentInFrontOfTwoExpr()
+			throws Exception
+	{
+		String templates =
+				"list(a,b) ::= <<" +
+				"  <a><b>"+newline+
+				">>"+newline;
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ST t = group.getInstanceOf("list");
+		t.impl.dump();
+		t.add("a", "Terence");
+		t.add("b", "Jim");
+		String expecting =
+				"  TerenceJim";
+		assertEquals(expecting, t.render());
+	}
+
 	@Test public void testSimpleIndentOfAttributeList()
 			throws Exception
 	{
@@ -44,7 +63,7 @@ public class TestIndentation extends BaseTest {
 				">>"+newline;
 
 		writeFile(tmpdir, "t.stg", templates);
-		org.stringtemplate.v4.STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ST t = group.getInstanceOf("list");
 		t.add("names", "Terence");
 		t.add("names", "Jim");
@@ -167,7 +186,7 @@ public class TestIndentation extends BaseTest {
 				"\t}"+newline+
 				"}";
 		assertEquals(expecting, t.render());
-	}	
+	}
 
     @Test public void testIndentedIFWithValueExpr() throws Exception {
         ST t = new ST(
