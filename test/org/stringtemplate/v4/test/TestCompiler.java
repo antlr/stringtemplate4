@@ -162,6 +162,18 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
+	@Test public void testParMap() throws Exception {
+		String template = "hi <names,phones:bold()>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"load_str 0, write, load_attr 1, load_attr 2, load_str 3, zip_map 2, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[hi , names, phones, bold]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
+
     @Test public void testAnonMap() throws Exception {
         String template = "hi <name:{n | <n>}>";
         CompiledST code = new Compiler().compile(template);

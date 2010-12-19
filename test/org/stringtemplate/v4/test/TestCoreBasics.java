@@ -158,6 +158,7 @@ public class TestCoreBasics extends BaseTest {
         String template = "load <box(\"arg\")>;";
         ST st = new ST(template);
         st.impl.nativeGroup.defineTemplate("box", "kewl <x> daddy");
+		st.impl.dump();
         String expected = "load kewl arg daddy;";
         String result = st.render();
         assertEquals(expected, result);
@@ -588,4 +589,12 @@ public class TestCoreBasics extends BaseTest {
 		String result = st.render();
 		assertEquals(expected, result);
 	}
+
+//	@Test public void playing() throws Exception {
+//		String template = "<if(!(a&&b))>t<endif>";
+//		ST st = new ST(template);
+//		st.impl.dump();
+//	}
+
+
 }

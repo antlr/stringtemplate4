@@ -71,7 +71,7 @@ public class Bytecode {
 	public static final short INSTR_WRITE_OPT       = 14;
     public static final short INSTR_MAP             = 15;  // <a:b()>, <a:b():c()>, <a:{...}>
     public static final short INSTR_ROT_MAP         = 16;  // <a:b(),c()>
-    public static final short INSTR_PAR_MAP         = 17;  // <names,phones:{n,p | ...}>
+    public static final short INSTR_ZIP_MAP         = 17;  // <names,phones:{n,p | ...}>
     public static final short INSTR_BR              = 18;
     public static final short INSTR_BRF             = 19;
     public static final short INSTR_OPTIONS         = 20;  // push options block
@@ -120,7 +120,7 @@ public class Bytecode {
 		new Instruction("write_opt"),
         new Instruction("map"),
         new Instruction("rot_map", OperandType.INT),
-        new Instruction("par_map", OperandType.INT),
+        new Instruction("zip_map", OperandType.INT),
         new Instruction("br", OperandType.ADDR),
         new Instruction("brf", OperandType.ADDR),
         new Instruction("options"),

@@ -245,9 +245,11 @@ mapExpr
 @init {int nt=1, ne=1; int a=$start.getStartIndex();}
 	:	memberExpr (c=',' memberExpr {ne++;} )*
 		(	':' templateRef
-			(	(',' templateRef {nt++;})+
-						   {gen.emit(Bytecode.INSTR_ROT_MAP, nt, a,
-						              ((CommonToken)input.LT(-1)).getStopIndex());}
+			(	({$c==null}?=>',' templateRef {nt++;})+
+						   {
+						   gen.emit(Bytecode.INSTR_ROT_MAP, nt, a,
+						            ((CommonToken)input.LT(-1)).getStopIndex());
+						   }
 			|	           {
 			               if ( $c!=null ) gen.emit(Bytecode.INSTR_PAR_MAP, ne, a,
 						                            ((CommonToken)input.LT(-1)).getStopIndex());

@@ -252,14 +252,14 @@ public class Interpreter {
                 o = operands[sp--];
                 if ( o!=null ) rot_map(self,o,templates);
                 break;
-            case Bytecode.INSTR_PAR_MAP :
+            case Bytecode.INSTR_ZIP_MAP:
                 name = (String)operands[sp--];
                 nmaps = getShort(code, ip);
                 ip += Bytecode.OPND_SIZE_IN_BYTES;
                 List<Object> exprs = new ArrayList<Object>();
                 for (int i=nmaps-1; i>=0; i--) exprs.add(operands[sp-i]);
                 sp -= nmaps;
-                operands[++sp] = par_map(self,exprs,name);
+                operands[++sp] = zip_map(self, exprs, name);
                 break;
             case Bytecode.INSTR_BR :
                 ip = getShort(code, ip);
@@ -566,7 +566,7 @@ public class Interpreter {
     }
 
     // <names,phones:{n,p | ...}>
-    protected ST.AttributeList par_map(ST self, List<Object> exprs, String template) {
+    protected ST.AttributeList zip_map(ST self, List<Object> exprs, String template) {
         if ( exprs==null || template==null || exprs.size()==0 ) {
             return null; // do not apply if missing templates or empty values
         }
@@ -641,7 +641,8 @@ public class Interpreter {
             if ( nargs != 1 ) {
                 ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_SINGLE_ARGUMENT, st, nargs);
             }
-            name = st.impl.formalArguments.keySet().iterator().next();
+//			name = st.impl.formalArguments.keySet().iterator().next();
+			name = st.impl.formalArguments.get(0);
         }
         st.rawSetAttribute(name, attr);
     }
