@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import org.stringtemplate.v4.misc.*;
 import org.stringtemplate.v4.*;
 import java.io.File;
@@ -138,12 +137,12 @@ templateDef[String prefix]
 	|   alias=ID '::=' target=ID  {group.defineTemplateAlias($alias, $target);}
 	;
 
-formalArgs returns[LinkedHashMap<String,FormalArgument> args]
-@init {$args = new LinkedHashMap<String,FormalArgument>();}
+formalArgs returns[OrderedHashMap<String,FormalArgument> args]
+@init {$args = new OrderedHashMap<String,FormalArgument>();}
     :	formalArg[$args] ( ',' formalArg[$args] )*
 	;
 
-formalArg[LinkedHashMap<String,FormalArgument> args]
+formalArg[OrderedHashMap<String,FormalArgument> args]
 	:	ID
 		(	'=' a=STRING
 		|	'=' a=ANONYMOUS_TEMPLATE

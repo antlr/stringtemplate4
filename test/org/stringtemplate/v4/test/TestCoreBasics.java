@@ -27,19 +27,19 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.antlr.runtime.CommonToken;
 import org.junit.Test;
 import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-import org.stringtemplate.v4.compiler.FormalArgument;
-import org.stringtemplate.v4.compiler.GroupParser;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
 
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -146,7 +146,8 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testIncludeWithArg() throws Exception {
         String template = "load <box(x=\"arg\")>;";
         ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box", "kewl <x> daddy");
+        st.impl.nativeGroup.defineTemplate("box", "x", "kewl <x> daddy");
+		st.impl.dump();
         st.add("name", "Ter");
         String expected = "load kewl arg daddy;";
         String result = st.render();

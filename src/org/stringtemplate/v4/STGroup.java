@@ -34,7 +34,7 @@ import org.stringtemplate.v4.debug.DebugST;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
-import sun.net.idn.StringPrep;
+import org.stringtemplate.v4.misc.OrderedHashMap;
 
 import java.net.URL;
 import java.util.*;
@@ -183,8 +183,8 @@ public class STGroup {
 
 	public CompiledST defineTemplate(String name, String argsS, String template) {
 		String[] args = argsS.split(",");
-		LinkedHashMap<String, FormalArgument> a =
-			new LinkedHashMap<String,FormalArgument>();
+		OrderedHashMap<String, FormalArgument> a =
+			new OrderedHashMap<String,FormalArgument>();
 		for (int i = 0; i  < args.length; i ++) {
 			a.put(args[i], new FormalArgument(args[i]));
 		}
@@ -193,7 +193,7 @@ public class STGroup {
 	}
 
     public CompiledST defineTemplate(String templateName, Token nameT,
-                                     LinkedHashMap<String,FormalArgument> args,
+                                     OrderedHashMap<String,FormalArgument> args,
                                      String template)
     {
 //        String name = nameT.getText();
@@ -266,7 +266,7 @@ public class STGroup {
 		String regionSurroundingTemplateName,
         Token templateToken, String template,
         Token nameToken,
-        LinkedHashMap<String,FormalArgument> args)
+        OrderedHashMap<String,FormalArgument> args)
     {
         int n = 1; // num char to strip from left, right of template def token text "" <<>>
         if ( templateToken.getType()==GroupLexer.BIGSTRING ) n=2;

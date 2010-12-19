@@ -35,8 +35,7 @@ import org.stringtemplate.v4.compiler.FormalArgument;
 import org.stringtemplate.v4.compiler.GroupParser;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
-
-import java.util.LinkedHashMap;
+import org.stringtemplate.v4.misc.OrderedHashMap;
 
 import static org.junit.Assert.assertEquals;
 
@@ -179,8 +178,8 @@ public class TestOptions extends BaseTest {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
         STGroup group = new STGroup();
-		LinkedHashMap<String,FormalArgument> args =
-			new LinkedHashMap<String,FormalArgument>();
+		OrderedHashMap<String,FormalArgument> args =
+			new OrderedHashMap<String,FormalArgument>();
 		args.put("name", new FormalArgument("name"));
 		group.defineTemplate("test", new CommonToken(GroupParser.ID, "text"),
 							 args, "<name; bad=\"ugly\">");

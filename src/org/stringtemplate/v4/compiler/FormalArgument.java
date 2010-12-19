@@ -28,8 +28,7 @@
 package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.Token;
-
-import java.util.LinkedHashMap;
+import org.stringtemplate.v4.misc.OrderedHashMap;
 
 /** Represents the name of a formal argument defined in a template:
  *
@@ -69,8 +68,8 @@ public class FormalArgument {
      *  must be distinguished from the case where a template can specify
      *  args and there just aren't any such as the t() template above.
      */
-    public static final LinkedHashMap<String, FormalArgument> UNKNOWN =
-        new LinkedHashMap<String, FormalArgument>();
+    public static final OrderedHashMap<String, FormalArgument> UNKNOWN =
+        new OrderedHashMap<String, FormalArgument>();
 
     public String name;
 
