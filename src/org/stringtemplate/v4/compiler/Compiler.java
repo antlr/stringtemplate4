@@ -112,15 +112,15 @@ public class Compiler {
 
     /** used to parse w/o compilation side-effects */
     public static final Compiler NOOP_GEN = new Compiler() {
-        public void emit(short opcode) {;}
-        public void emit(short opcode, int p, int q) {;}
-        public void emit(short opcode, int arg) {;}
-        public void emit(short opcode, int arg, int p, int q) {;}
-        public void emit(short opcode, String s) {;}
-        public void emit(short opcode, String s, int p, int q) {;}
-        public void emit(short opcode, int arg1, int arg2, int p, int q) {;}
-        public void insert(int addr, short opcode, String s) {;}
-        public void write(int addr, short value) {;}
+        public void emit(short opcode) { }
+        public void emit(short opcode, int p, int q) { }
+        public void emit(short opcode, int arg) { }
+        public void emit(short opcode, int arg, int p, int q) { }
+        public void emit(short opcode, String s) { }
+        public void emit(short opcode, String s, int p, int q) { }
+        public void emit(short opcode, int arg1, int arg2, int p, int q) { }
+        public void insert(int addr, short opcode, String s) { }
+        public void write(int addr, short value) { }
         public int address() { return 0; }
         public String compileAnonTemplate(String enclosingTemplateName,
                                           TokenStream input,
@@ -138,7 +138,7 @@ public class Compiler {
             c.compile(input, state);
             return null;
         }
-        public void defineBlankRegion(String fullyQualifiedName) {;}
+        public void defineBlankRegion(String fullyQualifiedName) { }
     };
 
     public Compiler() { this("<unknown>", '<', '>'); }
@@ -199,7 +199,7 @@ public class Compiler {
         String name = ST.SUBTEMPLATE_PREFIX+subtemplateCount;
         TokenSource tokenSource = input.getTokenSource();
         STLexer lexer = null;
-        int start=-1, stop=-1;
+        int start=-1;
         if ( tokenSource instanceof STLexer ) {
             lexer = (STLexer) tokenSource;
             start = lexer.input.index();
@@ -210,7 +210,7 @@ public class Compiler {
         sub.name = name;
         sub.isSubtemplate = true;
         if ( tokenSource instanceof STLexer ) {
-            stop = lexer.input.index();
+            int stop = lexer.input.index();
             //System.out.println(start+".."+stop);
             sub.embeddedStart = start;
             sub.embeddedStop = stop-1;

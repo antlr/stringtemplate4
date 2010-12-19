@@ -119,12 +119,12 @@ public class Interpreter {
         int start = out.index(); // track char we're about to write
         int prevOpcode = 0;
         int n = 0; // how many char we write out
-        int nameIndex = 0;
-        int addr = 0;
-        String name = null;
-        Object o = null, left = null, right = null;
-        ST st = null;
-        Object[] options = null;
+        int nameIndex;
+        int addr;
+        String name;
+        Object o, left, right;
+        ST st;
+        Object[] options;
         byte[] code = self.impl.instrs;        // which code block are we executing
         int ip = 0;
         while ( ip < self.impl.codeSize ) {
@@ -393,7 +393,7 @@ public class Interpreter {
      *  E.g., <name>
      */
     protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
-        int start = out.index(); // track char we're about to write
+//        int start = out.index(); // track char we're about to write
         int n = writeObject(out, self, o, null);
 /*
         if ( group.debug ) {
@@ -411,7 +411,7 @@ public class Interpreter {
     protected int writeObjectWithOptions(STWriter out, ST self, Object o,
                                          Object[] options)
     {
-        int start = out.index(); // track char we're about to write
+//        int start = out.index(); // track char we're about to write
         // precompute all option values (render all the way to strings)
         String[] optionStrings = null;
         if ( options!=null ) {
@@ -504,10 +504,10 @@ public class Interpreter {
         String formatString = null;
         if ( options!=null ) formatString = options[Option.FORMAT.ordinal()];
         AttributeRenderer r = group.getAttributeRenderer(o.getClass());
-        String v = null;
+        String v;
         if ( r!=null ) v = r.toString(o, formatString, locale);
         else v = o.toString();
-        int n = 0;
+        int n;
         if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
             n = out.write(v, options[Option.WRAP.ordinal()]);
         }
@@ -701,13 +701,12 @@ public class Interpreter {
      *  or null if single-valued.
      */
     public Object rest(Object v) {
-        if ( v ==null ) return null;
+        if ( v == null ) return null;
         if ( v instanceof List ) { // optimize list case
             List elems = (List)v;
             if ( elems.size()<=1 ) return null;
             return elems.subList(1, elems.size());
         }
-        Object theRest = v; // else iterate and copy
         v = convertAnythingIteratableToIterator(v);
         if ( v instanceof Iterator ) {
             List a = new ArrayList();
@@ -715,15 +714,12 @@ public class Interpreter {
             if ( !it.hasNext() ) return null; // if not even one value return null
             it.next(); // ignore first value
             while (it.hasNext()) {
-                Object o = (Object) it.next();
+                Object o = it.next();
                 if ( o!=null ) a.add(o);
             }
             return a;
         }
-        else {
-            theRest = null;  // rest of single-valued attribute is null
-        }
-        return theRest;
+        return null;  // rest of single-valued attribute is null
     }
 
     /** Return all but the last element.  trunc(x)=null if x is single-valued. */
@@ -739,7 +735,7 @@ public class Interpreter {
             List a = new ArrayList();
             Iterator it = (Iterator) v;
             while (it.hasNext()) {
-                Object o = (Object) it.next();
+                Object o = it.next();
                 if ( it.hasNext() ) a.add(o); // only add if not last one
             }
             return a;
@@ -755,7 +751,7 @@ public class Interpreter {
             List a = new ArrayList();
             Iterator it = (Iterator) v;
             while (it.hasNext()) {
-                Object o = (Object) it.next();
+                Object o = it.next();
                 if ( o!=null ) a.add(o);
             }
             return a;
@@ -789,7 +785,6 @@ public class Interpreter {
         if ( v instanceof Map ) i = ((Map)v).size();
         else if ( v instanceof Collection ) i = ((Collection)v).size();
         else if ( v instanceof Object[] ) i = ((Object[])v).length;
-        else if ( v instanceof String[] ) i = ((String[])v).length;
         else if ( v instanceof int[] ) i = ((int[])v).length;
         else if ( v instanceof long[] ) i = ((long[])v).length;
         else if ( v instanceof float[] ) i = ((float[])v).length;
@@ -852,26 +847,16 @@ public class Interpreter {
     }
 
     protected Object getObjectProperty(ST self, Object o, Object property) {
+		Object value = null;
+
         if ( o==null ) {
             ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
                                       "null object");
             return null;
         }
-        if ( property==null ) {
-            ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
-                                      "property name of "+o.getClass().getName()+" is null");
-            return null;
-        }
-        Object value = null;
-
-        if ( o instanceof ST ) {
-            ST st = (ST)o;
-            return st.getAttribute((String)property);
-        }
-
         if (o instanceof Map) {
             Map map = (Map)o;
-            if ( value == STGroup.DICT_KEY ) value = property;
+			if ( property==null ) value = map.get(STGroup.DEFAULT_KEY);
             else if ( property.equals("keys") ) value = map.keySet();
             else if ( property.equals("values") ) value = map.values();
             else if ( map.containsKey(property) ) value = map.get(property);
@@ -885,6 +870,19 @@ public class Interpreter {
             }
             return value;
         }
+
+		if ( property==null ) {
+			ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+									  "property name of "+o.getClass().getName()+" is null");
+			return null;
+		}
+
+		if ( o instanceof ST ) {
+			ST st = (ST)o;
+			return st.getAttribute((String)property);
+		}
+
+
 
         Class c = o.getClass();
 
@@ -987,7 +985,7 @@ public class Interpreter {
         StringBuilder buf = new StringBuilder();
         dis.disassembleInstruction(buf,ip);
         String name = self.impl.name+":";
-        if ( self.impl.name==ST.UNKNOWN_NAME) name = "";
+        if ( self.impl.name==ST.UNKNOWN_NAME ) name = "";
         tr.append(String.format("%-40s",name+buf));
         tr.append("\tstack=[");
         for (int i = 0; i <= sp; i++) {
@@ -1027,8 +1025,8 @@ public class Interpreter {
     public List<String> getExecutionTrace() { return executeTrace; }
 
     public static int getShort(byte[] memory, int index) {
-        int b1 = memory[index++]&0xFF; // mask off sign-extended bits
-        int b2 = memory[index++]&0xFF;
+        int b1 = memory[index]&0xFF; // mask off sign-extended bits
+        int b2 = memory[index+1]&0xFF;
         return b1<<(8*1) | b2;
     }
 }

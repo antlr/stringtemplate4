@@ -58,12 +58,12 @@ public class DateRenderer implements AttributeRenderer {
         };
 
     public String toString(Object o, String formatString, Locale locale) {
-        Date d = null;
+        Date d;
         if ( formatString==null ) formatString = "short";
         if ( o instanceof Calendar ) d = ((Calendar)o).getTime();
         else d = (Date)o;
         Integer styleI = formatToInt.get(formatString);
-        DateFormat f = null;
+        DateFormat f;
         if ( styleI==null ) f = new SimpleDateFormat(formatString);
         else {
             int style = styleI.intValue();

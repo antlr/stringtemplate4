@@ -151,7 +151,7 @@ public class ST {
             multi.addAll((List)value);
         }
         else if ( value!=null && value.getClass().isArray() ) {
-            multi.addAll(Arrays.asList((Object[])value));
+            multi.addAll(Arrays.asList(value));
         }
         else {
             multi.add(value);

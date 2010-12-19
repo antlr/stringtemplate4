@@ -28,7 +28,7 @@
 package org.stringtemplate.v4.compiler;
 
 public class Bytecode {
-    public static final int MAX_OPNDS = 3;
+    public static final int MAX_OPNDS = 2;
     public static final int OPND_SIZE_IN_BYTES = 2;
 
     public enum OperandType { NONE, STRING, ADDR, INT }
@@ -38,19 +38,15 @@ public class Bytecode {
         OperandType[] type = new OperandType[MAX_OPNDS];
         int nopnds = 0;
         public Instruction(String name) {
-            this(name,OperandType.NONE,OperandType.NONE,OperandType.NONE); nopnds =0;
+            this(name,OperandType.NONE,OperandType.NONE); nopnds =0;
         }
         public Instruction(String name, OperandType a) {
-            this(name,a,OperandType.NONE,OperandType.NONE); nopnds =1;
+            this(name,a,OperandType.NONE); nopnds =1;
         }
         public Instruction(String name, OperandType a, OperandType b) {
-            this(name,a,b,OperandType.NONE); nopnds =2;
-        }
-        public Instruction(String name, OperandType a, OperandType b, OperandType c) {
             this.name = name;
             type[0] = a;
             type[1] = b;
-            type[2] = c;
             nopnds = MAX_OPNDS;
         }
     }
@@ -103,7 +99,7 @@ public class Bytecode {
     public static final short INSTR_NEWLINE         = 38;
 
     public static final short INSTR_NOOP            = 39; // do nothing
-    public static final short INSTR_POP             = 40;    
+    public static final short INSTR_POP             = 40;
 
     /** Used for assembly/disassembly; describes instruction set */
     public static Instruction[] instructions = new Instruction[] {
@@ -147,6 +143,6 @@ public class Bytecode {
         new Instruction("dedent"),
         new Instruction("newline"),
         new Instruction("noop"),
-        new Instruction("pop")        
+        new Instruction("pop")
     };
 }

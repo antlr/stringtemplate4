@@ -59,7 +59,7 @@ public class STDump {
             List<String> attrNames = new ArrayList<String>();
             attrNames.addAll(self.getAttributes().keySet());
             Collections.sort(attrNames);
-            String longestName = (String)
+            String longestName =
                 Collections.max(attrNames,
                                 new Comparator<String>() {
                                     public int compare(String s1, String s2) {
@@ -67,14 +67,14 @@ public class STDump {
                                     }
                                 });
             int w = longestName.length();
-            for (Iterator iter = attrNames.iterator(); iter.hasNext();) {
-                String name = (String) iter.next();
-                buf.append(Misc.newline);
-                indent(buf, n);
-                buf.append(String.format("%-"+w+"s = ",name));
-                Object value = self.getAttributes().get(name);
-                buf.append( getValueDebugString(value, n) );
-            }
+			for (Object attrName : attrNames) {
+				String name = (String) attrName;
+				buf.append(Misc.newline);
+				indent(buf, n);
+				buf.append(String.format("%-" + w + "s = ", name));
+				Object value = self.getAttributes().get(name);
+				buf.append(getValueDebugString(value, n));
+			}
         }
         buf.append(Misc.newline);
         n--;

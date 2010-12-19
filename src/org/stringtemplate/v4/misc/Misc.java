@@ -48,22 +48,22 @@ public class Misc {
         return buf.toString();
     }
 
-    public static String join(Object[] a, String separator, int start, int stop) {
-        StringBuilder buf = new StringBuilder();
-        for (int i = start; i < stop; i++) {
-            if ( i>start ) buf.append(separator);
-            buf.append(a[i].toString());
-        }
-        return buf.toString();
-    }
+//    public static String join(Object[] a, String separator, int start, int stop) {
+//        StringBuilder buf = new StringBuilder();
+//        for (int i = start; i < stop; i++) {
+//            if ( i>start ) buf.append(separator);
+//            buf.append(a[i].toString());
+//        }
+//        return buf.toString();
+//    }
 
     public static String strip(String s, int n) {
         return s.substring(n, s.length()-n);
     }
 
-    public static String stripRight(String s, int n) {
-        return s.substring(0, s.length()-n);
-    }
+//    public static String stripRight(String s, int n) {
+//        return s.substring(0, s.length()-n);
+//    }
 
     // strip newline from front but just one
     public static String trimOneStartingNewline(String s) {
@@ -89,8 +89,6 @@ public class Misc {
     }
 
 	public static String getPrefix(String name) {
-//		String p = new File(name).getParent();
-		String p;
 		//System.out.println("getParent("+name+")="+p);
 		if (name==null) return null;
 		int lastSlash=name.lastIndexOf('/');

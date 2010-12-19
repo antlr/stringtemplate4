@@ -115,6 +115,7 @@ public class STGroupDir extends STGroup {
         }
         catch (MalformedURLException e) {
             ErrorManager.internalError(null, "bad URL: "+root+parent+".stg", e);
+			return null;
         }
         InputStream is = null;
         try {
@@ -128,7 +129,7 @@ public class STGroupDir extends STGroup {
             ErrorManager.internalError(null, "can't load template file "+name, ioe);
         }
         try { // clean up
-            is.close();
+            if (is!=null ) is.close();
         }
         catch (IOException ioe) {
             ErrorManager.internalError(null, "can't close template file stream "+name, ioe);
@@ -147,10 +148,10 @@ public class STGroupDir extends STGroup {
 		}
 		catch (MalformedURLException me) {
 			ErrorManager.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
-									 me, Misc.getFileName(f.getFile()));
+									  me, root+fileName);
 			return null;
 		}
-		ANTLRInputStream fs = null;
+		ANTLRInputStream fs;
 		try {
 			fs = new ANTLRInputStream(f.openStream(), encoding);
 		}

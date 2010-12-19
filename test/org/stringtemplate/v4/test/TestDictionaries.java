@@ -40,20 +40,20 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class TestDictionaries extends BaseTest {
-    @Test public void testDict() throws Exception {
-        String templates =
-                "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
-                "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
-                ;
-        writeFile(tmpdir, "test.stg", templates);
-        org.stringtemplate.v4.STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("var");
-        st.add("type", "int");
-        st.add("name", "x");
-        String expecting = "int x = 0;";
-        String result = st.render();
-        assertEquals(expecting, result);
-    }
+	@Test public void testDict() throws Exception {
+		String templates =
+				"typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
+				"var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
+				;
+		writeFile(tmpdir, "test.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+		ST st = group.getInstanceOf("var");
+		st.add("type", "int");
+		st.add("name", "x");
+		String expecting = "int x = 0;";
+		String result = st.render();
+		assertEquals(expecting, result);
+	}
 
     @Test public void testDictValuesAreTemplates() throws Exception {
         String templates =
@@ -61,7 +61,7 @@ public class TestDictionaries extends BaseTest {
                 "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
         writeFile(tmpdir, "test.stg", templates);
-        org.stringtemplate.v4.STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("w", "L");
         st.add("type", "int");
@@ -81,7 +81,7 @@ public class TestDictionaries extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("w", "L");
-        st.add("type", new org.stringtemplate.v4.ST("int"));
+        st.add("type", new ST("int"));
         st.add("name", "x");
         String expecting = "int x = 0L;";
         String result = st.render();
@@ -107,21 +107,37 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictMissingDefaultValueIsEmpty() throws Exception {
-        String templates =
-                "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
-                "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
-                ;
-        writeFile(tmpdir, "test.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
-        ST st = group.getInstanceOf("var");
-        st.add("w", "L");
-        st.add("type", "double"); // double not in typeInit map
-        st.add("name", "x");
-        String expecting = "double x = ;"; // weird, but tests default value is key
-        String result = st.render();
-        assertEquals(expecting, result);
-    }
+	@Test public void testDictMissingDefaultValueIsEmpty() throws Exception {
+		String templates =
+				"typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
+				"var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
+				;
+		writeFile(tmpdir, "test.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+		ST st = group.getInstanceOf("var");
+		st.add("w", "L");
+		st.add("type", "double"); // double not in typeInit map
+		st.add("name", "x");
+		String expecting = "double x = ;";
+		String result = st.render();
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testDictMissingDefaultValueIsEmptyForNullKey() throws Exception {
+		String templates =
+				"typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
+				"var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
+				;
+		writeFile(tmpdir, "test.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+		ST st = group.getInstanceOf("var");
+		st.add("w", "L");
+		st.add("type", null); // double not in typeInit map
+		st.add("name", "x");
+		String expecting = " x = ;";
+		String result = st.render();
+		assertEquals(expecting, result);
+	}
 
     @Test public void testDictHiddenByFormalArg() throws Exception {
         String templates =
@@ -129,8 +145,8 @@ public class TestDictionaries extends BaseTest {
                 "var(typeInit,type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
         writeFile(tmpdir, "test.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"test.stg");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("var");
+        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+        ST st = group.getInstanceOf("var");
         st.add("type", "int");
         st.add("name", "x");
         String expecting = "int x = ;";
@@ -153,20 +169,35 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictDefaultValue() throws Exception {
-        String templates =
-                "typeInit ::= [\"int\":\"0\", default:\"null\"] "+newline+
-                "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
-                ;
-        writeFile(tmpdir, "test.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("var");
-        st.add("type", "UserRecord");
-        st.add("name", "x");
-        String expecting = "UserRecord x = null;";
-        String result = st.render();
-        assertEquals(expecting, result);
-    }
+	@Test public void testDictDefaultValue() throws Exception {
+		String templates =
+				"typeInit ::= [\"int\":\"0\", default:\"null\"] "+newline+
+				"var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
+				;
+		writeFile(tmpdir, "test.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+		ST st = group.getInstanceOf("var");
+		st.add("type", "UserRecord");
+		st.add("name", "x");
+		String expecting = "UserRecord x = null;";
+		String result = st.render();
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testDictNullKeyGetsDefaultValue() throws Exception {
+		String templates =
+				"typeInit ::= [\"int\":\"0\", default:\"null\"] "+newline+
+				"var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
+				;
+		writeFile(tmpdir, "test.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+		ST st = group.getInstanceOf("var");
+		// missing or set to null: st.add("type", null);
+		st.add("name", "x");
+		String expecting = " x = null;";
+		String result = st.render();
+		assertEquals(expecting, result);
+	}
 
     @Test public void testDictEmptyDefaultValue() throws Exception {
         String templates =
@@ -176,7 +207,7 @@ public class TestDictionaries extends BaseTest {
         writeFile(tmpdir, "test.stg", templates);
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
-        STGroupFile group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"test.stg");
+        STGroupFile group = new STGroupFile(tmpdir+"/"+"test.stg");
         group.load();
         String expected = "[test.stg 1:33: missing value for key at ']']";
         String result = errors.errors.toString();
@@ -189,7 +220,7 @@ public class TestDictionaries extends BaseTest {
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
         writeFile(tmpdir, "test.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"test.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
         st.add("type", "UserRecord");
         st.add("name", "x");
@@ -226,7 +257,7 @@ public class TestDictionaries extends BaseTest {
                 ;
         writeFile(tmpdir, "test.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("t");
+        ST st = group.getInstanceOf("t");
         String expecting = " default ";
         String result = st.render();
         assertEquals(expecting, result);
@@ -239,8 +270,8 @@ public class TestDictionaries extends BaseTest {
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
         writeFile(tmpdir, "test.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"test.stg");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("intermediate");
+        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+        ST st = group.getInstanceOf("intermediate");
         st.add("type", "int");
         st.add("name", "x");
         String expecting = "int x = 0;";
@@ -255,7 +286,7 @@ public class TestDictionaries extends BaseTest {
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
         writeFile(tmpdir, "test.stg", templates);
-        STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"test.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
         ST interm = group.getInstanceOf("intermediate");
         ST var = group.getInstanceOf("var");
         var.add("type", "int");

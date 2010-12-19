@@ -72,11 +72,6 @@ public class DebugST extends org.stringtemplate.v4.ST {
         super.setAttributes(attributes);
     }
 
-    @Override
-    public String render(Locale locale, int lineWidth) {
-        return super.render(locale, lineWidth);
-    }
-
 // LAUNCH A WINDOW TO INSPECT TEMPLATE HIERARCHY
 
     public List<InterpEvent> inspect() { return inspect(Locale.getDefault()); }
@@ -99,7 +94,7 @@ public class DebugST extends org.stringtemplate.v4.ST {
     }
 
     // TESTING SUPPORT
-    
+
     public List<InterpEvent> getEvents() { return getEvents(Locale.getDefault()); }
 
     public List<InterpEvent> getEvents(int lineWidth) { return getEvents(Locale.getDefault(), lineWidth); }

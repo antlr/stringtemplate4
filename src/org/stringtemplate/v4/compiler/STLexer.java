@@ -57,8 +57,8 @@ public class STLexer implements TokenSource {
      *  token names like 23 to LDELIM.
      */
     public static class STToken extends CommonToken {
-        public STToken(CharStream input, int type, int channel, int start, int stop) {
-            super(input, type, channel, start, stop);
+        public STToken(CharStream input, int type, int start, int stop) {
+            super(input, type, DEFAULT_CHANNEL, start, stop);
         }
         public STToken(int type, String text) { super(type, text); }
 
@@ -174,7 +174,7 @@ public class STLexer implements TokenSource {
             startCharPositionInLine = input.getCharPositionInLine();
 
             if ( c==EOF ) return newToken(EOF_TYPE);
-            Token t = null;
+            Token t;
             if ( scanningInsideExpr ) t = inside();
             else t = outside();
             if ( t!=SKIP ) return t;
@@ -463,7 +463,6 @@ public class STLexer implements TokenSource {
         if ( c=='\r' ) consume();
         match('\n');
         while ( c==' ' || c=='\t' ) consume(); // scarf any indent
-        return;
     }
 
     public static boolean isIDStartLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c=='_'; }
@@ -472,16 +471,14 @@ public class STLexer implements TokenSource {
     public static boolean isUnicodeLetter(char c) { return c>='a'&&c<='f' || c>='A'&&c<='F' || c>='0'&&c<='9'; }
 
     public Token newToken(int ttype) {
-        STToken t = new STToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
-                startCharIndex, input.index()-1);
+        STToken t = new STToken(input, ttype, startCharIndex, input.index()-1);
         t.setLine(startLine);
         t.setCharPositionInLine(startCharPositionInLine);
 		return t;
 	}
 
     public Token newTokenFromPreviousChar(int ttype) {
-        STToken t = new STToken(input, ttype, Lexer.DEFAULT_TOKEN_CHANNEL,
-                input.index()-1, input.index()-1);
+        STToken t = new STToken(input, ttype, input.index()-1, input.index()-1);
         t.setLine(input.getLine());
         t.setCharPositionInLine(input.getCharPositionInLine()-1);
         return t;

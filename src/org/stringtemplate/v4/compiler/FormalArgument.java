@@ -110,11 +110,8 @@ public class FormalArgument {
 			return false;
 		}
 		// only check if there is a default value; that's all
-		if ( (this.defaultValueToken !=null && other.defaultValueToken ==null) ||
-			 (this.defaultValueToken ==null && other.defaultValueToken !=null) ) {
-			return false;
-		}
-		return true;
+		return !((this.defaultValueToken != null && other.defaultValueToken == null) ||
+			   (this.defaultValueToken == null && other.defaultValueToken != null));
 	}
 
     public String toString() {

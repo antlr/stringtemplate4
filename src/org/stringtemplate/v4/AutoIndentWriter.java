@@ -117,7 +117,7 @@ public class AutoIndentWriter implements STWriter {
 	}
 
     public int index() { return charIndex; }
-    
+
 	/** Write out a string literal or attribute expression or expression element.*/
 	public int write(String str) throws IOException {
 		int n = 0;
@@ -197,10 +197,9 @@ public class AutoIndentWriter implements STWriter {
 
 	public int indent() throws IOException {
 		int n = 0;
-		for (int i=0; i<indents.size(); i++) {
-			String ind = indents.get(i);
-			if ( ind!=null ) {
-				n+=ind.length();
+		for (String ind : indents) {
+			if (ind != null) {
+				n += ind.length();
 				out.write(ind);
 			}
 		}
