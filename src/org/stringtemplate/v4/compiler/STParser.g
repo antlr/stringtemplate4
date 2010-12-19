@@ -216,10 +216,21 @@ andConditional
 	;
 
 notConditional
-	:	'!' memberExpr  {gen.emit(Bytecode.INSTR_NOT);}
+	:	'!' notConditionalExpr  		{gen.emit(Bytecode.INSTR_NOT);}
+	|	'!' '(' conditional ')' {gen.emit(Bytecode.INSTR_NOT);}
 	|	memberExpr
 	;
-	
+
+notConditionalExpr
+	:	o=ID               {gen.refAttr($o);}
+		(	'.' p=ID       {gen.emit(Bytecode.INSTR_LOAD_PROP, $p.text,
+					                 $p.getStartIndex(), $p.getStopIndex());}
+		|	'.' lp='(' mapExpr rp=')'
+						   {gen.emit(Bytecode.INSTR_LOAD_PROP_IND,
+						   		     $lp.getStartIndex(),$rp.getStartIndex());}
+		)*
+	;
+
 exprOptions
 	:	{gen.emit(Bytecode.INSTR_OPTIONS);} option (',' option)*
 	;
@@ -251,7 +262,7 @@ mapExpr
 						            ((CommonToken)input.LT(-1)).getStopIndex());
 						   }
 			|	           {
-			               if ( $c!=null ) gen.emit(Bytecode.INSTR_PAR_MAP, ne, a,
+			               if ( $c!=null ) gen.emit(Bytecode.INSTR_ZIP_MAP, ne, a,
 						                            ((CommonToken)input.LT(-1)).getStopIndex());
 						   else gen.emit(Bytecode.INSTR_MAP, a,
 							             ((CommonToken)input.LT(-1)).getStopIndex());

@@ -355,14 +355,22 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTrueCond() throws Exception {
-        String template = "<if(name)>works<endif>";
-        ST st = new ST(template);
-        st.add("name", "Ter");
-        String expected = "works";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testTrueCond() throws Exception {
+		String template = "<if(name)>works<endif>";
+		ST st = new ST(template);
+		st.add("name", "Ter");
+		String expected = "works";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testCondParens() throws Exception {
+		String template = "<if(!(x||y)&&!z)>works<endif>";
+		ST st = new ST(template);
+		String expected = "works";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
 	@Test public void testFalseCond() throws Exception {
 		String template = "<if(name)>works<endif>";
@@ -590,11 +598,11 @@ public class TestCoreBasics extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-//	@Test public void playing() throws Exception {
-//		String template = "<if(!(a&&b))>t<endif>";
-//		ST st = new ST(template);
-//		st.impl.dump();
-//	}
+	@Test public void playing() throws Exception {
+		String template = "<if(!a)>f<endif>";
+		ST st = new ST(template);
+		st.impl.dump();
+	}
 
 
 }
