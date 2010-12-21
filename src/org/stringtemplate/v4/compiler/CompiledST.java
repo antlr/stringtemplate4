@@ -30,11 +30,13 @@ package org.stringtemplate.v4.compiler;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.Interval;
+import org.stringtemplate.v4.misc.Misc;
 import org.stringtemplate.v4.misc.OrderedHashMap;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /** The result of compiling an ST.  Contains all the bytecode instructions,
  *  string table, bytecode address to source code map, and other bookkeeping
@@ -52,6 +54,7 @@ public class CompiledST {
     /** Where within a template does the subtemplate start? */
     public int embeddedStart=-1, embeddedStop=-1; // if subtemplate
 
+	/** Either UNKNOWN or must be non null map */
     public OrderedHashMap<String, FormalArgument> formalArguments = FormalArgument.UNKNOWN;
 
     /** A list of all regions and subtemplates */
@@ -90,6 +93,36 @@ public class CompiledST {
             implicitlyDefinedTemplates = new ArrayList<CompiledST>();
         }
         implicitlyDefinedTemplates.add(sub);
+    }
+
+	public int getNumberOfArgsWithDefaultValues() {
+		int n = 0;
+		for (String arg : formalArguments.keySet()) {
+			if ( formalArguments.get(arg).defaultValueToken!=null ) n++;
+		}
+		return n;
+	}
+
+	public void defineArgDefaultValueTemplates(STGroup group) {
+		for (String a : formalArguments.keySet()) {
+			FormalArgument fa = formalArguments.get(a);
+			if ( fa.defaultValueToken !=null ) {
+				Compiler c2 = new Compiler(name,
+										   group.delimiterStartChar, group.delimiterStopChar);
+				String defArgTemplate = Misc.strip(fa.defaultValueToken.getText(), 1);
+				fa.compiledDefaultValue = c2.compile(defArgTemplate);
+				fa.compiledDefaultValue.name = fa.name+"-default-value";
+			}
+		}
+	}
+
+	public void defineImplicitlyDefinedTemplates(STGroup group) {
+		if ( implicitlyDefinedTemplates !=null ) {
+            for (CompiledST sub : implicitlyDefinedTemplates) {
+                group.rawDefineTemplate(sub.name, sub, null);
+                sub.defineImplicitlyDefinedTemplates(group);
+            }
+        }
     }
 
     public String instrs() {

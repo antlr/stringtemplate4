@@ -111,9 +111,7 @@ public class STDump {
         buf.append("<");
         buf.append(self.getName());
         buf.append("(");
-        if ( self.impl.formalArguments!=null ) {
-            buf.append(self.impl.formalArguments.keySet());
-        }
+        buf.append(self.impl.formalArguments.keySet());
         buf.append(")@");
         buf.append(String.valueOf(hashCode()));
         buf.append(">");

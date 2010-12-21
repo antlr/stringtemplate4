@@ -83,7 +83,7 @@ public class Interpreter {
     Locale locale;
 
     /** Dump bytecode instructions as we execute them? */
-    public boolean trace = false;
+    public boolean trace = true;
 
     /** Track everything happening in interp if debug across all templates */
     protected List<InterpEvent> events;
@@ -118,7 +118,8 @@ public class Interpreter {
     public int exec(STWriter out, ST self) {
         int start = out.index(); // track char we're about to write
         int prevOpcode = 0;
-        int n = 0; // how many char we write out
+		int n = 0; // how many char we write out
+		int nargs;
         int nameIndex;
         int addr;
         String name;
@@ -170,20 +171,32 @@ public class Interpreter {
                 nameIndex = getShort(code, ip);
                 ip += Bytecode.OPND_SIZE_IN_BYTES;
                 name = self.impl.strings[nameIndex];
+				nargs = getShort(code, ip);
+				ip += Bytecode.OPND_SIZE_IN_BYTES;
 				// look up in original hierarchy not enclosing template (variable group)
 				// see TestSubtemplates.testEvalSTFromAnotherGroup()
                 st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, ip, name);
+				// get n args and store into st's attr list
+				storeArgs(self, nargs, st);
+				sp -= nargs;
                 operands[++sp] = st;
                 break;
             case Bytecode.INSTR_NEW_IND:
-                name = (String)operands[sp--];
+				nargs = getShort(code, ip);
+				ip += Bytecode.OPND_SIZE_IN_BYTES;
+                name = (String)operands[sp-nargs];
                 st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, ip, name);
+				storeArgs(self, nargs, st);
+				sp -= nargs;
+				sp--; // pop template name
                 operands[++sp] = st;
                 break;
             case Bytecode.INSTR_SUPER_NEW :
                 nameIndex = getShort(code, ip);
                 ip += Bytecode.OPND_SIZE_IN_BYTES;
                 name = self.impl.strings[nameIndex];
+				nargs = getShort(code, ip);
+				ip += Bytecode.OPND_SIZE_IN_BYTES;
                 // super.foo refers to the foo in the imported group
                 // relative to the native group of self (i.e., where self
                 // was defined).
@@ -199,21 +212,21 @@ public class Interpreter {
                 st.impl = imported;
                 operands[++sp] = st;
                 break;
-            case Bytecode.INSTR_STORE_ATTR:
-                nameIndex = getShort(code, ip);
-                name = self.impl.strings[nameIndex];
-                ip += Bytecode.OPND_SIZE_IN_BYTES;
-                o = operands[sp--];    // value to store
-                st = (ST)operands[sp]; // store arg in ST on top of stack
-                st.checkAttributeExists(name);
-                st.rawSetAttribute(name, o);
-                break;
-            case Bytecode.INSTR_STORE_SOLE_ARG :
-                // unnamed arg, set to sole arg (or first if multiple)
-                o = operands[sp--];    // value to store
-                st = (ST)operands[sp]; // store arg in ST on top of stack
-                setSoleArgument(self, st, o);
-                break;
+//            case Bytecode.INSTR_STORE_ATTR:
+//                nameIndex = getShort(code, ip);
+//                name = self.impl.strings[nameIndex];
+//                ip += Bytecode.OPND_SIZE_IN_BYTES;
+//                o = operands[sp--];    // value to store
+//                st = (ST)operands[sp]; // store arg in ST on top of stack
+//                st.checkAttributeExists(name);
+//                st.rawSetAttribute(name, o);
+//                break;
+//            case Bytecode.INSTR_STORE_SOLE_ARG :
+//                // unnamed arg, set to sole arg (or first if multiple)
+//                o = operands[sp--];    // value to store
+//                st = (ST)operands[sp]; // store arg in ST on top of stack
+//                setSoleArgument(self, st, o);
+//                break;
             case Bytecode.INSTR_SET_PASS_THRU :
                 st = (ST)operands[sp]; // ST on top of stack
                 st.passThroughAttributes = true;
@@ -239,27 +252,27 @@ public class Interpreter {
                 nwline += n2;
 				break;
             case Bytecode.INSTR_MAP :
-                name = (String)operands[sp--];
-                o = operands[sp--];
-                map(self,o,name);
+                st = (ST)operands[sp--]; // get prototype off stack
+                o = operands[sp--];		 // get object to map prototype across
+                map(self,o,st);
                 break;
             case Bytecode.INSTR_ROT_MAP :
                 int nmaps = getShort(code, ip);
                 ip += Bytecode.OPND_SIZE_IN_BYTES;
-                List<String> templates = new ArrayList<String>();
-                for (int i=nmaps-1; i>=0; i--) templates.add((String)operands[sp-i]);
+                List<ST> templates = new ArrayList<ST>();
+                for (int i=nmaps-1; i>=0; i--) templates.add((ST)operands[sp-i]);
                 sp -= nmaps;
                 o = operands[sp--];
                 if ( o!=null ) rot_map(self,o,templates);
                 break;
             case Bytecode.INSTR_ZIP_MAP:
-                name = (String)operands[sp--];
+                st = (ST)operands[sp--];
                 nmaps = getShort(code, ip);
                 ip += Bytecode.OPND_SIZE_IN_BYTES;
                 List<Object> exprs = new ArrayList<Object>();
                 for (int i=nmaps-1; i>=0; i--) exprs.add(operands[sp-i]);
                 sp -= nmaps;
-                operands[++sp] = zip_map(self, exprs, name);
+                operands[++sp] = zip_map(self, exprs, st);
                 break;
             case Bytecode.INSTR_BR :
                 ip = getShort(code, ip);
@@ -366,6 +379,9 @@ public class Interpreter {
             case Bytecode.INSTR_POP :
                 sp--; // throw away top of stack
                 break;
+			case Bytecode.INSTR_NULL :
+				operands[++sp] = null;
+				break;
             default :
                 ErrorManager.internalError(self, "invalid bytecode @ "+(ip-1)+": "+opcode, null);
                 self.impl.dump();
@@ -389,7 +405,29 @@ public class Interpreter {
         return n;
     }
 
-    /** Write out an expression result that doesn't use expression options.
+	void storeArgs(ST self, int nargs, ST st) {
+			// TODO: add err check to see about arg mismatch
+		int nformalArgs = st.impl.formalArguments.size();
+		if ( nargs != (nformalArgs-st.impl.getNumberOfArgsWithDefaultValues()) ) {
+			ErrorManager.runTimeError(self,
+									  current_ip,
+									  ErrorType.ARGUMENT_COUNT_MISMATCH,
+									  nargs,
+									  st.impl.name,
+									  nformalArgs);
+
+		}
+		Object o;
+		int firstArg = sp-(nargs-1);
+		for (int i=0; i<Math.min(nargs,st.impl.formalArguments.size()); i++) {
+			o = operands[firstArg+i];    // value to store
+			String argName = st.impl.formalArguments.get(i);
+			st.checkAttributeExists(argName);
+			st.rawSetAttribute(argName, o);
+		}
+	}
+
+	/** Write out an expression result that doesn't use expression options.
      *  E.g., <name>
      */
     protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
@@ -517,12 +555,12 @@ public class Interpreter {
         return n;
     }
 
-    protected void map(ST self, Object attr, final String name) {
-        rot_map(self, attr, new ArrayList<String>() {{add(name);}});
+    protected void map(ST self, Object attr, final ST st) {
+        rot_map(self, attr, new ArrayList<ST>() {{add(st);}});
     }
 
     // <names:a> or <names:a,b>
-    protected void rot_map(ST self, Object attr, List<String> templates) {
+    protected void rot_map(ST self, Object attr, List<ST> prototypes) {
         if ( attr==null ) {
             operands[++sp] = null;
             return;
@@ -537,11 +575,12 @@ public class Interpreter {
             while ( iter.hasNext() ) {
                 Object iterValue = iter.next();
                 if ( iterValue == null ) { mapped.add(null); continue; }
-                int templateIndex = ti % templates.size(); // rotate through
+                int templateIndex = ti % prototypes.size(); // rotate through
                 ti++;
-                String name = templates.get(templateIndex);
-                ST st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, name);
-                setSoleArgument(self, st, iterValue);
+                ST proto = prototypes.get(templateIndex);
+				ST st = new ST(proto);
+                //ST st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, name);
+                setFirstArgument(self, st, iterValue);
                 st.rawSetAttribute("i0", i0);
                 st.rawSetAttribute("i", i);
                 mapped.add(st);
@@ -550,10 +589,12 @@ public class Interpreter {
             }
             operands[++sp] = mapped;
         }
-        else { // if only single value, just apply first template to attribute
-			ST st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, templates.get(0));
+        else { // if only single value, just apply first template to sole value
+			ST proto = prototypes.get(0);
+			ST st = new ST(proto);
+//			ST st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, prototypes.get(0));
             if ( st!=null ) {
-                setSoleArgument(self, st, attr);
+                setFirstArgument(self, st, attr);
                 st.rawSetAttribute("i0", 0);
                 st.rawSetAttribute("i", 1);
                 operands[++sp] = st;
@@ -565,9 +606,9 @@ public class Interpreter {
         }
     }
 
-    // <names,phones:{n,p | ...}>
-    protected ST.AttributeList zip_map(ST self, List<Object> exprs, String template) {
-        if ( exprs==null || template==null || exprs.size()==0 ) {
+    // <names,phones:{n,p | ...}> or <a,b:t()>
+    protected ST.AttributeList zip_map(ST self, List<Object> exprs, ST prototype) {
+        if ( exprs==null || prototype==null || exprs.size()==0 ) {
             return null; // do not apply if missing templates or empty values
         }
         // make everything iterable
@@ -578,7 +619,8 @@ public class Interpreter {
 
         // ensure arguments line up
         int numAttributes = exprs.size();
-        CompiledST code = group.lookupTemplate(template);
+//		CompiledST code = group.lookupTemplate(template);
+		CompiledST code = prototype.impl;
         Map formalArguments = code.formalArguments;
         if ( formalArguments==null || formalArguments.size()==0 ) {
             ErrorManager.runTimeError(self, current_ip, ErrorType.MISSING_FORMAL_ARGUMENTS);
@@ -609,7 +651,8 @@ public class Interpreter {
         while ( true ) {
             // get a value for each attribute in list; put into ST instance
             int numEmpty = 0;
-            ST embedded = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, template);
+			ST embedded = new ST(prototype);
+//            ST embedded = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, template);
             embedded.rawSetAttribute("i0", i);
             embedded.rawSetAttribute("i", i+1);
             for (int a = 0; a < numAttributes; a++) {
@@ -631,16 +674,13 @@ public class Interpreter {
         return results;
     }
 
-    protected void setSoleArgument(ST self, ST st, Object attr) {
+    protected void setFirstArgument(ST self, ST st, Object attr) {
         String name = "it";
-        int nargs = 0;
-        if ( st.impl.formalArguments!=null ) {
-            nargs = st.impl.formalArguments.size();
-        }
+        int nargs = st.impl.formalArguments.size();
         if ( nargs > 0 ) {
-            if ( nargs != 1 ) {
-                ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_SINGLE_ARGUMENT, st, nargs);
-            }
+//            if ( nargs != 1 ) {
+//                ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_SINGLE_ARGUMENT, st, nargs);
+//            }
 //			name = st.impl.formalArguments.keySet().iterator().next();
 			name = st.impl.formalArguments.get(0);
         }
@@ -937,7 +977,7 @@ public class Interpreter {
      *  by the template.
      */
     public void setDefaultArguments(ST invokedST) {
-        if ( invokedST.impl.formalArguments==null || invokedST.impl.formalArguments.size()==0 ) return;
+        if ( invokedST.impl.formalArguments.size()==0 ) return;
         for (FormalArgument arg : invokedST.impl.formalArguments.values()) {
             // if no value for attribute and default arg, inject default arg into self
             if ( (invokedST.attributes==null || invokedST.attributes.get(arg.name)==null) &&
@@ -970,7 +1010,7 @@ public class Interpreter {
 		if ( self.impl.formalArguments == FormalArgument.UNKNOWN ) return;
         ST p = self;
         while ( p!=null ) {
-            if ( p.impl.formalArguments!=null && p.impl.formalArguments.get(name)!=null ) {
+            if ( p.impl.formalArguments.get(name)!=null ) {
                 // found it; no problems, just return
                 return;
             }

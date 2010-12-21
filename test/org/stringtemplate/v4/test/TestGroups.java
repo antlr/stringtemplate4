@@ -267,18 +267,31 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDefaultArgument2() throws Exception {
-        String templates =
-                "stat(name,value=\"99\") ::= \"x=<value>; // <name>\""+newline
-                ;
-        writeFile(tmpdir, "group.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/group.stg");
-        ST b = group.getInstanceOf("stat");
-        b.add("name", "foo");
-        String expecting = "x=99; // foo";
-        String result = b.render();
-        assertEquals(expecting, result);
-    }
+	@Test public void testDefaultArgument2() throws Exception {
+		String templates =
+				"stat(name,value=\"99\") ::= \"x=<value>; // <name>\""+newline
+				;
+		writeFile(tmpdir, "group.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/group.stg");
+		ST b = group.getInstanceOf("stat");
+		b.add("name", "foo");
+		String expecting = "x=99; // foo";
+		String result = b.render();
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testDefaultArgumentAsSimpleTemplate() throws Exception {
+		String templates =
+				"stat(name,value={99}) ::= \"x=<value>; // <name>\""+newline
+				;
+		writeFile(tmpdir, "group.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/group.stg");
+		ST b = group.getInstanceOf("stat");
+		b.add("name", "foo");
+		String expecting = "x=99; // foo";
+		String result = b.render();
+		assertEquals(expecting, result);
+	}
 
     @Test public void testDefaultArgumentManuallySet() throws Exception {
         class Field {
@@ -291,7 +304,7 @@ public class TestGroups extends BaseTest {
 		// set arg f manually for stat(f=f)
         String templates =
                 "method(fields) ::= <<"+newline+
-                "<fields:{f | <stat(f=f)>}>" +newline+
+                "<fields:{f | <stat(f)>}>" +newline+
                 ">>"+newline+
                 "stat(f,value={<f.name>}) ::= \"x=<value>; // <f.name>\""+newline
                 ;
@@ -390,7 +403,7 @@ public class TestGroups extends BaseTest {
     @Test public void testDoNotUseDefaultArgument() throws Exception {
         String templates =
                 "method(name) ::= <<"+newline+
-                "<stat(value=\"34\",...)>" +newline+
+                "<stat(name,\"34\")>" +newline+
                 ">>"+newline+
                 "stat(name,value=\"99\") ::= \"x=<value>; // <name>\""+newline
                 ;
@@ -416,10 +429,10 @@ public class TestGroups extends BaseTest {
                 ;
         writeFile(tmpdir, "group.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/group.stg");
-        ST b = group.getInstanceOf("A");
-        b.add("x", new Counter());
+        ST a = group.getInstanceOf("A");
+        a.add("x", new Counter());
         String expecting = "0 1 2 0"; // trace must be false to get these numbers
-        String result = b.render();
+        String result = a.render();
         //System.err.println("result='"+result+"'");
         assertEquals(expecting, result);
     }

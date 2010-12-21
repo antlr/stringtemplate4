@@ -33,7 +33,7 @@ import org.stringtemplate.v4.ST;
 public class STRuntimeMessage extends STMessage {
     /** Where error occurred in bytecode memory */
     public int ip = -1;
-    
+
     public STRuntimeMessage(ErrorType error, int ip) { this(error, ip, null); }
     public STRuntimeMessage(ErrorType error, int ip, ST self) { this(error,ip,self,null); }
     public STRuntimeMessage(ErrorType error, int ip, ST self, Object arg) {
@@ -42,10 +42,14 @@ public class STRuntimeMessage extends STMessage {
     public STRuntimeMessage(ErrorType error, int ip, ST self, Throwable e, Object arg) {
         this(error, ip, self, e, arg, null);
     }
-    public STRuntimeMessage(ErrorType error, int ip, ST self, Throwable e, Object arg, Object arg2) {
-        super(error, self, e, arg, arg2);
-        this.ip = ip;
-    }
+	public STRuntimeMessage(ErrorType error, int ip, ST self, Throwable e, Object arg, Object arg2) {
+		super(error, self, e, arg, arg2);
+		this.ip = ip;
+	}
+	public STRuntimeMessage(ErrorType error, int ip, ST self, Throwable e, Object arg, Object arg2, Object arg3) {
+		super(error, self, e, arg, arg2, arg3);
+		this.ip = ip;
+	}
 
 
     /** Given an ip (code location), get it's range in source template then

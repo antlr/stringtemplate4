@@ -53,9 +53,9 @@ public class STGroupFile extends STGroup {
             throw new IllegalArgumentException("Group file names must end in .stg: "+fileName);
         }
         try {
-            File dir = new File(fileName);
-            if ( dir.exists() ) {
-                url = dir.toURI().toURL();
+            File f = new File(fileName);
+            if ( f.exists() ) {
+                url = f.toURI().toURL();
             }
             else { // try in classpath
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();

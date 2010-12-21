@@ -113,8 +113,18 @@ public class ST {
         groupThatCreatedThisInstance = group;
         impl = groupThatCreatedThisInstance.compile(null, template);
         impl.name = UNKNOWN_NAME;
-        groupThatCreatedThisInstance.defineImplicitlyDefinedTemplates(impl);
+        impl.defineImplicitlyDefinedTemplates(groupThatCreatedThisInstance);
     }
+
+	/** Clone a prototype template for application in MAP operations; copy all fields */
+	public ST(ST proto) {
+		this.impl = proto.impl;
+		this.attributes = new HashMap<String,Object>(); // copy attributes
+		this.attributes.putAll(proto.attributes);
+		this.enclosingInstance = proto.enclosingInstance;
+		this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
+		this.passThroughAttributes = proto.passThroughAttributes;
+	}
 
     /** Inject an attribute (name/value pair). If there is already an
      *  attribute with that name, this method turns the attribute into an
@@ -169,7 +179,7 @@ public class ST {
      */
     protected void checkAttributeExists(String name) {
 		if ( impl.formalArguments == FormalArgument.UNKNOWN ) return;
-        if ( impl.formalArguments == null || impl.formalArguments.get(name) == null ) {
+        if ( impl.formalArguments.get(name) == null ) {
             ErrorManager.runTimeError(this, -1, ErrorType.CANT_SET_ATTRIBUTE, name, getName());
         }
     }
@@ -183,8 +193,7 @@ public class ST {
         if ( attributes!=null ) o = attributes.get(name);
         if ( o!=null ) return o;
 
-        if ( impl.formalArguments!=null &&
-             impl.formalArguments.get(name)!=null &&  // no local value && it's a formal arg
+        if ( impl.formalArguments.get(name)!=null &&  // no local value && it's a formal arg
              !passThroughAttributes )                 // but no ... in arg list
         {
             // if you've defined attribute as formal arg for this
@@ -199,7 +208,7 @@ public class ST {
             if ( o!=null ) return o; // found it!
             p = p.enclosingInstance;
         }
-        if ( impl.formalArguments==null || impl.formalArguments.get(name)==null ) {
+        if ( impl.formalArguments.get(name)==null ) {
             // if not hidden by formal args, return any dictionary
             return impl.nativeGroup.rawGetDictionary(name);
         }

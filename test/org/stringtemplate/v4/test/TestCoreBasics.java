@@ -144,7 +144,7 @@ public class TestCoreBasics extends BaseTest {
     }
 
     @Test public void testIncludeWithArg() throws Exception {
-        String template = "load <box(x=\"arg\")>;";
+        String template = "load <box(\"arg\")>;";
         ST st = new ST(template);
         st.impl.nativeGroup.defineTemplate("box", "x", "kewl <x> daddy");
 		st.impl.dump();
@@ -154,18 +154,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIncludeWithSingleUnnamedArg() throws Exception {
-        String template = "load <box(\"arg\")>;";
-        ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box", "kewl <x> daddy");
-		st.impl.dump();
-        String expected = "load kewl arg daddy;";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
     @Test public void testIncludeWithArg2() throws Exception {
-        String template = "load <box(x=\"arg\", y=foo())>;";
+        String template = "load <box(\"arg\", foo())>;";
         ST st = new ST(template);
         st.impl.nativeGroup.defineTemplate("box", "x,y", "kewl <x> <y> daddy");
         st.impl.nativeGroup.defineTemplate("foo", "blech");
@@ -176,10 +166,10 @@ public class TestCoreBasics extends BaseTest {
     }
 
     @Test public void testIncludeWithNestedArgs() throws Exception {
-        String template = "load <box(y=foo(x=\"arg\"))>;";
+        String template = "load <box(foo(\"arg\"))>;";
         ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box", "kewl <y> daddy");
-        st.impl.nativeGroup.defineTemplate("foo", "blech <x>");
+        st.impl.nativeGroup.defineTemplate("box", "y", "kewl <y> daddy");
+        st.impl.nativeGroup.defineTemplate("foo", "x", "blech <x>");
         st.add("name", "Ter");
         String expected = "load kewl blech arg daddy;";
         String result = st.render();
@@ -188,7 +178,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testDefineTemplate() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("inc", "<it>+1");
+        group.defineTemplate("inc", "x", "<x>+1");
         group.defineTemplate("test", "hi <name>!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
@@ -200,25 +190,40 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMap() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("inc", "[<it>]");
-        group.defineTemplate("test", "hi <name:inc()>!");
-        ST st = group.getInstanceOf("test");
-        st.add("name", "Ter");
-        st.add("name", "Tom");
-        st.add("name", "Sumana");
-        String expected =
-            "hi [Ter][Tom][Sumana]!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testMap() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("inc", "x", "[<x>]");
+		group.defineTemplate("test", "name", "hi <name:inc()>!");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		st.add("name", "Tom");
+		st.add("name", "Sumana");
+		String expected =
+			"hi [Ter][Tom][Sumana]!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testIndirectMap() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("inc", "x", "[<x>]");
+		group.defineTemplate("test", "t,name", "<name:(t)()>!");
+		ST st = group.getInstanceOf("test");
+		st.add("t", "inc");
+		st.add("name", "Ter");
+		st.add("name", "Tom");
+		st.add("name", "Sumana");
+		String expected =
+			"[Ter][Tom][Sumana]!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testMapWithExprAsTemplateName() throws Exception {
         String templates =
             "d ::= [\"foo\":\"bold\"]\n" +
-            "test() ::= \"<name:(d.foo)()>\"\n" +
-            "bold() ::= <<*<it>*>>\n";
+            "test(name) ::= \"<name:(d.foo)()>\"\n" +
+            "bold(x) ::= <<*<x>*>>\n";
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         ST st = group.getInstanceOf("test");
@@ -263,7 +268,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testMapIndexes() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("inc", "<i>:<it>");
+		group.defineTemplate("inc", "x", "<i>:<x>");
 		group.defineTemplate("test", "<name:inc(); separator=\", \">");
 		ST st = group.getInstanceOf("test");
 		st.add("name", "Ter");
@@ -292,7 +297,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testMapSingleValue() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("a", "[<it>]");
+		group.defineTemplate("a", "x", "[<x>]");
 		group.defineTemplate("test", "hi <name:a()>!");
 		ST st = group.getInstanceOf("test");
 		st.add("name", "Ter");
@@ -303,7 +308,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testMapNullValue() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("a", "[<it>]");
+		group.defineTemplate("a", "x", "[<x>]");
 		group.defineTemplate("test", "hi <name:a()>!");
 		ST st = group.getInstanceOf("test");
 		String expected = "hi !";
@@ -327,8 +332,8 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testRepeatedMap() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("a", "[<it>]");
-        group.defineTemplate("b", "(<it>)");
+        group.defineTemplate("a", "x", "[<x>]");
+        group.defineTemplate("b", "x", "(<x>)");
         group.defineTemplate("test", "hi <name:a():b()>!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
@@ -342,8 +347,8 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testRoundRobinMap() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("a", "[<it>]");
-        group.defineTemplate("b", "(<it>)");
+        group.defineTemplate("a", "x", "[<x>]");
+        group.defineTemplate("b", "x", "(<x>)");
         group.defineTemplate("test", "hi <name:a(),b()>!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
@@ -505,19 +510,6 @@ public class TestCoreBasics extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Test public void testITDoesntPropagate() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("foo", "<it>");   // <it> not visible
-        String template = "<names:{<foo()>}>"; // <it> visible only to {...} here
-        group.defineTemplate("test", template);
-        ST st = group.getInstanceOf("test");
-        st.add("names", "Ter");
-        st.add("names", "Tom");
-        String expected = "";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
     @Test public void testCharLiterals() throws Exception {
         ST st = new ST(
                 "Foo <\\n><\\n><\\t> bar\n"
@@ -577,7 +569,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testSeparator() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("test", "<names:{case <it>}; separator=\", \">");
+		group.defineTemplate("test", "<names:{n | case <n>}; separator=\", \">");
 		ST st = group.getInstanceOf("test");
 		st.add("names", "Ter");
 		st.add("names", "Tom");
@@ -589,7 +581,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testSeparatorInList() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("test", "<names:{case <it>}; separator=\", \">");
+		group.defineTemplate("test", "<names:{n | case <n>}; separator=\", \">");
 		ST st = group.getInstanceOf("test");
 		st.add("names", new ArrayList<String>() {{add("Ter"); add("Tom");}});
 		String expected =
@@ -599,10 +591,9 @@ public class TestCoreBasics extends BaseTest {
 	}
 
 	@Test public void playing() throws Exception {
-		String template = "<if(!a)>f<endif>";
+		String template = "<a:t(x,y),u()>";
 		ST st = new ST(template);
 		st.impl.dump();
 	}
-
 
 }

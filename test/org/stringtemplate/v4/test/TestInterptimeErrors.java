@@ -138,25 +138,6 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testPassUnknownAttr() throws Exception {
-        String templates =
-            "t() ::= \"<u(x={Ter})>\"\n"+
-            "u(y) ::= <<hi <x>!>>\n";
-        ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        ST st = group.getInstanceOf("t");
-        String expected = "hi Ter!";
-        String result = st.render();
-        assertEquals(expected, result);
-
-        // check error now
-        expected = "[context [t u] can't set attribute x; template u has no such attribute]";
-        result = errors.errors.toString();
-        assertEquals(expected, result);
-    }
-
     @Test public void testSoleArg() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
@@ -169,7 +150,7 @@ public class TestInterptimeErrors extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         org.stringtemplate.v4.ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [t] 1:3 expecting single arg in template reference u() (not 2 args)"+newline;
+        String expected = "context [t] 1:1 passed 1 arg(s) to template u with 2 declared arg(s)"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -189,7 +170,7 @@ public class TestInterptimeErrors extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
 
-        expected = "context [t] 1:1 expecting single arg in template reference u() (not 2 args)"+newline;
+        expected = "context [t] 1:5 passed 1 arg(s) to template u with 2 declared arg(s)"+newline;
 		result = errors.toString();
         assertEquals(expected, result);
     }
@@ -204,7 +185,7 @@ public class TestInterptimeErrors extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        group.debug = true; 
+        group.debug = true;
         ST st = group.getInstanceOf("t");
         st.render();
         String expected = "context [t u] 1:1 attribute x isn't defined"+newline;
@@ -212,7 +193,7 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testParallelAttributeIterationWithMismatchArgListSizes() throws Exception {
+    @Test public void testParallelAttributeIterationWithMissingArgs() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
         org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
@@ -224,24 +205,13 @@ public class TestInterptimeErrors extends BaseTest {
         e.add("phones", "2");
         e.add("salaries", "big");
         e.render();
-        String errorExpecting = "context [anonymous] 1:1 iterating through 3 arguments but parallel map has 2 formal arguments"+newline;
+        String errorExpecting =
+			"1:23: anonymous template has 2 arg(s) but mapped across 3 value(s)\n" +
+			"context [anonymous] 1:23 passed 3 arg(s) to template _sub1 with 2 declared arg(s)\n" +
+			"context [anonymous] 1:1 iterating through 3 values in zip map but template has 2 declared arguments\n";
         assertEquals(errorExpecting, errors.toString());
         String expecting = "Ter@1, Tom@2";
         assertEquals(expecting, e.render());
-    }
-
-    @Test public void testParallelAttributeIterationWithMissingArgs() throws Exception {
-        ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
-        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
-                "<names,phones,salaries:{<n>@<p>}; separator=\", \">"
-            );
-        e.add("names", "Tom");
-        e.add("phones", "2");
-        e.add("salaries", "big");
-        e.render(); // generate the error
-        String errorExpecting = "context [anonymous] 1:1 missing argument definitions"+newline;
-        assertEquals(errorExpecting, errors.toString());
     }
 
     @Test public void testStringTypeMismatch() throws Exception {

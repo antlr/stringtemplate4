@@ -114,7 +114,7 @@ templateDef[String prefix]
     int n=0; // num char to strip from left, right of template def
 }
 	:	(	'@' enclosing=ID '.' name=ID '(' ')'
-		|	name=ID '(' formalArgs? ')'
+		|	name=ID '(' formalArgs ')'
 		)
 	    '::='
 	    {Token templateToken = input.LT(1);}
@@ -139,14 +139,23 @@ templateDef[String prefix]
 
 formalArgs returns[OrderedHashMap<String,FormalArgument> args]
 @init {$args = new OrderedHashMap<String,FormalArgument>();}
-    :	formalArg[$args] ( ',' formalArg[$args] )*
+    :	formalArg[$args]
+    	( ',' formalArg[$args] )*
+    	( ',' formalArgWithDefaultValue[$args] )*
+    |	formalArgWithDefaultValue[$args] ( ',' formalArgWithDefaultValue[$args] )*
+    |
 	;
 
 formalArg[OrderedHashMap<String,FormalArgument> args]
 	:	ID
+		{$args.put($ID.text, new FormalArgument($ID.text));}
+    ;
+
+formalArgWithDefaultValue[OrderedHashMap<String,FormalArgument> args]
+	:	ID
 		(	'=' a=STRING
 		|	'=' a=ANONYMOUS_TEMPLATE
-		)?
+		)
 		{$args.put($ID.text, new FormalArgument($ID.text, $a));}
     ;
 
@@ -246,10 +255,14 @@ ANONYMOUS_TEMPLATE
 			new STLexer(input, group.delimiterStartChar, group.delimiterStopChar);
 		lexer.subtemplateDepth = 1;
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-        STParser parser = new STParser(tokens, (Compiler)null, null);
-		parser.template();
+        STParser parser = new STParser(tokens, Compiler.NOOP_GEN, null);
+		parser.subtemplateBody();
 		}
-    	// don't match '}' here; subparser matches it to terminate
+    	// don't match '}' here; subparser matches it to terminate.
+    	// actually since I call subtemplateBody, it loads '}' into
+    	// STParser's lookahead buffer but doesn't use it.  Since it
+    	// consume from group file input char stream, we don't see it
+    	// as if it had been matched.
     ;
 
 COMMENT

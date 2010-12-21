@@ -42,11 +42,12 @@ import java.io.StringWriter;
 public class STMessage {
     /** if in debug mode, has create instance, add attr events and eval
      *  template events.
-     */    
+     */
     public ST self;
     public ErrorType error;
     public Object arg;
-    public Object arg2;
+	public Object arg2;
+	public Object arg3;
     public Throwable cause;
 
     public STMessage(ErrorType error) {
@@ -68,16 +69,20 @@ public class STMessage {
         this(error,self,cause,where);
         this.arg = arg;
     }
-    public STMessage(ErrorType error, ST self, Throwable cause, Object arg, Object arg2) {
-        this(error,self,cause,arg);
-        this.arg2 = arg2;
-    }
+	public STMessage(ErrorType error, ST self, Throwable cause, Object arg, Object arg2) {
+		this(error,self,cause,arg);
+		this.arg2 = arg2;
+	}
+	public STMessage(ErrorType error, ST self, Throwable cause, Object arg, Object arg2, Object arg3) {
+		this(error,self,cause,arg,arg2);
+		this.arg3 = arg3;
+	}
 
     @Override
     public String toString() {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        String msg = String.format(error.message, arg, arg2);
+        String msg = String.format(error.message, arg, arg2, arg3);
         pw.print(msg);
         if ( cause!=null ) {
             pw.print("\nCaused by: ");

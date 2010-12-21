@@ -61,7 +61,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:5: missing ')' at '::='"+newline;
+		String expected = "t.stg 1:5: no viable alternative at input '::='"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -107,7 +107,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:6: missing ID at ')'"+newline;
+		String expected = "t.stg 1:6: mismatched input ')' expecting ID"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -122,8 +122,9 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:6: missing ID at ',', "+
-                          "t.stg 1:7: missing ID at ')']";
+		String expected =
+			"[t.stg 1:6: mismatched input ',' expecting ID, " +
+			"t.stg 1:7: mismatched input ')' expecting ID]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
@@ -138,7 +139,9 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:6: extraneous input 'b' expecting ')']";
+		String expected =
+			"[t.stg 1:4: no viable alternative at input 'a', " +
+			"t.stg 1:6: garbled template definition starting at 'b']";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}

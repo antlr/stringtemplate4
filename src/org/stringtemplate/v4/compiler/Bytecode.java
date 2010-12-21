@@ -60,46 +60,45 @@ public class Bytecode {
     public static final short INSTR_LOAD_LOCAL      = 3; // load stuff like it, i, i0
     public static final short INSTR_LOAD_PROP       = 4;
     public static final short INSTR_LOAD_PROP_IND   = 5;
-    public static final short INSTR_STORE_ATTR      = 6;
-    public static final short INSTR_STORE_SOLE_ARG  = 7;
-    public static final short INSTR_SET_PASS_THRU   = 8;
-    public static final short INSTR_STORE_OPTION    = 9;
-    public static final short INSTR_NEW             = 10;  // create new template instance
-    public static final short INSTR_NEW_IND         = 11;  // create new template instance using value on stack
-    public static final short INSTR_SUPER_NEW       = 12;  // create new template instance using value on stack
-    public static final short INSTR_WRITE           = 13;
-	public static final short INSTR_WRITE_OPT       = 14;
-    public static final short INSTR_MAP             = 15;  // <a:b()>, <a:b():c()>, <a:{...}>
-    public static final short INSTR_ROT_MAP         = 16;  // <a:b(),c()>
-    public static final short INSTR_ZIP_MAP         = 17;  // <names,phones:{n,p | ...}>
-    public static final short INSTR_BR              = 18;
-    public static final short INSTR_BRF             = 19;
-    public static final short INSTR_OPTIONS         = 20;  // push options block
-    public static final short INSTR_LIST            = 21;
-    public static final short INSTR_ADD             = 22;
-    public static final short INSTR_TOSTR           = 23;
+    public static final short INSTR_SET_PASS_THRU   = 6;
+    public static final short INSTR_STORE_OPTION    = 7;
+    public static final short INSTR_NEW             = 8;  // create new template instance
+    public static final short INSTR_NEW_IND         = 9;  // create new template instance using value on stack
+    public static final short INSTR_SUPER_NEW       = 10;  // create new template instance using value on stack
+    public static final short INSTR_WRITE           = 11;
+	public static final short INSTR_WRITE_OPT       = 12;
+    public static final short INSTR_MAP             = 13;  // <a:b()>, <a:b():c()>, <a:{...}>
+    public static final short INSTR_ROT_MAP         = 14;  // <a:b(),c()>
+    public static final short INSTR_ZIP_MAP         = 15;  // <names,phones:{n,p | ...}>
+    public static final short INSTR_BR              = 16;
+    public static final short INSTR_BRF             = 17;
+    public static final short INSTR_OPTIONS         = 18;  // push options block
+    public static final short INSTR_LIST            = 19;
+    public static final short INSTR_ADD             = 20;
+    public static final short INSTR_TOSTR           = 21;
 
     // Predefined functions
-    public static final short INSTR_FIRST           = 24;
-    public static final short INSTR_LAST            = 25;
-    public static final short INSTR_REST            = 26;
-    public static final short INSTR_TRUNC           = 27;
-    public static final short INSTR_STRIP           = 28;
-    public static final short INSTR_TRIM            = 29;
-    public static final short INSTR_LENGTH          = 30;
-    public static final short INSTR_STRLEN          = 31;
-    public static final short INSTR_REVERSE         = 32;
+    public static final short INSTR_FIRST           = 22;
+    public static final short INSTR_LAST            = 23;
+    public static final short INSTR_REST            = 24;
+    public static final short INSTR_TRUNC           = 25;
+    public static final short INSTR_STRIP           = 26;
+    public static final short INSTR_TRIM            = 27;
+    public static final short INSTR_LENGTH          = 28;
+    public static final short INSTR_STRLEN          = 29;
+    public static final short INSTR_REVERSE         = 30;
 
-	public static final short INSTR_NOT             = 33;
-	public static final short INSTR_OR              = 34;
-	public static final short INSTR_AND             = 35;
+	public static final short INSTR_NOT             = 31;
+	public static final short INSTR_OR              = 32;
+	public static final short INSTR_AND             = 33;
 
-	public static final short INSTR_INDENT          = 36;
-    public static final short INSTR_DEDENT          = 37;
-    public static final short INSTR_NEWLINE         = 38;
+	public static final short INSTR_INDENT          = 34;
+    public static final short INSTR_DEDENT          = 35;
+    public static final short INSTR_NEWLINE         = 36;
 
-    public static final short INSTR_NOOP            = 39; // do nothing
-    public static final short INSTR_POP             = 40;
+    public static final short INSTR_NOOP            = 37; // do nothing
+	public static final short INSTR_POP             = 38;
+	public static final short INSTR_NULL            = 39; // push null value
 
     /** Used for assembly/disassembly; describes instruction set */
     public static Instruction[] instructions = new Instruction[] {
@@ -109,13 +108,11 @@ public class Bytecode {
         new Instruction("load_local",OperandType.STRING),
         new Instruction("load_prop",OperandType.STRING),
         new Instruction("load_prop_ind"),
-        new Instruction("store_attr",OperandType.STRING),
-        new Instruction("store_sole_arg"),
         new Instruction("set_pass_thru"),
         new Instruction("store_option",OperandType.INT),
-        new Instruction("new",OperandType.STRING),
-        new Instruction("new_ind"),
-        new Instruction("super_new",OperandType.STRING),
+        new Instruction("new",OperandType.STRING,OperandType.INT),
+        new Instruction("new_ind",OperandType.INT),
+        new Instruction("super_new",OperandType.STRING,OperandType.INT),
         new Instruction("write"),
 		new Instruction("write_opt"),
         new Instruction("map"),
@@ -143,6 +140,7 @@ public class Bytecode {
         new Instruction("dedent"),
         new Instruction("newline"),
         new Instruction("noop"),
-        new Instruction("pop")
+		new Instruction("pop"),
+		new Instruction("null")
     };
 }

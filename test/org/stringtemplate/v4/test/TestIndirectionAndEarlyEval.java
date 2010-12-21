@@ -46,17 +46,29 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIndirectTemplateInclude() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("foo", "bar");
-        String template = "<(name)()>";
-        group.defineTemplate("test", template);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
-        st.add("name", "foo");
-        String expected = "bar";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testIndirectTemplateInclude() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("foo", "bar");
+		String template = "<(name)()>";
+		group.defineTemplate("test", template);
+		org.stringtemplate.v4.ST st = group.getInstanceOf("test");
+		st.add("name", "foo");
+		String expected = "bar";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testIndirectTemplateIncludeWithArgs() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("foo", "x,y", "<x><y>");
+		String template = "<(name)({1},{2})>";
+		group.defineTemplate("test", template);
+		org.stringtemplate.v4.ST st = group.getInstanceOf("test");
+		st.add("name", "foo");
+		String expected = "12";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testIndirectTemplateIncludeViaTemplate() throws Exception {
         org.stringtemplate.v4.STGroup group = new STGroup();
@@ -82,7 +94,7 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
 
     @Test public void testIndirectMap() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("a", "[<it>]");
+        group.defineTemplate("a", "x", "[<x>]");
         group.defineTemplate("test", "hi <names:(templateName)()>!");
         org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("names", "Ter");

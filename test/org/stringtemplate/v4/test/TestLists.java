@@ -30,12 +30,13 @@ package org.stringtemplate.v4.test;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestLists extends BaseTest {
 	@Test public void testJustCat() throws Exception {
-		org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
+		ST e = new ST(
 				"<[names,phones]>"
 			);
 		e.add("names", "Ter");
@@ -47,7 +48,7 @@ public class TestLists extends BaseTest {
 	}
 
 	@Test public void testCat2Attributes() throws Exception {
-		org.stringtemplate.v4.ST e = new ST(
+		ST e = new ST(
 				"<[names,phones]; separator=\", \">"
 			);
 		e.add("names", "Ter");
@@ -59,7 +60,7 @@ public class TestLists extends BaseTest {
 	}
 
 	@Test public void testCat2AttributesWithApply() throws Exception {
-		org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
+		ST e = new ST(
 				"<[names,phones]:{a|<a>.}>"
 			);
 		e.add("names", "Ter");
@@ -71,7 +72,7 @@ public class TestLists extends BaseTest {
 	}
 
 	@Test public void testCat3Attributes() throws Exception {
-		org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
+		ST e = new ST(
 				"<[names,phones,salaries]; separator=\", \">"
 			);
 		e.add("names", "Ter");
@@ -85,8 +86,8 @@ public class TestLists extends BaseTest {
 	}
 
     @Test public void testCatWithTemplateApplicationAsElement() throws Exception {
-        ST e = new org.stringtemplate.v4.ST(
-                "<[names:{<it>!},phones]; separator=\", \">"
+        ST e = new ST(
+                "<[names:{n|<n>!},phones]; separator=\", \">"
             );
         e.add("names", "Ter");
         e.add("names", "Tom");
@@ -97,7 +98,7 @@ public class TestLists extends BaseTest {
     }
 
     @Test public void testCatWithIFAsElement() throws Exception {
-        ST e = new org.stringtemplate.v4.ST(
+        ST e = new ST(
                 "<[{<if(names)>doh<endif>},phones]; separator=\", \">"
             );
         e.add("names", "Ter");
@@ -109,8 +110,8 @@ public class TestLists extends BaseTest {
     }
 
     @Test public void testCatWithNullTemplateApplicationAsElement() throws Exception {
-        org.stringtemplate.v4.ST e = new ST(
-                "<[names:{<it>!},\"foo\"]:{x}; separator=\", \">"
+        ST e = new ST(
+                "<[names:{n|<n>!},\"foo\"]:{a|x}; separator=\", \">"
             );
         e.add("phones", "1");
         e.add("phones", "2");
@@ -119,8 +120,8 @@ public class TestLists extends BaseTest {
     }
 
     @Test public void testCatWithNestedTemplateApplicationAsElement() throws Exception {
-        ST e = new org.stringtemplate.v4.ST(
-                "<[names, [\"foo\",\"bar\"]:{<it>!},phones]; separator=\", \">"
+        ST e = new ST(
+                "<[names, [\"foo\",\"bar\"]:{x | <x>!},phones]; separator=\", \">"
             );
         e.add("names", "Ter");
         e.add("names", "Tom");
@@ -136,8 +137,8 @@ public class TestLists extends BaseTest {
 				"foo(items) ::= \"<items:{a | *<a>*}>\""+newline
 				;
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
-		org.stringtemplate.v4.ST e = group.getInstanceOf("test");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ST e = group.getInstanceOf("test");
 		e.add("names", "Ter");
 		e.add("names", "Tom");
 		e.add("phones", "1");

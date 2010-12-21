@@ -28,7 +28,7 @@
 package org.stringtemplate.v4.misc;
 
 /** All the errors that can happen and how to generate a message */
-public enum ErrorType {      
+public enum ErrorType {
     // RUNTIME SEMANTIC ERRORS
     NO_SUCH_TEMPLATE("no such template: %s"),
     CANT_SET_ATTRIBUTE("can't set attribute %s; template %s has no such attribute"),
@@ -37,11 +37,12 @@ public enum ErrorType {
     EXPECTING_SINGLE_ARGUMENT("expecting single arg in template reference %s (not %s args)"),
     MISSING_FORMAL_ARGUMENTS("missing argument definitions"),
     NO_SUCH_PROPERTY("no such property or can't access: %s"),
-    MAP_ARGUMENT_COUNT_MISMATCH("iterating through %s arguments but parallel map has %s formal arguments"),
+	MAP_ARGUMENT_COUNT_MISMATCH("iterating through %s values in zip map but template has %s declared arguments"),
+	ARGUMENT_COUNT_MISMATCH("passed %s arg(s) to template %s with %s declared arg(s)"),
     EXPECTING_STRING("function %s expects a string not %s"),
 
     // COMPILE-TIME SYNTAX/SEMANTIC ERRORS
-    SYNTAX_ERROR("%s"),    
+    SYNTAX_ERROR("%s"),
     TEMPLATE_REDEFINITION("redefinition of template %s"),
     EMBEDDED_REGION_REDEFINITION("region %s is embedded and thus already implicitly defined"),
     REGION_REDEFINITION("redefinition of region %s"),
@@ -54,6 +55,7 @@ public enum ErrorType {
     NO_SUCH_REGION("template %s doesn't have a region called %s"),
     NO_SUCH_OPTION("no such option: %s"),
 	INVALID_TEMPLATE_NAME("invalid template name or path: %s"),
+	ANON_ARGUMENT_MISMATCH("anonymous template has %s arg(s) but mapped across %s value(s)"),
 
     // INTERNAL ERRORS
     INTERNAL_ERROR("%s"),

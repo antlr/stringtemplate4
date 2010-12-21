@@ -41,7 +41,7 @@ public class TestSubtemplates extends BaseTest {
 
     @Test public void testSimpleIteration() throws Exception {
         org.stringtemplate.v4.STGroup group = new STGroup();
-        group.defineTemplate("test", "<names:{<it>}>!");
+        group.defineTemplate("test", "<names:{n|<n>}>!");
         org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
@@ -193,7 +193,7 @@ public class TestSubtemplates extends BaseTest {
 		ErrorManager.setErrorListener(errors);
 		STGroup innerGroup = new STGroup();
 		innerGroup.defineTemplate("test", "<m:samegroup()>");
-		innerGroup.defineTemplate("samegroup", "hi ");
+		innerGroup.defineTemplate("samegroup", "x", "hi ");
 		ST st = innerGroup.getInstanceOf("test");
 		st.add("m", new int[] {1,2,3});
 
@@ -215,7 +215,7 @@ public class TestSubtemplates extends BaseTest {
 		ErrorManager.setErrorListener(errors);
 		STGroup innerGroup = new STGroup();
 		innerGroup.defineTemplate("test", "<m:samegroup()>");
-		innerGroup.defineTemplate("samegroup", "hi ");
+		innerGroup.defineTemplate("samegroup", "x", "hi ");
 		ST st = innerGroup.getInstanceOf("test");
 		st.add("m", 10);
 

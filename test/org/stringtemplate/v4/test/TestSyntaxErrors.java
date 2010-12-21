@@ -138,7 +138,7 @@ public class TestSyntaxErrors extends BaseTest {
 
     @Test public void testEOFInExpr() throws Exception {
         String templates =
-            "foo() ::= \"hi <name:{[<aaa.bb>]}\"\n";
+            "foo() ::= \"hi <name:{x|[<aaa.bb>]}\"\n";
         writeFile(tmpdir, "t.stg", templates);
 
 		STGroupFile group = null;
@@ -146,7 +146,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:32: premature EOF"+newline;
+		String expected = "t.stg 1:34: premature EOF"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -161,7 +161,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:19: mismatched input '>' expecting RPAREN"+newline;
+		String expected = "t.stg 1:19: '>' came as a complete surprise to me"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}

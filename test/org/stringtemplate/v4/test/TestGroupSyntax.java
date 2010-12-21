@@ -28,6 +28,8 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.Misc;
 
 import static org.junit.Assert.assertEquals;
@@ -38,7 +40,7 @@ public class TestGroupSyntax extends BaseTest {
             "t() ::= <<foo>>" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         String expected =
             "t() ::= <<" + Misc.newline+
             "foo" + Misc.newline+
@@ -49,15 +51,15 @@ public class TestGroupSyntax extends BaseTest {
 
     @Test public void testMultiTemplates() throws Exception {
         String templates =
-            "ta() ::= \"[<it>]\"" + Misc.newline +
+            "ta(x) ::= \"[<x>]\"" + Misc.newline +
             "duh() ::= <<hi there>>" + Misc.newline +
             "wow() ::= <<last>>" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         String expected =
-            "ta() ::= <<" +Misc.newline+
-            "[<it>]" +Misc.newline+
+            "ta(x) ::= <<" +Misc.newline+
+            "[<x>]" +Misc.newline+
             ">>" +Misc.newline+
             "duh() ::= <<" +Misc.newline+
             "hi there" +Misc.newline+
@@ -74,7 +76,7 @@ public class TestGroupSyntax extends BaseTest {
             "t(a,b) ::= \"[<a>]\"" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         String expected =
             "t(a,b) ::= <<" + Misc.newline+
             "[<a>]" + Misc.newline+
@@ -88,7 +90,7 @@ public class TestGroupSyntax extends BaseTest {
             "t(a={def1},b=\"def2\") ::= \"[<a>]\"" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         String expected =
             "t(a={def1},b=\"def2\") ::= <<" + Misc.newline+
             "[<a>]" + Misc.newline+
@@ -102,7 +104,7 @@ public class TestGroupSyntax extends BaseTest {
             "t(a={x | 2*<x>}) ::= \"[<a>]\"" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         String expected =
             "t(a={x | 2*<x>}) ::= <<" + Misc.newline+
             "[<a>]" + Misc.newline+
@@ -113,13 +115,13 @@ public class TestGroupSyntax extends BaseTest {
 
 	@Test public void testNestedTemplateInGroupFile() throws Exception {
 		String templates =
-			"t(a) ::= \"<a:{x | <x:{<it>}>}>\"" + Misc.newline;
+			"t(a) ::= \"<a:{x | <x:{y | <y>}>}>\"" + Misc.newline;
 
 		writeFile(tmpdir, "t.stg", templates);
-		org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		String expected =
 			"t(a) ::= <<\n" +
-			"<a:{x | <x:{<it>}>}>\n" +
+			"<a:{x | <x:{y | <y>}>}>\n" +
 			">>"+ Misc.newline;
 		String result = group.show();
 		assertEquals(expected, result);
@@ -127,12 +129,13 @@ public class TestGroupSyntax extends BaseTest {
 
 	@Test public void testNestedDefaultValueTemplate() throws Exception {
 		String templates =
-			"t(a={x | <x:{<it>}>}) ::= \"ick\"" + Misc.newline;
+			"t(a={x | <x:{y|<y>}>}) ::= \"ick\"" + Misc.newline;
 
 		writeFile(tmpdir, "t.stg", templates);
-		org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.load();
 		String expected =
-			"t(a={x | <x:{<it>}>}) ::= <<\n" +
+			"t(a={x | <x:{y|<y>}>}) ::= <<\n" +
 			"ick\n" +
 			">>"+ Misc.newline;
 		String result = group.show();
@@ -141,12 +144,12 @@ public class TestGroupSyntax extends BaseTest {
 
 	@Test public void testNestedDefaultValueTemplateWithEscapes() throws Exception {
 		String templates =
-			"t(a={x | \\< <x:{<it>\\}}>}) ::= \"[<a>]\"" + Misc.newline;
+			"t(a={x | \\< <x:{y|<y>\\}}>}) ::= \"[<a>]\"" + Misc.newline;
 
 		writeFile(tmpdir, "t.stg", templates);
-		org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		String expected =
-			"t(a={x | \\< <x:{<it>\\}}>}) ::= <<" + Misc.newline+
+			"t(a={x | \\< <x:{y|<y>\\}}>}) ::= <<" + Misc.newline+
 			"[<a>]" + Misc.newline+
 			">>"+ Misc.newline;
 		String result = group.show();

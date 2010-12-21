@@ -100,7 +100,7 @@ public class ErrorManager {
 
     public static void compileTimeError(ErrorType error, Token t, Object arg, Object arg2) {
         String srcName = t.getInputStream().getSourceName();
-        srcName = Misc.getFileName(srcName);
+        if ( srcName!=null ) srcName = Misc.getFileName(srcName);
         listener.get().compileTimeError(
             new STCompiletimeMessage(error,srcName,t,null,arg,arg2)
         );
@@ -124,9 +124,13 @@ public class ErrorManager {
         listener.get().runTimeError(new STRuntimeMessage(error,ip,self,e,arg));
     }
 
-    public static void runTimeError(ST self, int ip, ErrorType error, Object arg, Object arg2) {
-        listener.get().runTimeError(new STRuntimeMessage(error,ip,self,null,arg,arg2));
-    }
+	public static void runTimeError(ST self, int ip, ErrorType error, Object arg, Object arg2) {
+		listener.get().runTimeError(new STRuntimeMessage(error,ip,self,null,arg,arg2));
+	}
+
+	public static void runTimeError(ST self, int ip, ErrorType error, Object arg, Object arg2, Object arg3) {
+		listener.get().runTimeError(new STRuntimeMessage(error,ip,self,null,arg,arg2,arg3));
+	}
 
     public static void IOError(ST self, ErrorType error, Throwable e) {
         listener.get().IOError(new STMessage(error, self, e));

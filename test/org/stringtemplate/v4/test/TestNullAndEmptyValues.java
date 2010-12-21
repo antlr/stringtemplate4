@@ -104,7 +104,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("test",
             "begin\n" +
-            "<users:{name: <it>}; separator=\", \">\n" +
+            "<users:{u | name: <u>}; separator=\", \">\n" +
             "end\n");
         ST t = group.getInstanceOf("test");
         //t.setAttribute("users", new Duh());
@@ -117,7 +117,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         org.stringtemplate.v4.STGroup group = new STGroup();
         group.defineTemplate("test",
             "begin\n" +
-            "<users:{name: <it>}; separator=\", \">\n" +
+            "<users:{u | name: <u>}; separator=\", \">\n" +
             "end\n");
         org.stringtemplate.v4.ST t = group.getInstanceOf("test");
         t.add("users", new ArrayList());

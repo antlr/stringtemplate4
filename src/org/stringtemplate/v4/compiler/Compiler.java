@@ -115,9 +115,9 @@ public class Compiler {
         public void emit(short opcode) { }
         public void emit(short opcode, int p, int q) { }
         public void emit(short opcode, int arg) { }
-        public void emit(short opcode, int arg, int p, int q) { }
-        public void emit(short opcode, String s) { }
-        public void emit(short opcode, String s, int p, int q) { }
+        public void emit1(short opcode, int arg, int p, int q) { }
+        public void emit1(short opcode, String s) { }
+        public void emit1(short opcode, String s, int p, int q) { }
         public void emit(short opcode, int arg1, int arg2, int p, int q) { }
         public void insert(int addr, short opcode, String s) { }
         public void write(int addr, short value) { }
@@ -162,8 +162,8 @@ public class Compiler {
         code.sourceMap = new Interval[initialSize];
         code.template = template;
 
-        STLexer lexer = new STLexer(new ANTLRStringStream(template),
-                                    delimiterStartChar, delimiterStopChar);
+		ANTLRStringStream is = new ANTLRStringStream(template);
+		STLexer lexer = new STLexer(is, delimiterStartChar, delimiterStopChar);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         STParser parser = new STParser(tokens, this, enclosingTemplateName);
         try {
@@ -279,10 +279,10 @@ public class Compiler {
     public void refAttr(CommonToken id) {
         String name = id.getText();
         if ( Interpreter.predefinedAttributes.contains(name) ) {
-            emit(Bytecode.INSTR_LOAD_LOCAL, name, id.getStartIndex(), id.getStopIndex());
+            emit1(Bytecode.INSTR_LOAD_LOCAL, name, id.getStartIndex(), id.getStopIndex());
         }
         else {
-            emit(Bytecode.INSTR_LOAD_ATTR, name, id.getStartIndex(), id.getStopIndex());
+            emit1(Bytecode.INSTR_LOAD_ATTR, name, id.getStartIndex(), id.getStopIndex());
         }
     }
 
@@ -293,8 +293,8 @@ public class Compiler {
             emit(Bytecode.INSTR_POP, id.getStartIndex(), id.getStopIndex());
             return;
         }
-        emit(Bytecode.INSTR_STORE_OPTION, O.ordinal(),
-             id.getStartIndex(), id.getStopIndex());
+        emit1(Bytecode.INSTR_STORE_OPTION, O.ordinal(),
+			  id.getStartIndex(), id.getStopIndex());
     }
 
     public void defaultOption(CommonToken id) {
@@ -303,7 +303,7 @@ public class Compiler {
             ErrorManager.compileTimeError(ErrorType.NO_DEFAULT_VALUE, id);
             emit(Bytecode.INSTR_POP, id.getStartIndex(), id.getStopIndex());
         }
-        emit(Bytecode.INSTR_LOAD_STR, v, id.getStartIndex(), id.getStopIndex());
+        emit1(Bytecode.INSTR_LOAD_STR, v, id.getStartIndex(), id.getStopIndex());
     }
 
     public void func(CommonToken id) {
@@ -325,16 +325,35 @@ public class Compiler {
         code.instrs[ip++] = (byte)opcode;
     }
 
-    public void emit(short opcode, int arg) { emit(opcode,arg,-1,-1); }
+	public void emit1(short opcode, int arg) { emit1(opcode, arg, -1, -1); }
 
-    public void emit(short opcode, int arg, int p, int q) {
-        emit(opcode, p, q);
-        ensureCapacity(2);
-        writeShort(code.instrs, ip, (short)arg);
-        ip += Bytecode.OPND_SIZE_IN_BYTES;
-    }
+	public void emit1(short opcode, int arg, int p, int q) {
+		emit(opcode, p, q);
+		ensureCapacity(Bytecode.OPND_SIZE_IN_BYTES);
+		writeShort(code.instrs, ip, (short)arg);
+		ip += Bytecode.OPND_SIZE_IN_BYTES;
+	}
 
-    public void emit(short opcode, String s) { emit(opcode,s,-1,-1);}
+	public void emit2(short opcode, int arg, int arg2, int p, int q) {
+		emit(opcode, p, q);
+		ensureCapacity(Bytecode.OPND_SIZE_IN_BYTES * 2);
+		writeShort(code.instrs, ip, (short)arg);
+		ip += Bytecode.OPND_SIZE_IN_BYTES;
+		writeShort(code.instrs, ip, (short)arg2);
+		ip += Bytecode.OPND_SIZE_IN_BYTES;
+	}
+
+	public void emit2(short opcode, String s, int arg2, int p, int q) {
+		int i = defineString(s);
+		emit2(opcode, i, arg2, p, q);
+	}
+
+    public void emit1(short opcode, String s) { emit1(opcode, s, -1, -1);}
+
+	public void emit1(short opcode, String s, int p, int q) {
+		int i = defineString(s);
+		emit1(opcode, i, p, q);
+	}
 
     public void insert(int addr, short opcode, String s) {
 		//System.out.println("before insert of "+opcode+"("+s+"):"+ Arrays.toString(code.instrs));
@@ -345,7 +364,7 @@ public class Compiler {
 						 ip-addr); // make room for opcode, opnd
         int save = ip;
         ip = addr;
-        emit(opcode, s);
+        emit1(opcode, s);
         ip = save+instrSize;
 		//System.out.println("after  insert of "+opcode+"("+s+"):"+ Arrays.toString(code.instrs));
 		// adjust addresses for BR and BRF
@@ -360,11 +379,6 @@ public class Compiler {
 			a += I.nopnds * Bytecode.OPND_SIZE_IN_BYTES + 1;
 		}
 		//System.out.println("after  insert of "+opcode+"("+s+"):"+ Arrays.toString(code.instrs));
-    }
-
-    public void emit(short opcode, String s, int p, int q) {
-        int i = defineString(s);
-        emit(opcode, i, p, q);
     }
 
     public void write(int addr, short value) {

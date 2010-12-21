@@ -209,20 +209,8 @@ public class STGroup {
         code.name = templateName;
         code.formalArguments = args;
         rawDefineTemplate(templateName, code, nameT);
-        if ( args!=null ) { // compile any default args
-            for (String a : args.keySet()) {
-                FormalArgument fa = args.get(a);
-                if ( fa.defaultValueToken !=null ) {
-                    Compiler c2 = new Compiler(templateName,
-                                               delimiterStartChar, delimiterStopChar);
-                    String defArgTemplate = Misc.strip(fa.defaultValueToken.getText(), 1);
-                    fa.compiledDefaultValue = c2.compile(defArgTemplate);
-                    fa.compiledDefaultValue.name = fa.name+"-default-value";
-                }
-            }
-        }
-        // define any anonymous subtemplates
-        defineImplicitlyDefinedTemplates(code);
+		code.defineArgDefaultValueTemplates(this);
+        code.defineImplicitlyDefinedTemplates(this); // define any anonymous subtemplates
 
         return code;
     }
@@ -289,16 +277,7 @@ public class STGroup {
 		}
 	}
 
-	protected void defineImplicitlyDefinedTemplates(CompiledST code) {
-		if ( code.implicitlyDefinedTemplates !=null ) {
-            for (CompiledST sub : code.implicitlyDefinedTemplates) {
-                rawDefineTemplate(sub.name, sub, null);
-                defineImplicitlyDefinedTemplates(sub);
-            }
-        }
-    }
-
-    protected void rawDefineTemplate(String name, CompiledST code, Token defT) {
+    public void rawDefineTemplate(String name, CompiledST code, Token defT) {
         CompiledST prev = templates.get(name);
         if ( prev!=null ) {
             if ( !prev.isRegion ) {
@@ -423,9 +402,7 @@ public class STGroup {
             name = name.substring(slash+1, name.length());
             buf.append(name);
             buf.append('(');
-            if ( c.formalArguments!=null ) {
-                buf.append( Misc.join(c.formalArguments.values().iterator(), ",") );
-            }
+            buf.append( Misc.join(c.formalArguments.values().iterator(), ",") );
             buf.append(')');
             buf.append(" ::= <<"+Misc.newline);
             buf.append(c.template+ Misc.newline);
