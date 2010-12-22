@@ -79,6 +79,15 @@ public class STGroup {
      *  according to locale.  Or you can have a different renderer object
      *  for each locale.
      *
+	 *  Order of addition is recorded and matters.  If more than one
+	 *  renderer works for an object, the first registered has priority.
+	 *
+	 *  Renderer associated with type t works for object o if
+	 *
+	 * 		t.isAssignableFrom(o.getClass()) // would assignment t = o work?
+	 *
+	 *  So it works if o is subclass or implements t.
+	 *
      *  This structure is synchronized.
      */
     protected Map<Class, AttributeRenderer> renderers;
@@ -256,8 +265,7 @@ public class STGroup {
 		String regionSurroundingTemplateName,
         Token templateToken, String template,
         Token nameToken,
-        LinkedHashMap
-<String,FormalArgument> args)
+        LinkedHashMap<String,FormalArgument> args)
     {
         int n = 1; // num char to strip from left, right of template def token text "" <<>>
         if ( templateToken.getType()==GroupLexer.BIGSTRING ) n=2;
@@ -367,20 +375,28 @@ public class STGroup {
         }
     }
 
-    /** Register a renderer for all objects of a particular type for all
-     *  templates evaluated relative to this group.
+    /** Register a renderer for all objects of a particular "kind" for all
+     *  templates evaluated relative to this group.  Use r to render if
+	 *  object in question is instanceof(attributeType).
      */
     public void registerRenderer(Class attributeType, AttributeRenderer r) {
+		// TODO: invalidate cache
         if ( renderers ==null ) {
-            renderers = Collections.synchronizedMap(new HashMap<Class, AttributeRenderer>());
+            renderers =
+				Collections.synchronizedMap(new LinkedHashMap<Class, AttributeRenderer>());
         }
         renderers.put(attributeType, r);
-    }
+	}
 
-    public AttributeRenderer getAttributeRenderer(Class attributeType) {
-        if ( renderers==null ) return null;
-        return renderers.get(attributeType);
-    }
+	public AttributeRenderer getAttributeRenderer(Class attributeType) {
+		if ( renderers==null ) return null;
+		// TODO: cache this lookup
+		for (Class t : renderers.keySet()) {
+			// t works for attributeType if attributeType subclasses t or implements
+			if ( t.isAssignableFrom(attributeType) ) return renderers.get(t);
+		}
+		return null;
+	}
 
     /** StringTemplate object factory; each group can have its own. */
     public ST createStringTemplate() {

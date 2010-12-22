@@ -38,18 +38,18 @@ import java.util.Locale;
 import static org.junit.Assert.assertEquals;
 
 public class TestRenderers extends BaseTest {
-    @Test public void testRendererForGroup() throws Exception {
-        String templates =
-                "dateThing(created) ::= \"datetime: <created>\"\n";
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
-        ST st = group.getInstanceOf("dateThing");
-        st.add("created", new GregorianCalendar(2005, 07-1, 05));
-        String expecting = "datetime: 7/5/05 12:00 AM";
-        String result = st.render();
-        assertEquals(expecting, result);
-    }
+	@Test public void testRendererForGroup() throws Exception {
+		String templates =
+				"dateThing(created) ::= \"datetime: <created>\"\n";
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/t.stg");
+		group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+		ST st = group.getInstanceOf("dateThing");
+		st.add("created", new GregorianCalendar(2005, 07-1, 05));
+		String expecting = "datetime: 7/5/05 12:00 AM";
+		String result = st.render();
+		assertEquals(expecting, result);
+	}
 
     @Test public void testRendererWithFormat() throws Exception {
         String templates =
@@ -148,6 +148,21 @@ public class TestRenderers extends BaseTest {
         assertEquals(expecting, result);
     }
 
+	@Test public void testInstanceofRenderer() throws Exception {
+		String templates =
+				"numberThing(x,y,z) ::= \"numbers: <x>, <y>; <z>\"\n";
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/t.stg");
+		group.registerRenderer(Number.class, new NumberRenderer());
+		ST st = group.getInstanceOf("numberThing");
+		st.add("x", -2100);
+		st.add("y", 3.14159);
+		st.add("z", "hi");
+		String expecting = "numbers: -2100, 3.14159; hi";
+		String result = st.render();
+		assertEquals(expecting, result);
+	}
+
     @Test public void testLocaleWithNumberRenderer() throws Exception {
         String templates =
                 "foo(x,y) ::= << <x; format=\"%,d\"> <y; format=\"%,2.3f\"> >>\n";
@@ -211,5 +226,5 @@ public class TestRenderers extends BaseTest {
         String result = st.render();
         assertEquals(expecting, result);
     }
-    
+
 }
