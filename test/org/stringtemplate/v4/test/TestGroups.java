@@ -254,7 +254,7 @@ public class TestGroups extends BaseTest {
     @Test public void testDefaultArgument() throws Exception {
         String templates =
                 "method(name) ::= <<"+newline+
-                "<stat(...)>" +newline+
+                "<stat(name)>" +newline+
                 ">>"+newline+
                 "stat(name,value=\"99\") ::= \"x=<value>; // <name>\""+newline
                 ;
@@ -327,9 +327,9 @@ public class TestGroups extends BaseTest {
         }
         String templates =
                 "method(fields) ::= <<"+newline+
-                "<fields:{f | <stat(...)>}>" +newline+
+                "<fields:{f | <stat()>}>" +newline+
                 ">>"+newline+
-                "stat(f,value={<f.name>}) ::= \"x=<value>; // <f.name>\""+newline
+                "stat(value={<f.name>}) ::= \"x=<value>; // <f.name>\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/group.stg");
@@ -367,7 +367,7 @@ public class TestGroups extends BaseTest {
     @Test public void testDefaultArgumentAsTemplate() throws Exception {
         String templates =
                 "method(name,size) ::= <<"+newline+
-                "<stat(...)>" +newline+
+                "<stat(name)>" +newline+
                 ">>"+newline+
                 "stat(name,value={<name>}) ::= \"x=<value>; // <name>\""+newline
                 ;
@@ -385,7 +385,7 @@ public class TestGroups extends BaseTest {
     @Test public void testDefaultArgumentAsTemplate2() throws Exception {
         String templates =
                 "method(name,size) ::= <<"+newline+
-                "<stat(...)>" +newline+
+                "<stat(name)>" +newline+
                 ">>"+newline+
                 "stat(name,value={ [<name>] }) ::= \"x=<value>; // <name>\""+newline
                 ;

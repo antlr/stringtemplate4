@@ -185,23 +185,4 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testSuperWithArgAndPassThru() throws Exception {
-		String dir1 = getRandomDir();
-		String a = "a(x,y) ::= <<dir1 a <x><y>.>>\n";
-		String b = "b(x,y) ::= <<dir1 b>>\n";
-		writeFile(dir1, "a.st", a);
-		writeFile(dir1, "b.st", b);
-		String dir2 = getRandomDir();
-		a = "a(y={2}) ::= << [<super.a({1},...)>] >>\n";
-		writeFile(dir2, "a.st", a);
-
-		STGroup group1 = new STGroupDir(dir1);
-		STGroup group2 = new STGroupDir(dir2);
-		group2.importTemplates(group1);
-		ST st = group2.getInstanceOf("a");
-		String expected = " [dir1 a 12.] ";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
 }

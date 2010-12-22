@@ -77,7 +77,7 @@ public class TestDollarDelimiters extends BaseTest {
     @Test public void testDefaultArgument() throws Exception {
         String templates =
                 "method(name) ::= <<"+newline+
-                "$stat(...)$" +newline+
+                "$stat(name)$" +newline+
                 ">>"+newline+
                 "stat(name,value=\"99\") ::= \"x=$value$; // $name$\""+newline
                 ;

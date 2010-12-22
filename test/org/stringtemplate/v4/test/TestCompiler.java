@@ -172,18 +172,6 @@ public class TestCompiler extends BaseTest {
 		assertEquals(expected, errors.toString());
 	}
 
-	@Test public void testIncludeWitArgsAndPassThru() throws Exception {
-		String template = "hi <foo(a,b,...)>";
-		CompiledST code = new Compiler().compile(template);
-		String asmExpected =
-			"load_str 0, write, load_attr 1, load_attr 2, arg_pass_thru, new 3 3, write";
-		String asmResult = code.instrs();
-		assertEquals(asmExpected, asmResult);
-		String stringsExpected = "[hi , a, b, foo]";
-		String stringsResult = Arrays.toString(code.strings);
-		assertEquals(stringsExpected, stringsResult);
-	}
-
 	@Test public void testIndirectIncludeWitArgs() throws Exception {
 		String template = "hi <(foo)(a,b)>";
 		CompiledST code = new Compiler().compile(template);
@@ -192,18 +180,6 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[hi , foo, a, b]";
-		String stringsResult = Arrays.toString(code.strings);
-		assertEquals(stringsExpected, stringsResult);
-	}
-
-	@Test public void testIndirectIncludeWitArgsAndPassThru() throws Exception {
-		String template = "<(foo)(a,b,...)>";
-		CompiledST code = new Compiler().compile(template);
-		String asmExpected =
-			"load_attr 0, tostr, load_attr 1, load_attr 2, arg_pass_thru, new_ind 3, write";
-		String asmResult = code.instrs();
-		assertEquals(asmExpected, asmResult);
-		String stringsExpected = "[foo, a, b]";
 		String stringsResult = Arrays.toString(code.strings);
 		assertEquals(stringsExpected, stringsResult);
 	}
@@ -238,18 +214,6 @@ public class TestCompiler extends BaseTest {
 		CompiledST code = new Compiler().compile(template);
 		String asmExpected =
 			"load_attr 0, null, new 1 1, map, write";
-		String asmResult = code.instrs();
-		assertEquals(asmExpected, asmResult);
-		String stringsExpected = "[name, bold]";
-		String stringsResult = Arrays.toString(code.strings);
-		assertEquals(stringsExpected, stringsResult);
-	}
-
-	@Test public void testMapArgPassThru() throws Exception {
-		String template = "<name:bold(...)>";
-		CompiledST code = new Compiler().compile(template);
-		String asmExpected =
-			"load_attr 0, null, arg_pass_thru, new 1 2, map, write";
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[name, bold]";

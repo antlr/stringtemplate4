@@ -147,6 +147,7 @@ subtemplate returns [String name, int nargs=0]
 		'}'
     ;
     
+/** Used to parse {...} in default arguments in Group.g */
 headlessSubtemplate returns [String name, int nargs=0]
 	:	subtemplateBody {$name=$subtemplateBody.name; $nargs=$subtemplateBody.nargs;} '}'
     ;
@@ -337,8 +338,7 @@ primary
 	;
 
 args returns [int n=0]
-	:	arg {$n=1;} (',' arg {$n++;})* (',' '...' {gen.emit(Bytecode.INSTR_ARG_PASS_THRU); $n++;})?
-	|	'...' {gen.emit(Bytecode.INSTR_ARG_PASS_THRU); $n++;}
+	:	arg {$n=1;} (',' arg {$n++;})*
 	|
 	;
 

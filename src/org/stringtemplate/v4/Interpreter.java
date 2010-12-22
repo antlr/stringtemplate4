@@ -217,9 +217,6 @@ public class Interpreter {
 				sp -= nargs;
 				operands[++sp] = st;
                 break;
-            case Bytecode.INSTR_ARG_PASS_THRU :
-				operands[++sp] = ARG_PASS_THRU;
-                break;
             case Bytecode.INSTR_STORE_OPTION:
                 int optionIndex = getShort(code, ip);
                 ip += Bytecode.OPND_SIZE_IN_BYTES;

@@ -266,7 +266,7 @@ public class TestDictionaries extends BaseTest {
     @Test public void testDictViaEnclosingTemplates() throws Exception {
         String templates =
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
-                "intermediate(type,name) ::= \"<var(...)>\""+newline+
+                "intermediate(type,name) ::= \"<var(type,name)>\""+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
         writeFile(tmpdir, "test.stg", templates);
