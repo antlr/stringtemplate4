@@ -192,14 +192,12 @@ public class Interpreter {
                 operands[++sp] = st;
                 break;
             case Bytecode.INSTR_SUPER_NEW :
-                nameIndex = getShort(code, ip);
-                ip += Bytecode.OPND_SIZE_IN_BYTES;
-                name = self.impl.strings[nameIndex];
+				nameIndex = getShort(code, ip);
+				ip += Bytecode.OPND_SIZE_IN_BYTES;
+				name = self.impl.strings[nameIndex];
 				nargs = getShort(code, ip);
 				ip += Bytecode.OPND_SIZE_IN_BYTES;
-                // super.foo refers to the foo in the imported group
-                // relative to the native group of self (i.e., where self
-                // was defined).
+
                 CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
                 if ( imported==null ) {
                     ErrorManager.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
@@ -207,26 +205,37 @@ public class Interpreter {
                     operands[++sp] = ST.BLANK;
                     break;
                 }
+
                 st = imported.nativeGroup.createStringTemplate();
+				st.enclosingInstance = self; // self invoked super.name()
                 st.groupThatCreatedThisInstance = group;
                 st.impl = imported;
-                operands[++sp] = st;
-                break;
-//            case Bytecode.INSTR_STORE_ATTR:
+				// get n args and store into st's attr list
+				storeArgs(self, nargs, st);
+				sp -= nargs;
+				operands[++sp] = st;
+
+				// OLD
 //                nameIndex = getShort(code, ip);
-//                name = self.impl.strings[nameIndex];
 //                ip += Bytecode.OPND_SIZE_IN_BYTES;
-//                o = operands[sp--];    // value to store
-//                st = (ST)operands[sp]; // store arg in ST on top of stack
-//                st.checkAttributeExists(name);
-//                st.rawSetAttribute(name, o);
-//                break;
-//            case Bytecode.INSTR_STORE_SOLE_ARG :
-//                // unnamed arg, set to sole arg (or first if multiple)
-//                o = operands[sp--];    // value to store
-//                st = (ST)operands[sp]; // store arg in ST on top of stack
-//                setSoleArgument(self, st, o);
-//                break;
+//                name = self.impl.strings[nameIndex];
+//				nargs = getShort(code, ip);
+//				ip += Bytecode.OPND_SIZE_IN_BYTES;
+//                // super.foo refers to the foo in the imported group
+//                // relative to the native group of self (i.e., where self
+//                // was defined).
+//                CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
+//                if ( imported==null ) {
+//                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
+//                                              name);
+//                    operands[++sp] = ST.BLANK;
+//                    break;
+//                }
+//                st = imported.nativeGroup.createStringTemplate();
+//                st.groupThatCreatedThisInstance = group;
+//                st.impl = imported;
+//                operands[++sp] = st;
+                break;
             case Bytecode.INSTR_SET_PASS_THRU :
                 st = (ST)operands[sp]; // ST on top of stack
                 st.passThroughAttributes = true;
@@ -406,7 +415,6 @@ public class Interpreter {
     }
 
 	void storeArgs(ST self, int nargs, ST st) {
-			// TODO: add err check to see about arg mismatch
 		int nformalArgs = st.impl.formalArguments.size();
 		if ( nargs != (nformalArgs-st.impl.getNumberOfArgsWithDefaultValues()) ) {
 			ErrorManager.runTimeError(self,
@@ -417,10 +425,9 @@ public class Interpreter {
 									  nformalArgs);
 
 		}
-		Object o;
 		int firstArg = sp-(nargs-1);
 		for (int i=0; i<Math.min(nargs,st.impl.formalArguments.size()); i++) {
-			o = operands[firstArg+i];    // value to store
+			Object o = operands[firstArg+i];    // value to store
 			String argName = st.impl.formalArguments.get(i);
 			st.checkAttributeExists(argName);
 			st.rawSetAttribute(argName, o);
@@ -688,7 +695,7 @@ public class Interpreter {
     }
 
     protected void addToList(List<Object> list, Object o) {
-        if ( o==null ) return; // [a,b,c] lists ignore null values
+        //if ( o==null ) return; // [a,b,c] lists ignore null values
         o = Interpreter.convertAnythingIteratableToIterator(o);
         if ( o instanceof Iterator ) {
             // copy of elements into our temp list

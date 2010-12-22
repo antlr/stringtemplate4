@@ -97,7 +97,31 @@ public class TestCompiler extends BaseTest {
 		assertEquals(stringsExpected, stringsResult);
 	}
 
-	@Test public void testIncludeWitArgs() throws Exception {
+	@Test public void testSuperInclude() throws Exception {
+		String template = "<super.foo()>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"super_new 0 0, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[foo]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
+
+	@Test public void testSuperIncludeWithArgs() throws Exception {
+		String template = "<super.foo(a,{b})>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"load_attr 0, new 1 0, super_new 2 2, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[a, _sub1, foo]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
+
+	@Test public void testIncludeWithArgs() throws Exception {
 		String template = "hi <foo(a,b)>";
 		CompiledST code = new Compiler().compile(template);
 		String asmExpected =
@@ -168,6 +192,18 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[hi , foo, a, b]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
+
+	@Test public void testIndirectIncludeWitArgsAndPassThru() throws Exception {
+		String template = "<(foo)(a,b,...)>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"load_attr 0, tostr, load_attr 1, load_attr 2, new_ind 2, set_pass_thru, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[foo, a, b]";
 		String stringsResult = Arrays.toString(code.strings);
 		assertEquals(stringsExpected, stringsResult);
 	}

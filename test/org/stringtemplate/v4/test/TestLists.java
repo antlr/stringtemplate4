@@ -47,6 +47,18 @@ public class TestLists extends BaseTest {
 		assertEquals(expecting, e.render());
 	}
 
+	@Test public void testLength() throws Exception {
+		ST e = new ST(
+				"<length([names,phones])>"
+			);
+		e.add("names", "Ter");
+		e.add("names", "Tom");
+		e.add("phones", "1");
+		e.add("phones", "2");
+		String expecting = "4";
+		assertEquals(expecting, e.render());
+	}
+
 	@Test public void testCat2Attributes() throws Exception {
 		ST e = new ST(
 				"<[names,phones]; separator=\", \">"
@@ -109,15 +121,27 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testCatWithNullTemplateApplicationAsElement() throws Exception {
-        ST e = new ST(
-                "<[names:{n|<n>!},\"foo\"]:{a|x}; separator=\", \">"
-            );
-        e.add("phones", "1");
-        e.add("phones", "2");
-        String expecting = "x";  // only one since template application gives nothing
-        assertEquals(expecting, e.render());
-    }
+	@Test public void testCatNullValues() throws Exception {
+		// [a, b] must behave like <a><b>; if a==b==null, blank output
+		// unless null argument.
+		ST e = new ST(
+				"<[no,go]; null=\"foo\", separator=\", \">"
+			);
+		e.add("phones", "1");
+		e.add("phones", "2");
+		String expecting = "foo, foo";  // only one since template application gives nothing
+		assertEquals(expecting, e.render());
+	}
+
+	@Test public void testCatWithNullTemplateApplicationAsElement() throws Exception {
+		ST e = new ST(
+				"<[names:{n|<n>!},\"foo\"]:{a|x}; separator=\", \">"
+			);
+		e.add("phones", "1");
+		e.add("phones", "2");
+		String expecting = "x";  // only one since template application gives nothing
+		assertEquals(expecting, e.render());
+	}
 
     @Test public void testCatWithNestedTemplateApplicationAsElement() throws Exception {
         ST e = new ST(

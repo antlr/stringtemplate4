@@ -76,6 +76,15 @@ public class ST {
      *
      *  st = skin1.getInstanceOf("searchbox");
      *  result = st.render(); // knows skin1 created it
+	 *
+	 *  Say we have a group, g1, with template t and import t and u templates from
+	 *  another group, g2.  g1.getInstanceOf("u") finds u in g2 but remembers
+	 *  that g1 created it.  If u includes t, it should create g1.t not g2.t.
+	 *
+	 *   g1 = {t(), u()}
+	 *   |
+	 *   v
+	 *   g2 = {t()}
      */
     public STGroup groupThatCreatedThisInstance;
 

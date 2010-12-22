@@ -101,7 +101,7 @@ public class STGroup {
     }
 
     /** The primary means of getting an instance of a template from this
-     *  group. Names must be absolute, fully-qualified names like /a/b
+     *  group. Names must be absolute, fully-qualified names like a/b
      */
     public ST getInstanceOf(String name) {
 		if ( name==null ) return null;

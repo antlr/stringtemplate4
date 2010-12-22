@@ -51,17 +51,29 @@ public class TestFunctions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testLength() throws Exception {
-        String template = "<length(names)>";
-        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
-        List names = new ArrayList() {
-            {add("Ter"); add("Tom");}
-        };
-        st.add("names", names);
-        String expected = "2";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testLength() throws Exception {
+		String template = "<length(names)>";
+		org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
+		List names = new ArrayList() {
+			{add("Ter"); add("Tom");}
+		};
+		st.add("names", names);
+		String expected = "2";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testLengthWithNullValues() throws Exception {
+		String template = "<length(names)>";
+		org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
+		List names = new ArrayList() {
+			{add("Ter"); add(null); add("Tom"); add(null); }
+		};
+		st.add("names", names);
+		String expected = "4";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testFirstOp() throws Exception {
         org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
@@ -132,19 +144,33 @@ public class TestFunctions extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testStripOp() throws Exception {
-        ST e = new org.stringtemplate.v4.ST(
-                "<strip(names); null=\"n/a\">"
-            );
-        e.add("names", null);
-        e.add("names", "Tom");
-        e.add("names", null);
-        e.add("names", null);
-        e.add("names", "Sriram");
-        e.add("names", null);
-        String expecting = "TomSriram";
-        assertEquals(expecting, e.render());
-    }
+	@Test public void testStripOp() throws Exception {
+		ST e = new org.stringtemplate.v4.ST(
+				"<strip(names); null=\"n/a\">"
+			);
+		e.add("names", null);
+		e.add("names", "Tom");
+		e.add("names", null);
+		e.add("names", null);
+		e.add("names", "Sriram");
+		e.add("names", null);
+		String expecting = "TomSriram";
+		assertEquals(expecting, e.render());
+	}
+
+	@Test public void testLengthStrip() throws Exception {
+		ST e = new org.stringtemplate.v4.ST(
+				"<length(strip(names))>"
+			);
+		e.add("names", null);
+		e.add("names", "Tom");
+		e.add("names", null);
+		e.add("names", null);
+		e.add("names", "Sriram");
+		e.add("names", null);
+		String expecting = "2";
+		assertEquals(expecting, e.render());
+	}
 
     @Test public void testCombinedOp() throws Exception {
         // replace first of yours with first of mine

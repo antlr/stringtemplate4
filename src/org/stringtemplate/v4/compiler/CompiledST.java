@@ -60,7 +60,7 @@ public class CompiledST {
     /** A list of all regions and subtemplates */
     public List<CompiledST> implicitlyDefinedTemplates;
 
-    /** The group that holds this ST definition.  We use it to initiate
+    /** The group that physically defines this ST definition.  We use it to initiate
      *  interpretation via ST.toString().  From there, it becomes field 'group'
      *  in interpreter and is fixed until rendering completes.
      */
