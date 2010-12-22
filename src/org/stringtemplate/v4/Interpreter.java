@@ -68,7 +68,7 @@ public class Interpreter {
 	public static final Object ARG_PASS_THRU = new Object();
 
     public static final Set<String> predefinedAttributes =
-        new HashSet<String>() { { add("it"); add("i"); add("i0"); } };
+        new HashSet<String>() { { add("i"); add("i0"); } };
 
     /** Operand stack, grows upwards */
     Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
