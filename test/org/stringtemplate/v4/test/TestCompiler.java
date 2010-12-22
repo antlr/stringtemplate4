@@ -176,7 +176,7 @@ public class TestCompiler extends BaseTest {
 		String template = "hi <foo(a,b,...)>";
 		CompiledST code = new Compiler().compile(template);
 		String asmExpected =
-			"load_str 0, write, load_attr 1, load_attr 2, new 3 2, set_pass_thru, write";
+			"load_str 0, write, load_attr 1, load_attr 2, arg_pass_thru, new 3 3, write";
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[hi , a, b, foo]";
@@ -200,7 +200,7 @@ public class TestCompiler extends BaseTest {
 		String template = "<(foo)(a,b,...)>";
 		CompiledST code = new Compiler().compile(template);
 		String asmExpected =
-			"load_attr 0, tostr, load_attr 1, load_attr 2, new_ind 2, set_pass_thru, write";
+			"load_attr 0, tostr, load_attr 1, load_attr 2, arg_pass_thru, new_ind 3, write";
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[foo, a, b]";
@@ -249,7 +249,7 @@ public class TestCompiler extends BaseTest {
 		String template = "<name:bold(...)>";
 		CompiledST code = new Compiler().compile(template);
 		String asmExpected =
-			"load_attr 0, null, new 1 1, set_pass_thru, map, write";
+			"load_attr 0, null, arg_pass_thru, new 1 2, map, write";
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[name, bold]";

@@ -304,7 +304,6 @@ options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
 							         $ID.text,
 								     $args.n,
 								     $start.getStartIndex(), $ID.getStopIndex());
-						   if ( $args.hasElipsis ) gen.emit(Bytecode.INSTR_SET_PASS_THRU);
 						   }
 	|	'@' (s='super' '.')? ID '(' rp=')'	// convert <@r()> to <region__enclosingTemplate__r()>
 						   {
@@ -333,14 +332,13 @@ primary
 		(	'(' args ')' // indirect call
 			{
 			gen.emit1(Bytecode.INSTR_NEW_IND, $args.n, $lp.getStartIndex(),$rp.getStartIndex());
- 			if ( $args.hasElipsis ) gen.emit(Bytecode.INSTR_SET_PASS_THRU);
 			}
 		)?
 	;
 
-args returns [int n=0, boolean hasElipsis]
-	:	arg {$n=1;} (',' arg {$n++;})* (',' '...' {$hasElipsis=true;})?
-	|	'...' {$hasElipsis=true;}
+args returns [int n=0]
+	:	arg {$n=1;} (',' arg {$n++;})* (',' '...' {gen.emit(Bytecode.INSTR_ARG_PASS_THRU); $n++;})?
+	|	'...' {gen.emit(Bytecode.INSTR_ARG_PASS_THRU); $n++;}
 	|
 	;
 
@@ -356,7 +354,6 @@ mapTemplateRef[int num_exprs]
 		ID  '(' args ')'   {
 						   gen.emit2(Bytecode.INSTR_NEW,$ID.text, $args.n+$num_exprs,
                    		 	         $ID.getStartIndex(), $ID.getStopIndex());
-						   if ( $args.hasElipsis ) gen.emit(Bytecode.INSTR_SET_PASS_THRU);
                    		   }
 	|	{for (int i=1; i<=num_exprs; i++) gen.emit(Bytecode.INSTR_NULL);}
 		subtemplate
@@ -379,7 +376,6 @@ mapTemplateRef[int num_exprs]
 		{
 		gen.emit1(Bytecode.INSTR_NEW_IND, $args.n+$num_exprs,
 				  $lp.getStartIndex(),$rp.getStartIndex());
-		if ( $args.hasElipsis ) gen.emit(Bytecode.INSTR_SET_PASS_THRU);
 		}
 	;
 	

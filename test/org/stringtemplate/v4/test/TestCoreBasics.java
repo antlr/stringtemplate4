@@ -131,10 +131,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testInclude() throws Exception {
         String template = "load <box()>;";
         ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box",
-                                "kewl\n" +
-                                "daddy"
-                                );
+        st.impl.nativeGroup.defineTemplate("box", "kewl\ndaddy");
         st.add("name", "Ter");
         String expected =
             "load kewl\n" +

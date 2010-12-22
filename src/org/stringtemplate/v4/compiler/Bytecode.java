@@ -60,7 +60,7 @@ public class Bytecode {
     public static final short INSTR_LOAD_LOCAL      = 3; // load stuff like it, i, i0
     public static final short INSTR_LOAD_PROP       = 4;
     public static final short INSTR_LOAD_PROP_IND   = 5;
-    public static final short INSTR_SET_PASS_THRU   = 6;
+    public static final short INSTR_ARG_PASS_THRU   = 6;
     public static final short INSTR_STORE_OPTION    = 7;
     public static final short INSTR_NEW             = 8;  // create new template instance
     public static final short INSTR_NEW_IND         = 9;  // create new template instance using value on stack
@@ -108,7 +108,7 @@ public class Bytecode {
         new Instruction("load_local",OperandType.STRING),
         new Instruction("load_prop",OperandType.STRING),
         new Instruction("load_prop_ind"),
-        new Instruction("set_pass_thru"),
+        new Instruction("arg_pass_thru"),
         new Instruction("store_option",OperandType.INT),
         new Instruction("new",OperandType.STRING,OperandType.INT),
         new Instruction("new_ind",OperandType.INT),

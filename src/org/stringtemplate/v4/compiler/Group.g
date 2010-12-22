@@ -67,7 +67,7 @@ public void error(String msg) {
 }
 
 @lexer::members {
-protected STGroup group;
+public STGroup group;
 
 public void reportError(RecognitionException e) {
     String msg = null;

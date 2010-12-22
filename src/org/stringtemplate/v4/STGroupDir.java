@@ -28,7 +28,6 @@
 package org.stringtemplate.v4;
 
 import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.stringtemplate.v4.compiler.CompiledST;
@@ -164,6 +163,7 @@ public class STGroupDir extends STGroup {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		GroupParser parser = new GroupParser(tokens);
 		parser.group = this;
+		lexer.group = this;
 		try {
 			parser.templateDef(prefix);
 		}

@@ -65,6 +65,8 @@ public class Interpreter {
 
     public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
+	public static final Object ARG_PASS_THRU = new Object();
+
     public static final Set<String> predefinedAttributes =
         new HashSet<String>() { { add("it"); add("i"); add("i0"); } };
 
@@ -214,31 +216,9 @@ public class Interpreter {
 				storeArgs(self, nargs, st);
 				sp -= nargs;
 				operands[++sp] = st;
-
-				// OLD
-//                nameIndex = getShort(code, ip);
-//                ip += Bytecode.OPND_SIZE_IN_BYTES;
-//                name = self.impl.strings[nameIndex];
-//				nargs = getShort(code, ip);
-//				ip += Bytecode.OPND_SIZE_IN_BYTES;
-//                // super.foo refers to the foo in the imported group
-//                // relative to the native group of self (i.e., where self
-//                // was defined).
-//                CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
-//                if ( imported==null ) {
-//                    ErrorManager.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
-//                                              name);
-//                    operands[++sp] = ST.BLANK;
-//                    break;
-//                }
-//                st = imported.nativeGroup.createStringTemplate();
-//                st.groupThatCreatedThisInstance = group;
-//                st.impl = imported;
-//                operands[++sp] = st;
                 break;
-            case Bytecode.INSTR_SET_PASS_THRU :
-                st = (ST)operands[sp]; // ST on top of stack
-                st.passThroughAttributes = true;
+            case Bytecode.INSTR_ARG_PASS_THRU :
+				operands[++sp] = ARG_PASS_THRU;
                 break;
             case Bytecode.INSTR_STORE_OPTION:
                 int optionIndex = getShort(code, ip);
@@ -416,7 +396,17 @@ public class Interpreter {
 
 	void storeArgs(ST self, int nargs, ST st) {
 		int nformalArgs = st.impl.formalArguments.size();
-		if ( nargs != (nformalArgs-st.impl.getNumberOfArgsWithDefaultValues()) ) {
+		int firstArg = sp-(nargs-1);
+		int numToStore = Math.min(nargs, st.impl.formalArguments.size());
+
+		if ( numToStore>0 && operands[firstArg+numToStore-1]==ARG_PASS_THRU ) {
+			st.passThroughAttributes = true;
+			numToStore--; // ignore last arg, it's "..."
+		}
+
+		if ( !st.passThroughAttributes &&
+			 nargs != (nformalArgs-st.impl.getNumberOfArgsWithDefaultValues()) )
+		{
 			ErrorManager.runTimeError(self,
 									  current_ip,
 									  ErrorType.ARGUMENT_COUNT_MISMATCH,
@@ -425,8 +415,8 @@ public class Interpreter {
 									  nformalArgs);
 
 		}
-		int firstArg = sp-(nargs-1);
-		for (int i=0; i<Math.min(nargs,st.impl.formalArguments.size()); i++) {
+
+		for (int i=0; i<numToStore; i++) {
 			Object o = operands[firstArg+i];    // value to store
 			String argName = st.impl.formalArguments.get(i);
 			st.checkAttributeExists(argName);
