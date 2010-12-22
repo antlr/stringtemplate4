@@ -413,13 +413,14 @@ public class Interpreter {
 									  nargs,
 									  st.impl.name,
 									  nformalArgs);
-
 		}
 
+		Iterator<String> argNames = st.impl.formalArguments.keySet().iterator();
 		for (int i=0; i<numToStore; i++) {
 			Object o = operands[firstArg+i];    // value to store
-			String argName = st.impl.formalArguments.get(i);
-			st.checkAttributeExists(argName);
+//			String argName = st.impl.formalArguments.get(i);
+			String argName = argNames.next();
+			//st.checkAttributeExists(argName);
 			st.rawSetAttribute(argName, o);
 		}
 	}
@@ -672,16 +673,19 @@ public class Interpreter {
     }
 
     protected void setFirstArgument(ST self, ST st, Object attr) {
-        String name = "it";
         int nargs = st.impl.formalArguments.size();
-        if ( nargs > 0 ) {
-//            if ( nargs != 1 ) {
-//                ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_SINGLE_ARGUMENT, st, nargs);
-//            }
-//			name = st.impl.formalArguments.keySet().iterator().next();
-			name = st.impl.formalArguments.get(0);
-        }
-        st.rawSetAttribute(name, attr);
+		if ( nargs == 0 ) {
+			ErrorManager.runTimeError(self,
+									  current_ip,
+									  ErrorType.ARGUMENT_COUNT_MISMATCH,
+									  1,
+									  st.impl.name,
+									  nargs);
+		}
+        else if ( nargs > 0 ) {
+			String name = st.impl.formalArguments.keySet().iterator().next();
+	        st.rawSetAttribute(name, attr);
+		}
     }
 
     protected void addToList(List<Object> list, Object o) {

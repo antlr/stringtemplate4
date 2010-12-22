@@ -27,15 +27,11 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.antlr.runtime.CommonToken;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.compiler.FormalArgument;
-import org.stringtemplate.v4.compiler.GroupParser;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
-import org.stringtemplate.v4.misc.OrderedHashMap;
 
 import static org.junit.Assert.assertEquals;
 
@@ -178,11 +174,7 @@ public class TestOptions extends BaseTest {
         ErrorBuffer errors = new ErrorBuffer();
         ErrorManager.setErrorListener(errors);
         STGroup group = new STGroup();
-		OrderedHashMap<String,FormalArgument> args =
-			new OrderedHashMap<String,FormalArgument>();
-		args.put("name", new FormalArgument("name"));
-		group.defineTemplate("test", new CommonToken(GroupParser.ID, "text"),
-							 args, "<name; bad=\"ugly\">");
+		group.defineTemplate("test", "name", "<name; bad=\"ugly\">");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         String expected = "Ter";

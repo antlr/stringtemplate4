@@ -34,9 +34,9 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Interval;
-import org.stringtemplate.v4.misc.OrderedHashMap;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -218,7 +218,7 @@ public class Compiler {
         }
         code.addImplicitlyDefinedTemplate(sub);
         if ( argIDs!=null ) {
-            sub.formalArguments = new OrderedHashMap<String,FormalArgument>();
+            sub.formalArguments = new LinkedHashMap<String,FormalArgument>();
             for (Token arg : argIDs) {
                 String argName = arg.getText();
                 sub.formalArguments.put(argName, new FormalArgument(argName));

@@ -31,11 +31,11 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.Interval;
 import org.stringtemplate.v4.misc.Misc;
-import org.stringtemplate.v4.misc.OrderedHashMap;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /** The result of compiling an ST.  Contains all the bytecode instructions,
@@ -55,7 +55,7 @@ public class CompiledST {
     public int embeddedStart=-1, embeddedStop=-1; // if subtemplate
 
 	/** Either UNKNOWN or must be non null map */
-    public OrderedHashMap<String, FormalArgument> formalArguments = FormalArgument.UNKNOWN;
+    public LinkedHashMap<String, FormalArgument> formalArguments = FormalArgument.UNKNOWN;
 
     /** A list of all regions and subtemplates */
     public List<CompiledST> implicitlyDefinedTemplates;
