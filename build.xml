@@ -25,12 +25,15 @@
 
 	<!-- LOAD/DEFINE ant-antlr3 ANT TASK -->
 	<target name="pre-init">
-		<taskdef resource="org/apache/tools/ant/antlr/antlib.xml"/>
+		<taskdef resource="org/apache/tools/ant/antlr/antlib.xml">
+			<classpath refid="classpath"/>
+		</taskdef>
 	</target>
 
 	<target name="antlr" depends="init, pre-init">
 		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
-			target="${source}/org/stringtemplate/v4/compiler/Group.g"/>
+			target="${source}/org/stringtemplate/v4/compiler/Group.g">
+		</antlr:ant-antlr3>
 		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
 			target="${source}/org/stringtemplate/v4/compiler/STParser.g"/>
 	</target>
