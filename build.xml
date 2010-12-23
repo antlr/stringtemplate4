@@ -26,9 +26,12 @@
 	<target name="antlr" depends="init">
 		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
 			target="${source}/org/stringtemplate/v4/compiler/Group.g">
+			<classpath refid="classpath"/>
 		</antlr:ant-antlr3>
 		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
-			target="${source}/org/stringtemplate/v4/compiler/STParser.g"/>
+			target="${source}/org/stringtemplate/v4/compiler/STParser.g">
+			<classpath refid="classpath"/>
+		</antlr:ant-antlr3>
 	</target>
 
     <target name="clean">
