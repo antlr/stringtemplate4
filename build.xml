@@ -21,11 +21,13 @@
 
 	<target name="antlr" depends="init">
 		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
-			target="${source}/org/stringtemplate/v4/compiler/Group.g">
+			target="${source}/org/stringtemplate/v4/compiler/Group.g"
+			outputdirectory="${build.dir}/gen/org/stringtemplate/v4/compiler">
 			<classpath refid="classpath"/>
 		</antlr:ant-antlr3>
 		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
-			target="${source}/org/stringtemplate/v4/compiler/STParser.g">
+			target="${source}/org/stringtemplate/v4/compiler/STParser.g"
+			outputdirectory="${build.dir}/gen/org/stringtemplate/v4/compiler">
 			<classpath refid="classpath"/>
 		</antlr:ant-antlr3>
 	</target>
@@ -36,15 +38,15 @@
     </target>
 
     <target name="compile" depends="antlr" description="Compile for generic OS">
-        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dir}/classes"/>
         <javac
-                destdir="${build.dir}"
+                destdir="${build.dir}/classes"
                 source="1.5"
                 target="1.5"
                 debug="true"
                 excludes="org/stringtemplate/v4/test/**">
 			<classpath refid="classpath"/>
-            <src path="${source}"/>
+            <src path="${source}:${build.dir}/gen"/>
         </javac>
     </target>
 
@@ -52,7 +54,7 @@
         <mkdir dir="${dist.dir}"/>
 
         <jar jarfile="${jar.file}">
-            <fileset dir="${build.dir}" includes="**/*.class"/>
+            <fileset dir="${build.dir}/classes" includes="**/*.class"/>
 
             <manifest>
                 <attribute name="Version" value="${version}"/>
