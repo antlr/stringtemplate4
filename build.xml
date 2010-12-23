@@ -1,4 +1,4 @@
-<project name="distribution" default="distribute" basedir=".">
+<project name="ST4" default="distribute" basedir=".">
 
     <property file="build.properties" />
 
@@ -11,14 +11,36 @@
 
 	<path id="classpath">
 		<pathelement location="${antlr3.jar}"/>
+		<pathelement location="${ant-antlr3.jar}"/>
 	</path>
+
+		<!--
+		<taskdef name="antlr3" classname="org/apache/tools/ant/antlr/ANTLR3"/>
+		-->
+
+	<target name="init">
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build.dir}/gen/org/stringtemplate/v4/compiler" />
+	</target>
+
+	<!-- LOAD/DEFINE ant-antlr3 ANT TASK -->
+	<target name="pre-init">
+		<taskdef resource="org/apache/tools/ant/antlr/antlib.xml"/>
+	</target>
+
+	<target name="antlr" depends="init, pre-init">
+		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
+			target="${source}/org/stringtemplate/v4/compiler/Group.g"/>
+		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
+			target="${source}/org/stringtemplate/v4/compiler/STParser.g"/>
+	</target>
 
     <target name="clean">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>
     </target>
 
-    <target name="compile" description="Compile for generic OS">
+    <target name="compile" depends="antlr" description="Compile for generic OS">
         <mkdir dir="${build.dir}"/>
         <javac
                 destdir="${build.dir}"
