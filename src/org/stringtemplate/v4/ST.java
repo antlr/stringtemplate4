@@ -168,6 +168,11 @@ public class ST {
         }
     }
 
+	/** Remove an attribute entirely */
+	public void remove(String name) {
+		attributes.remove(name);
+	}
+
     protected void rawSetAttribute(String name, Object value) {
         if ( attributes==null ) {
             attributes = Collections.synchronizedMap(new HashMap<String,Object>());
