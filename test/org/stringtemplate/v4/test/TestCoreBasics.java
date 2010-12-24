@@ -34,6 +34,8 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.STNoSuchPropertyException;
+import org.stringtemplate.v4.misc.STRuntimeMessage;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -104,7 +106,7 @@ public class TestCoreBasics extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
 
-        assertTrue(names.size()==2); // my names list is still just 2
+        assertTrue(names.size() == 2); // my names list is still just 2
     }
 
     @Test public void testAttrIsArray() throws Exception {
@@ -119,14 +121,79 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testProp() throws Exception {
-        String template = "<u.id>: <u.name>";
-        ST st = new ST(template);
-        st.add("u", new User(1, "parrt"));
-        String expected = "1: parrt";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testProp() throws Exception {
+		String template = "<u.id>: <u.name>"; // checks field and method getter
+		ST st = new ST(template);
+		st.add("u", new User(1, "parrt"));
+		String expected = "1: parrt";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testSTProp() throws Exception {
+		String template = "<t.x>"; // get x attr of template t
+		ST st = new ST(template);
+		ST t = new ST("<x>");
+		t.add("x", "Ter");
+		st.add("t", t);
+		String expected = "Ter";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testNullAttrProp() throws Exception {
+		String template = "<u.id>: <u.name>";
+		ST st = new ST(template);
+		String expected = ": ";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testNoSuchProp() throws Exception {
+		ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
+		ErrorManager.setErrorListener(errors);
+		String template = "<u.qqq>";
+		ST st = new ST(template);
+		st.add("u", new User(1, "parrt"));
+		String expected = "";
+		String result = st.render();
+		assertEquals(expected, result);
+		ErrorManager.setErrorListener(ErrorManager.DEFAULT_ERROR_LISTENER);
+		STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
+		STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
+		assertEquals("org.stringtemplate.v4.test.BaseTest$User.qqq", e.propertyName);
+	}
+
+	@Test public void testNullIndirectProp() throws Exception {
+		ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
+		ErrorManager.setErrorListener(errors);
+		String template = "<u.(qqq)>";
+		ST st = new ST(template);
+		st.add("u", new User(1, "parrt"));
+		String expected = "";
+		String result = st.render();
+		assertEquals(expected, result);
+		ErrorManager.setErrorListener(ErrorManager.DEFAULT_ERROR_LISTENER);
+		STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
+		STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
+		assertEquals("org.stringtemplate.v4.test.BaseTest$User.null", e.propertyName);
+	}
+
+	@Test public void testPropConvertsToString() throws Exception {
+		ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
+		ErrorManager.setErrorListener(errors);
+		String template = "<u.(name)>";
+		ST st = new ST(template);
+		st.add("u", new User(1, "parrt"));
+		st.add("name", 100);
+		String expected = "";
+		String result = st.render();
+		assertEquals(expected, result);
+		ErrorManager.setErrorListener(ErrorManager.DEFAULT_ERROR_LISTENER);
+		STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
+		STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
+		assertEquals("org.stringtemplate.v4.test.BaseTest$User.100", e.propertyName);
+	}
 
     @Test public void testInclude() throws Exception {
         String template = "load <box()>;";

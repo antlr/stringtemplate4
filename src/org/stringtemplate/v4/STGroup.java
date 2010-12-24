@@ -31,9 +31,7 @@ import org.antlr.runtime.*;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.debug.DebugST;
-import org.stringtemplate.v4.misc.ErrorManager;
-import org.stringtemplate.v4.misc.ErrorType;
-import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.misc.*;
 
 import java.net.URL;
 import java.util.*;
@@ -91,6 +89,26 @@ public class STGroup {
      *  This structure is synchronized.
      */
     protected Map<Class, AttributeRenderer> renderers;
+
+    /** A dictionary that allows people to register a model adaptor for
+     *  a particular kind of object (subclass or implementation). Applies
+	 *  for any template evaluated relative to this group.
+	 *
+	 *  ST initializes with model adaptors that know how to pull
+	 *  properties out of Objects, Maps, and STs.
+	 */
+	protected Map<Class, ModelAdaptor> adaptors =
+		Collections.synchronizedMap(
+			new LinkedHashMap<Class, ModelAdaptor>() {{
+				put(Object.class, new ObjectModelAdaptor());
+				put(ST.class, new STModelAdaptor());
+				put(Map.class, new MapModelAdaptor());
+			}}
+		);
+
+	/** Cache exact attribute type to adaptor object */
+	protected Map<Class, ModelAdaptor> typeToAdaptorCache =
+		Collections.synchronizedMap(new LinkedHashMap<Class, ModelAdaptor>());
 
 	public static STGroup defaultGroup = new STGroup();
 
@@ -374,6 +392,53 @@ public class STGroup {
             ErrorManager.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, fileName);
         }
     }
+
+	/** Add an adaptor for a kind of object so ST knows how to pull properties
+	 *  from them. Add adaptors in increasing order of specificity.  ST adds Object,
+	 *  Map, and ST model adaptors for you first. Adaptors you add have
+	 *  priority over default adaptors.
+	 *
+	 *  If an adaptor for type T already exists, it is replaced by the adaptor arg.
+	 *
+	 *  This must invalidate cache entries, so set your adaptors up before
+	 *  render()ing your templates for efficiency.
+	 */
+	public void registerModelAdaptor(Class attributeType, ModelAdaptor adaptor) {
+		adaptors.put(attributeType, adaptor);
+		invalidateModelAdaptorCache(attributeType);
+	}
+
+	/** remove at least all types in cache that are subclasses or implement attributeType */
+	public void invalidateModelAdaptorCache(Class attributeType) {
+		typeToAdaptorCache.clear(); // be safe, not clever; wack all values
+		/*
+		List<Class> kill = new ArrayList<Class>();
+		for (Class t : typeToAdaptorCache.keySet()) {
+			if ( attributeType.isAssignableFrom(t) ) {
+				System.out.println(attributeType.getName() + " = " + t.getName());
+				kill.add(t);
+			}
+		}
+		for (Class t : kill) typeToAdaptorCache.remove(t);
+		*/
+	}
+
+	public ModelAdaptor getModelAdaptor(Class attributeType) {
+		ModelAdaptor a = typeToAdaptorCache.get(attributeType);
+		if ( a!=null ) return a;
+
+		// Else, we must find adaptor that fits;
+		// find last fit (most specific)
+		for (Class t : adaptors.keySet()) {
+			// t works for attributeType if attributeType subclasses t or implements
+			if ( t.isAssignableFrom(attributeType) ) {
+				System.out.println(t.getName()+" = "+attributeType.getName());
+				a = adaptors.get(t);
+			}
+		}
+		typeToAdaptorCache.put(attributeType, a); // cache it for next time
+		return a;
+	}
 
     /** Register a renderer for all objects of a particular "kind" for all
      *  templates evaluated relative to this group.  Use r to render if

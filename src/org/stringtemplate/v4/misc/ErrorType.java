@@ -34,9 +34,8 @@ public enum ErrorType {
     CANT_SET_ATTRIBUTE("can't set attribute %s; template %s has no such attribute"),
     NO_IMPORTED_TEMPLATE("no such template: super.%s"),
     NO_ATTRIBUTE_DEFINITION("attribute %s isn't defined"),
-    EXPECTING_SINGLE_ARGUMENT("expecting single arg in template reference %s (not %s args)"),
     MISSING_FORMAL_ARGUMENTS("missing argument definitions"),
-    NO_SUCH_PROPERTY("no such property or can't access: %s"),
+	NO_SUCH_PROPERTY("no such property or can't access: %s"),
 	MAP_ARGUMENT_COUNT_MISMATCH("iterating through %s values in zip map but template has %s declared arguments"),
 	ARGUMENT_COUNT_MISMATCH("passed %s arg(s) to template %s with %s declared arg(s)"),
     EXPECTING_STRING("function %s expects a string not %s"),
@@ -61,7 +60,6 @@ public enum ErrorType {
     INTERNAL_ERROR("%s"),
     WRITE_IO_ERROR("error writing output caused by"),
     CANT_LOAD_GROUP_FILE("can't load group file %s");
-    //CANT_LOAD_TEMPLATE_FILE("can't load template file %s");
 
     public String message;
 
