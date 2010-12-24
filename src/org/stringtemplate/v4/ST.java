@@ -88,14 +88,6 @@ public class ST {
      */
     public STGroup groupThatCreatedThisInstance;
 
-    /** Normally, formal parameters hide any attributes inherited from the
-     *  enclosing template with the same name.  This is normally what you
-     *  want, but makes it hard to invoke another template passing in all
-     *  the data.  Use notation now: <otherTemplate(...)> to say "pass in
-     *  all data".  Works great.  Can also say <otherTemplate(foo="xxx",...)>
-     */
-    protected boolean passThroughAttributes = false;
-
 	/** Just an alias for ArrayList, but this way I can track whether a
      *  list is something ST created or it's an incoming list.
      */
@@ -132,7 +124,6 @@ public class ST {
 		this.attributes.putAll(proto.attributes);
 		this.enclosingInstance = proto.enclosingInstance;
 		this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
-		this.passThroughAttributes = proto.passThroughAttributes;
 	}
 
     /** Inject an attribute (name/value pair). If there is already an
@@ -202,9 +193,7 @@ public class ST {
         if ( attributes!=null ) o = attributes.get(name);
         if ( o!=null ) return o;
 
-        if ( impl.formalArguments.get(name)!=null &&  // no local value && it's a formal arg
-             !passThroughAttributes )                 // but no ... in arg list
-        {
+        if ( impl.formalArguments.get(name)!=null ) {  // no local value && it's a formal arg
             // if you've defined attribute as formal arg for this
             // template and it has no value, do not look up the
             // enclosing dynamic scopes.
