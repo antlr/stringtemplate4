@@ -432,7 +432,7 @@ public class STGroup {
 		for (Class t : adaptors.keySet()) {
 			// t works for attributeType if attributeType subclasses t or implements
 			if ( t.isAssignableFrom(attributeType) ) {
-				System.out.println(t.getName()+" = "+attributeType.getName());
+				//System.out.println(t.getName()+" = "+attributeType.getName());
 				a = adaptors.get(t);
 			}
 		}

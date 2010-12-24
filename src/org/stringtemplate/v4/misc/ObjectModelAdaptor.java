@@ -27,13 +27,19 @@
  */
 package org.stringtemplate.v4.misc;
 
+import org.antlr.runtime.misc.DoubleKeyMap;
 import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 public class ObjectModelAdaptor implements ModelAdaptor {
+	/** Cache exact attribute type and property name reflection Member object */
+	protected DoubleKeyMap<Class, String, Member> classAndPropertyToMemberCache =
+		new DoubleKeyMap<Class, String, Member>();
+
 	public Object getProperty(ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{
@@ -44,41 +50,46 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 			throw new STNoSuchPropertyException(null, c.getName() + "." + propertyName);
 		}
 
-        // try getXXX and isXXX properties
-
-        // look up using reflection
-        String methodSuffix = Character.toUpperCase(propertyName.charAt(0))+
-            propertyName.substring(1, propertyName.length());
-        Method m = Misc.getMethod(c, "get" + methodSuffix);
-        if ( m==null ) {
-            m = Misc.getMethod(c, "is"+methodSuffix);
-        }
-        if ( m != null ) {
-            // TODO: save to avoid lookup later
-            try {
-                value = Misc.invokeMethod(m, o, value);
-            }
-            catch (Exception e) {
+		// Look in cache for Member first
+		Member member = classAndPropertyToMemberCache.get(c, propertyName);
+		if ( member!=null ) {
+			try {
+				if ( member.getClass() == Method.class ) return ((Method)member).invoke(o);
+				if ( member.getClass() == Field.class ) return ((Field)member).get(o);
+			}
+			catch (Exception e) {
 				throw new STNoSuchPropertyException(e, c.getName() + "." + propertyName);
-            }
-        }
-        else {
-            // try for a visible field
-            try {
-                Field f = c.getField(propertyName);
-                //self.getGroup().cacheClassProperty(c,propertyName,f);
-                try {
-                    value = Misc.accessField(f, o, value);
-                }
-                catch (IllegalAccessException iae) {
-					throw new STNoSuchPropertyException(iae, c.getName() + "." + propertyName);
-                }
-            }
-            catch (NoSuchFieldException nsfe) {
-				throw new STNoSuchPropertyException(nsfe, c.getName() + "." + propertyName);
-            }
-        }
+			}
+		}
 
-        return value;
+		// try getXXX and isXXX properties, look up using reflection
+		String methodSuffix = Character.toUpperCase(propertyName.charAt(0))+
+			propertyName.substring(1, propertyName.length());
+		Method m = Misc.getMethod(c, "get" + methodSuffix);
+		if ( m==null ) {
+			m = Misc.getMethod(c, "is"+methodSuffix);
+		}
+		try {
+			if ( m != null ) {
+				classAndPropertyToMemberCache.put(c, propertyName, m);
+				value = Misc.invokeMethod(m, o, value);
+			}
+			else {
+				// try for a visible field
+				Field f = c.getField(propertyName);
+				classAndPropertyToMemberCache.put(c, propertyName, f);
+				try {
+					value = Misc.accessField(f, o, value);
+				}
+				catch (IllegalAccessException iae) {
+					throw new STNoSuchPropertyException(iae, c.getName() + "." + propertyName);
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new STNoSuchPropertyException(e, c.getName() + "." + propertyName);
+		}
+
+		return value;
 	}
 }
