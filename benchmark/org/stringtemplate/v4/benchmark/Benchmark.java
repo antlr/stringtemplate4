@@ -29,11 +29,15 @@ public class Benchmark {
 			if ( m.getName().startsWith("time") ) benchmarks.add(m);
 		}
 
+		// TODO: grab interpreted time to check for compiler removing
+		// dead code and giving inside speedups?
+
 		// warm everybody up to ensure they are compiled.
 		// must run them all since loading later test can force recompilation
 		System.err.println("# HotSpot warmup");
 		for (Method m : benchmarks) m.invoke(suite,WARMUP_REPS);
 
+		System.err.println("# Computing number of reps per trial");
 		// Compute a reps num that kicks each benchmark over MIN_BENCHMARK_TIME_IN_MS
 		Map<Method, Integer> min_reps = new HashMap<Method, Integer>();
 		for (Method m : benchmarks) {

@@ -67,6 +67,7 @@ public class BaseTest {
 			ioe.printStackTrace(System.err);
 		}
 	}
+
     public void checkTokens(String template, String expected) {
         checkTokens(template, expected, '<', '>');
     }
@@ -115,8 +116,8 @@ public class BaseTest {
             return false;
         }
 	}
-    
-    protected String getRandomDir() {
+
+    public static String getRandomDir() {
         String randomDir = tmpdir+"dir"+String.valueOf((int)(Math.random()*100000));
         File f = new File(randomDir);
         f.mkdirs();
