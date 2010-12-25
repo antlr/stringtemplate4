@@ -80,7 +80,7 @@ public class Interpreter {
 	Locale locale;
 
 	/** Dump bytecode instructions as we execute them? */
-	public boolean trace = true;
+	public static boolean trace = false;
 
 	/** Track everything happening in interp if debug across all templates */
 	protected List<InterpEvent> events;
