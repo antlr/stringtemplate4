@@ -36,6 +36,8 @@ public class Benchmark {
 		}
 	}
 
+	// keep run as one big method so it all gets compiled.
+
 	public static void run(String benchmarkClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnknownHostException, InvocationTargetException {
 		Class c = Class.forName(benchmarkClassName);
 		Object suite = c.newInstance();
