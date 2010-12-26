@@ -1,0 +1,21 @@
+# Env Host terence.local, Dec 26, 2010 10:30:24 AM, Java 1.6.0_22-b04-307-10M3261, Mac OS X 10.6.5 on x86_64
+# HotSpot warmup
+# Computing number of reps per trial
+# time2Args benchmarking
+# timeLotsOfArgs benchmarking
+# timeSimplePropsOfArgs benchmarking
+# timeDynamicAttributeLookup benchmarking
+# timeDeepDynamicLookup benchmarking
+timeSimplePropsOfArgs         :   395.24  402.13  399.98  369.82  408.94 =   395.22 units of work / ms
+timeDeepDynamicLookup         :    74.90   76.92   77.04   77.62   77.45 =    76.79 units of work / ms
+timeDynamicAttributeLookup    :   779.24  789.39  783.38  784.43  794.15 =   786.12 units of work / ms
+time2Args                     :   699.52  663.76  728.28  884.45  892.18 =   773.64 units of work / ms warning: variable average work
+timeLotsOfArgs                :   128.14  128.42  134.57  135.90  135.24 =   132.46 units of work / ms warning: variable average work
+
+# Env Host terence.local, Dec 26, 2010 11:50:28 AM, Java 1.6.0_22-b04-307-10M3261, Mac OS X 10.6.5 on x86_64
+# HotSpot warmup
+# Computing number of reps per trial
+# timeSingle benchmarking
+# timeSingleBigger benchmarking
+timeSingleBigger              :     6.29    6.27    6.28    6.27    6.27 =     6.28 units of work / ms
+timeSingle                    :   733.33  736.13  743.92  742.87  744.47 =   740.14 units of work / ms

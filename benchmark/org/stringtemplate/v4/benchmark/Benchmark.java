@@ -3,10 +3,9 @@ package org.stringtemplate.v4.benchmark;
 import org.stringtemplate.v4.misc.MultiMap;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.InetAddress;
+import java.text.DateFormat;
+import java.util.*;
 
 /** A Java benchmark tool inspired by Caliper from google.  This isn't nearly
  *  as good but probably ok for my needs.
@@ -31,6 +30,16 @@ public class Benchmark {
 
 		// TODO: grab interpreted time to check for compiler removing
 		// dead code and giving inside speedups?
+
+		DateFormat df = DateFormat.getDateTimeInstance();
+
+		System.err.print("# Env ");
+		System.err.print("Host "+InetAddress.getLocalHost().getHostName());
+		System.err.print(", "+df.format(new GregorianCalendar().getTime()));
+		System.err.print(", Java " + System.getProperty("java.runtime.version"));
+		System.err.print(", "+System.getProperty("os.name")+" "+System.getProperty("os.version"));
+		System.err.print(" on " + System.getProperty("os.arch"));
+		System.err.println();
 
 		// warm everybody up to ensure they are compiled.
 		// must run them all since loading later test can force recompilation
