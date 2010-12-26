@@ -2,8 +2,10 @@ package org.stringtemplate.v4.benchmark;
 
 import org.stringtemplate.v4.misc.MultiMap;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -19,7 +21,22 @@ public class Benchmark {
 	public static final double MAX_ERROR_IN_WORK_PER_MS = 0.05;
 
 	public static void main(String[] args) throws Exception {
-		String benchmarkClassName = args[0];
+		DateFormat df = DateFormat.getDateTimeInstance();
+		System.err.print("# Env ");
+		System.err.print("Host "+ InetAddress.getLocalHost().getHostName());
+		System.err.print(", "+df.format(new GregorianCalendar().getTime()));
+		System.err.print(", Java " + System.getProperty("java.runtime.version"));
+		System.err.print(", "+System.getProperty("os.name")+" "+System.getProperty("os.version"));
+		System.err.print(" on " + System.getProperty("os.arch"));
+		System.err.println();
+
+		for (int i = 0; i < args.length; i++) {
+			String benchmarkClassName = args[i];
+			run(benchmarkClassName);
+		}
+	}
+
+	public static void run(String benchmarkClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnknownHostException, InvocationTargetException {
 		Class c = Class.forName(benchmarkClassName);
 		Object suite = c.newInstance();
 		Method[] methods = c.getDeclaredMethods();
@@ -30,16 +47,6 @@ public class Benchmark {
 
 		// TODO: grab interpreted time to check for compiler removing
 		// dead code and giving inside speedups?
-
-		DateFormat df = DateFormat.getDateTimeInstance();
-
-		System.err.print("# Env ");
-		System.err.print("Host "+InetAddress.getLocalHost().getHostName());
-		System.err.print(", "+df.format(new GregorianCalendar().getTime()));
-		System.err.print(", Java " + System.getProperty("java.runtime.version"));
-		System.err.print(", "+System.getProperty("os.name")+" "+System.getProperty("os.version"));
-		System.err.print(" on " + System.getProperty("os.arch"));
-		System.err.println();
 
 		// warm everybody up to ensure they are compiled.
 		// must run them all since loading later test can force recompilation
