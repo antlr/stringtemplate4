@@ -38,7 +38,7 @@ import static org.junit.Assert.assertEquals;
 public class TestOptions extends BaseTest {
     @Test public void testSeparator() throws Exception {
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
-        group.defineTemplate("test", "hi <name; separator=\", \">!");
+        group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
         org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
@@ -50,7 +50,7 @@ public class TestOptions extends BaseTest {
 
     @Test public void testAttrSeparator() throws Exception {
         STGroup group = new org.stringtemplate.v4.STGroup();
-        group.defineTemplate("test", "hi <name; separator=sep>!");
+        group.defineTemplate("test", "name,sep", "hi <name; separator=sep>!");
         ST st = group.getInstanceOf("test");
         st.add("sep", ", ");
         st.add("name", "Ter");
@@ -64,7 +64,7 @@ public class TestOptions extends BaseTest {
     @Test public void testIncludeSeparator() throws Exception {
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
         group.defineTemplate("foo", "|");
-        group.defineTemplate("test", "hi <name; separator=foo()>!");
+        group.defineTemplate("test", "name,sep", "hi <name; separator=foo()>!");
         ST st = group.getInstanceOf("test");
         st.add("sep", ", ");
         st.add("name", "Ter");
@@ -77,7 +77,7 @@ public class TestOptions extends BaseTest {
 
     @Test public void testSubtemplateSeparator() throws Exception {
         STGroup group = new org.stringtemplate.v4.STGroup();
-        group.defineTemplate("test", "hi <name; separator={<sep> _}>!");
+        group.defineTemplate("test", "name,sep", "hi <name; separator={<sep> _}>!");
         org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("sep", ",");
         st.add("name", "Ter");
@@ -90,7 +90,7 @@ public class TestOptions extends BaseTest {
 
     @Test public void testSeparatorWithNullFirstValueAndNullOption() throws Exception {
         STGroup group = new org.stringtemplate.v4.STGroup();
-        group.defineTemplate("test", "hi <name; null=\"n/a\", separator=\", \">!");
+        group.defineTemplate("test", "name", "hi <name; null=\"n/a\", separator=\", \">!");
         ST st = group.getInstanceOf("test");
         st.add("name", null);
         st.add("name", "Tom");
@@ -102,7 +102,7 @@ public class TestOptions extends BaseTest {
 
     @Test public void testSeparatorWithNull2ndValueAndNullOption() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "hi <name; null=\"n/a\", separator=\", \">!");
+        group.defineTemplate("test", "name", "hi <name; null=\"n/a\", separator=\", \">!");
         ST st = group.getInstanceOf("test");
 		st.impl.dump();
         st.add("name", "Ter");
@@ -115,7 +115,7 @@ public class TestOptions extends BaseTest {
 
 	@Test public void testNullValueAndNullOption() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("test", "<name; null=\"n/a\">");
+		group.defineTemplate("test", "name", "<name; null=\"n/a\">");
 		ST st = group.getInstanceOf("test");
 		st.add("name", null);
 		String expected = "n/a";
@@ -125,7 +125,7 @@ public class TestOptions extends BaseTest {
 
 	@Test public void testListApplyWithNullValueAndNullOption() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("test", "<name:{n | <n>}; null=\"n/a\">");
+		group.defineTemplate("test", "name", "<name:{n | <n>}; null=\"n/a\">");
 		ST st = group.getInstanceOf("test");
 		st.add("name", "Ter");
 		st.add("name", null);
@@ -140,7 +140,7 @@ public class TestOptions extends BaseTest {
 		// the value.  This verifies that null not blank comes out of first apply
 		// since we don't get [null].
 		STGroup group = new STGroup();
-		group.defineTemplate("test", "<name:{n | <n>}:{n | [<n>]}; null=\"n/a\">");
+		group.defineTemplate("test", "name", "<name:{n | <n>}:{n | [<n>]}; null=\"n/a\">");
 		ST st = group.getInstanceOf("test");
 		st.add("name", "Ter");
 		st.add("name", null);
@@ -152,7 +152,7 @@ public class TestOptions extends BaseTest {
 
     @Test public void testMissingValueAndNullOption() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "<name; null=\"n/a\">");
+        group.defineTemplate("test", "name", "<name; null=\"n/a\">");
         ST st = group.getInstanceOf("test");
         String expected = "n/a";
         String result = st.render();
@@ -162,7 +162,7 @@ public class TestOptions extends BaseTest {
     @Test public void testOptionDoesntApplyToNestedTemplate() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("foo", "<zippo>");
-        group.defineTemplate("test", "<foo(); null=\"n/a\">");
+        group.defineTemplate("test", "zippo", "<foo(); null=\"n/a\">");
         ST st = group.getInstanceOf("test");
         st.add("zippo", null);
         String expected = "";

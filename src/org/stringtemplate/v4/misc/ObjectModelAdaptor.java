@@ -40,6 +40,11 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 	protected DoubleKeyMap<Class, String, Member> classAndPropertyToMemberCache =
 		new DoubleKeyMap<Class, String, Member>();
 
+	/** Cached exception to reuse since creation is expensive part.
+	 *  Just in case people use "missing" to mean boolean false not error.
+	 */
+	static STNoSuchPropertyException cachedException;
+
 	public Object getProperty(ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{
@@ -47,7 +52,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
         Class c = o.getClass();
 
 		if ( property==null ) {
-			throw new STNoSuchPropertyException(null, c.getName() + "." + propertyName);
+			return throwNoSuchProperty(c.getName() + "." + propertyName);
 		}
 
 		// Look in cache for Member first
@@ -58,7 +63,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 				if ( member.getClass() == Field.class ) return ((Field)member).get(o);
 			}
 			catch (Exception e) {
-				throw new STNoSuchPropertyException(e, c.getName() + "." + propertyName);
+				throwNoSuchProperty(c.getName() + "." + propertyName);
 			}
 		}
 
@@ -82,14 +87,20 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 					value = Misc.accessField(f, o, value);
 				}
 				catch (IllegalAccessException iae) {
-					throw new STNoSuchPropertyException(iae, c.getName() + "." + propertyName);
+					throwNoSuchProperty(c.getName() + "." + propertyName);
 				}
 			}
 		}
 		catch (Exception e) {
-			throw new STNoSuchPropertyException(e, c.getName() + "." + propertyName);
+			throwNoSuchProperty(c.getName() + "." + propertyName);
 		}
 
 		return value;
+	}
+
+	protected Object throwNoSuchProperty(String propertyName) {
+		if ( cachedException==null ) cachedException = new STNoSuchPropertyException();
+		cachedException.propertyName = propertyName;
+		throw cachedException;
 	}
 }

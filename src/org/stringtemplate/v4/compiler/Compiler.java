@@ -35,8 +35,8 @@ import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Interval;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -156,8 +156,15 @@ public class Compiler {
     }
 
     /** Compile full template */
-    public CompiledST compile(String template) {
-        int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
+	public CompiledST compile(String template) {
+		return compile(null, template);
+	}
+
+	/** Compile full template with respect to a list of formal args. */
+    public CompiledST compile(List<FormalArgument> args, String template) {
+		code.defineFormalArgs(args); // make sure args are defined prior to compilation
+
+		int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
         code.instrs = new byte[initialSize];
         code.sourceMap = new Interval[initialSize];
         code.template = template;
@@ -206,9 +213,22 @@ public class Compiler {
         }
         Compiler c = new Compiler(enclosingTemplateName,
                                   delimiterStartChar, delimiterStopChar);
+		// define {...} args and i, i0
+		List<FormalArgument> args = null;
+		if ( argIDs!=null ) {
+			args = new ArrayList<FormalArgument>();
+			for (Token arg : argIDs) {
+				String argName = arg.getText();
+				args.add(new FormalArgument(argName));
+			}
+		}
+		c.code.defineFormalArgs(args);
+		c.code.addArg(new FormalArgument("i"));
+		c.code.addArg(new FormalArgument("i0"));
+
         CompiledST sub = c.compile(input, state);
         sub.name = name;
-        sub.isSubtemplate = true;
+        sub.isAnonSubtemplate = true;
         if ( tokenSource instanceof STLexer ) {
             int stop = lexer.input.index();
             //System.out.println(start+".."+stop);
@@ -216,14 +236,8 @@ public class Compiler {
             sub.embeddedStop = stop-1;
             sub.template = lexer.input.substring(0, lexer.input.size()-1);
         }
-        code.addImplicitlyDefinedTemplate(sub);
-        if ( argIDs!=null ) {
-            sub.formalArguments = new LinkedHashMap<String,FormalArgument>();
-            for (Token arg : argIDs) {
-                String argName = arg.getText();
-                sub.formalArguments.put(argName, new FormalArgument(argName));
-            }
-        }
+
+		code.addImplicitlyDefinedTemplate(sub);
         return name;
     }
 
@@ -278,9 +292,11 @@ public class Compiler {
 
     public void refAttr(CommonToken id) {
         String name = id.getText();
-        if ( Interpreter.predefinedAttributes.contains(name) ) {
-            emit1(Bytecode.INSTR_LOAD_LOCAL, name, id.getStartIndex(), id.getStopIndex());
-        }
+		if ( code.formalArguments!=null && code.formalArguments.get(name)!=null ) {
+			FormalArgument arg = code.formalArguments.get(name);
+			int index = arg.index;
+            emit1(Bytecode.INSTR_LOAD_LOCAL, index, id.getStartIndex(), id.getStopIndex());
+		}
         else {
             emit1(Bytecode.INSTR_LOAD_ATTR, name, id.getStartIndex(), id.getStopIndex());
         }

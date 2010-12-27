@@ -34,9 +34,7 @@ import org.stringtemplate.v4.misc.Misc;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /** The result of compiling an ST.  Contains all the bytecode instructions,
  *  string table, bytecode address to source code map, and other bookkeeping
@@ -54,8 +52,10 @@ public class CompiledST {
     /** Where within a template does the subtemplate start? */
     public int embeddedStart=-1, embeddedStop=-1; // if subtemplate
 
-	/** Either UNKNOWN or must be non null map */
-    public LinkedHashMap<String, FormalArgument> formalArguments = FormalArgument.UNKNOWN;
+	/** Must be non null map if !noFormalArgs */
+    public Map<String, FormalArgument> formalArguments;
+
+	public boolean hasFormalArgs;
 
     /** A list of all regions and subtemplates */
     public List<CompiledST> implicitlyDefinedTemplates;
@@ -81,7 +81,7 @@ public class CompiledST {
      */
     public ST.RegionType regionDefType;
 
-    public boolean isSubtemplate; // {...}
+    public boolean isAnonSubtemplate; // {...}
 
     public String[] strings;     // string operands of instructions
     public byte[] instrs;        // byte-addressable code memory.
@@ -96,6 +96,7 @@ public class CompiledST {
     }
 
 	public int getNumberOfArgsWithDefaultValues() {
+		if ( formalArguments==null ) return 0;
 		int n = 0;
 		for (String arg : formalArguments.keySet()) {
 			if ( formalArguments.get(arg).defaultValueToken!=null ) n++;
@@ -104,16 +105,32 @@ public class CompiledST {
 	}
 
 	public void defineArgDefaultValueTemplates(STGroup group) {
+		if ( formalArguments==null ) return;
 		for (String a : formalArguments.keySet()) {
 			FormalArgument fa = formalArguments.get(a);
 			if ( fa.defaultValueToken !=null ) {
 				Compiler c2 = new Compiler(name,
 										   group.delimiterStartChar, group.delimiterStopChar);
 				String defArgTemplate = Misc.strip(fa.defaultValueToken.getText(), 1);
-				fa.compiledDefaultValue = c2.compile(defArgTemplate);
+				fa.compiledDefaultValue = c2.compile(null, defArgTemplate);
 				fa.compiledDefaultValue.name = fa.name+"-default-value";
 			}
 		}
+	}
+
+	public void defineFormalArgs(List<FormalArgument> args) {
+		hasFormalArgs = true; // even if no args; it's formally defined
+		if ( args == null ) formalArguments = null;
+		else for (FormalArgument a : args) addArg(a);
+	}
+
+	/** Used by ST.add() to add args one by one w/o turning on full formal args definition signal */
+	public void addArg(FormalArgument a) {
+		if ( formalArguments==null ) {
+			formalArguments = Collections.synchronizedMap(new LinkedHashMap<String,FormalArgument>());
+		}
+		a.index = formalArguments.size();
+		formalArguments.put(a.name, a);
 	}
 
 	public void defineImplicitlyDefinedTemplates(STGroup group) {

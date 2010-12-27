@@ -30,8 +30,7 @@ package org.stringtemplate.v4;
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.FormalArgument;
 import org.stringtemplate.v4.misc.BlankST;
-import org.stringtemplate.v4.misc.ErrorManager;
-import org.stringtemplate.v4.misc.ErrorType;
+import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -51,10 +50,16 @@ public class ST {
 	public static final String SUBTEMPLATE_PREFIX = "_sub";
 
     /** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
-    public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT };
+    public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT }
 
     public static final String UNKNOWN_NAME = "anonymous";
     public static final ST BLANK = new BlankST();
+	public static final Object EMPTY_ATTR = new Object();
+
+	/** Cache exception since this could happen a lot if people use "missing"
+	 *  to mean boolean false.
+	 */
+	public static STNoSuchPropertyException cachedNoSuchPropException;
 
     /** The implementation for this template among all instances of same tmpelate . */
     public CompiledST impl;
@@ -63,10 +68,18 @@ public class ST {
      *  rawSetAttribute makes a synchronized map so multiple threads can
      *  write to this table.
      */
-    protected Map<String,Object> attributes;
+    //protected Map<String,Object> attributes;
+
+	/** Safe to simultaneously write via add, which is synchronized.  Reading
+	 *  during exec is, however, NOT synchronized.  So, not thread safe to
+	 *  add attributes while it is being evaluated.  Initialized to EMPTY_ATTR
+	 *  to distinguish null from empty.
+	 */
+	protected Object[] locals;
 
     /** Enclosing instance if I'm embedded within another template.
-     *  IF-subtemplates are considered embedded as well.
+     *  IF-subtemplates are considered embedded as well. We look up
+	 *  dynamically scoped attributes with this ptr.
      */
     public ST enclosingInstance; // who's your daddy?
 
@@ -96,8 +109,13 @@ public class ST {
         public AttributeList() { super(); }
     }
 
-    public ST() {;}
+	/** Used by group creation routine, not by users */
+    public ST() {
+	}
 
+	/** Used to make templates inline in code for simple things like SQL or log records.
+	 *  No formal args are set and there is no enclosing instance.
+	 */
     public ST(String template) {
         this(STGroup.defaultGroup, template);
     }
@@ -112,7 +130,8 @@ public class ST {
 
     public ST(STGroup group, String template) {
         groupThatCreatedThisInstance = group;
-        impl = groupThatCreatedThisInstance.compile(null, template);
+        impl = groupThatCreatedThisInstance.compile(null, null, template);
+		impl.hasFormalArgs = false;
         impl.name = UNKNOWN_NAME;
         impl.defineImplicitlyDefinedTemplates(groupThatCreatedThisInstance);
     }
@@ -120,8 +139,9 @@ public class ST {
 	/** Clone a prototype template for application in MAP operations; copy all fields */
 	public ST(ST proto) {
 		this.impl = proto.impl;
-		this.attributes = new HashMap<String,Object>(); // copy attributes
-		this.attributes.putAll(proto.attributes);
+		if ( proto.locals!=null ) {
+			this.locals = Arrays.copyOf(proto.locals, proto.locals.length);
+		}
 		this.enclosingInstance = proto.enclosingInstance;
 		this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
 	}
@@ -133,27 +153,46 @@ public class ST {
      *  in a List and then inject a single value element, add() copies
      *  original list and adds the new value.
      */
-    public void add(String name, Object value) {
+    public synchronized void add(String name, Object value) {
         if ( name==null ) return; // allow null value
         if ( name.indexOf('.')>=0 ) {
             throw new IllegalArgumentException("cannot have '.' in attribute names");
         }
 
-        if ( value instanceof ST ) ((ST)value).enclosingInstance = this;
+		FormalArgument arg = null;
+		if ( impl.hasFormalArgs ) {
+			if ( impl.formalArguments!=null ) arg = impl.formalArguments.get(name);
+			if ( arg==null ) {
+				throw new IllegalArgumentException("no such attribute: "+name);
+			}
+		}
+		else {
+			// define and make room in locals (a hack to make new ST("simple template") work.)
+			if ( impl.formalArguments!=null ) {
+				arg = impl.formalArguments.get(name);
+			}
+			if ( arg==null ) { // not defined
+				arg = new FormalArgument(name);
+				impl.addArg(arg);
+				if ( locals==null ) locals = new Object[1];
+				else locals = Arrays.copyOf(locals, impl.formalArguments.size());
+				locals[arg.index] = EMPTY_ATTR;
+			}
+		}
 
-        Object curvalue = null;
-        if ( attributes==null || !attributes.containsKey(name) ) { // new attribute
-            checkAttributeExists(name);
-            rawSetAttribute(name, value);
+		if ( value instanceof ST ) ((ST)value).enclosingInstance = this;
+
+		Object curvalue = locals[arg.index];
+        if ( curvalue==EMPTY_ATTR ) { // new attribute
+			locals[arg.index] = value;
             return;
         }
-        if ( attributes!=null ) curvalue = attributes.get(name);
 
         // attribute will be multi-valued for sure now
         // convert current attribute to list if not already
         // copy-on-write semantics; copy a list injected by user to add new value
         AttributeList<Object> multi = convertToAttributeList(curvalue);
-        rawSetAttribute(name, multi); // replace with list
+		locals[arg.index] = multi; // replace with list
 
         // now, add incoming value to multi-valued attribute
         if ( value instanceof List ) {
@@ -168,62 +207,74 @@ public class ST {
         }
     }
 
-	/** Remove an attribute entirely */
+	/** Remove an attribute value entirely (can't remove attribute definitions). */
 	public void remove(String name) {
-		attributes.remove(name);
+		if ( impl.formalArguments==null ) {
+			if ( impl.hasFormalArgs ) {
+				throw new IllegalArgumentException("no such attribute: "+name);
+			}
+			return;
+		}
+		FormalArgument arg = impl.formalArguments.get(name);
+		if ( arg==null ) {
+			throw new IllegalArgumentException("no such attribute: "+name);
+		}
+		locals[arg.index] = EMPTY_ATTR; // reset value
 	}
 
+	/** Set this.locals attr value when you only know the name, not the index.
+	 *  This is ultimately invoked by calling ST.add() from outside so toss
+	 *  an exception to notify them.
+	 */
     protected void rawSetAttribute(String name, Object value) {
-        if ( attributes==null ) {
-            attributes = Collections.synchronizedMap(new HashMap<String,Object>());
-        }
-        attributes.put(name, value);
-    }
+		if ( impl.formalArguments==null ) {
+			throw new IllegalArgumentException("no such attribute: "+name);
+		}
+		FormalArgument arg = impl.formalArguments.get(name);
+		if ( arg==null ) {
+			throw new IllegalArgumentException("no such attribute: "+name);
+		}
+		locals[arg.index] = value;
+	}
 
-    /** Cause an error if name is not defined.
-     */
-    protected void checkAttributeExists(String name) {
-		if ( impl.formalArguments == FormalArgument.UNKNOWN ) return;
-        if ( impl.formalArguments.get(name) == null ) {
-            ErrorManager.runTimeError(this, -1, ErrorType.CANT_SET_ATTRIBUTE, name, getName());
-        }
-    }
-
-    /** Find an attr with dynamic scoping up enclosing ST chain.
+    /** Find an attr via dynamic scoping up enclosing ST chain.
      *  If not found, look for a map.  So attributes sent in to a template
      *  override dictionary names.
      */
     public Object getAttribute(String name) {
-        Object o = null;
-        if ( attributes!=null ) o = attributes.get(name);
-        if ( o!=null ) return o;
-
-        if ( impl.formalArguments.get(name)!=null ) {  // no local value && it's a formal arg
-            // if you've defined attribute as formal arg for this
-            // template and it has no value, do not look up the
-            // enclosing dynamic scopes.
-            return null;
-        }
-
-        ST p = this.enclosingInstance;
+        ST p = this;
         while ( p!=null ) {
-            if ( p.attributes!=null ) o = p.attributes.get(name);
-            if ( o!=null ) return o; // found it!
+			FormalArgument localArg = null;
+			if ( p.impl.formalArguments!=null ) localArg = p.impl.formalArguments.get(name);
+            if ( localArg!=null ) {
+				Object o = p.locals[localArg.index];
+				if ( o==ST.EMPTY_ATTR ) o = null;
+				return o;
+			}
             p = p.enclosingInstance;
         }
-        if ( impl.formalArguments.get(name)==null ) {
-            // if not hidden by formal args, return any dictionary
-            return impl.nativeGroup.rawGetDictionary(name);
-        }
-        return null;
+		// got to root template and no definition, try dictionaries in group
+        if ( impl.nativeGroup.isDictionary(name) ) {
+			return impl.nativeGroup.rawGetDictionary(name);
+		}
+		// not found, report unknown attr unless formal args unknown
+		if ( cachedNoSuchPropException ==null ) {
+			cachedNoSuchPropException = new STNoSuchPropertyException();
+		}
+		cachedNoSuchPropException.propertyName = name;
+		throw cachedNoSuchPropException;
     }
 
-    public Map<String, Object> getAttributes() { return attributes; }
-
-    /** Useful if you want to set all attributes at once, w/o using add() */
-    public void setAttributes(Map<String, Object> attributes) {
-        this.attributes = attributes;
-    }
+    public Map<String, Object> getAttributes() {
+		if ( impl.formalArguments==null ) return null;
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		for (FormalArgument a : impl.formalArguments.values()) {
+			Object o = locals[a.index];
+			if ( o==ST.EMPTY_ATTR ) o = null;
+			attributes.put(a.name, o);
+		}
+		return attributes;
+	}
 
     protected static AttributeList<Object> convertToAttributeList(Object curvalue) {
         AttributeList<Object> multi;
@@ -284,7 +335,7 @@ public class ST {
 
     public String getName() { return impl.name; }
 
-	public boolean isSubtemplate() { return impl.isSubtemplate; }
+	public boolean isAnonSubtemplate() { return impl.isAnonSubtemplate; }
 
     public int write(STWriter out) throws IOException {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance);

@@ -29,8 +29,6 @@ package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.Token;
 
-import java.util.LinkedHashMap;
-
 /** Represents the name of a formal argument defined in a template:
  *
  *  test(a,b) ::= "<a> <n>"
@@ -69,10 +67,12 @@ public class FormalArgument {
      *  must be distinguished from the case where a template can specify
      *  args and there just aren't any such as the t() template above.
      */
-    public static final LinkedHashMap<String, FormalArgument> UNKNOWN =
-        new LinkedHashMap<String, FormalArgument>();
+//    public static final LinkedHashMap<String, FormalArgument> UNKNOWN =
+//        new LinkedHashMap<String, FormalArgument>();
 
     public String name;
+
+	public int index; // which argument is it? from 0..n-1
 
 	/** If they specified name="value", store the template here */
 	public Token defaultValueToken;

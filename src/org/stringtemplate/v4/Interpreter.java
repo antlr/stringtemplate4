@@ -60,9 +60,7 @@ public class Interpreter {
 
 	public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
-	public static final Object ARG_PASS_THRU = new Object();
-
-	public static final Set<String> predefinedAttributes =
+	public static final Set<String> predefinedAnonSubtemplateAttributes =
 		new HashSet<String>() { { add("i"); add("i0"); } };
 
 	/** Operand stack, grows upwards */
@@ -140,16 +138,18 @@ public class Interpreter {
 					nameIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = self.impl.strings[nameIndex];
-					o = self.getAttribute(name);
+					try {o = self.getAttribute(name);}
+					catch (STNoSuchPropertyException nspe) {
+						ErrorManager.runTimeError(self, current_ip, ErrorType.NO_ATTRIBUTE_DEFINITION, name);
+						o = null;
+					}
 					operands[++sp] = o;
-					if ( o==null ) checkNullAttributeAgainstFormalArguments(self, name);
 					break;
 				case Bytecode.INSTR_LOAD_LOCAL:
-					nameIndex = getShort(code, ip);
+					int valueIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
-					name = self.impl.strings[nameIndex];
-					if ( self.attributes!=null ) o = self.attributes.get(name);
-					else o = null;
+					o = self.locals[valueIndex];
+					if ( o==ST.EMPTY_ATTR ) o = null;
 					operands[++sp] = o;
 					break;
 				case Bytecode.INSTR_LOAD_PROP :
@@ -207,6 +207,7 @@ public class Interpreter {
 					st.enclosingInstance = self; // self invoked super.name()
 					st.groupThatCreatedThisInstance = group;
 					st.impl = imported;
+
 					// get n args and store into st's attr list
 					storeArgs(self, nargs, st);
 					sp -= nargs;
@@ -387,9 +388,11 @@ public class Interpreter {
 	}
 
 	void storeArgs(ST self, int nargs, ST st) {
-		int nformalArgs = st.impl.formalArguments.size();
+		int nformalArgs = 0;
+		if ( st.impl.formalArguments!=null ) nformalArgs = st.impl.formalArguments.size();
 		int firstArg = sp-(nargs-1);
-		int numToStore = Math.min(nargs, st.impl.formalArguments.size());
+		int numToStore = Math.min(nargs, nformalArgs);
+		if ( st.impl.isAnonSubtemplate ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
 
 		if ( nargs != (nformalArgs-st.impl.getNumberOfArgsWithDefaultValues()) ) {
 			ErrorManager.runTimeError(self,
@@ -399,6 +402,8 @@ public class Interpreter {
 									  st.impl.name,
 									  nformalArgs);
 		}
+
+		if ( st.impl.formalArguments==null ) return;
 
 		Iterator<String> argNames = st.impl.formalArguments.keySet().iterator();
 		for (int i=0; i<numToStore; i++) {
@@ -560,10 +565,11 @@ public class Interpreter {
 				ti++;
 				ST proto = prototypes.get(templateIndex);
 				ST st = new ST(proto);
-				//ST st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, name);
 				setFirstArgument(self, st, iterValue);
-				st.rawSetAttribute("i0", i0);
-				st.rawSetAttribute("i", i);
+				if ( st.impl.isAnonSubtemplate ) {
+					st.rawSetAttribute("i0", i0);
+					st.rawSetAttribute("i", i);
+				}
 				mapped.add(st);
 				i0++;
 				i++;
@@ -573,21 +579,22 @@ public class Interpreter {
 		else { // if only single value, just apply first template to sole value
 			ST proto = prototypes.get(0);
 			ST st = new ST(proto);
-//			ST st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, prototypes.get(0));
 			if ( st!=null ) {
 				setFirstArgument(self, st, attr);
-				st.rawSetAttribute("i0", 0);
-				st.rawSetAttribute("i", 1);
+				if ( st.impl.isAnonSubtemplate ) {
+					st.rawSetAttribute("i0", 0);
+					st.rawSetAttribute("i", 1);
+				}
 				operands[++sp] = st;
 			}
 			else {
-//				operands[++sp] = ST.BLANK;
 				operands[++sp] = null;
 			}
 		}
 	}
 
 	// <names,phones:{n,p | ...}> or <a,b:t()>
+	// todo: i, i0 not set unless mentioned? map:{k,v | ..}?
 	protected ST.AttributeList zip_map(ST self, List<Object> exprs, ST prototype) {
 		if ( exprs==null || prototype==null || exprs.size()==0 ) {
 			return null; // do not apply if missing templates or empty values
@@ -599,25 +606,28 @@ public class Interpreter {
 		}
 
 		// ensure arguments line up
-		int numAttributes = exprs.size();
-//		CompiledST code = group.lookupTemplate(template);
+		int numExprs = exprs.size();
 		CompiledST code = prototype.impl;
 		Map formalArguments = code.formalArguments;
-		if ( formalArguments==null || formalArguments.size()==0 ) {
+		if ( !code.hasFormalArgs || formalArguments==null ) {
 			ErrorManager.runTimeError(self, current_ip, ErrorType.MISSING_FORMAL_ARGUMENTS);
 			return null;
 		}
 
+		// todo: track formal args not names for efficient filling of locals
 		Object[] formalArgumentNames = formalArguments.keySet().toArray();
-		if ( formalArgumentNames.length != numAttributes ) {
+		int nformalArgs = formalArgumentNames.length;
+		if ( prototype.isAnonSubtemplate() ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
+		if ( nformalArgs != numExprs ) {
 			ErrorManager.runTimeError(self,
 									  current_ip,
 									  ErrorType.MAP_ARGUMENT_COUNT_MISMATCH,
-									  numAttributes,
-									  formalArgumentNames.length);
+									  numExprs,
+									  nformalArgs);
+			// TODO just fill first n
 			// truncate arg list to match smaller size
-			int shorterSize = Math.min(formalArgumentNames.length, numAttributes);
-			numAttributes = shorterSize;
+			int shorterSize = Math.min(formalArgumentNames.length, numExprs);
+			numExprs = shorterSize;
 			Object[] newFormalArgumentNames = new Object[shorterSize];
 			System.arraycopy(formalArgumentNames, 0,
 							 newFormalArgumentNames, 0,
@@ -633,22 +643,20 @@ public class Interpreter {
 			// get a value for each attribute in list; put into ST instance
 			int numEmpty = 0;
 			ST embedded = new ST(prototype);
-//            ST embedded = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, current_ip, template);
 			embedded.rawSetAttribute("i0", i);
 			embedded.rawSetAttribute("i", i+1);
-			for (int a = 0; a < numAttributes; a++) {
+			for (int a = 0; a < numExprs; a++) {
 				Iterator it = (Iterator) exprs.get(a);
 				if ( it!=null && it.hasNext() ) {
 					String argName = (String)formalArgumentNames[a];
 					Object iteratedValue = it.next();
-					embedded.checkAttributeExists(argName);
 					embedded.rawSetAttribute(argName, iteratedValue);
 				}
 				else {
 					numEmpty++;
 				}
 			}
-			if ( numEmpty==numAttributes ) break;
+			if ( numEmpty==numExprs ) break;
 			results.add(embedded);
 			i++;
 		}
@@ -656,19 +664,16 @@ public class Interpreter {
 	}
 
 	protected void setFirstArgument(ST self, ST st, Object attr) {
-		int nargs = st.impl.formalArguments.size();
-		if ( nargs == 0 ) {
+		if ( st.impl.formalArguments==null ) {
 			ErrorManager.runTimeError(self,
 									  current_ip,
 									  ErrorType.ARGUMENT_COUNT_MISMATCH,
 									  1,
 									  st.impl.name,
-									  nargs);
+									  0);
+			return;
 		}
-		else if ( nargs > 0 ) {
-			String name = st.impl.formalArguments.keySet().iterator().next();
-			st.rawSetAttribute(name, attr);
-		}
+		st.locals[0] = attr;
 	}
 
 	protected void addToList(List<Object> list, Object o) {
@@ -891,19 +896,17 @@ public class Interpreter {
 
 	/** Set any default argument values that were not set by the
 	 *  invoking template or by setAttribute directly.  Note
-	 *  that the default values may be templates.  Their evaluation
-	 *  context is the template itself and, hence, can see attributes
-	 *  within the template, any arguments, and any values inherited
-	 *  by the template.
+	 *  that the default values may be templates.
+	 *
+	 *  The evaluation context is the template enclosing invokedST.
 	 */
 	public void setDefaultArguments(ST invokedST) {
-		if ( invokedST.impl.formalArguments.size()==0 ) return;
+		if ( invokedST.impl.formalArguments==null ) return;
 		for (FormalArgument arg : invokedST.impl.formalArguments.values()) {
 			// if no value for attribute and default arg, inject default arg into self
-			if ( (invokedST.attributes==null || invokedST.attributes.get(arg.name)==null) &&
-				arg.compiledDefaultValue!=null )
-			{
+			if ( invokedST.locals[arg.index]==ST.EMPTY_ATTR && arg.compiledDefaultValue!=null ) {
 				ST defaultArgST = group.createStringTemplate();
+				defaultArgST.enclosingInstance = invokedST.enclosingInstance;
 				defaultArgST.groupThatCreatedThisInstance = group;
 				defaultArgST.impl = arg.compiledDefaultValue;
 				System.out.println("setting def arg "+arg.name+" to "+defaultArgST);
@@ -920,24 +923,6 @@ public class Interpreter {
 				}
 			}
 		}
-	}
-
-	/** A reference to an attribute with no value must be compared against
-	 *  the formal parameters up the enclosing chain to see if it exists;
-	 *  if it exists all is well, but if not, record an error.
-	 */
-	protected void checkNullAttributeAgainstFormalArguments(ST self, String name) {
-		if ( self.impl.formalArguments == FormalArgument.UNKNOWN ) return;
-		ST p = self;
-		while ( p!=null ) {
-			if ( p.impl.formalArguments.get(name)!=null ) {
-				// found it; no problems, just return
-				return;
-			}
-			p = p.enclosingInstance;
-		}
-
-		ErrorManager.runTimeError(self, current_ip, ErrorType.NO_ATTRIBUTE_DEFINITION, name);
 	}
 
 	protected void trace(ST self, int ip) {

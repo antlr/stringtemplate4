@@ -73,14 +73,14 @@ public class TestCoreBasics extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         ST st = group.getInstanceOf("t");
-        st.add("name", "Ter");
-        String expected = "hi Ter!";
-        String result = st.render();
-        assertEquals(expected, result);
-
-        // check error now
-        expected = "[context [t] can't set attribute name; template t has no such attribute]";
-        result = errors.errors.toString();
+        String result = null;
+		try {
+			st.add("name", "Ter");
+		}
+		catch (IllegalArgumentException iae) {
+			result = iae.getMessage();
+		}
+        String expected = "no such attribute: name";
         assertEquals(expected, result);
     }
 
@@ -170,6 +170,7 @@ public class TestCoreBasics extends BaseTest {
 		String template = "<u.(qqq)>";
 		ST st = new ST(template);
 		st.add("u", new User(1, "parrt"));
+		st.add("qqq", null);
 		String expected = "";
 		String result = st.render();
 		assertEquals(expected, result);
@@ -199,7 +200,6 @@ public class TestCoreBasics extends BaseTest {
         String template = "load <box()>;";
         ST st = new ST(template);
         st.impl.nativeGroup.defineTemplate("box", "kewl\ndaddy");
-        st.add("name", "Ter");
         String expected =
             "load kewl\n" +
             "daddy;";
@@ -243,7 +243,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testDefineTemplate() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("inc", "x", "<x>+1");
-        group.defineTemplate("test", "hi <name>!");
+        group.defineTemplate("test", "name", "hi <name>!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
@@ -301,7 +301,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testParallelMap() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "hi <names,phones:{n,p | <n>:<p>;}>");
+        group.defineTemplate("test", "names,phones", "hi <names,phones:{n,p | <n>:<p>;}>");
         ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
@@ -317,7 +317,7 @@ public class TestCoreBasics extends BaseTest {
 
     @Test public void testParallelMapWith3Versus2Elements() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "hi <names,phones:{n,p | <n>:<p>;}>");
+        group.defineTemplate("test", "names,phones", "hi <names,phones:{n,p | <n>:<p>;}>");
         ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
@@ -332,8 +332,8 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testMapIndexes() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("inc", "x", "<i>:<x>");
-		group.defineTemplate("test", "<name:inc(); separator=\", \">");
+		group.defineTemplate("inc", "x,i", "<i>:<x>");
+		group.defineTemplate("test", "name", "<name:{n|<inc(n,i)>}; separator=\", \">");
 		ST st = group.getInstanceOf("test");
 		st.add("name", "Ter");
 		st.add("name", "Tom");
@@ -347,7 +347,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testMapIndexes2() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("test", "<name:{n | <i>:<n>}; separator=\", \">");
+		group.defineTemplate("test", "name", "<name:{n | <i>:<n>}; separator=\", \">");
 		ST st = group.getInstanceOf("test");
 		st.add("name", "Ter");
 		st.add("name", "Tom");
@@ -362,7 +362,7 @@ public class TestCoreBasics extends BaseTest {
 	@Test public void testMapSingleValue() throws Exception {
 		STGroup group = new STGroup();
 		group.defineTemplate("a", "x", "[<x>]");
-		group.defineTemplate("test", "hi <name:a()>!");
+		group.defineTemplate("test", "name", "hi <name:a()>!");
 		ST st = group.getInstanceOf("test");
 		st.add("name", "Ter");
 		String expected = "hi [Ter]!";
@@ -373,7 +373,7 @@ public class TestCoreBasics extends BaseTest {
 	@Test public void testMapNullValue() throws Exception {
 		STGroup group = new STGroup();
 		group.defineTemplate("a", "x", "[<x>]");
-		group.defineTemplate("test", "hi <name:a()>!");
+		group.defineTemplate("test", "name", "hi <name:a()>!");
 		ST st = group.getInstanceOf("test");
 		String expected = "hi !";
 		String result = st.render();
@@ -382,7 +382,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testMapNullValueInList() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("test", "<name; separator=\", \">");
+		group.defineTemplate("test", "name", "<name; separator=\", \">");
 		ST st = group.getInstanceOf("test");
 		st.add("name", "Ter");
 		st.add("name", "Tom");
@@ -398,7 +398,7 @@ public class TestCoreBasics extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("a", "x", "[<x>]");
         group.defineTemplate("b", "x", "(<x>)");
-        group.defineTemplate("test", "hi <name:a():b()>!");
+        group.defineTemplate("test", "name", "hi <name:a():b()>!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
@@ -413,7 +413,7 @@ public class TestCoreBasics extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("a", "x", "[<x>]");
         group.defineTemplate("b", "x", "(<x>)");
-        group.defineTemplate("test", "hi <name:a(),b()>!");
+        group.defineTemplate("test", "name", "hi <name:a(),b()>!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
@@ -633,7 +633,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testSeparator() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("test", "<names:{n | case <n>}; separator=\", \">");
+		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
 		ST st = group.getInstanceOf("test");
 		st.add("names", "Ter");
 		st.add("names", "Tom");
@@ -645,7 +645,7 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testSeparatorInList() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("test", "<names:{n | case <n>}; separator=\", \">");
+		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
 		ST st = group.getInstanceOf("test");
 		st.add("names", new ArrayList<String>() {{add("Ter"); add("Tom");}});
 		String expected =

@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 public class TestWhitespace extends BaseTest {
     @Test public void testTrimmedSubtemplates() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "<names:{n | <n>}>!");
+        group.defineTemplate("test", "names", "<names:{n | <n>}>!");
         org.stringtemplate.v4.ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
@@ -51,7 +51,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testTrimmedSubtemplatesNoArgs() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "<names:{x|  foo }>");
+        group.defineTemplate("test", "names", "<names:{x|  foo }>");
         ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
@@ -63,7 +63,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testTrimJustOneWSInSubtemplates() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "<names:{n |  <n> }>!");
+        group.defineTemplate("test", "names", "<names:{n |  <n> }>!");
         ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
@@ -75,7 +75,7 @@ public class TestWhitespace extends BaseTest {
 
     @Test public void testTrimNewlineInSubtemplates() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "<names:{n |\n" +
+        group.defineTemplate("test", "names", "<names:{n |\n" +
                                      "<n>}>!");
         ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
@@ -88,7 +88,7 @@ public class TestWhitespace extends BaseTest {
 
 	@Test public void testLeaveNewlineOnEndInSubtemplates() throws Exception {
 		STGroup group = new STGroup();
-		group.defineTemplate("test", "<names:{n |\n" +
+		group.defineTemplate("test", "names", "<names:{n |\n" +
 									 "<n>\n" +
 									 "}>!");
 		ST st = group.getInstanceOf("test");
@@ -103,7 +103,7 @@ public class TestWhitespace extends BaseTest {
 	@Test public void testTabBeforeEndInSubtemplates() throws Exception {
 		// fails since it counts indent from outer too
 		STGroup group = new STGroup();
-		group.defineTemplate("test", "  <names:{n |\n" +
+		group.defineTemplate("test", "names", "  <names:{n |\n" +
 									 "    <n>\n" +
 									 "  }>!");
 		ST st = group.getInstanceOf("test");

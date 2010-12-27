@@ -47,7 +47,7 @@ public class TestDollarDelimiters extends BaseTest {
 
     @Test public void testParallelMap() throws Exception {
         STGroup group = new org.stringtemplate.v4.STGroup('$', '$');
-        group.defineTemplate("test", "hi $names,phones:{n,p | $n$:$p$;}$");
+        group.defineTemplate("test", "names,phones", "hi $names,phones:{n,p | $n$:$p$;}$");
         ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");

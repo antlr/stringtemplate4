@@ -38,9 +38,9 @@ import static org.junit.Assert.assertEquals;
 
 public class TestNullAndEmptyValues extends BaseTest {
     @Test public void testSeparatorWithNullFirstValue() throws Exception {
-        STGroup group = new org.stringtemplate.v4.STGroup();
-        group.defineTemplate("test", "hi <name; separator=\", \">!");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
+        ST st = group.getInstanceOf("test");
         st.add("name", null); // null is added to list, but ignored in iteration
         st.add("name", "Tom");
         st.add("name", "Sumana");
@@ -51,7 +51,7 @@ public class TestNullAndEmptyValues extends BaseTest {
 
     @Test public void testSeparatorWithNull2ndValue() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "hi <name; separator=\", \">!");
+        group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", null);
@@ -63,7 +63,7 @@ public class TestNullAndEmptyValues extends BaseTest {
 
     @Test public void testSeparatorWithNullLastValue() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "hi <name; separator=\", \">!");
+        group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
@@ -75,8 +75,8 @@ public class TestNullAndEmptyValues extends BaseTest {
 
     @Test public void testSeparatorWithTwoNullValuesInRow() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "hi <name; separator=\", \">!");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
+        group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
+        ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", null);
@@ -88,8 +88,8 @@ public class TestNullAndEmptyValues extends BaseTest {
     }
 
     @Test public void testSizeZeroButNonNullListGetsNoOutput() throws Exception {
-        org.stringtemplate.v4.STGroup group = new STGroup();
-        group.defineTemplate("test",
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "users",
             "begin\n" +
             "<users>\n" +
             "end\n");
@@ -101,8 +101,8 @@ public class TestNullAndEmptyValues extends BaseTest {
     }
 
     @Test public void testNullListGetsNoOutput() throws Exception {
-        STGroup group = new org.stringtemplate.v4.STGroup();
-        group.defineTemplate("test",
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "users",
             "begin\n" +
             "<users:{u | name: <u>}; separator=\", \">\n" +
             "end\n");
@@ -114,12 +114,12 @@ public class TestNullAndEmptyValues extends BaseTest {
     }
 
     @Test public void testEmptyListGetsNoOutput() throws Exception {
-        org.stringtemplate.v4.STGroup group = new STGroup();
-        group.defineTemplate("test",
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "users",
             "begin\n" +
             "<users:{u | name: <u>}; separator=\", \">\n" +
             "end\n");
-        org.stringtemplate.v4.ST t = group.getInstanceOf("test");
+        ST t = group.getInstanceOf("test");
         t.add("users", new ArrayList());
         String expecting="begin"+newline+"end";
         String result = t.render();
@@ -128,7 +128,7 @@ public class TestNullAndEmptyValues extends BaseTest {
 
     @Test public void testMissingDictionaryValue() throws Exception {
         STGroup group = new STGroup();
-        group.defineTemplate("test", "<m.foo>");
+        group.defineTemplate("test", "m", "<m.foo>");
         ST t = group.getInstanceOf("test");
         t.add("m", new HashMap());
         String expecting="";
@@ -137,8 +137,8 @@ public class TestNullAndEmptyValues extends BaseTest {
     }
 
     @Test public void testMissingDictionaryValue2() throws Exception {
-        STGroup group = new org.stringtemplate.v4.STGroup();
-        group.defineTemplate("test", "<if(m.foo)>[<m.foo>]<endif>");
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "m", "<if(m.foo)>[<m.foo>]<endif>");
         ST t = group.getInstanceOf("test");
         t.add("m", new HashMap());
         String expecting="";
@@ -147,8 +147,8 @@ public class TestNullAndEmptyValues extends BaseTest {
     }
 
     @Test public void testMissingDictionaryValue3() throws Exception {
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
-        group.defineTemplate("test", "<if(m.foo)>[<m.foo>]<endif>");
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "m", "<if(m.foo)>[<m.foo>]<endif>");
         ST t = group.getInstanceOf("test");
         t.add("m", new HashMap() {{put("foo",null);}});
         String expecting="";

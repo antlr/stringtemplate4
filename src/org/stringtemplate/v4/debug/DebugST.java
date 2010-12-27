@@ -39,7 +39,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /** To avoid polluting ST instances with debug info when not debugging.
  *  Setting debug mode in STGroup makes it create these instead of STs.
@@ -59,17 +58,6 @@ public class DebugST extends org.stringtemplate.v4.ST {
             addAttrEvents.map(name, new AddAttributeEvent(name, value));
         }
         super.add(name, value);
-    }
-
-    @Override
-    public void setAttributes(Map<String, Object> attributes) {
-        if ( groupThatCreatedThisInstance.debug ) {
-            for (String name : attributes.keySet()) {
-                Object value = attributes.get(name);
-                addAttrEvents.map(name, new AddAttributeEvent(name, value));
-            }
-        }
-        super.setAttributes(attributes);
     }
 
 // LAUNCH A WINDOW TO INSPECT TEMPLATE HIERARCHY

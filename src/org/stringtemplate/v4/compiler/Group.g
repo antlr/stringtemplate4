@@ -31,7 +31,6 @@ grammar Group;
 package org.stringtemplate.v4.compiler;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import org.stringtemplate.v4.misc.*;
@@ -138,8 +137,8 @@ templateDef[String prefix]
 	|   alias=ID '::=' target=ID  {group.defineTemplateAlias($alias, $target);}
 	;
 
-formalArgs returns[LinkedHashMap<String,FormalArgument> args]
-@init {$args = new LinkedHashMap<String,FormalArgument>();}
+formalArgs returns[List<FormalArgument> args]
+@init {$args = new ArrayList<FormalArgument>();}
     :	formalArg[$args]
     	( ',' formalArg[$args] )*
     	( ',' formalArgWithDefaultValue[$args] )*
@@ -147,17 +146,17 @@ formalArgs returns[LinkedHashMap<String,FormalArgument> args]
     |
 	;
 
-formalArg[LinkedHashMap<String,FormalArgument> args]
+formalArg[List<FormalArgument> args]
 	:	ID
-		{$args.put($ID.text, new FormalArgument($ID.text));}
+		{$args.add(new FormalArgument($ID.text));}
     ;
 
-formalArgWithDefaultValue[LinkedHashMap<String,FormalArgument> args]
+formalArgWithDefaultValue[List<FormalArgument> args]
 	:	ID
 		(	'=' a=STRING
 		|	'=' a=ANONYMOUS_TEMPLATE
 		)
-		{$args.put($ID.text, new FormalArgument($ID.text, $a));}
+		{$args.add(new FormalArgument($ID.text, $a));}
     ;
 
 /*

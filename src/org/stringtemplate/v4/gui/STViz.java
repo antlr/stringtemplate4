@@ -96,7 +96,7 @@ public class STViz {
                     }
                 }
             }
-        );        
+        );
 
         m.output.setText(output);
 
@@ -188,7 +188,7 @@ public class STViz {
 			if ( e instanceof EvalTemplateEvent) {
 				String txt = currentST.impl.template;
 				m.template.setText(txt);
-				if ( currentST.isSubtemplate() ) {
+				if ( currentST.isAnonSubtemplate() ) {
 					highlight(m.template, currentST.impl.embeddedStart, currentST.impl.embeddedStop);
 				}
 				highlight(m.output, e.start, e.stop);
@@ -327,5 +327,5 @@ public class STViz {
             System.err.println("can't write file");
             ioe.printStackTrace(System.err);
         }
-    }    
+    }
 }

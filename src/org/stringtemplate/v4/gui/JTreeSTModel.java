@@ -50,11 +50,11 @@ public class JTreeSTModel implements TreeModel {
 		}
 		public int hashCode() { return st != null ? st.hashCode() : 0; }
 		public String toString() {
-			if ( st.isSubtemplate() ) return "{...}";
+			if ( st.isAnonSubtemplate() ) return "{...}";
             return st.toString()+" @ "+st.newSTEvent.getFileName()+":"+st.newSTEvent.getLine();
 		}
 	}
-	
+
     public JTreeSTModel(DebugST root) { this.root = new Wrapper(root); }
 
     public int getChildCount(Object parent) {

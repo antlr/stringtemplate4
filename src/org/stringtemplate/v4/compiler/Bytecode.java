@@ -104,7 +104,7 @@ public class Bytecode {
         null, // <INVALID>
         new Instruction("load_str",OperandType.STRING), // index is the opcode
         new Instruction("load_attr",OperandType.STRING),
-        new Instruction("load_local",OperandType.STRING),
+        new Instruction("load_local",OperandType.INT),
         new Instruction("load_prop",OperandType.STRING),
         new Instruction("load_prop_ind"),
         new Instruction("store_option",OperandType.INT),

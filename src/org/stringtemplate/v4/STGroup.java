@@ -61,7 +61,6 @@ public class STGroup {
     /** Maps template name to StringTemplate object. synchronized. */
     protected Map<String, CompiledST> templates =
 		Collections.synchronizedMap(new LinkedHashMap<String, CompiledST>());
-        //new SynchronizedLinkedHashMap<String,CompiledST>();
 
     /** Maps dict names to HashMap objects.  This is the list of dictionaries
      *  defined by the user like typeInitMap ::= ["int":"0"]
@@ -137,17 +136,21 @@ public class STGroup {
             ST instanceST = createStringTemplate();
             instanceST.groupThatCreatedThisInstance = this;
             instanceST.impl = c;
+			if ( instanceST.impl.formalArguments!=null ) {
+				instanceST.locals = new Object[instanceST.impl.formalArguments.size()];
+				Arrays.fill(instanceST.locals, ST.EMPTY_ATTR);
+			}
             return instanceST;
         }
         return null;
     }
 
-    public ST getInstanceOf(String name, Map<String,Object> attributes) {
-		if ( name==null ) return null;
-        ST st = getInstanceOf(name);
-        if ( st!=null ) st.setAttributes(attributes);
-        return st;
-    }
+//    public ST getInstanceOf(String name, Map<String,Object> attributes) {
+//		if ( name==null ) return null;
+//        ST st = getInstanceOf(name);
+//        if ( st!=null ) st.setAttributes(attributes);
+//        return st;
+//    }
 
     protected ST getEmbeddedInstanceOf(ST enclosingInstance, int ip, String name) {
         ST st = getInstanceOf(name);
@@ -199,33 +202,30 @@ public class STGroup {
     }
 
     public CompiledST rawGetTemplate(String name) { return templates.get(name); }
-    public Map<String,Object> rawGetDictionary(String name) { return dictionaries.get(name); }
+	public Map<String,Object> rawGetDictionary(String name) { return dictionaries.get(name); }
+	public boolean isDictionary(String name) { return dictionaries.get(name)!=null; }
 
     // for testing
     public CompiledST defineTemplate(String templateName, String template) {
         return defineTemplate(templateName, new CommonToken(GroupParser.ID,templateName),
-                              FormalArgument.UNKNOWN, template);
+                              null, template);
     }
 
+    // for testing
 	public CompiledST defineTemplate(String name, String argsS, String template) {
 		String[] args = argsS.split(",");
-		LinkedHashMap
-<String, FormalArgument> a =
-			new LinkedHashMap
-<String,FormalArgument>();
+		List<FormalArgument> a = new ArrayList<FormalArgument>();
 		for (int i = 0; i  < args.length; i ++) {
-			a.put(args[i], new FormalArgument(args[i]));
+			a.add(new FormalArgument(args[i]));
 		}
 		return defineTemplate(name, new CommonToken(GroupParser.ID, name),
 							  a, template);
 	}
 
     public CompiledST defineTemplate(String templateName, Token nameT,
-                                     LinkedHashMap
-<String,FormalArgument> args,
+                                     List<FormalArgument> args,
                                      String template)
     {
-//        String name = nameT.getText();
 		if ( templateName==null || templateName.length()==0 ) {
 			throw new IllegalArgumentException("empty template name");
 		}
@@ -234,9 +234,9 @@ public class STGroup {
 		}
         template = Misc.trimOneStartingNewline(template);
         template = Misc.trimOneTrailingNewline(template);
-        CompiledST code = compile(templateName, template);
+		// compile, passing in templateName as enclosing name for any embedded regions
+        CompiledST code = compile(templateName, args, template);
         code.name = templateName;
-        code.formalArguments = args;
         rawDefineTemplate(templateName, code, nameT);
 		code.defineArgDefaultValueTemplates(this);
         code.defineImplicitlyDefinedTemplates(this); // define any anonymous subtemplates
@@ -262,7 +262,7 @@ public class STGroup {
                                    String template)
     {
         String name = regionT.getText();
-        CompiledST code = compile(enclosingTemplateName, template);
+        CompiledST code = compile(enclosingTemplateName, null, template);
         String mangled = getMangledRegionName(enclosingTemplateName, name);
 
         if ( lookupTemplate(mangled)==null ) {
@@ -283,7 +283,7 @@ public class STGroup {
 		String regionSurroundingTemplateName,
         Token templateToken, String template,
         Token nameToken,
-        LinkedHashMap<String,FormalArgument> args)
+        List<FormalArgument> args)
     {
         int n = 1; // num char to strip from left, right of template def token text "" <<>>
         if ( templateToken.getType()==GroupLexer.BIGSTRING ) n=2;
@@ -334,11 +334,12 @@ public class STGroup {
     }
 
     protected CompiledST compile(String enclosingTemplateName,
+								 List<FormalArgument> args,
                                  String template)
     {
         Compiler c = new Compiler(enclosingTemplateName,
                                   delimiterStartChar, delimiterStopChar);
-        CompiledST code = c.compile(template);
+        CompiledST code = c.compile(args, template);
         code.nativeGroup = this;
         code.template = template;
         return code;
@@ -481,12 +482,12 @@ public class STGroup {
         if ( imports!=null ) buf.append(" : "+imports);
         for (String name : templates.keySet()) {
 			CompiledST c = templates.get(name);
-			if ( c.isSubtemplate || c==NOT_FOUND_ST ) continue;
+			if ( c.isAnonSubtemplate || c==NOT_FOUND_ST ) continue;
             int slash = name.lastIndexOf('/');
             name = name.substring(slash+1, name.length());
             buf.append(name);
             buf.append('(');
-            buf.append( Misc.join(c.formalArguments.values().iterator(), ",") );
+            if ( c.formalArguments!=null ) buf.append( Misc.join(c.formalArguments.values().iterator(), ",") );
             buf.append(')');
             buf.append(" ::= <<"+Misc.newline);
             buf.append(c.template+ Misc.newline);
