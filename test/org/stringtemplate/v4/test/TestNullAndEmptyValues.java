@@ -28,11 +28,9 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -73,19 +71,30 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorWithTwoNullValuesInRow() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
-        ST st = group.getInstanceOf("test");
-        st.add("name", "Ter");
-        st.add("name", "Tom");
-        st.add("name", null);
-        st.add("name", null);
-        st.add("name", "Sri");
-        String expected = "hi Ter, Tom, Sri!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testSeparatorWithTwoNullValuesInRow() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		st.add("name", "Tom");
+		st.add("name", null);
+		st.add("name", null);
+		st.add("name", "Sri");
+		String expected = "hi Ter, Tom, Sri!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testTwoNullValues() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "name", "hi <name; null=\"x\">!");
+		ST st = group.getInstanceOf("test");
+		st.add("name", null);
+		st.add("name", null);
+		String expected = "hi xx!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testSizeZeroButNonNullListGetsNoOutput() throws Exception {
         STGroup group = new STGroup();
