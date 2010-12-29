@@ -28,6 +28,8 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.debug.DebugST;
 import org.stringtemplate.v4.debug.InterpEvent;
 import org.stringtemplate.v4.misc.Misc;
@@ -42,7 +44,7 @@ public class TestDebugEvents extends BaseTest {
             "t() ::= <<foo>>" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         group.debug = true;
         DebugST st = (DebugST)group.getInstanceOf("t");
         List<InterpEvent> events = st.getEvents();
@@ -58,7 +60,7 @@ public class TestDebugEvents extends BaseTest {
             "t(x) ::= << <x> >>" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         group.debug = true;
         DebugST st = (DebugST)group.getInstanceOf("t");
         List<InterpEvent> events = st.getEvents();
@@ -76,7 +78,7 @@ public class TestDebugEvents extends BaseTest {
             "u() ::= << <x> >>\n";
 
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         group.debug = true;
         DebugST st = (DebugST)group.getInstanceOf("t");
         List<InterpEvent> events = st.getEvents();

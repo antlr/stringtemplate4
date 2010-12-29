@@ -47,7 +47,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 2:0: missing STRING at 'foo'"+newline;
+		String expected = "t.stg 2:0: mismatched input 'foo' expecting STRING"+newline+
+			"t.stg 2:3: required (...)+ loop did not match anything at input '('"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}

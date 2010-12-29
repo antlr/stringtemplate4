@@ -29,6 +29,7 @@ package org.stringtemplate.v4.debug;
 
 import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.Interpreter;
+import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STWriter;
 import org.stringtemplate.v4.gui.STViz;
 import org.stringtemplate.v4.misc.ErrorBuffer;
@@ -43,13 +44,14 @@ import java.util.Locale;
 /** To avoid polluting ST instances with debug info when not debugging.
  *  Setting debug mode in STGroup makes it create these instead of STs.
  */
-public class DebugST extends org.stringtemplate.v4.ST {
+public class DebugST extends ST {
     /** Track all events that occur during rendering. */
     public List<InterpEvent> interpEvents = new ArrayList<InterpEvent>();
 
     /** Track construction-time add attribute "events"; used for ST user-level debugging */
     public MultiMap<String, AddAttributeEvent> addAttrEvents = new MultiMap<String, AddAttributeEvent>();
 
+	/** Record who made us? ConstructionEvent creates Exception to grab stack */
     public ConstructionEvent newSTEvent = new ConstructionEvent();
 
     @Override

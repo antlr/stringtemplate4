@@ -276,7 +276,7 @@ public class STViz {
 
     public static void main(String[] args) throws IOException { // test rig
         String templates =
-            "method(type,name,args,stats) ::= <<\n" +
+            "method(type,name,locals,args,stats) ::= <<\n" +
                 "public <type> <ick()> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
                 "    <if(locals)>int locals[<locals>];<endif>\n"+
                 "    <stats;separator=\"\\n\">\n" +

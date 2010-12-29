@@ -29,7 +29,6 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.FormalArgument;
-import org.stringtemplate.v4.misc.BlankST;
 import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 
 import java.io.IOException;
@@ -53,7 +52,6 @@ public class ST {
     public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT }
 
     public static final String UNKNOWN_NAME = "anonymous";
-    public static final ST BLANK = new BlankST();
 	public static final Object EMPTY_ATTR = new Object();
 
 	/** Cache exception since this could happen a lot if people use "missing"

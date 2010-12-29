@@ -157,7 +157,9 @@ public class STGroup {
         if ( st==null ) {
             ErrorManager.runTimeError(enclosingInstance, ip, ErrorType.NO_SUCH_TEMPLATE,
                                       name);
-            return ST.BLANK;
+			st = createStringTemplate();
+			st.impl = new CompiledST();
+			return st;
         }
         st.enclosingInstance = enclosingInstance;
         return st;

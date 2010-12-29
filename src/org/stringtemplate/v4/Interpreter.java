@@ -199,7 +199,9 @@ public class Interpreter {
 					if ( imported==null ) {
 						ErrorManager.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
 												  name);
-						operands[++sp] = ST.BLANK;
+						st = self.groupThatCreatedThisInstance.createStringTemplate();
+						st.impl = new CompiledST();
+						operands[++sp] = st;
 						break;
 					}
 
