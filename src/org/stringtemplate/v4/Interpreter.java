@@ -677,7 +677,6 @@ public class Interpreter {
 	}
 
 	protected void addToList(List<Object> list, Object o) {
-		//if ( o==null ) return; // [a,b,c] lists ignore null values
 		o = Interpreter.convertAnythingIteratableToIterator(o);
 		if ( o instanceof Iterator ) {
 			// copy of elements into our temp list

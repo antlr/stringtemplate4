@@ -47,6 +47,22 @@ public class TestLists extends BaseTest {
 		assertEquals(expecting, e.render());
 	}
 
+	@Test public void testListLiteralWithEmptyElements() throws Exception {
+		ST e = new ST(
+			"<[\"Ter\",,\"Jesse\"]:{n | <i>:<n>}; separator=\", \", null={foo}>"
+		);
+		String expecting = "1:Ter, foo, 2:Jesse";
+		assertEquals(expecting, e.render());
+	}
+
+	@Test public void testListLiteralWithEmptyFirstElement() throws Exception {
+		ST e = new ST(
+			"<[,\"Ter\",\"Jesse\"]:{n | <i>:<n>}; separator=\", \", null={foo}>"
+		);
+		String expecting = "foo, 1:Ter, 2:Jesse";
+		assertEquals(expecting, e.render());
+	}
+
 	@Test public void testLength() throws Exception {
 		ST e = new ST(
 				"<length([names,phones])>"

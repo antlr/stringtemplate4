@@ -379,13 +379,16 @@ mapTemplateRef[int num_exprs]
 		}
 	;
 	
-list:	{gen.emit(Bytecode.INSTR_LIST);} '[' listElement (',' listElement)* ']'
-	|	{gen.emit(Bytecode.INSTR_LIST);} '[' ']'
+list
+	:	{input.LA(2)==RBRACK}? // hush warning; [] special case
+		{gen.emit(Bytecode.INSTR_LIST);} '[' ']'
+	|	{gen.emit(Bytecode.INSTR_LIST);} '[' listElement (',' listElement)* ']'
 	;
 
 listElement
-    :   exprNoComma        {gen.emit(Bytecode.INSTR_ADD,
-								    $exprNoComma.start.getStartIndex(),
-								    $exprNoComma.stop.getStopIndex());}
+    :   exprNoComma {gen.emit(Bytecode.INSTR_ADD,
+					          $exprNoComma.start.getStartIndex(),
+							  $exprNoComma.stop.getStopIndex());}
+	|	{gen.emit(Bytecode.INSTR_NULL); gen.emit(Bytecode.INSTR_ADD);}
     ;
     

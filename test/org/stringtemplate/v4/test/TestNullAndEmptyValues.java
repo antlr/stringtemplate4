@@ -35,17 +35,38 @@ import java.util.*;
 import static org.junit.Assert.assertEquals;
 
 public class TestNullAndEmptyValues extends BaseTest {
-    @Test public void testSeparatorWithNullFirstValue() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
-        ST st = group.getInstanceOf("test");
-        st.add("name", null); // null is added to list, but ignored in iteration
-        st.add("name", "Tom");
-        st.add("name", "Sumana");
-        String expected = "hi Tom, Sumana!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testSeparatorWithNullFirstValue() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
+		ST st = group.getInstanceOf("test");
+		st.add("name", null); // null is added to list, but ignored in iteration
+		st.add("name", "Tom");
+		st.add("name", "Sumana");
+		String expected = "hi Tom, Sumana!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testTemplateAppliedToNullIsEmpty() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "name", "<name:t()>");
+		group.defineTemplate("t", "x", "<x>");
+		ST st = group.getInstanceOf("test");
+		st.add("name", null); // null is added to list, but ignored in iteration
+		String expected = "";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testTemplateAppliedToMissingValueIsEmpty() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "name", "<name:t()>");
+		group.defineTemplate("t", "x", "<x>");
+		ST st = group.getInstanceOf("test");
+		String expected = "";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testSeparatorWithNull2ndValue() throws Exception {
         STGroup group = new STGroup();
@@ -96,6 +117,19 @@ public class TestNullAndEmptyValues extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testNullListItemNotCountedForIteratorIndex() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "name", "<name:{n | <i>:<n>}>");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		st.add("name", null);
+		st.add("name", null);
+		st.add("name", "Jesse");
+		String expected = "1:Ter2:Jesse";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
     @Test public void testSizeZeroButNonNullListGetsNoOutput() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "users",
@@ -116,7 +150,6 @@ public class TestNullAndEmptyValues extends BaseTest {
             "<users:{u | name: <u>}; separator=\", \">\n" +
             "end\n");
         ST t = group.getInstanceOf("test");
-        //t.setAttribute("users", new Duh());
         String expecting="begin"+newline+"end";
         String result = t.render();
         assertEquals(expecting, result);
