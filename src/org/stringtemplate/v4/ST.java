@@ -64,12 +64,6 @@ public class ST {
     /** The implementation for this template among all instances of same tmpelate . */
     public CompiledST impl;
 
-    /** Map an attribute name to its value(s).
-     *  rawSetAttribute makes a synchronized map so multiple threads can
-     *  write to this table.
-     */
-    //protected Map<String,Object> attributes;
-
 	/** Safe to simultaneously write via add, which is synchronized.  Reading
 	 *  during exec is, however, NOT synchronized.  So, not thread safe to
 	 *  add attributes while it is being evaluated.  Initialized to EMPTY_ATTR

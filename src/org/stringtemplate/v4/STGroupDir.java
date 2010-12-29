@@ -139,7 +139,7 @@ public class STGroupDir extends STGroup {
 
 	/** Load full path name .st file relative to root by prefix */
 	public CompiledST loadTemplateFile(String prefix, String fileName) {
-		System.out.println("load "+fileName+" from "+root+" prefix="+prefix);
+		//System.out.println("load "+fileName+" from "+root+" prefix="+prefix);
 		String templateName = Misc.getFileNameNoSuffix(fileName);
 		URL f = null;
 		try {

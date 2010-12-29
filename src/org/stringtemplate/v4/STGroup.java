@@ -183,6 +183,15 @@ public class STGroup {
         return code;
     }
 
+	/** "unload" all templates and dictionaries but leave renderers, adaptors,
+	 *  and import relationships.  This essentially forces next getInstanceOf
+	 *  to reload templates.
+	 */
+	public synchronized void unload() {
+		templates.clear();
+		dictionaries.clear();
+	}
+
     /** Load st from disk if dir or load whole group file if .stg file (then
      *  return just one template). name is fully-qualified.
      */

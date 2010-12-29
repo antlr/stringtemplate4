@@ -100,7 +100,13 @@ public class STGroupFile extends STGroup {
         return super.isDefined(name);
     }
 
-    protected CompiledST load(String name) {
+	@Override
+	public synchronized void unload() {
+		super.unload();
+		alreadyLoaded = false;
+	}
+
+	protected CompiledST load(String name) {
         if ( !alreadyLoaded ) load();
         return templates.get(name);
     }

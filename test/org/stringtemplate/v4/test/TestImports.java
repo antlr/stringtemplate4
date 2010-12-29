@@ -185,4 +185,38 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
+	@Test public void testUnloadImportedTemplate() throws Exception {
+		String dir1 = getRandomDir();
+		String a = "a() ::= <<dir1 a>>\n";
+		String b = "b() ::= <<dir1 b>>\n";
+		writeFile(dir1, "a.st", a);
+		writeFile(dir1, "b.st", b);
+		String dir2 = getRandomDir();
+		a = "a() ::= << <b()> >>\n";
+		writeFile(dir2, "a.st", a);
+
+		STGroup group1 = new STGroupDir(dir1);
+		STGroup group2 = new STGroupDir(dir2);
+		group2.importTemplates(group1);
+
+		ST st = group2.getInstanceOf("a");
+		ST st2 = group2.getInstanceOf("b");
+		int originalHashCode = System.identityHashCode(st);
+		int originalHashCode2 = System.identityHashCode(st2);
+		group1.unload(); // blast cache
+		st = group2.getInstanceOf("a");
+		int newHashCode = System.identityHashCode(st);
+		assertEquals(originalHashCode==newHashCode, false); // diff objects
+
+		String expected = " dir1 b ";
+		String result = st.render();
+		assertEquals(expected, result);
+
+		st = group2.getInstanceOf("b");
+		int newHashCode2 = System.identityHashCode(st);
+		assertEquals(originalHashCode2==newHashCode2, false); // diff objects
+		result = st.render();
+		expected = "dir1 b";
+		assertEquals(expected, result);
+	}
 }

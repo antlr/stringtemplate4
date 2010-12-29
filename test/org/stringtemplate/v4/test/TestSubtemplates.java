@@ -35,22 +35,39 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestSubtemplates extends BaseTest {
 
-    @Test public void testSimpleIteration() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "names", "<names:{n|<n>}>!");
-        ST st = group.getInstanceOf("test");
-        st.add("names", "Ter");
-        st.add("names", "Tom");
-        st.add("names", "Sumana");
-        String expected = "TerTomSumana!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testSimpleIteration() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "names", "<names:{n|<n>}>!");
+		ST st = group.getInstanceOf("test");
+		st.add("names", "Ter");
+		st.add("names", "Tom");
+		st.add("names", "Sumana");
+		String expected = "TerTomSumana!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testMapIterationIsByKeys() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "emails", "<emails:{n|<n>}>!");
+		ST st = group.getInstanceOf("test");
+		Map<String,String> emails = new LinkedHashMap<String,String>();
+		emails.put("parrt", "Ter");
+		emails.put("tombu", "Tom");
+		emails.put("dmose", "Dan");
+		st.add("emails", emails);
+		String expected = "parrttombudmose!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testSimpleIterationWithArg() throws Exception {
         STGroup group = new STGroup();
@@ -174,7 +191,7 @@ public class TestSubtemplates extends BaseTest {
         String templates =
                 "page(names,phones,salaries) ::= "+newline+
                 "	<< <names,phones,salaries:{n,p,s | <value(n)>@<value(p)>: <value(s)>}; separator=\", \"> >>"+newline +
-                "value(x=\"n/a\") ::= \"<x>\"" +newline;
+                "value(x) ::= \"<if(!x)>n/a<else><x><endif>\"" +newline;
         writeFile(tmpdir, "g.stg", templates);
 
         STGroup group = new STGroupFile(tmpdir+"/g.stg");

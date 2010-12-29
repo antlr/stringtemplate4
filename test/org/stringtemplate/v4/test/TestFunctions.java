@@ -351,11 +351,11 @@ public class TestFunctions extends BaseTest {
 		e.add("maps", m1);
 		m2.put("Tom", "x5332");
 		e.add("maps", m2);
-		String expecting = "x5707!";
+		String expecting = "Ter!";
 		assertEquals(expecting, e.render());
 		List list = new ArrayList() {{add(m1); add(m2);}};
 		e.add("maps", list);
-		expecting = "x5707!";
+		expecting = "Ter!";
 		assertEquals(expecting, e.render());
 	}
 

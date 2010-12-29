@@ -498,4 +498,53 @@ public class TestGroups extends BaseTest {
         String result = st1.render()+st2.render();
         assertEquals(expected, result);
     }
+
+	@Test public void testUnloadingSimpleGroup() throws Exception {
+		String dir = getRandomDir();
+		String a =
+			"a(x) ::= <<foo>>\n";
+		String b =
+			"b() ::= <<bar>>\n";
+		writeFile(dir, "a.st", a);
+		writeFile(dir, "b.st", b);
+		STGroup group = new STGroupDir(dir);
+		group.load(); // force load
+		ST st = group.getInstanceOf("a");
+		int originalHashCode = System.identityHashCode(st);
+		group.unload(); // blast cache
+		st = group.getInstanceOf("a");
+		int newHashCode = System.identityHashCode(st);
+		assertEquals(originalHashCode==newHashCode, false); // diff objects
+		String expected = "foo";
+		String result = st.render();
+		assertEquals(expected, result);
+		st = group.getInstanceOf("b");
+		expected = "bar";
+		result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testUnloadingGroupFile() throws Exception {
+		String dir = getRandomDir();
+		String a =
+			"a(x) ::= <<foo>>\n" +
+			"b() ::= <<bar>>\n";
+		writeFile(dir, "a.stg", a);
+		STGroup group = new STGroupFile(dir+"/a.stg");
+		group.load(); // force load
+		ST st = group.getInstanceOf("a");
+		int originalHashCode = System.identityHashCode(st);
+		group.unload(); // blast cache
+		st = group.getInstanceOf("a");
+		int newHashCode = System.identityHashCode(st);
+		assertEquals(originalHashCode==newHashCode, false); // diff objects
+		String expected = "foo";
+		String result = st.render();
+		assertEquals(expected, result);
+		st = group.getInstanceOf("b");
+		expected = "bar";
+		result = st.render();
+		assertEquals(expected, result);
+	}
+
 }
