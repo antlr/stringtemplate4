@@ -94,8 +94,21 @@ group[STGroup group, String prefix]
 GroupLexer lexer = (GroupLexer)input.getTokenSource();
 this.group = lexer.group = $group;
 }
-	:	def[prefix]+
+	:	(	'import' STRING {group.importTemplates($STRING);}
+		|	'import' // common error: name not in string
+			{
+			MismatchedTokenException e = new MismatchedTokenException(STRING, input);
+			reportError(e);
+			}
+			ID ('.' ID)* // might be a.b.c.d
+		)*
+        def[prefix]+
     ;
+    
+groupName returns [String name]
+@init {StringBuilder buf = new StringBuilder();}
+	:	a=ID {buf.append($a.text);} ('.' a=ID {buf.append($a.text);})*
+	;
 
 /** Match template and dictionary defs outside of (...)+ loop in group.
  *  The key is catching while still in the loop; must keep prediction of

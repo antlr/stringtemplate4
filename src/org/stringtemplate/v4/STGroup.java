@@ -384,7 +384,32 @@ public class STGroup {
         imports.add(g);
     }
 
-    // TODO: make this happen in background then flip ptr to new list of templates/dictionaries?
+	/** Load group dir or file (if .stg suffix) and then import templates. Don't hold
+	 *  an independent ref to the "supergroup".
+	 *
+	 *  Override this if you want to look for groups elsewhere (database maybe?)
+	 *
+	 *  importTemplates("org.foo.proj.G.stg") will try to find file org/foo/proj/G.stg
+	 *  relative to current dir or in CLASSPATH. The name is not relative to this group.
+	 *  Can use "/a/b/c/myfile.stg" also or "/a/b/c/mydir".
+	 *
+	 *  Pass token so you can give good error if you want.
+	 */
+	public void importTemplates(Token fileNameToken) {
+		String fileName = fileNameToken.getText();
+		// do nothing upon syntax error
+		if ( fileName==null || fileName.equals("<missing STRING>") ) return;
+		fileName = Misc.strip(fileName, 1);
+		STGroup g = null;
+		if ( fileName.endsWith(".stg") ) {
+			g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
+		}
+		else {
+			g = new STGroupDir(fileName, delimiterStartChar, delimiterStopChar);
+		}
+		importTemplates(g);
+	}
+
 	/** Load a group file with full path fileName; it's relative to root by prefix. */
     public void loadGroupFile(String prefix, String fileName) {
         //System.out.println("load group file prefix="+prefix+", fileName="+fileName);

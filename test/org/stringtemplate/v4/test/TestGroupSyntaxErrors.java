@@ -29,6 +29,7 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Test;
 import org.stringtemplate.v4.STErrorListener;
+import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
@@ -36,12 +37,42 @@ import org.stringtemplate.v4.misc.ErrorManager;
 import static org.junit.Assert.assertEquals;
 
 public class TestGroupSyntaxErrors extends BaseTest {
-    @Test public void testMissingTemplate() throws Exception {
-        String templates =
-            "foo() ::= \n";
-        writeFile(tmpdir, "t.stg", templates);
+	@Test public void testMissingImportString() throws Exception {
+		String templates =
+			"import\n" +
+			"foo() ::= <<>>\n";
+		writeFile(tmpdir, "t.stg", templates);
 
-		org.stringtemplate.v4.STGroupFile group = null;
+		STErrorListener errors = new ErrorBuffer();
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ErrorManager.setErrorListener(errors);
+		group.load(); // force load
+		String expected = "t.stg 2:0: missing STRING at 'foo'"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportNotString() throws Exception {
+		String templates =
+			"import Super.stg\n" +
+			"foo() ::= <<>>\n";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STErrorListener errors = new ErrorBuffer();
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ErrorManager.setErrorListener(errors);
+		group.load(); // force load
+		String expected = "t.stg 1:7: mismatched input 'Super' expecting STRING"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testMissingTemplate() throws Exception {
+		String templates =
+			"foo() ::= \n";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);

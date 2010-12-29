@@ -36,30 +36,69 @@ import org.stringtemplate.v4.STGroupFile;
 import static org.junit.Assert.assertEquals;
 
 public class TestImports extends BaseTest {
-    @Test public void testImportTemplate() throws Exception {
-        String dir1 = getRandomDir();
-        String a = "a() ::= <<dir1 a>>\n";
-        String b = "b() ::= <<dir1 b>>\n";
-        writeFile(dir1, "a.st", a);
-        writeFile(dir1, "b.st", b);
-        String dir2 = getRandomDir();
-        a = "a() ::= << <b()> >>\n";
-        writeFile(dir2, "a.st", a);
+	@Test public void testImportTemplate() throws Exception {
+		String dir1 = getRandomDir();
+		String a = "a() ::= <<dir1 a>>\n";
+		String b = "b() ::= <<dir1 b>>\n";
+		writeFile(dir1, "a.st", a);
+		writeFile(dir1, "b.st", b);
+		String dir2 = getRandomDir();
+		a = "a() ::= << <b()> >>\n";
+		writeFile(dir2, "a.st", a);
 
-        STGroup group1 = new STGroupDir(dir1);
-        STGroup group2 = new STGroupDir(dir2);
-        group2.importTemplates(group1);
-        ST st = group2.getInstanceOf("b");
-        String expected = "dir1 b";
-        String result = st.render();
-        assertEquals(expected, result);
+		STGroup group1 = new STGroupDir(dir1);
+		STGroup group2 = new STGroupDir(dir2);
+		group2.importTemplates(group1);
+		ST st = group2.getInstanceOf("b");
+		String expected = "dir1 b";
+		String result = st.render();
+		assertEquals(expected, result);
 
-        // do it again, but make a template ref imported template
-        st = group2.getInstanceOf("a");
-        expected = " dir1 b ";
-        result = st.render();
-        assertEquals(expected, result);
-    }
+		// do it again, but make a template ref imported template
+		st = group2.getInstanceOf("a");
+		expected = " dir1 b ";
+		result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportStatementWithDir() throws Exception {
+		String dir1 = getRandomDir()+"/dir1";
+		String dir2 = getRandomDir()+"/dir2";
+		String a =
+			"import \""+dir2+"\"\n" +
+			"a() ::= <<dir1 a>>\n";
+		writeFile(dir1, "a.stg", a);
+
+		a = "a() ::= <<dir2 a>>\n";
+		String b = "b() ::= <<dir2 b>>\n";
+		writeFile(dir2, "a.st", a);
+		writeFile(dir2, "b.st", b);
+
+		STGroup group = new STGroupFile(dir1+"/a.stg");
+		ST st = group.getInstanceOf("b"); // visible only if import worked
+		String expected = "dir2 b";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportStatementWithFile() throws Exception {
+		String dir = getRandomDir();
+		String groupFile =
+			"import \""+dir+"/group2.stg\"\n" +
+			"a() ::= \"g1 a\"\n"+
+			"b() ::= \"<c()>\"\n";
+		writeFile(dir, "group1.stg", groupFile);
+
+		groupFile =
+			"c() ::= \"g2 c\"\n";
+		writeFile(dir, "group2.stg", groupFile);
+
+		STGroup group1 = new STGroupFile(dir+"/group1.stg");
+		ST st = group1.getInstanceOf("c"); // should see c()
+		String expected = "g2 c";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testImportTemplateInGroupFileFromDir() throws Exception {
         String dir = getRandomDir();
