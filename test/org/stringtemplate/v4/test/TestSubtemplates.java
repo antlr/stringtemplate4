@@ -81,28 +81,6 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void test_it_NotDefinedWithArg() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "names", "<names:{n | <it>}>!");
-        ST st = group.getInstanceOf("test");
-        st.add("names", "Ter");
-        st.add("names", "Tom");
-        st.add("names", "Sumana");
-        String expected = "!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
-    @Test public void test_it_NotDefinedWithArgSingleValue() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "names", "<names:{n | <it>}>!");
-        ST st = group.getInstanceOf("test");
-        st.add("names", "Ter");
-        String expected = "!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
     @Test public void testNestedIterationWithArg() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "users", "<users:{u | <u.id:{id | <id>=}><u.name>}>!");

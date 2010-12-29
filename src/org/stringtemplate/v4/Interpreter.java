@@ -140,7 +140,7 @@ public class Interpreter {
 					name = self.impl.strings[nameIndex];
 					try {o = self.getAttribute(name);}
 					catch (STNoSuchPropertyException nspe) {
-						ErrorManager.runTimeError(self, current_ip, ErrorType.NO_ATTRIBUTE_DEFINITION, name);
+						ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_ATTRIBUTE, name);
 						o = null;
 					}
 					operands[++sp] = o;

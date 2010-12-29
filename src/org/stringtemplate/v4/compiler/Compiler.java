@@ -298,7 +298,13 @@ public class Compiler {
             emit1(Bytecode.INSTR_LOAD_LOCAL, index, id.getStartIndex(), id.getStopIndex());
 		}
         else {
-            emit1(Bytecode.INSTR_LOAD_ATTR, name, id.getStartIndex(), id.getStopIndex());
+			if ( Interpreter.predefinedAnonSubtemplateAttributes.contains(name) ) {
+				ErrorManager.compileTimeError(ErrorType.NO_SUCH_ATTRIBUTE, id);
+				emit(Bytecode.INSTR_NULL, id.getStartIndex(), id.getStopIndex());
+			}
+            else {
+				emit1(Bytecode.INSTR_LOAD_ATTR, name, id.getStartIndex(), id.getStopIndex());
+			}
         }
     }
 

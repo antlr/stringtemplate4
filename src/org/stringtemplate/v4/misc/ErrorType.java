@@ -33,7 +33,7 @@ public enum ErrorType {
     NO_SUCH_TEMPLATE("no such template: %s"),
     CANT_SET_ATTRIBUTE("can't set attribute %s; template %s has no such attribute"),
     NO_IMPORTED_TEMPLATE("no such template: super.%s"),
-    NO_ATTRIBUTE_DEFINITION("attribute %s isn't defined"),
+    NO_SUCH_ATTRIBUTE("attribute %s isn't defined"),
     MISSING_FORMAL_ARGUMENTS("missing argument definitions"),
 	NO_SUCH_PROPERTY("no such property or can't access: %s"),
 	MAP_ARGUMENT_COUNT_MISMATCH("iterating through %s values in zip map but template has %s declared arguments"),
