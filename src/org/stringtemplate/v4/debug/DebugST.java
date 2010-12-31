@@ -54,6 +54,10 @@ public class DebugST extends ST {
 	/** Record who made us? ConstructionEvent creates Exception to grab stack */
     public ConstructionEvent newSTEvent = new ConstructionEvent();
 
+	public DebugST() {}
+
+	public DebugST(ST proto) { super(proto); }
+
     @Override
     public void add(String name, Object value) {
         if ( groupThatCreatedThisInstance.debug ) {

@@ -49,17 +49,27 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTrimmedSubtemplatesNoArgs() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("test", "names", "<names:{x|  foo }>");
-        ST st = group.getInstanceOf("test");
-        st.add("names", "Ter");
-        st.add("names", "Tom");
-        st.add("names", "Sumana");
-        String expected = " foo  foo  foo ";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testTrimmedSubtemplatesNoArgs() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "[<foo({ foo })>]");
+		group.defineTemplate("foo", "x", "<x>");
+		ST st = group.getInstanceOf("test");
+		String expected = "[ foo ]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testTrimmedSubtemplatesArgs() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "names", "<names:{x|  foo }>");
+		ST st = group.getInstanceOf("test");
+		st.add("names", "Ter");
+		st.add("names", "Tom");
+		st.add("names", "Sumana");
+		String expected = " foo  foo  foo ";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testTrimJustOneWSInSubtemplates() throws Exception {
         STGroup group = new STGroup();

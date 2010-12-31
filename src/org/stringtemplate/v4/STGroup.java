@@ -145,13 +145,6 @@ public class STGroup {
         return null;
     }
 
-//    public ST getInstanceOf(String name, Map<String,Object> attributes) {
-//		if ( name==null ) return null;
-//        ST st = getInstanceOf(name);
-//        if ( st!=null ) st.setAttributes(attributes);
-//        return st;
-//    }
-
     protected ST getEmbeddedInstanceOf(ST enclosingInstance, int ip, String name) {
         ST st = getInstanceOf(name);
         if ( st==null ) {
@@ -164,6 +157,24 @@ public class STGroup {
         st.enclosingInstance = enclosingInstance;
         return st;
     }
+
+	/** Create singleton template for use with dictionary values */
+	public ST createSingleton(Token templateToken) {
+		String template;
+		if ( templateToken.getType()==GroupParser.BIGSTRING ) {
+			template = Misc.strip(templateToken.getText(),2);
+		}
+		else {
+			template = Misc.strip(templateToken.getText(),1);			
+		}
+		ST st = createStringTemplate();
+		st.groupThatCreatedThisInstance = this;
+		st.impl = compile(null, templateToken, null, template);
+		st.impl.hasFormalArgs = false;
+		st.impl.name = ST.UNKNOWN_NAME;
+		st.impl.defineImplicitlyDefinedTemplates(this);
+		return st;
+	}
 
     /** Is this template defined in this group or from this group below?
      *  Names must be absolute, fully-qualified names like /a/b
@@ -218,9 +229,10 @@ public class STGroup {
 
     // for testing
     public CompiledST defineTemplate(String templateName, String template) {
-        return defineTemplate(templateName, new CommonToken(GroupParser.ID,templateName),
-                              null, template);
-    }
+		return defineTemplate(templateName, new CommonToken(GroupParser.ID,templateName),
+			null, null,
+			template);
+	}
 
     // for testing
 	public CompiledST defineTemplate(String name, String argsS, String template) {
@@ -230,12 +242,13 @@ public class STGroup {
 			a.add(new FormalArgument(args[i]));
 		}
 		return defineTemplate(name, new CommonToken(GroupParser.ID, name),
-							  a, template);
+			a, null, template);
 	}
 
-    public CompiledST defineTemplate(String templateName, Token nameT,
+	public CompiledST defineTemplate(String templateName, Token nameT,
                                      List<FormalArgument> args,
-                                     String template)
+                                     Token templateToken,
+									 String template)
     {
 		if ( templateName==null || templateName.length()==0 ) {
 			throw new IllegalArgumentException("empty template name");
@@ -246,7 +259,7 @@ public class STGroup {
         template = Misc.trimOneStartingNewline(template);
         template = Misc.trimOneTrailingNewline(template);
 		// compile, passing in templateName as enclosing name for any embedded regions
-        CompiledST code = compile(templateName, args, template);
+        CompiledST code = compile(templateName, templateToken, args, template);
         code.name = templateName;
         rawDefineTemplate(templateName, code, nameT);
 		code.defineArgDefaultValueTemplates(this);
@@ -270,10 +283,11 @@ public class STGroup {
 
     public CompiledST defineRegion(String enclosingTemplateName,
                                    Token regionT,
-                                   String template)
+								   Token templateToken,
+								   String template)
     {
         String name = regionT.getText();
-        CompiledST code = compile(enclosingTemplateName, null, template);
+        CompiledST code = compile(enclosingTemplateName, templateToken, null, template);
         String mangled = getMangledRegionName(enclosingTemplateName, name);
 
         if ( lookupTemplate(mangled)==null ) {
@@ -300,10 +314,10 @@ public class STGroup {
         if ( templateToken.getType()==GroupLexer.BIGSTRING ) n=2;
         try {
             if ( regionSurroundingTemplateName!=null ) {
-                defineRegion(regionSurroundingTemplateName, nameToken, template);
+                defineRegion(regionSurroundingTemplateName, nameToken, templateToken, template);
             }
             else {
-                defineTemplate(templateName, nameToken, args, template);
+                defineTemplate(templateName, nameToken, args, templateToken, template);
             }
 		}
 		catch (STException e) {
@@ -344,13 +358,15 @@ public class STGroup {
         templates.remove(name);
     }
 
-    protected CompiledST compile(String enclosingTemplateName,
-								 List<FormalArgument> args,
-                                 String template)
+	/** Compile a template relative to location in surrounding file */
+    public CompiledST compile(String enclosingTemplateName,
+							  Token templateToken,
+							  List<FormalArgument> args,
+                              String template)
     {
         Compiler c = new Compiler(enclosingTemplateName,
                                   delimiterStartChar, delimiterStopChar);
-        CompiledST code = c.compile(args, template);
+        CompiledST code = c.compile(args, templateToken, template);
         code.nativeGroup = this;
         code.template = template;
         return code;
@@ -501,13 +517,20 @@ public class STGroup {
 	}
 
     /** StringTemplate object factory; each group can have its own. */
-    public ST createStringTemplate() {
-        // TODO: try making a mem pool?
-        if ( debug ) {
-            return new DebugST();
-        }
-        return new ST();
-    }
+	public ST createStringTemplate() {
+		// TODO: try making a mem pool?
+		if ( debug ) {
+			return new DebugST();
+		}
+		return new ST();
+	}
+
+	public ST createStringTemplate(ST proto) {
+		if ( debug ) {
+			return new DebugST(proto);
+		}
+		return new ST(proto);
+	}
 
     public String getName() { return "<no name>;"; }
 

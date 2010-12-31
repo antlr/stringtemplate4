@@ -219,8 +219,8 @@ keyValuePair[Map<String,Object> mapping]
 	;
 
 keyValue returns [Object value]
-	:	BIGSTRING			{$value = new ST(Misc.strip($BIGSTRING.text,2));}
-	|	ANONYMOUS_TEMPLATE	{$value = new ST(Misc.strip($ANONYMOUS_TEMPLATE.text,1));}
+	:	BIGSTRING			{$value = group.createSingleton($BIGSTRING);}
+	|	ANONYMOUS_TEMPLATE	{$value = group.createSingleton($ANONYMOUS_TEMPLATE);}
 	|	STRING				{$value = Misc.replaceEscapes(Misc.strip($STRING.text, 1));}
 	|	{input.LT(1).getText().equals("key")}?=> ID
 							{$value = STGroup.DICT_KEY;}

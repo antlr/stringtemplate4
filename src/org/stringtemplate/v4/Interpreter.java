@@ -566,7 +566,7 @@ public class Interpreter {
 				int templateIndex = ti % prototypes.size(); // rotate through
 				ti++;
 				ST proto = prototypes.get(templateIndex);
-				ST st = new ST(proto);
+				ST st = group.createStringTemplate(proto);
 				setFirstArgument(self, st, iterValue);
 				if ( st.impl.isAnonSubtemplate ) {
 					st.rawSetAttribute("i0", i0);
@@ -580,7 +580,7 @@ public class Interpreter {
 		}
 		else { // if only single value, just apply first template to sole value
 			ST proto = prototypes.get(0);
-			ST st = new ST(proto);
+			ST st = group.createStringTemplate(proto);
 			if ( st!=null ) {
 				setFirstArgument(self, st, attr);
 				if ( st.impl.isAnonSubtemplate ) {
@@ -644,7 +644,7 @@ public class Interpreter {
 		while ( true ) {
 			// get a value for each attribute in list; put into ST instance
 			int numEmpty = 0;
-			ST embedded = new ST(prototype);
+			ST embedded = group.createStringTemplate(prototype);
 			embedded.rawSetAttribute("i0", i);
 			embedded.rawSetAttribute("i", i+1);
 			for (int a = 0; a < numExprs; a++) {
