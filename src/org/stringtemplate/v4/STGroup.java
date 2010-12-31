@@ -165,11 +165,11 @@ public class STGroup {
 			template = Misc.strip(templateToken.getText(),2);
 		}
 		else {
-			template = Misc.strip(templateToken.getText(),1);			
+			template = Misc.strip(templateToken.getText(),1);
 		}
 		ST st = createStringTemplate();
 		st.groupThatCreatedThisInstance = this;
-		st.impl = compile(null, templateToken, null, template);
+		st.impl = compile(null, null, template);
 		st.impl.hasFormalArgs = false;
 		st.impl.name = ST.UNKNOWN_NAME;
 		st.impl.defineImplicitlyDefinedTemplates(this);
@@ -259,7 +259,7 @@ public class STGroup {
         template = Misc.trimOneStartingNewline(template);
         template = Misc.trimOneTrailingNewline(template);
 		// compile, passing in templateName as enclosing name for any embedded regions
-        CompiledST code = compile(templateName, templateToken, args, template);
+        CompiledST code = compile(templateName, args, template);
         code.name = templateName;
         rawDefineTemplate(templateName, code, nameT);
 		code.defineArgDefaultValueTemplates(this);
@@ -287,7 +287,7 @@ public class STGroup {
 								   String template)
     {
         String name = regionT.getText();
-        CompiledST code = compile(enclosingTemplateName, templateToken, null, template);
+        CompiledST code = compile(enclosingTemplateName, null, template);
         String mangled = getMangledRegionName(enclosingTemplateName, name);
 
         if ( lookupTemplate(mangled)==null ) {
@@ -360,13 +360,12 @@ public class STGroup {
 
 	/** Compile a template relative to location in surrounding file */
     public CompiledST compile(String enclosingTemplateName,
-							  Token templateToken,
 							  List<FormalArgument> args,
                               String template)
     {
         Compiler c = new Compiler(enclosingTemplateName,
                                   delimiterStartChar, delimiterStopChar);
-        CompiledST code = c.compile(args, templateToken, template);
+        CompiledST code = c.compile(args, template);
         code.nativeGroup = this;
         code.template = template;
         return code;
