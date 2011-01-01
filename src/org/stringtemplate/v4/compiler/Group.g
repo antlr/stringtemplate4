@@ -267,15 +267,13 @@ ANONYMOUS_TEMPLATE
 		STLexer lexer =
 			new STLexer(input, group.delimiterStartChar, group.delimiterStopChar);
 		lexer.subtemplateDepth = 1;
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-        STParser parser = new STParser(tokens, Compiler.NOOP_GEN, null);
-		parser.subtemplateBody();
+		Token t = lexer.nextToken();
+		while ( lexer.subtemplateDepth>=1 || t.getType()!=STLexer.RCURLY ) {
+			t = lexer.nextToken();
 		}
-    	// don't match '}' here; subparser matches it to terminate.
-    	// actually since I call subtemplateBody, it loads '}' into
-    	// STParser's lookahead buffer but doesn't use it.  Since it
-    	// consume from group file input char stream, we don't see it
-    	// as if it had been matched.
+		}
+    	// don't match '}' here; our little {...} scanner loop matches it
+    	// to terminate.
     ;
 
 COMMENT
