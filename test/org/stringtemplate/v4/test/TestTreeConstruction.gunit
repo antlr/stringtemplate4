@@ -1,0 +1,17 @@
+/** Test ST's AST construction.  Translate to junit tests with:
+ *
+ *  $ java org.antlr.v4.gunit.Gen TestTreeConstruction.gunit
+ *
+ *  Use local version of gUnitBase to avoid dependency on v4 antlr.
+ */
+gunit TestTreeConstruction;
+
+@header{package org.stringtemplate.v4.test;}
+options {
+	parser = org.stringtemplate.v4.compiler.STTreeBuilder;
+	lexer = org.stringtemplate.v4.compiler.STLexer;
+}
+
+template:
+    "<[]>"                      -> (EXPR [)
+    "<[a,b]>"					-> (EXPR ([ a b))
