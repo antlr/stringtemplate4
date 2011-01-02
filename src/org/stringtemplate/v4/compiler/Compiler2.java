@@ -88,17 +88,11 @@ public class Compiler2 {
         }
     };
 
-    /** The compiled code implementation to fill in. */
-    CompiledST impl = new CompiledST();
-
-    /** If we're compiling a region or sub template, we need to know the
-     *  enclosing template's name.  Region r in template t
-     *  is formally called t.r.
-     */
-    String enclosingTemplateName;
-
 	/** Name subtemplates _sub1, _sub2, ... */
 	public static int subtemplateCount = 0; // public for testing access
+
+    /** The compiled code implementation to fill in. */
+    CompiledST impl = new CompiledST();
 
 	public Compiler2() { this("<unknown>", null, '<', '>'); }
 
@@ -110,8 +104,8 @@ public class Compiler2 {
 					 char delimiterStartChar,
 					 char delimiterStopChar)
 	{
-		this.impl.name = name;
-		this.enclosingTemplateName = enclosingTemplateName;
+		impl.name = name;
+		impl.enclosingTemplateName = enclosingTemplateName;
 		this.delimiterStartChar = delimiterStartChar;
 		this.delimiterStopChar = delimiterStopChar;
 	}
