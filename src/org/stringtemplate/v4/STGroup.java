@@ -361,7 +361,7 @@ public class STGroup {
 							  List<FormalArgument> args,
                               String template)
     {
-		System.out.println("STGroup.compile: "+enclosingTemplateName);
+		//System.out.println("STGroup.compile: "+enclosingTemplateName);
         Compiler c = new Compiler(enclosingTemplateName,
                                   delimiterStartChar, delimiterStopChar);
         CompiledST code = c.compile(args, template);
