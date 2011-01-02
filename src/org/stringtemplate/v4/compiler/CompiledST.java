@@ -98,6 +98,12 @@ public class CompiledST {
 	 */
 	int ip = 0;
 
+	/** If we're compiling a region or sub template, we need to know the
+	 *  enclosing template's name.  Region r in template t
+	 *  is formally called t.r.
+	 */
+	String enclosingTemplateName;
+
 
     public void addImplicitlyDefinedTemplate(CompiledST sub) {
         if ( implicitlyDefinedTemplates == null ) {

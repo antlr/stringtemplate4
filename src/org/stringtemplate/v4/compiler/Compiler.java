@@ -130,12 +130,6 @@ public class Compiler {
 	/** The compiled code implementation to fill in. */
 	CompiledST code = new CompiledST();
 
-	/** If we're compiling a region or sub template, we need to know the
-	 *  enclosing template's name.  Region r in template t
-	 *  is formally called t.r.
-	 */
-	String enclosingTemplateName;
-
 	public Compiler() { this("<unknown>", '<', '>'); }
 
     /** To compile a template, we need to know what
@@ -145,7 +139,7 @@ public class Compiler {
                     char delimiterStartChar,
                     char delimiterStopChar)
     {
-        this.enclosingTemplateName = enclosingTemplateName;
+        code.enclosingTemplateName = enclosingTemplateName;
         this.delimiterStartChar = delimiterStartChar;
         this.delimiterStopChar = delimiterStopChar;
     }
@@ -168,7 +162,7 @@ public class Compiler {
 		ANTLRStringStream is = new ANTLRStringStream(template);
 		STLexer lexer = new STLexer(is, delimiterStartChar, delimiterStopChar);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        STParser parser = new STParser(tokens, this, enclosingTemplateName);
+        STParser parser = new STParser(tokens, this, code.enclosingTemplateName);
         try {
             parser.templateAndEOF(); // parse, trigger compile actions
         }
@@ -186,7 +180,7 @@ public class Compiler {
 //		System.out.println("compile inline in "+tokens.toString(tokens.index(), 10000));
         code.instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
         code.sourceMap = new Interval[SUBTEMPLATE_INITIAL_CODE_SIZE];
-        STParser parser = new STParser(tokens, state, this, enclosingTemplateName);
+        STParser parser = new STParser(tokens, state, this, code.enclosingTemplateName);
         try {
             parser.template(); // parse, trigger compile actions
         }
