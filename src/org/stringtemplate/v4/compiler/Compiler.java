@@ -42,6 +42,8 @@ import java.util.Map;
 
 /** A compiler for a single template */
 public class Compiler {
+	public static final String SUBTEMPLATE_PREFIX = "_sub";
+
     /** Given a template of length n, how much code will result?
      *  For now, let's assume n/5. Later, we can test in practice.
      */
@@ -90,23 +92,6 @@ public class Compiler {
         }
     };
 
-    /** The compiled code implementation to fill in. */
-    CompiledST code = new CompiledST();
-
-    /** Track unique strings; copy into CompiledST's String[] after compilation */
-    StringTable strings = new StringTable();
-
-    /** Track instruction location within code.instrs array; this is
-     *  next address to write to.  Byte-addressable memory.
-     */
-    int ip = 0;
-
-    /** If we're compiling a region or sub template, we need to know the
-     *  enclosing template's name.  Region r in template t
-     *  is formally called t.r.
-     */
-    String enclosingTemplateName;
-
     /** Name subtemplates /sub1, /sub2, ... */
     public static int subtemplateCount = 0; // public for testing access
 
@@ -134,6 +119,7 @@ public class Compiler {
                                     TokenStream input,
                                     RecognizerSharedState state)
         {
+			System.out.println("NOP GEN compile inline");
             Compiler c = new Compiler();
             c.compile(input, state);
             return null;
@@ -141,7 +127,16 @@ public class Compiler {
         public void defineBlankRegion(String fullyQualifiedName) { }
     };
 
-    public Compiler() { this("<unknown>", '<', '>'); }
+	/** The compiled code implementation to fill in. */
+	CompiledST code = new CompiledST();
+
+	/** If we're compiling a region or sub template, we need to know the
+	 *  enclosing template's name.  Region r in template t
+	 *  is formally called t.r.
+	 */
+	String enclosingTemplateName;
+
+	public Compiler() { this("<unknown>", '<', '>'); }
 
     /** To compile a template, we need to know what
      *  the enclosing template is (if any).
@@ -162,6 +157,7 @@ public class Compiler {
 
 	/** Compile full template with respect to a list of formal args. */
     public CompiledST compile(List<FormalArgument> args, String template) {
+		//System.out.println("compile with args "+template);
 		code.defineFormalArgs(args); // make sure args are defined prior to compilation
 
 		int initialSize = Math.max(5, (int)(template.length() / CODE_SIZE_FACTOR));
@@ -177,8 +173,8 @@ public class Compiler {
             parser.templateAndEOF(); // parse, trigger compile actions
         }
         catch (RecognitionException re) { throwSTException(tokens, parser, re); }
-        if ( strings!=null ) code.strings = strings.toArray();
-        code.codeSize = ip;
+        if ( code.stringtable!=null ) code.strings = code.stringtable.toArray();
+        code.codeSize = code.ip;
         return code;
     }
 
@@ -186,6 +182,8 @@ public class Compiler {
     protected CompiledST compile(TokenStream tokens,
                                  RecognizerSharedState state)
     {
+//		tokens.LT(3);
+//		System.out.println("compile inline in "+tokens.toString(tokens.index(), 10000));
         code.instrs = new byte[SUBTEMPLATE_INITIAL_CODE_SIZE];
         code.sourceMap = new Interval[SUBTEMPLATE_INITIAL_CODE_SIZE];
         STParser parser = new STParser(tokens, state, this, enclosingTemplateName);
@@ -193,8 +191,8 @@ public class Compiler {
             parser.template(); // parse, trigger compile actions
         }
         catch (RecognitionException re) { throwSTException(tokens, parser, re); }
-        if ( strings!=null ) code.strings = strings.toArray();
-        code.codeSize = ip;
+        if ( code.stringtable!=null ) code.strings = code.stringtable.toArray();
+        code.codeSize = code.ip;
         return code;
     }
 
@@ -202,8 +200,10 @@ public class Compiler {
                                       TokenStream input,
                                       List<Token> argIDs,
                                       RecognizerSharedState state) {
+//		input.LT(3);
+//		System.out.println("compile anon in "+input.toString(input.index(), 10000));
         subtemplateCount++;
-        String name = ST.SUBTEMPLATE_PREFIX+subtemplateCount;
+        String name = SUBTEMPLATE_PREFIX+subtemplateCount;
         TokenSource tokenSource = input.getTokenSource();
         STLexer lexer = null;
         int start=-1;
@@ -288,7 +288,7 @@ public class Compiler {
         }
     }
 
-    public int defineString(String s) { return strings.add(s); }
+    public int defineString(String s) { return code.stringtable.add(s); }
 
     public void refAttr(CommonToken id) {
         String name = id.getText();
@@ -343,8 +343,8 @@ public class Compiler {
 
     public void emit(short opcode, int p, int q) {
         ensureCapacity(1);
-        if ( !(p<0 || q<0) ) code.sourceMap[ip] = new Interval(p, q);
-        code.instrs[ip++] = (byte)opcode;
+        if ( !(p<0 || q<0) ) code.sourceMap[code.ip] = new Interval(p, q);
+        code.instrs[code.ip++] = (byte)opcode;
     }
 
 	public void emit1(short opcode, int arg) { emit1(opcode, arg, -1, -1); }
@@ -352,17 +352,17 @@ public class Compiler {
 	public void emit1(short opcode, int arg, int p, int q) {
 		emit(opcode, p, q);
 		ensureCapacity(Bytecode.OPND_SIZE_IN_BYTES);
-		writeShort(code.instrs, ip, (short)arg);
-		ip += Bytecode.OPND_SIZE_IN_BYTES;
+		writeShort(code.instrs, code.ip, (short)arg);
+		code.ip += Bytecode.OPND_SIZE_IN_BYTES;
 	}
 
 	public void emit2(short opcode, int arg, int arg2, int p, int q) {
 		emit(opcode, p, q);
 		ensureCapacity(Bytecode.OPND_SIZE_IN_BYTES * 2);
-		writeShort(code.instrs, ip, (short)arg);
-		ip += Bytecode.OPND_SIZE_IN_BYTES;
-		writeShort(code.instrs, ip, (short)arg2);
-		ip += Bytecode.OPND_SIZE_IN_BYTES;
+		writeShort(code.instrs, code.ip, (short)arg);
+		code.ip += Bytecode.OPND_SIZE_IN_BYTES;
+		writeShort(code.instrs, code.ip, (short)arg2);
+		code.ip += Bytecode.OPND_SIZE_IN_BYTES;
 	}
 
 	public void emit2(short opcode, String s, int arg2, int p, int q) {
@@ -383,15 +383,15 @@ public class Compiler {
 		int instrSize = 1 + Bytecode.OPND_SIZE_IN_BYTES;
 		System.arraycopy(code.instrs, addr,
 						 code.instrs, addr + instrSize,
-						 ip-addr); // make room for opcode, opnd
-        int save = ip;
-        ip = addr;
+						 code.ip-addr); // make room for opcode, opnd
+        int save = code.ip;
+        code.ip = addr;
         emit1(opcode, s);
-        ip = save+instrSize;
+        code.ip = save+instrSize;
 		//System.out.println("after  insert of "+opcode+"("+s+"):"+ Arrays.toString(code.instrs));
 		// adjust addresses for BR and BRF
 		int a=addr+instrSize;
-		while ( a < ip ) {
+		while ( a < code.ip ) {
 			byte op = code.instrs[a];
 			Bytecode.Instruction I = Bytecode.instructions[op];
 			if ( op == Bytecode.INSTR_BR || op == Bytecode.INSTR_BRF ) {
@@ -407,10 +407,10 @@ public class Compiler {
         writeShort(code.instrs, addr, value);
     }
 
-    public int address() { return ip; }
+    public int address() { return code.ip; }
 
     protected void ensureCapacity(int n) {
-        if ( (ip+n) >= code.instrs.length ) { // ensure room for full instruction
+        if ( (code.ip+n) >= code.instrs.length ) { // ensure room for full instruction
             byte[] c = new byte[code.instrs.length*2];
             System.arraycopy(code.instrs, 0, c, 0, code.instrs.length);
             code.instrs = c;

@@ -276,15 +276,15 @@ public class STViz {
 
     public static void main(String[] args) throws IOException { // test rig
         String templates =
-            "method(type,name,locals,args,stats) ::= <<\n" +
-                "public <type> <ick()> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
-                "    <if(locals)>int locals[<locals>];<endif>\n"+
-                "    <stats;separator=\"\\n\">\n" +
-                "}\n" +
-                ">>\n"+
-                "assign(a,b) ::= \"<a> = <b> <a,b:{foo}>;\"\n"+
-                "return(x) ::= <<return <x>;>>\n" +
-                "paren(x) ::= \"(<x>)\"\n";
+			"method(type,name,locals,args,stats) ::= <<\n" +
+			"public <type> <ick()> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
+			"    <if(locals)>int locals[<locals>];<endif>\n"+
+			"    <stats;separator=\"\\n\">\n" +
+			"}\n" +
+			">>\n"+
+			"assign(a,b) ::= \"<a> = <b> <a,b:{foo}>;\"\n"+
+			"return(x) ::= <<return <x>;>>\n" +
+			"paren(x) ::= \"(<x>)\"\n";
 
         String tmpdir = System.getProperty("java.io.tmpdir");
         writeFile(tmpdir, "t.stg", templates);
@@ -310,7 +310,8 @@ public class STViz {
         st.add("stats", s2);
         st.add("stats", s3);
 
-        st.inspect();
+//        st.inspect();
+		st.render();
     }
 
     public static void writeFile(String dir, String fileName, String content) {

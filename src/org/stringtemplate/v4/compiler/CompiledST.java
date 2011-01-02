@@ -88,6 +88,17 @@ public class CompiledST {
     public int codeSize;
     public Interval[] sourceMap; // maps IP to range in template pattern
 
+	// temp data used during construction
+
+	/** Track unique strings; copy into CompiledST's String[] after compilation */
+	StringTable stringtable = new StringTable();
+
+	/** Track instruction location within code.instrs array; this is
+	 *  next address to write to.  Byte-addressable memory.
+	 */
+	int ip = 0;
+
+
     public void addImplicitlyDefinedTemplate(CompiledST sub) {
         if ( implicitlyDefinedTemplates == null ) {
             implicitlyDefinedTemplates = new ArrayList<CompiledST>();

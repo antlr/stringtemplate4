@@ -230,7 +230,7 @@ public class STGroup {
     // for testing
     public CompiledST defineTemplate(String templateName, String template) {
 		return defineTemplate(templateName, new CommonToken(GroupParser.ID,templateName),
-			null, null,
+			null,
 			template);
 	}
 
@@ -242,12 +242,11 @@ public class STGroup {
 			a.add(new FormalArgument(args[i]));
 		}
 		return defineTemplate(name, new CommonToken(GroupParser.ID, name),
-			a, null, template);
+			a, template);
 	}
 
 	public CompiledST defineTemplate(String templateName, Token nameT,
                                      List<FormalArgument> args,
-                                     Token templateToken,
 									 String template)
     {
 		if ( templateName==null || templateName.length()==0 ) {
@@ -283,7 +282,6 @@ public class STGroup {
 
     public CompiledST defineRegion(String enclosingTemplateName,
                                    Token regionT,
-								   Token templateToken,
 								   String template)
     {
         String name = regionT.getText();
@@ -314,10 +312,10 @@ public class STGroup {
         if ( templateToken.getType()==GroupLexer.BIGSTRING ) n=2;
         try {
             if ( regionSurroundingTemplateName!=null ) {
-                defineRegion(regionSurroundingTemplateName, nameToken, templateToken, template);
+                defineRegion(regionSurroundingTemplateName, nameToken, template);
             }
             else {
-                defineTemplate(templateName, nameToken, args, templateToken, template);
+                defineTemplate(templateName, nameToken, args, template);
             }
 		}
 		catch (STException e) {
@@ -358,11 +356,12 @@ public class STGroup {
         templates.remove(name);
     }
 
-	/** Compile a template relative to location in surrounding file */
+	/** Compile a template */
     public CompiledST compile(String enclosingTemplateName,
 							  List<FormalArgument> args,
                               String template)
     {
+		System.out.println("STGroup.compile: "+enclosingTemplateName);
         Compiler c = new Compiler(enclosingTemplateName,
                                   delimiterStartChar, delimiterStopChar);
         CompiledST code = c.compile(args, template);
