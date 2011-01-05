@@ -47,16 +47,6 @@ package org.stringtemplate.v4.compiler;
 }
 
 @members {
-    public static void main(String[] args) throws Exception {
-		STLexer lexer = new STLexer(new ANTLRFileStream(args[0]));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-    	STTreeBuilder p = new STTreeBuilder(tokens);
-   		template_return r = p.template();
-		System.out.println(((CommonTree)r.getTree()).toStringTree());
-		CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.getTree());
-		CodeGenerator gen = new CodeGenerator(nodes);
-		gen.template();
-    }
 }
 
 templateAndEOF : template EOF! ;

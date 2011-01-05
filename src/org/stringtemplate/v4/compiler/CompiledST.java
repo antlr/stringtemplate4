@@ -104,6 +104,11 @@ public class CompiledST {
 	 */
 	String enclosingTemplateName;
 
+	public CompiledST() {
+        instrs = new byte[Compiler2.TEMPLATE_INITIAL_CODE_SIZE];
+        sourceMap = new Interval[Compiler2.TEMPLATE_INITIAL_CODE_SIZE];
+		template = "";
+	}
 
     public void addImplicitlyDefinedTemplate(CompiledST sub) {
         if ( implicitlyDefinedTemplates == null ) {

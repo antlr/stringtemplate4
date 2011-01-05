@@ -35,29 +35,65 @@ options {
 
 @header {
 package org.stringtemplate.v4.compiler;
+import org.stringtemplate.v4.misc.Misc;
 }
 
-templateAndEOF : template ;
+@members {
+Compiler2 compiler;
+}
 
-template : element* ;
+templateAndEOF : root[""] EOF; // hush warning
 
+root[String name] returns [CompiledST impl]
+scope {
+    CompilationState state; // automatically get a new one per invocation
+}
+@init {
+	$root::state = new CompilationState();
+	$root::state.tokens = input.getTokenStream();
+	$impl = $root::state.impl;
+    $impl.name = name;
+}
+	:	template
+		{
+        if ( $impl.stringtable!=null ) $impl.strings = $impl.stringtable.toArray();
+        $impl.codeSize = $impl.ip;
+		}
+	;
+
+template
+	:	element*
+	;
+	
 element
-	:	^(INDENT element)
+	:	^(INDENT {$root::state.indent($INDENT.text);} element {$root::state.emit(Bytecode.INSTR_DEDENT);})
 	|	ifstat
 	|	exprElement
 	|	TEXT
+		{
+		if ( $TEXT.text.length()>0 ) {
+			$root::state.emit1($TEXT,Bytecode.INSTR_LOAD_STR, $TEXT.text);
+			$root::state.emit($TEXT,Bytecode.INSTR_WRITE);
+		}
+		}
 	|	region
-	|	NEWLINE
+	|	NEWLINE {$root::state.emit(Bytecode.INSTR_NEWLINE);}
 	;
 
 exprElement
-	:	^(EXPR expr exprOptions?)
+@init { short op = Bytecode.INSTR_WRITE; }
+	:	^( EXPR expr (exprOptions {op=Bytecode.INSTR_WRITE_OPT;})? )
+		{$root::state.emit($EXPR, op);}
 	;
 
 region : LDELIM '@' ID RDELIM LDELIM '@end' RDELIM ;
 
-subtemplate
-	:	^(SUBTEMPLATE (^(ARGS ID+))* template)
+subtemplate returns [String name]
+@init {
+        compiler.subtemplateCount++;
+        $name = Compiler2.SUBTEMPLATE_PREFIX+compiler.subtemplateCount;
+}
+	:	^(SUBTEMPLATE (^(ARGS ID+))* root[$name])
 	;
 
 ifstat
@@ -92,30 +128,47 @@ prop:	^(PROP expr ID)
 	;
 	
 mapTemplateRef
-	:	^(INCLUDE ID arg*)
+	:	^(INCLUDE ID args)
 	|	subtemplate
-	|	^(INCLUDE_IND ID arg*)
+	|	^(INCLUDE_IND ID args)
 	;
 
 includeExpr
-	:	^(EXEC_FUNC ID expr?)
-	|	^(INCLUDE ID arg*)
-	|	^(INCLUDE_SUPER ID arg*)
+	:	^(EXEC_FUNC ID expr?)		{$root::state.func($ID);}
+	|	^(INCLUDE ID args)
+									{
+									$root::state.emit2($start,Bytecode.INSTR_NEW,
+									          $ID.text,
+									    	  $args.n);
+									}
+	|	^(INCLUDE_SUPER ID args)
+									{
+									$root::state.emit2($start,Bytecode.INSTR_SUPER_NEW,
+									          $ID.text,
+									    	  $args.n);
+									}
 	|	^(INCLUDE_REGION ID)
 	|	^(INCLUDE_SUPER_REGION ID)
 	|	primary
 	;
 
 primary
-	:	ID
-	|	STRING
-	|	subtemplate
+	:	ID				{$root::state.refAttr($ID);}
+	|	STRING			{$root::state.emit1($STRING,Bytecode.INSTR_LOAD_STR,
+									  Misc.strip($STRING.text,1));}	
+	|	subtemplate		// push a subtemplate but ignore args since we can't pass any to it here
+		                {$root::state.emit2($start,Bytecode.INSTR_NEW, $subtemplate.name, 0);}
 	|	list
-	|	^(INCLUDE_IND expr arg*)
-	|	^(TO_STR expr)
+	|	^(INCLUDE_IND expr args)
+			{
+			$root::state.emit1($INCLUDE_IND, Bytecode.INSTR_NEW_IND, $args.n);
+			}
+	|	^(TO_STR expr)	{$root::state.emit($TO_STR, Bytecode.INSTR_TOSTR);}
 	;
+
+args returns [int n=0] : ( arg {n++;} )* ;
 
 arg : expr ;
 
-list:	^(LIST expr*)
+list:	^(LIST expr*) {$root::state.emit(Bytecode.INSTR_LIST);}
 	;
