@@ -39,7 +39,7 @@ options {
 tokens {
 	EXPR; OPTIONS; PROP; PROP_IND; INCLUDE; INCLUDE_IND; EXEC_FUNC; INCLUDE_SUPER;
 	INCLUDE_SUPER_REGION; INCLUDE_REGION; TO_STR; LIST; MAP; ZIP; SUBTEMPLATE; ARGS;
-	ELEMENTS;
+	ELEMENTS; REGION;
 	}
 
 @header {
@@ -69,7 +69,7 @@ exprTag
 		-> ^(EXPR[$LDELIM,"EXPR"] expr exprOptions?)
 	;
 
-region : LDELIM '@' ID RDELIM LDELIM '@end' RDELIM ;
+region : LDELIM '@' ID RDELIM template LDELIM '@end' RDELIM -> ^(REGION ID template) ;
 
 subtemplate
 	:	lc='{' (ids+= ID ( ',' ids+= ID )* '|' )? template INDENT? '}'

@@ -35,71 +35,106 @@ options {
 
 @header {
 package org.stringtemplate.v4.compiler;
-import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.*;
 }
 
 @members {
-Compiler2 compiler;
+	String outermostTemplateName; // name of overall template
+	CompiledST outermostImpl;
+	String template;
+	public CodeGenerator(TreeNodeStream input, String name, String template) {
+		this(input, new RecognizerSharedState());
+		this.outermostTemplateName = name;
+		this.template = template;
+	}
 }
 
-templateAndEOF : root[""] EOF; // hush warning
+templateAndEOF : template[null,null] EOF; // hush warning; ignore
 
-root[String name] returns [CompiledST impl]
+template[String name, List<FormalArgument> args] returns [CompiledST impl]
 scope {
-    CompilationState state; // automatically get a new one per invocation
+    CompilationState state; // automatically get a new state pointer per invocation
 }
 @init {
-	$root::state = new CompilationState();
-	$root::state.tokens = input.getTokenStream();
-	$impl = $root::state.impl;
-    $impl.name = name;
+ 	$template::state = new CompilationState(name, input.getTokenStream());
+	$impl = $template::state.impl;
+ 	if ( $template.size() == 1 ) outermostImpl = $impl;
+	$impl.defineFormalArgs($args); // make sure args are defined prior to compilation
+	$impl.template = template;
 }
-	:	template
-		{
+	:	chunk
+		{ // finish off the CompiledST result
         if ( $impl.stringtable!=null ) $impl.strings = $impl.stringtable.toArray();
         $impl.codeSize = $impl.ip;
 		}
 	;
 
-template
+chunk
 	:	element*
 	;
 	
 element
-	:	^(INDENT {$root::state.indent($INDENT.text);} element {$root::state.emit(Bytecode.INSTR_DEDENT);})
+	:	^(INDENT {$template::state.indent($INDENT.text);} element {$template::state.emit(Bytecode.INSTR_DEDENT);})
 	|	ifstat
 	|	exprElement
 	|	TEXT
 		{
 		if ( $TEXT.text.length()>0 ) {
-			$root::state.emit1($TEXT,Bytecode.INSTR_LOAD_STR, $TEXT.text);
-			$root::state.emit($TEXT,Bytecode.INSTR_WRITE);
+			$template::state.emit1($TEXT,Bytecode.INSTR_LOAD_STR, $TEXT.text);
+			$template::state.emit($TEXT,Bytecode.INSTR_WRITE);
 		}
 		}
 	|	region
-	|	NEWLINE {$root::state.emit(Bytecode.INSTR_NEWLINE);}
+		{
+		$template::state.emit2($region.start, Bytecode.INSTR_NEW, $region.name, 0);
+		$template::state.emit($region.start, Bytecode.INSTR_WRITE);
+		}
+	|	NEWLINE {$template::state.emit(Bytecode.INSTR_NEWLINE);}
 	;
 
 exprElement
 @init { short op = Bytecode.INSTR_WRITE; }
 	:	^( EXPR expr (exprOptions {op=Bytecode.INSTR_WRITE_OPT;})? )
-		{$root::state.emit($EXPR, op);}
+		{$template::state.emit($EXPR, op);}
 	;
 
-region : LDELIM '@' ID RDELIM LDELIM '@end' RDELIM ;
+region returns [String name]
+	:	^(	REGION ID
+			{$name = STGroup.getMangledRegionName(outermostTemplateName, $ID.text);}
+			template[$name,null]
+			{
+			CompiledST sub = $template.impl;
+	        sub.isRegion = true;
+	        sub.regionDefType = ST.RegionType.EMBEDDED;
+			sub.dump();
+			outermostImpl.addImplicitlyDefinedTemplate(sub);
+			}
+		 )
+	;
 
-subtemplate returns [String name]
+subtemplate returns [String name, int nargs]
 @init {
-        compiler.subtemplateCount++;
-        $name = Compiler2.SUBTEMPLATE_PREFIX+compiler.subtemplateCount;
+    $name = Compiler2.getNewSubtemplateName();
+	List<FormalArgument> args = new ArrayList<FormalArgument>();
 }
-	:	^(SUBTEMPLATE (^(ARGS ID+))* root[$name])
+	:	^(	SUBTEMPLATE
+			(^(ARGS (ID {args.add(new FormalArgument($ID.text));})+))*
+			{$nargs = args.size();}
+			template[$name,args]
+			{
+			CompiledST sub = $template.impl;
+			sub.isAnonSubtemplate = true;
+			sub.dump();
+			outermostImpl.addImplicitlyDefinedTemplate(sub);
+			}
+		 )
 	;
 
 ifstat
-	:	^(	'if' conditional template
-			(^('elseif' conditional template))*
-			(^('else' template))?
+	:	^(	'if' conditional chunk
+			(^('elseif' conditional chunk))*
+			(^('else' chunk))?
 		 )
 	;
 
@@ -117,8 +152,11 @@ option
 	:	^('=' ID expr)
 	;
 
-expr:	^(ZIP ^(ELEMENTS expr+) mapTemplateRef)
-	|	^(MAP expr mapTemplateRef+)
+expr
+@init {int nt = 0, ne = 0;}
+	:	^(ZIP ^(ELEMENTS (expr {ne++;})+) mapTemplateRef[ne])
+	|	^(MAP expr (mapTemplateRef[1] {nt++;})+)
+		{$template::state.emit1($MAP, Bytecode.INSTR_ROT_MAP, nt);}
 	|	prop
 	|	includeExpr
 	;
@@ -127,48 +165,64 @@ prop:	^(PROP expr ID)
 	|	^(PROP_IND expr expr)
 	;
 	
-mapTemplateRef
+mapTemplateRef[int num_exprs]
 	:	^(INCLUDE ID args)
+		{$template::state.emit2($INCLUDE, Bytecode.INSTR_NEW,$ID.text, $args.n+$num_exprs);}
 	|	subtemplate
+		{
+		if ( $subtemplate.nargs != $num_exprs ) {
+            ErrorManager.compileTimeError(ErrorType.ANON_ARGUMENT_MISMATCH,
+            							  $subtemplate.start.token, $subtemplate.nargs, $num_exprs);
+		}
+        $template::state.emit2($subtemplate.start, Bytecode.INSTR_NEW,
+	              $subtemplate.name,
+	              $num_exprs);
+		}
+
 	|	^(INCLUDE_IND ID args)
 	;
 
 includeExpr
-	:	^(EXEC_FUNC ID expr?)		{$root::state.func($ID);}
+	:	^(EXEC_FUNC ID expr?)		{$template::state.func($ID);}
 	|	^(INCLUDE ID args)
 									{
-									$root::state.emit2($start,Bytecode.INSTR_NEW,
+									$template::state.emit2($start,Bytecode.INSTR_NEW,
 									          $ID.text,
 									    	  $args.n);
 									}
 	|	^(INCLUDE_SUPER ID args)
 									{
-									$root::state.emit2($start,Bytecode.INSTR_SUPER_NEW,
+									$template::state.emit2($start,Bytecode.INSTR_SUPER_NEW,
 									          $ID.text,
 									    	  $args.n);
 									}
 	|	^(INCLUDE_REGION ID)
+								   {
+								   CompiledST impl = Compiler2.defineBlankRegion(outermostImpl, $ID.text);
+								   impl.dump();
+								   $template::state.emit2($INCLUDE_REGION,Bytecode.INSTR_NEW,
+									   	    impl.name,
+									   	    0);
+								   }
 	|	^(INCLUDE_SUPER_REGION ID)
 	|	primary
 	;
 
 primary
-	:	ID				{$root::state.refAttr($ID);}
-	|	STRING			{$root::state.emit1($STRING,Bytecode.INSTR_LOAD_STR,
+	:	ID				{$template::state.refAttr($ID);}
+	|	STRING			{$template::state.emit1($STRING,Bytecode.INSTR_LOAD_STR,
 									  Misc.strip($STRING.text,1));}	
 	|	subtemplate		// push a subtemplate but ignore args since we can't pass any to it here
-		                {$root::state.emit2($start,Bytecode.INSTR_NEW, $subtemplate.name, 0);}
+		                {$template::state.emit2($start,Bytecode.INSTR_NEW, $subtemplate.name, 0);}
 	|	list
 	|	^(INCLUDE_IND expr args)
-			{
-			$root::state.emit1($INCLUDE_IND, Bytecode.INSTR_NEW_IND, $args.n);
-			}
-	|	^(TO_STR expr)	{$root::state.emit($TO_STR, Bytecode.INSTR_TOSTR);}
+						{$template::state.emit1($INCLUDE_IND, Bytecode.INSTR_NEW_IND, $args.n);}
+	|	^(TO_STR expr)	{$template::state.emit($TO_STR, Bytecode.INSTR_TOSTR);}
 	;
 
-args returns [int n=0] : ( arg {n++;} )* ;
+args returns [int n=0] : ( arg {$n++;} )* ;
 
 arg : expr ;
 
-list:	^(LIST expr*) {$root::state.emit(Bytecode.INSTR_LIST);}
+list:	^(LIST expr*) {$template::state.emit(Bytecode.INSTR_LIST);}
 	;

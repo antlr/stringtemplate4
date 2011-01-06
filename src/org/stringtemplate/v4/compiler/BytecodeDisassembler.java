@@ -137,19 +137,21 @@ public class BytecodeDisassembler {
     }
 
     public String strings() {
-        StringBuffer buf = new StringBuffer();
-        int addr = 0;
-        for (Object o : code.strings) {
-            if ( o instanceof String ) {
-				String s = (String)o;
-                s = Misc.replaceEscapes(s);
-                buf.append( String.format("%04d: \"%s\"\n", addr, s) );
-            }
-            else {
-                buf.append( String.format("%04d: %s\n", addr, o) );
-            }
-            addr++;
-        }
+		StringBuffer buf = new StringBuffer();
+		int addr = 0;
+		if ( code.strings!=null ) {
+			for (Object o : code.strings) {
+				if ( o instanceof String ) {
+					String s = (String)o;
+					s = Misc.replaceEscapes(s);
+					buf.append( String.format("%04d: \"%s\"\n", addr, s) );
+				}
+				else {
+					buf.append( String.format("%04d: %s\n", addr, o) );
+				}
+				addr++;
+			}
+		}
         return buf.toString();
     }
 

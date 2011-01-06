@@ -34,9 +34,10 @@ public class CompilationState {
 
 	TokenStream tokens;
 
-//	public CompilationState(String template) {
-//		impl.template = template;
-//	}
+	public CompilationState(String name, TokenStream tokens) {
+		this.tokens = tokens;
+		impl.name = name;
+	}
 
 	public int defineString(String s) { return impl.stringtable.add(s); }
 
@@ -171,7 +172,7 @@ public class CompilationState {
 		}
 	}
 
-	public void indent(String indent) {	emit1(null,Bytecode.INSTR_INDENT, indent); }	
+	public void indent(String indent) {	emit1(null,Bytecode.INSTR_INDENT, indent); }
 
 	/** Write value at index into a byte array highest to lowest byte,
 	 *  left to right.
@@ -179,5 +180,5 @@ public class CompilationState {
 	public static void writeShort(byte[] memory, int index, short value) {
 		memory[index+0] = (byte)((value>>(8*1))&0xFF);
 		memory[index+1] = (byte)(value&0xFF);
-	}	
+	}
 }

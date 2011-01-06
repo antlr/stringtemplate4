@@ -27,7 +27,13 @@
  */
 package org.stringtemplate.v4.compiler;
 
+import org.antlr.runtime.*;
+import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.stringtemplate.v4.Interpreter;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.misc.ErrorManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -84,47 +90,90 @@ public class Compiler2 {
 	/** Name subtemplates _sub1, _sub2, ... */
 	public static int subtemplateCount = 0;
 
-    /** The compiled code implementation to fill in. */
-    CompiledST impl = new CompiledST();
-
-	/** Track unique strings; copy into CompiledST's String[] after compilation */
-	StringTable stringtable = new StringTable();
-
-	/** Track instruction location within code.instrs array; this is
-	 *  next address to write to.  Byte-addressable memory.
-	 */
-	int ip = 0;
-
-	/** If we're compiling a region or subtemplate, we need to know the
-	 *  enclosing template's name.  Region r in template t
-	 *  is formally called t.r.
-	 */
-	String enclosingTemplateName;
-
-
-	public Compiler2() { this("<unknown>", null, '<', '>'); }
+	public Compiler2() { this('<', '>'); }
 
 	/** To compile a template, we need to know what the
 	 *  enclosing template is (if any) in case of regions.
 	 */
-	public Compiler2(String name,
-					 String enclosingTemplateName,
-					 char delimiterStartChar,
+	public Compiler2(char delimiterStartChar,
 					 char delimiterStopChar)
 	{
-		impl.name = name;
-		impl.enclosingTemplateName = enclosingTemplateName;
 		this.delimiterStartChar = delimiterStartChar;
 		this.delimiterStopChar = delimiterStopChar;
 	}
 
-	public CompiledST compile(String template) {
-		return null;
+	/** Compile full template with unknown formal args. */
+	public CompiledST compile(String name, String template) {
+		CompiledST code = compile(name, null, template);
+		code.hasFormalArgs = false;
+		return code;
 	}
 
 	/** Compile full template with respect to a list of formal args. */
-	public CompiledST compile(List<FormalArgument> args, String template) {
-		return null;
+	public CompiledST compile(String name,
+							  List<FormalArgument> args,
+							  String template)
+	{
+		STLexer lexer = new STLexer(new ANTLRStringStream(template));
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		STTreeBuilder p = new STTreeBuilder(tokens);
+		STTreeBuilder.template_return r = null;
+		try {
+			r = p.template();
+		}
+		catch (RecognitionException re) { throwSTException(tokens, p, re); }
+		System.out.println(((CommonTree)r.getTree()).toStringTree());
+		CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.getTree());
+		nodes.setTokenStream(tokens);
+		CodeGenerator gen = new CodeGenerator(nodes, name, template);
+
+		CompiledST impl=null;
+		try {
+			impl = gen.template(name,args);
+		}
+		catch (RecognitionException re) {
+			ErrorManager.internalError(null, "bad tree structure", re);
+		}
+		impl.dump();
+
+		return impl;
 	}
-	
+
+	public static CompiledST defineBlankRegion(CompiledST outermostImpl, String name) {
+		String outermostTemplateName = outermostImpl.name;
+		String mangled = STGroup.getMangledRegionName(outermostTemplateName, name);
+		CompiledST blank = new CompiledST();
+		blank.isRegion = true;
+		blank.regionDefType = ST.RegionType.IMPLICIT;
+		blank.name = mangled;
+		outermostImpl.addImplicitlyDefinedTemplate(blank);
+		return blank;
+	}
+
+	public static String getNewSubtemplateName() {
+		subtemplateCount++;
+		return SUBTEMPLATE_PREFIX+subtemplateCount;
+	}
+
+	protected void throwSTException(TokenStream tokens, Parser parser, RecognitionException re) {
+		String msg = parser.getErrorMessage(re, parser.getTokenNames());
+		if ( re.token.getType() == STLexer.EOF_TYPE ) {
+			throw new STException("premature EOF", re);
+		}
+		else if ( re instanceof NoViableAltException) {
+			throw new STException(
+				"'"+re.token.getText()+"' came as a complete surprise to me",re);
+		}
+		else if ( tokens.index() == 0 ) { // couldn't parse anything
+			throw new STException(
+				"this doesn't look like a template: \""+tokens+"\"", re);
+		}
+		else if ( tokens.LA(1) == STLexer.LDELIM ) { // couldn't parse expr
+			throw new STException("doesn't look like an expression", re);
+		}
+		else {
+			throw new STException(msg, re);
+		}
+	}
+
 }

@@ -171,6 +171,7 @@ public class CompiledST {
 
     public void dump() {
         BytecodeDisassembler dis = new BytecodeDisassembler(this);
+		System.out.println(name+":");
         System.out.println(dis.disassemble());
         System.out.println("Strings:");
         System.out.println(dis.strings());

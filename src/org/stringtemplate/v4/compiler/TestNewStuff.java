@@ -28,13 +28,10 @@
 
 package org.stringtemplate.v4.compiler;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.CommonTreeNodeStream;
-
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /** */
 public class TestNewStuff {
@@ -45,18 +42,8 @@ public class TestNewStuff {
 		FileInputStream f = new FileInputStream(args[0]);
 		f.read(buffer);
 		String template = new String(buffer);
-
-		STLexer lexer = new STLexer(new ANTLRStringStream(template));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		STTreeBuilder p = new STTreeBuilder(tokens);
-		STTreeBuilder.template_return r = p.template();
-		System.out.println(((CommonTree)r.getTree()).toStringTree());
-		CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.getTree());
-		nodes.setTokenStream(tokens);
-		CodeGenerator gen = new CodeGenerator(nodes);
-		gen.compiler = c;
-		CompiledST impl = gen.root("t");
-		impl.template = template;
-		impl.dump();
+		List<FormalArgument> a = new ArrayList<FormalArgument>();
+		a.add(new FormalArgument("x"));
+		c.compile("foo", a, template);
 	}
 }
