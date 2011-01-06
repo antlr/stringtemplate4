@@ -28,6 +28,8 @@
 
 package org.stringtemplate.v4.compiler;
 
+import org.stringtemplate.v4.misc.Misc;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ public class TestNewStuff {
 		String template = new String(buffer);
 		List<FormalArgument> a = new ArrayList<FormalArgument>();
 		a.add(new FormalArgument("x"));
-		c.compile("foo", a, template);
+		String n = Misc.getFileNameNoSuffix(Misc.getFileName(args[0]));
+		c.compile(n, a, template);
 	}
 }

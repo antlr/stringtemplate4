@@ -61,21 +61,7 @@ public class CompilationState {
 
 	public void setOption(CommonTree id) {
 		Interpreter.Option O = Compiler.supportedOptions.get(id.getText());
-		if ( O==null ) {
-			ErrorManager.compileTimeError(ErrorType.NO_SUCH_OPTION, id.token);
-			emit(id, Bytecode.INSTR_POP);
-			return;
-		}
 		emit1(id, Bytecode.INSTR_STORE_OPTION, O.ordinal());
-	}
-
-	public void defaultOption(CommonTree id) {
-		String v = Compiler.defaultOptionValues.get(id.getText());
-		if ( v==null ) {
-			ErrorManager.compileTimeError(ErrorType.NO_DEFAULT_VALUE, id.token);
-			emit(id, Bytecode.INSTR_POP);
-		}
-		emit1(id, Bytecode.INSTR_LOAD_STR, v);
 	}
 
 	public void func(CommonTree id) {

@@ -44,6 +44,8 @@ tokens {
 
 @header {
 package org.stringtemplate.v4.compiler;
+import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.ErrorType;
 }
 
 @members {
@@ -105,8 +107,28 @@ notConditionalExpr
 exprOptions : option ( ',' option )* -> ^(OPTIONS option+) ;
 
 option
-	:	ID '=' exprNoComma 						-> ^('=' ID exprNoComma)
-	|	ID										-> ^('=' ID ID["true"])
+@init {
+	String id = input.LT(1).getText();
+	String defVal = Compiler2.defaultOptionValues.get(id);
+	boolean validOption = Compiler2.supportedOptions.get(id)!=null;
+}
+	:	ID
+		{
+		if ( !validOption ) {
+            ErrorManager.compileTimeError(ErrorType.NO_SUCH_OPTION, $ID, $ID.text);
+		}
+		}
+		(	'=' exprNoComma 					-> {validOption}? ^('=' ID exprNoComma)
+												->
+		|	{
+			if ( defVal==null ) {
+				ErrorManager.compileTimeError(ErrorType.NO_DEFAULT_VALUE, $ID);
+			}
+			}
+												-> {validOption&&defVal!=null}?
+												   ^(EQUALS["="] ID STRING[$ID,'"'+defVal+'"'])
+												->
+		)
 	;
 
 exprNoComma : memberExpr ( ':'^ mapTemplateRef )?;
@@ -134,7 +156,7 @@ expr:(e)(args)       convert e to a string template name and apply to expr
 mapTemplateRef
 	:	ID '(' args ')'							-> ^(INCLUDE ID args?)
 	|	subtemplate
-	|	lp='(' mapExpr rp=')' '(' args ')'		-> ^(INCLUDE_IND ID args?)
+	|	lp='(' mapExpr rp=')' '(' args ')'		-> ^(INCLUDE_IND mapExpr args?)
 	;
 
 memberExpr

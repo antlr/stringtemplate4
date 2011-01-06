@@ -114,7 +114,9 @@ public class Compiler2 {
 							  List<FormalArgument> args,
 							  String template)
 	{
-		STLexer lexer = new STLexer(new ANTLRStringStream(template));
+		ANTLRStringStream is = new ANTLRStringStream(template);
+		is.name = name;
+		STLexer lexer = new STLexer(is);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		STTreeBuilder p = new STTreeBuilder(tokens);
 		STTreeBuilder.template_return r = null;
