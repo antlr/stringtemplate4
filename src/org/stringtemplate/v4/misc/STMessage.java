@@ -40,7 +40,7 @@ import java.io.StringWriter;
  *  @see STCompiletimeMessage
  */
 public class STMessage {
-    /** if in debug mode, has create instance, add attr events and eval
+    /** if in debug mode, has created instance, add attr events and eval
      *  template events.
      */
     public ST self;
