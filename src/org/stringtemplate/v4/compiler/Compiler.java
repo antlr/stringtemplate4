@@ -103,14 +103,14 @@ public class Compiler {
 	}
 
 	public CompiledST compile(String template) {
-		CompiledST code = compile(null, null, template);
+		CompiledST code = compile(null, null, template, null);
 		code.hasFormalArgs = false;
 		return code;
 	}
 
 	/** Compile full template with unknown formal args. */
 	public CompiledST compile(String name, String template) {
-		CompiledST code = compile(name, null, template);
+		CompiledST code = compile(name, null, template, null);
 		code.hasFormalArgs = false;
 		return code;
 	}
@@ -118,10 +118,15 @@ public class Compiler {
 	/** Compile full template with respect to a list of formal args. */
 	public CompiledST compile(String name,
 							  List<FormalArgument> args,
-							  String template)
+							  String template,
+							  Token templateToken)
 	{
 		ANTLRStringStream is = new ANTLRStringStream(template);
 		is.name = name;
+//		if ( templateToken != null ) {
+//			is.setLine(templateToken.getLine());
+//			is.setCharPositionInLine(templateToken.getCharPositionInLine());
+//		}
 		STLexer lexer = new STLexer(is, delimiterStartChar, delimiterStopChar);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		STTreeBuilder p = new STTreeBuilder(tokens);

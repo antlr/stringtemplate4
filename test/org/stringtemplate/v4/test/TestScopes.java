@@ -94,7 +94,7 @@ public class TestScopes extends BaseTest {
 		String result = st.render();
 		group.getInstanceOf("u").impl.dump();
 
-		String expectedError = "u 1:1: attribute i isn't defined"+newline;
+		String expectedError = "u 2:10: attribute i isn't defined"+newline;
 		assertEquals(expectedError, errors.toString());
 
 		String expected = ":Ter";

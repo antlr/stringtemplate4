@@ -169,7 +169,7 @@ public class STGroup {
 		}
 		ST st = createStringTemplate();
 		st.groupThatCreatedThisInstance = this;
-		st.impl = compile(null, null, template);
+		st.impl = compile(null, null, template, templateToken);
 		st.impl.hasFormalArgs = false;
 		st.impl.name = ST.UNKNOWN_NAME;
 		st.impl.defineImplicitlyDefinedTemplates(this);
@@ -229,9 +229,8 @@ public class STGroup {
 
     // for testing
     public CompiledST defineTemplate(String templateName, String template) {
-		return defineTemplate(templateName, new CommonToken(GroupParser.ID,templateName),
-			null,
-			template);
+		return defineTemplate(templateName,	new CommonToken(GroupParser.ID, templateName),
+			null, template, null);
 	}
 
     // for testing
@@ -242,12 +241,14 @@ public class STGroup {
 			a.add(new FormalArgument(arg));
 		}
 		return defineTemplate(name, new CommonToken(GroupParser.ID, name),
-			a, template);
+							  a, template, null);
 	}
 
-	public CompiledST defineTemplate(String templateName, Token nameT,
+	public CompiledST defineTemplate(String templateName,
+									 Token nameT,
                                      List<FormalArgument> args,
-									 String template)
+									 String template,
+									 Token templateToken)
     {
 		if ( templateName==null || templateName.length()==0 ) {
 			throw new IllegalArgumentException("empty template name");
@@ -258,7 +259,7 @@ public class STGroup {
         template = Misc.trimOneStartingNewline(template);
         template = Misc.trimOneTrailingNewline(template);
 		// compile, passing in templateName as enclosing name for any embedded regions
-        CompiledST code = compile(templateName, args, template);
+        CompiledST code = compile(templateName, args, template, templateToken);
         code.name = templateName;
         rawDefineTemplate(templateName, code, nameT);
 		code.defineArgDefaultValueTemplates(this);
@@ -285,7 +286,7 @@ public class STGroup {
 								   String template)
     {
         String name = regionT.getText();
-        CompiledST code = compile(enclosingTemplateName, null, template);
+        CompiledST code = compile(enclosingTemplateName, null, template, regionT);
         String mangled = getMangledRegionName(enclosingTemplateName, name);
 
         if ( lookupTemplate(mangled)==null ) {
@@ -304,7 +305,8 @@ public class STGroup {
     public void defineTemplateOrRegion(
 		String templateName,
 		String regionSurroundingTemplateName,
-        Token templateToken, String template,
+        Token templateToken,
+		String template,
         Token nameToken,
         List<FormalArgument> args)
     {
@@ -315,14 +317,13 @@ public class STGroup {
                 defineRegion(regionSurroundingTemplateName, nameToken, template);
             }
             else {
-                defineTemplate(templateName, nameToken, args, template);
+                defineTemplate(templateName, nameToken, args, template, templateToken);
             }
 		}
 		catch (STException e) {
 			RecognitionException re = (RecognitionException)e.getCause();
 			re.charPositionInLine =
-				re.charPositionInLine+templateToken.getCharPositionInLine()+n;
-			re.line = re.line + templateToken.getLine() - 1;
+				re.charPositionInLine+n;
 			ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR,
 				Misc.getFileName(templateToken.getInputStream().getSourceName()),
 				re, e.getMessage());
@@ -359,11 +360,12 @@ public class STGroup {
 	/** Compile a template */
     public CompiledST compile(String name,
 							  List<FormalArgument> args,
-                              String template)
+                              String template,
+							  Token templateToken) // for error location
     {
 		//System.out.println("STGroup.compile: "+enclosingTemplateName);
 		Compiler c = new Compiler(delimiterStartChar, delimiterStopChar);
-		CompiledST code = c.compile(name, args, template);
+		CompiledST code = c.compile(name, args, template, templateToken);
 		code.nativeGroup = this;
 		code.template = template;
 		return code;

@@ -47,6 +47,6 @@ public class TestNewStuff {
 		List<FormalArgument> a = new ArrayList<FormalArgument>();
 		a.add(new FormalArgument("x"));
 		String n = Misc.getFileNameNoSuffix(Misc.getFileName(args[0]));
-		c.compile(n, a, template);
+		c.compile(n, a, template, null);
 	}
 }
