@@ -180,7 +180,7 @@ public class TestOptions extends BaseTest {
         String expected = "Ter";
         String result = st.render();
         assertEquals(expected, result);
-        expected = "[1:7: no such option: bad]";
+        expected = "[test 1:7: no such option: bad]";
         assertEquals(expected, errors.errors.toString());
     }
 }

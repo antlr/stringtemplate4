@@ -330,6 +330,40 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
+	@Test public void testParallelMapThenMap() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("bold", "x", "[<x>]");
+		group.defineTemplate("test", "names,phones",
+							 "hi <names,phones:{n,p | <n>:<p>;}:bold()>");
+		ST st = group.getInstanceOf("test");
+		st.add("names", "Ter");
+		st.add("names", "Tom");
+		st.add("names", "Sumana");
+		st.add("phones", "x5001");
+		st.add("phones", "x5002");
+		String expected =
+			"hi [Ter:x5001;][Tom:x5002;][Sumana:;]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testMapThenParallelMap() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("bold", "x", "[<x>]");
+		group.defineTemplate("test", "names,phones",
+							 "hi <[names:bold()],phones:{n,p | <n>:<p>;}>");
+		ST st = group.getInstanceOf("test");
+		st.add("names", "Ter");
+		st.add("names", "Tom");
+		st.add("names", "Sumana");
+		st.add("phones", "x5001");
+		st.add("phones", "x5002");
+		String expected =
+			"hi [Ter]:x5001;[Tom]:x5002;[Sumana]:;";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testMapIndexes() throws Exception {
 		STGroup group = new STGroup();
 		group.defineTemplate("inc", "x,i", "<i>:<x>");

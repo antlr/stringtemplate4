@@ -54,7 +54,7 @@ public class TestSyntaxErrors extends BaseTest {
                                               re.token.getInputStream().getSourceName(),
                                               re.token,re,se.getMessage()).toString();
 		}
-        String expected = "1:0: this doesn't look like a template: \" <> \"";
+        String expected = "test 1:0: this doesn't look like a template: \" <> \"";
         assertEquals(expected, result);
     }
 
@@ -71,7 +71,7 @@ public class TestSyntaxErrors extends BaseTest {
                                               re.token.getInputStream().getSourceName(),
                                               re.token,re,se.getMessage()).toString();
 		}
-        String expected = "1:3: doesn't look like an expression";
+        String expected = "test 1:3: doesn't look like an expression";
         assertEquals(expected, result);
     }
 
@@ -176,7 +176,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		ErrorManager.setErrorListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:19: ',' came as a complete surprise to me"+newline;
+		String expected = "t.stg 1:19: mismatched input ',' expecting RDELIM"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
