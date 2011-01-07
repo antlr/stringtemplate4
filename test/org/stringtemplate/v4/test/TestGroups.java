@@ -30,7 +30,6 @@ package org.stringtemplate.v4.test;
 import org.junit.Test;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorManager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -202,8 +201,8 @@ public class TestGroups extends BaseTest {
             "b() ::= \"duh\"\n";
         writeFile(dir, "group.stg", groupFile);
 		STErrorListener errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
         STGroupFile group = new STGroupFile(dir+"/group.stg");
+		group.setListener(errors);
         group.load();
 		String expected = "group.stg 2:0: redefinition of template b"+newline;
 		String result = errors.toString();

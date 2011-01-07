@@ -32,7 +32,6 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -207,8 +206,8 @@ public class TestDictionaries extends BaseTest {
                 ;
         writeFile(tmpdir, "test.stg", templates);
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
         STGroupFile group = new STGroupFile(tmpdir+"/"+"test.stg");
+		group.setListener(errors);
         group.load();
         String expected = "[test.stg 1:33: missing value for key at ']']";
         String result = errors.errors.toString();

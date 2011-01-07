@@ -15,9 +15,9 @@ public class TestScopes extends BaseTest {
 			"t(x,y) ::= \"<u()>\"\n" +
 			"u() ::= \"<x><y>\"";
 		ErrorBuffer errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
 		ST st = group.getInstanceOf("t");
 		st.add("x", "x");
 		st.add("y", "y");
@@ -28,7 +28,6 @@ public class TestScopes extends BaseTest {
 
 		String expected = "xy";
 		assertEquals(expected, result);
-		ErrorManager.setErrorListener(ErrorManager.DEFAULT_ERROR_LISTENER);
 	}
 
 	@Test public void testMissingArg() throws Exception {
@@ -36,9 +35,9 @@ public class TestScopes extends BaseTest {
 			"t() ::= \"<u()>\"\n" +
 			"u(z) ::= \"\"";
 		ErrorBuffer errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
 		ST st = group.getInstanceOf("t");
 		String result = st.render();
 
@@ -50,9 +49,9 @@ public class TestScopes extends BaseTest {
 		String templates =
 			"t() ::= \"<x>\"\n";
 		ErrorBuffer errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
 		ST st = group.getInstanceOf("t");
 		String result = st.render();
 
@@ -65,9 +64,9 @@ public class TestScopes extends BaseTest {
 			"t(x,y) ::= \"<u(x)>\"\n" +
 			"u(y) ::= \"<x><y>\"";
 		ErrorBuffer errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
 		ST st = group.getInstanceOf("t");
 		st.add("x", "x");
 		st.add("y", "y");
@@ -78,7 +77,7 @@ public class TestScopes extends BaseTest {
 
 		String expected = "xx";
 		assertEquals(expected, result);
-		ErrorManager.setErrorListener(ErrorManager.DEFAULT_ERROR_LISTENER);
+		group.setListener(ErrorManager.DEFAULT_ERROR_LISTENER);
 	}
 
 	@Test public void testIndexAttrVisibleLocallyOnly() throws Exception {
@@ -86,9 +85,9 @@ public class TestScopes extends BaseTest {
 			"t(names) ::= \"<names:{n | <u(n)>}>\"\n" +
 			"u(x) ::= \"<i>:<x>\"";
 		ErrorBuffer errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
 		ST st = group.getInstanceOf("t");
 		st.add("names", "Ter");
 		String result = st.render();
@@ -99,7 +98,7 @@ public class TestScopes extends BaseTest {
 
 		String expected = ":Ter";
 		assertEquals(expected, result);
-		ErrorManager.setErrorListener(ErrorManager.DEFAULT_ERROR_LISTENER);
+		group.setListener(ErrorManager.DEFAULT_ERROR_LISTENER);
 	}
 
 }

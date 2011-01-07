@@ -33,7 +33,6 @@ import org.antlr.runtime.RecognitionException;
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.GroupLexer;
 import org.stringtemplate.v4.compiler.GroupParser;
-import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
 
@@ -79,7 +78,7 @@ public class STGroupDir extends STGroup {
             }
         }
         catch (Exception e) {
-            ErrorManager.internalError(null, "can't load group dir "+dirName, e);
+            errMgr.internalError(null, "can't load group dir "+dirName, e);
         }
     }
 
@@ -113,7 +112,7 @@ public class STGroupDir extends STGroup {
             groupFileURL = new URL(root+parent+".stg");
         }
         catch (MalformedURLException e) {
-            ErrorManager.internalError(null, "bad URL: "+root+parent+".stg", e);
+            errMgr.internalError(null, "bad URL: "+root+parent+".stg", e);
 			return null;
         }
         InputStream is = null;
@@ -125,13 +124,13 @@ public class STGroupDir extends STGroup {
             return loadTemplateFile(parent, name+".st"); // load t.st file
         }
         catch (IOException ioe) {
-            ErrorManager.internalError(null, "can't load template file "+name, ioe);
+            errMgr.internalError(null, "can't load template file "+name, ioe);
         }
         try { // clean up
             if (is!=null ) is.close();
         }
         catch (IOException ioe) {
-            ErrorManager.internalError(null, "can't close template file stream "+name, ioe);
+            errMgr.internalError(null, "can't close template file stream "+name, ioe);
         }
         loadGroupFile(parent, root+parent+".stg");
         return templates.get(name);
@@ -146,7 +145,7 @@ public class STGroupDir extends STGroup {
 			f = new URL(root+fileName);
 		}
 		catch (MalformedURLException me) {
-			ErrorManager.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
+			errMgr.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
 									  me, root+fileName);
 			return null;
 		}
@@ -168,7 +167,7 @@ public class STGroupDir extends STGroup {
 			parser.templateDef(prefix);
 		}
 		catch (RecognitionException re) {
-			ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR,
+			errMgr.syntaxError(ErrorType.SYNTAX_ERROR,
 									 Misc.getFileName(f.getFile()),
 									 re, re.getMessage());
 		}

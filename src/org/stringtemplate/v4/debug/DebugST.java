@@ -70,19 +70,23 @@ public class DebugST extends ST {
 
     public List<InterpEvent> inspect() { return inspect(Locale.getDefault()); }
 
-    public List<InterpEvent> inspect(int lineWidth) { return inspect(Locale.getDefault(), lineWidth); }
+    public List<InterpEvent> inspect(int lineWidth) {
+		return inspect(impl.nativeGroup.errMgr, Locale.getDefault(), lineWidth);
+	}
 
-    public List<InterpEvent> inspect(Locale locale) { return inspect(locale, STWriter.NO_WRAP); }
+    public List<InterpEvent> inspect(Locale locale) {
+		return inspect(impl.nativeGroup.errMgr, locale, STWriter.NO_WRAP);
+	}
 
-    public List<InterpEvent> inspect(Locale locale, int lineWidth) {
+    public List<InterpEvent> inspect(ErrorManager errMgr, Locale locale, int lineWidth) {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
+        impl.nativeGroup.setListener(errors);
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
         interp.exec(wr, this); // render and track events
-        new STViz(this, out.toString(), interp.getEvents(),
+        new STViz(errMgr, this, out.toString(), interp.getEvents(),
                   interp.getExecutionTrace(), errors.errors);
         return interp.getEvents();
     }

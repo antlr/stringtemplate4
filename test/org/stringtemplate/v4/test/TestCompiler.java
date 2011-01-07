@@ -147,27 +147,24 @@ public class TestCompiler extends BaseTest {
 
 	@Test public void testAnonIncludeArgMismatch() throws Exception {
 		STErrorListener errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
 		String template = "<a:{foo}>";
-		CompiledST code = new Compiler().compile(template);
+		CompiledST code = new Compiler(new ErrorManager(errors)).compile(template);
 		String expected = "1:3: anonymous template has 0 arg(s) but mapped across 1 value(s)"+newline;
 		assertEquals(expected, errors.toString());
 	}
 
 	@Test public void testAnonIncludeArgMismatch2() throws Exception {
 		STErrorListener errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
 		String template = "<a,b:{x|foo}>";
-		CompiledST code = new Compiler().compile(template);
+		CompiledST code = new Compiler(new ErrorManager(errors)).compile(template);
 		String expected = "1:5: anonymous template has 1 arg(s) but mapped across 2 value(s)"+newline;
 		assertEquals(expected, errors.toString());
 	}
 
 	@Test public void testAnonIncludeArgMismatch3() throws Exception {
 		STErrorListener errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
 		String template = "<a:{x|foo},{bar}>";
-		CompiledST code = new Compiler().compile(template);
+		CompiledST code = new Compiler(new ErrorManager(errors)).compile(template);
 		String expected = "1:11: anonymous template has 0 arg(s) but mapped across 1 value(s)"+newline;
 		assertEquals(expected, errors.toString());
 	}

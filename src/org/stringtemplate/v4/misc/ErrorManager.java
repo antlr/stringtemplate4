@@ -36,7 +36,6 @@ import org.stringtemplate.v4.STErrorListener;
  *  will go in one grouping since each has it's own thread.
  */
 public class ErrorManager {
-
     public static STErrorListener DEFAULT_ERROR_LISTENER =
         new STErrorListener() {
             public void compileTimeError(STMessage msg) {
@@ -67,80 +66,78 @@ public class ErrorManager {
             }
         };
 
-    /** Gives us a new listener per thread.  If your server reuses threads,
-     *  these thread locals might not go away.  Might need to manually reset.
-     */
-    static ThreadLocal<STErrorListener> listener = new ThreadLocal<STErrorListener>() {
-        protected STErrorListener initialValue() { return DEFAULT_ERROR_LISTENER; }
-    };
+	public final STErrorListener listener;
 
-    public static void setErrorListener(STErrorListener listener) { ErrorManager.listener.set(listener); }
+	public ErrorManager() { this(DEFAULT_ERROR_LISTENER); }
+	public ErrorManager(STErrorListener listener) {
+		this.listener = listener;
+	}
 
-    public static void compileTimeError(ErrorType error, Token t) {
+    public void compileTimeError(ErrorType error, Token t) {
         String srcName = t.getInputStream().getSourceName();
         if ( srcName!=null ) srcName = Misc.getFileName(srcName);
-        listener.get().compileTimeError(
+        listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,t,null,t.getText())
         );
     }
 
-    public static void lexerError(ErrorType error, RecognitionException e, Object arg) {
-        listener.get().compileTimeError(
+    public void lexerError(ErrorType error, RecognitionException e, Object arg) {
+        listener.compileTimeError(
             new STCompiletimeMessage(error,null,null,e,arg)
         );
     }
 
-    public static void compileTimeError(ErrorType error, Token t, Object arg) {
+    public void compileTimeError(ErrorType error, Token t, Object arg) {
         String srcName = t.getInputStream().getSourceName();
         srcName = Misc.getFileName(srcName);
-        listener.get().compileTimeError(
+        listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,t,null,arg)
         );
     }
 
-    public static void compileTimeError(ErrorType error, Token t, Object arg, Object arg2) {
+    public void compileTimeError(ErrorType error, Token t, Object arg, Object arg2) {
         String srcName = t.getInputStream().getSourceName();
         if ( srcName!=null ) srcName = Misc.getFileName(srcName);
-        listener.get().compileTimeError(
+        listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,t,null,arg,arg2)
         );
     }
 
-    public static void syntaxError(ErrorType error, String srcName, RecognitionException e, String msg) {
-        listener.get().compileTimeError(
+    public void syntaxError(ErrorType error, String srcName, RecognitionException e, String msg) {
+        listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,e.token,e,msg)
         );
     }
 
-    public static void runTimeError(ST self, int ip, ErrorType error) {
-        listener.get().runTimeError(new STRuntimeMessage(error,ip,self));
+    public void runTimeError(ST self, int ip, ErrorType error) {
+        listener.runTimeError(new STRuntimeMessage(error,ip,self));
     }
 
-    public static void runTimeError(ST self, int ip, ErrorType error, Object arg) {
-        listener.get().runTimeError(new STRuntimeMessage(error,ip,self,arg));
+    public void runTimeError(ST self, int ip, ErrorType error, Object arg) {
+        listener.runTimeError(new STRuntimeMessage(error,ip,self,arg));
     }
 
-    public static void runTimeError(ST self, int ip, ErrorType error, Throwable e, Object arg) {
-        listener.get().runTimeError(new STRuntimeMessage(error,ip,self,e,arg));
+    public void runTimeError(ST self, int ip, ErrorType error, Throwable e, Object arg) {
+        listener.runTimeError(new STRuntimeMessage(error,ip,self,e,arg));
     }
 
-	public static void runTimeError(ST self, int ip, ErrorType error, Object arg, Object arg2) {
-		listener.get().runTimeError(new STRuntimeMessage(error,ip,self,null,arg,arg2));
+	public void runTimeError(ST self, int ip, ErrorType error, Object arg, Object arg2) {
+		listener.runTimeError(new STRuntimeMessage(error,ip,self,null,arg,arg2));
 	}
 
-	public static void runTimeError(ST self, int ip, ErrorType error, Object arg, Object arg2, Object arg3) {
-		listener.get().runTimeError(new STRuntimeMessage(error,ip,self,null,arg,arg2,arg3));
+	public void runTimeError(ST self, int ip, ErrorType error, Object arg, Object arg2, Object arg3) {
+		listener.runTimeError(new STRuntimeMessage(error,ip,self,null,arg,arg2,arg3));
 	}
 
-    public static void IOError(ST self, ErrorType error, Throwable e) {
-        listener.get().IOError(new STMessage(error, self, e));
+    public void IOError(ST self, ErrorType error, Throwable e) {
+        listener.IOError(new STMessage(error, self, e));
     }
 
-    public static void IOError(ST self, ErrorType error, Throwable e, Object arg) {
-        listener.get().IOError(new STMessage(error, self, e, arg));
+    public void IOError(ST self, ErrorType error, Throwable e, Object arg) {
+        listener.IOError(new STMessage(error, self, e, arg));
     }
 
-    public static void internalError(ST self, String msg, Throwable e) {
-        listener.get().internalError(new STMessage(ErrorType.INTERNAL_ERROR, self, e, msg));
+    public void internalError(ST self, String msg, Throwable e) {
+        listener.internalError(new STMessage(ErrorType.INTERNAL_ERROR, self, e, msg));
     }
 }

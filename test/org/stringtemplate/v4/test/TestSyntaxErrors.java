@@ -34,7 +34,6 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.compiler.STException;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.STCompiletimeMessage;
 
@@ -99,7 +98,7 @@ public class TestSyntaxErrors extends BaseTest {
 
 		STErrorListener errors = new ErrorBuffer();
 		STGroupFile group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
         String expected = "t.stg 1:15: doesn't look like an expression"+newline;
         String result = errors.toString();
@@ -114,7 +113,7 @@ public class TestSyntaxErrors extends BaseTest {
 
 		ErrorBuffer errors = new ErrorBuffer();
 		STGroupFile group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "[t.stg 1:15: \\n in string, t.stg 1:14: doesn't look like an expression]";
 		String result = errors.errors.toString();
@@ -129,7 +128,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:29: '!' came as a complete surprise to me"+newline;
 		String result = errors.toString();
@@ -144,7 +143,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:34: premature EOF"+newline;
 		String result = errors.toString();
@@ -159,7 +158,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:19: '>' came as a complete surprise to me"+newline;
 		String result = errors.toString();
@@ -174,7 +173,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:19: mismatched input ',' expecting RDELIM"+newline;
 		String result = errors.toString();

@@ -77,12 +77,14 @@ public class BaseTest {
                             char delimiterStartChar, char delimiterStopChar)
     {
         STLexer lexer =
-            new STLexer(new ANTLRStringStream(template),
-                        delimiterStartChar, delimiterStopChar);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        StringBuffer buf = new StringBuffer();
-        buf.append("[");
-        int i = 1;
+            new STLexer(STGroup.DEFAULT_ERR_MGR,
+						new ANTLRStringStream(template),
+						delimiterStartChar,
+						delimiterStopChar);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		StringBuffer buf = new StringBuffer();
+		buf.append("[");
+		int i = 1;
         Token t = tokens.LT(i);
         while ( t.getType()!=Token.EOF ) {
             if ( i>1 ) buf.append(", ");

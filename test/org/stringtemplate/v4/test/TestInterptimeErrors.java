@@ -32,7 +32,6 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.Misc;
 
 import static org.junit.Assert.assertEquals;
@@ -51,14 +50,14 @@ public class TestInterptimeErrors extends BaseTest {
 
     @Test public void testMissingEmbeddedTemplate() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
 
         String templates =
             "t() ::= \"<foo()>\"" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("t");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+        ST st = group.getInstanceOf("t");
         st.render();
         String expected = "context [t] 1:0 no such template: foo"+newline;
 		String result = errors.toString();
@@ -67,20 +66,20 @@ public class TestInterptimeErrors extends BaseTest {
 
     @Test public void testMissingSuperTemplate() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
 
         String templates =
             "t() ::= \"<super.t()>\"" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
         String templates2 =
             "u() ::= \"blech\"" + Misc.newline;
 
         writeFile(tmpdir, "t2.stg", templates2);
-        org.stringtemplate.v4.STGroup group2 = new STGroupFile(tmpdir+"/"+"t2.stg");
+        STGroup group2 = new STGroupFile(tmpdir+"/"+"t2.stg");
         group.importTemplates(group2);
-        org.stringtemplate.v4.ST st = group.getInstanceOf("t");
+        ST st = group.getInstanceOf("t");
         st.render();
         String expected = "context [t] 1:1 no such template: super.t"+newline;
 		String result = errors.toString();
@@ -89,14 +88,14 @@ public class TestInterptimeErrors extends BaseTest {
 
     @Test public void testNoPropertyNotError() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
 
         String templates =
             "t(u) ::= \"<u.x>\"" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("t");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+        ST st = group.getInstanceOf("t");
         st.add("u", new User(32, "parrt"));
         st.render();
         String expected = "";
@@ -106,14 +105,14 @@ public class TestInterptimeErrors extends BaseTest {
 
     @Test public void testHiddenPropertyNotError() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
 
         String templates =
             "t(u) ::= \"<u.name>\"" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("t");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+        ST st = group.getInstanceOf("t");
         st.add("u", new UserHiddenName("parrt"));
         st.render();
         String expected = "";
@@ -123,13 +122,13 @@ public class TestInterptimeErrors extends BaseTest {
 
     @Test public void testHiddenFieldNotError() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
 
         String templates =
             "t(u) ::= \"<u.name>\"" + Misc.newline;
 
         writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
         ST st = group.getInstanceOf("t");
         st.add("u", new UserHiddenNameField("parrt"));
         st.render();
@@ -140,7 +139,6 @@ public class TestInterptimeErrors extends BaseTest {
 
     @Test public void testSoleArg() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
 
         String templates =
             "t() ::= \"<u({9})>\"\n"+
@@ -148,7 +146,8 @@ public class TestInterptimeErrors extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("t");
+		group.setListener(errors);
+        ST st = group.getInstanceOf("t");
         st.render();
         String expected = "context [t] 1:1 passed 1 arg(s) to template u with 2 declared arg(s)"+newline;
 		String result = errors.toString();
@@ -157,15 +156,15 @@ public class TestInterptimeErrors extends BaseTest {
 
     @Test public void testSoleArgUsingApplySyntax() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
 
         String templates =
             "t() ::= \"<{9}:u()>\"\n"+
             "u(x,y) ::= \"<x>\"\n";
 
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("t");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+        ST st = group.getInstanceOf("t");
         String expected = "9";
         String result = st.render();
         assertEquals(expected, result);
@@ -177,14 +176,14 @@ public class TestInterptimeErrors extends BaseTest {
 
     @Test public void testUndefinedAttr() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
 
         String templates =
             "t() ::= \"<u()>\"\n"+
             "u() ::= \"<x>\"\n";
 
         writeFile(tmpdir, "t.stg", templates);
-        org.stringtemplate.v4.STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
         group.debug = true;
         ST st = group.getInstanceOf("t");
         st.render();
@@ -195,8 +194,9 @@ public class TestInterptimeErrors extends BaseTest {
 
     @Test public void testParallelAttributeIterationWithMissingArgs() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
-        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
+		STGroup group = new STGroup();
+		group.setListener(errors);
+        ST e = new ST(group,
                 "<names,phones,salaries:{n,p | <n>@<p>}; separator=\", \">"
             );
         e.add("names", "Ter");
@@ -216,8 +216,9 @@ public class TestInterptimeErrors extends BaseTest {
 
     @Test public void testStringTypeMismatch() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
-        ST e = new org.stringtemplate.v4.ST("<trim(s)>");
+		STGroup group = new STGroup();
+		group.setListener(errors);
+        ST e = new ST(group, "<trim(s)>");
         e.add("s", 34);
         e.render(); // generate the error
         String errorExpecting = "context [anonymous] 1:1 function trim expects a string not java.lang.Integer"+newline;
@@ -226,8 +227,9 @@ public class TestInterptimeErrors extends BaseTest {
 
     @Test public void testStringTypeMismatch2() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
-        ST e = new org.stringtemplate.v4.ST("<strlen(s)>");
+		STGroup group = new STGroup();
+		group.setListener(errors);
+        ST e = new ST(group, "<strlen(s)>");
         e.add("s", 34);
         e.render(); // generate the error
         String errorExpecting = "context [anonymous] 1:1 function strlen expects a string not java.lang.Integer"+newline;

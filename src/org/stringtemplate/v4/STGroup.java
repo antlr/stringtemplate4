@@ -116,7 +116,14 @@ public class STGroup {
      */
     protected static final CompiledST NOT_FOUND_ST = new CompiledST();
 
-    public boolean debug = false;
+	public static final ErrorManager DEFAULT_ERR_MGR = new ErrorManager();
+
+	/** The errMgr for entire group; all compilations and executions.
+	 *  This gets copied to parsers, walkers, and interpreters.
+	 */
+	public ErrorManager errMgr = STGroup.DEFAULT_ERR_MGR;
+
+	public boolean debug = false;
 
     public STGroup() { ; }
 
@@ -148,7 +155,7 @@ public class STGroup {
     protected ST getEmbeddedInstanceOf(ST enclosingInstance, int ip, String name) {
         ST st = getInstanceOf(name);
         if ( st==null ) {
-            ErrorManager.runTimeError(enclosingInstance, ip, ErrorType.NO_SUCH_TEMPLATE,
+            errMgr.runTimeError(enclosingInstance, ip, ErrorType.NO_SUCH_TEMPLATE,
                                       name);
 			st = createStringTemplate();
 			st.impl = new CompiledST();
@@ -274,7 +281,7 @@ public class STGroup {
         String target = targetT.getText();
         CompiledST targetCode = templates.get(target);
         if ( targetCode==null ){
-            ErrorManager.compileTimeError(ErrorType.ALIAS_TARGET_UNDEFINED, aliasT, alias, target);
+            errMgr.compileTimeError(ErrorType.ALIAS_TARGET_UNDEFINED, aliasT, alias, target);
             return null;
         }
         templates.put(alias, targetCode);
@@ -290,7 +297,7 @@ public class STGroup {
         String mangled = getMangledRegionName(enclosingTemplateName, name);
 
         if ( lookupTemplate(mangled)==null ) {
-            ErrorManager.compileTimeError(ErrorType.NO_SUCH_REGION, regionT,
+            errMgr.compileTimeError(ErrorType.NO_SUCH_REGION, regionT,
                                           enclosingTemplateName, name);
             return new CompiledST();
         }
@@ -324,7 +331,7 @@ public class STGroup {
 			RecognitionException re = (RecognitionException)e.getCause();
 			re.charPositionInLine =
 				re.charPositionInLine+n;
-			ErrorManager.syntaxError(ErrorType.SYNTAX_ERROR,
+			errMgr.syntaxError(ErrorType.SYNTAX_ERROR,
 				Misc.getFileName(templateToken.getInputStream().getSourceName()),
 				re, e.getMessage());
 		}
@@ -334,17 +341,17 @@ public class STGroup {
         CompiledST prev = templates.get(name);
         if ( prev!=null ) {
             if ( !prev.isRegion ) {
-                ErrorManager.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, defT);
+                errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, defT);
                 return;
             }
             if ( prev.isRegion && prev.regionDefType== ST.RegionType.EMBEDDED ) {
-                ErrorManager.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
+                errMgr.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
                                               defT,
                                               getUnMangledTemplateName(name));
                 return;
             }
             else if ( prev.isRegion && prev.regionDefType== ST.RegionType.EXPLICIT ) {
-                ErrorManager.compileTimeError(ErrorType.REGION_REDEFINITION,
+                errMgr.compileTimeError(ErrorType.REGION_REDEFINITION,
                                               defT,
                                               getUnMangledTemplateName(name));
                 return;
@@ -364,7 +371,7 @@ public class STGroup {
 							  Token templateToken) // for error location
     {
 		//System.out.println("STGroup.compile: "+enclosingTemplateName);
-		Compiler c = new Compiler(delimiterStartChar, delimiterStopChar);
+		Compiler c = new Compiler(errMgr, delimiterStartChar, delimiterStopChar);
 		CompiledST code = c.compile(name, args, template, templateToken);
 		code.nativeGroup = this;
 		code.template = template;
@@ -441,7 +448,7 @@ public class STGroup {
             parser.group(this, prefix);
         }
         catch (Exception e) {
-            ErrorManager.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, fileName);
+            errMgr.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, fileName);
         }
     }
 
@@ -553,4 +560,12 @@ public class STGroup {
         }
         return buf.toString();
     }
+
+	public STErrorListener getListener() {
+		return errMgr.listener;
+	}
+
+	public void setListener(STErrorListener listener) {
+		errMgr = new ErrorManager(listener);
+	}
 }

@@ -28,7 +28,6 @@
 package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.CompiledST;
-import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.Misc;
 
 import java.io.File;
@@ -71,7 +70,7 @@ public class STGroupFile extends STGroup {
             }
         }
         catch (Exception e) {
-            ErrorManager.internalError(null, "can't load group file "+fileName, e);
+            errMgr.internalError(null, "can't load group file "+fileName, e);
         }
         this.fileName = fileName;
     }

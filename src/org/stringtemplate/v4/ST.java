@@ -29,6 +29,7 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.FormalArgument;
+import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 
 import java.io.IOException;
@@ -327,17 +328,35 @@ public class ST {
 
 	public boolean isAnonSubtemplate() { return impl.isAnonSubtemplate; }
 
-    public int write(STWriter out) throws IOException {
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance);
-        interp.setDefaultArguments(this);
-        return interp.exec(out, this);
+	public int write(STWriter out) throws IOException {
+		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
+											 impl.nativeGroup.errMgr);
+		interp.setDefaultArguments(this);
+		return interp.exec(out, this);
     }
 
-    public int write(STWriter out, Locale locale) {
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
-        interp.setDefaultArguments(this);
-        return interp.exec(out, this);
-    }
+	public int write(STWriter out, Locale locale) {
+		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
+											 locale,
+											 impl.nativeGroup.errMgr);
+		interp.setDefaultArguments(this);
+		return interp.exec(out, this);
+	}
+
+	public int write(STWriter out, STErrorListener listener) {
+		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
+											 new ErrorManager(listener));
+		interp.setDefaultArguments(this);
+		return interp.exec(out, this);
+	}
+
+	public int write(STWriter out, Locale locale, STErrorListener listener) {
+		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
+											 locale,
+											 new ErrorManager(listener));
+		interp.setDefaultArguments(this);
+		return interp.exec(out, this);
+	}
 
     public String render() { return render(Locale.getDefault()); }
 

@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorManager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -172,8 +171,8 @@ public class TestOptions extends BaseTest {
 
     @Test public void testIllegalOption() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
         STGroup group = new STGroup();
+		group.setListener(errors);
 		group.defineTemplate("test", "name", "<name; bad=\"ugly\">");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");

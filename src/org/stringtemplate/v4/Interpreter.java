@@ -77,6 +77,8 @@ public class Interpreter {
 	/** For renderers, we have to pass in the locale */
 	Locale locale;
 
+	ErrorManager errMgr;
+
 	/** Dump bytecode instructions as we execute them? */
 	public static boolean trace = false;
 
@@ -96,12 +98,21 @@ public class Interpreter {
 	protected Set<ST> templateInterpEventsInitialized;
 
 	public Interpreter(STGroup group) {
-		this(group,Locale.getDefault());
+		this(group,Locale.getDefault(),group.errMgr);
 	}
 
 	public Interpreter(STGroup group, Locale locale) {
+		this(group, locale, group.errMgr);
+	}
+
+	public Interpreter(STGroup group, ErrorManager errMgr) {
+		this(group,Locale.getDefault(),errMgr);
+	}
+
+	public Interpreter(STGroup group, Locale locale, ErrorManager errMgr) {
 		this.group = group;
 		this.locale = locale;
+		this.errMgr = errMgr;
 		if ( group.debug ) {
 			events = new ArrayList<InterpEvent>();
 			templateInterpEventsInitialized = new HashSet<ST>();
@@ -140,7 +151,7 @@ public class Interpreter {
 					name = self.impl.strings[nameIndex];
 					try {o = self.getAttribute(name);}
 					catch (STNoSuchPropertyException nspe) {
-						ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_ATTRIBUTE, name);
+						errMgr.runTimeError(self, current_ip, ErrorType.NO_SUCH_ATTRIBUTE, name);
 						o = null;
 					}
 					operands[++sp] = o;
@@ -197,7 +208,7 @@ public class Interpreter {
 
 					CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
 					if ( imported==null ) {
-						ErrorManager.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
+						errMgr.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
 												  name);
 						st = self.groupThatCreatedThisInstance.createStringTemplate();
 						st.impl = new CompiledST();
@@ -303,7 +314,7 @@ public class Interpreter {
 						operands[++sp] = ((String)o).trim();
 					}
 					else {
-						ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "trim", o.getClass().getName());
+						errMgr.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "trim", o.getClass().getName());
 						operands[++sp] = o;
 					}
 					break;
@@ -316,7 +327,7 @@ public class Interpreter {
 						operands[++sp] = ((String)o).length();
 					}
 					else {
-						ErrorManager.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "strlen", o.getClass().getName());
+						errMgr.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "strlen", o.getClass().getName());
 						operands[++sp] = 0;
 					}
 					break;
@@ -355,7 +366,7 @@ public class Interpreter {
 						nwline = 0;
 					}
 					catch (IOException ioe) {
-						ErrorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
+						errMgr.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
 					}
 					break;
 				case Bytecode.INSTR_NOOP :
@@ -367,7 +378,7 @@ public class Interpreter {
 					operands[++sp] = null;
 					break;
 				default :
-					ErrorManager.internalError(self, "invalid bytecode @ "+(ip-1)+": "+opcode, null);
+					errMgr.internalError(self, "invalid bytecode @ "+(ip-1)+": "+opcode, null);
 					self.impl.dump();
 			}
 			prevOpcode = opcode;
@@ -397,7 +408,7 @@ public class Interpreter {
 		if ( st.impl.isAnonSubtemplate ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
 
 		if ( nargs != (nformalArgs-st.impl.getNumberOfArgsWithDefaultValues()) ) {
-			ErrorManager.runTimeError(self,
+			errMgr.runTimeError(self,
 									  current_ip,
 									  ErrorType.ARGUMENT_COUNT_MISMATCH,
 									  nargs,
@@ -486,7 +497,7 @@ public class Interpreter {
 					out.writeWrap(options[Option.WRAP.ordinal()]);
 				}
 				catch (IOException ioe) {
-					ErrorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
+					errMgr.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
 				}
 			}
 			n = exec(out, (ST)o);
@@ -498,7 +509,7 @@ public class Interpreter {
 				else n = writePOJO(out, o, options);
 			}
 			catch (IOException ioe) {
-				ErrorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe, o);
+				errMgr.IOError(self, ErrorType.WRITE_IO_ERROR, ioe, o);
 			}
 		}
 		return n;
@@ -612,7 +623,7 @@ public class Interpreter {
 		CompiledST code = prototype.impl;
 		Map formalArguments = code.formalArguments;
 		if ( !code.hasFormalArgs || formalArguments==null ) {
-			ErrorManager.runTimeError(self, current_ip, ErrorType.MISSING_FORMAL_ARGUMENTS);
+			errMgr.runTimeError(self, current_ip, ErrorType.MISSING_FORMAL_ARGUMENTS);
 			return null;
 		}
 
@@ -621,7 +632,7 @@ public class Interpreter {
 		int nformalArgs = formalArgumentNames.length;
 		if ( prototype.isAnonSubtemplate() ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
 		if ( nformalArgs != numExprs ) {
-			ErrorManager.runTimeError(self,
+			errMgr.runTimeError(self,
 									  current_ip,
 									  ErrorType.MAP_ARGUMENT_COUNT_MISMATCH,
 									  numExprs,
@@ -667,7 +678,7 @@ public class Interpreter {
 
 	protected void setFirstArgument(ST self, ST st, Object attr) {
 		if ( st.impl.formalArguments==null ) {
-			ErrorManager.runTimeError(self,
+			errMgr.runTimeError(self,
 									  current_ip,
 									  ErrorType.ARGUMENT_COUNT_MISMATCH,
 									  1,
@@ -879,7 +890,7 @@ public class Interpreter {
 
 	protected Object getObjectProperty(ST self, Object o, Object property) {
 		if ( o==null ) {
-			ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+			errMgr.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
 									  "null attribute");
 			return null;
 		}
@@ -889,7 +900,7 @@ public class Interpreter {
 			return adap.getProperty(self, o, property, toString(self,property));
 		}
 		catch (STNoSuchPropertyException e) {
-			ErrorManager.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+			errMgr.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
 									  e, o.getClass().getName()+"."+property);
 		}
 		return null;
@@ -976,5 +987,6 @@ public class Interpreter {
 		int b2 = memory[index+1]&0xFF;
 		return b1<<(8*1) | b2;
 	}
+
 }
 

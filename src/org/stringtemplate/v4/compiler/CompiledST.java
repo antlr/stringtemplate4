@@ -117,7 +117,7 @@ public class CompiledST {
 			if ( fa.defaultValueToken!=null ) {
 				String argSTname = fa.name + "_default_value";
 				Compiler c2 =
-					new Compiler(group.delimiterStartChar, group.delimiterStopChar);
+					new Compiler(group.errMgr, group.delimiterStartChar, group.delimiterStopChar);
 				String defArgTemplate =
 					Misc.strip(fa.defaultValueToken.getText(), 1);
 				fa.compiledDefaultValue =

@@ -45,13 +45,6 @@ public class Compiler {
 
     public static final int TEMPLATE_INITIAL_CODE_SIZE = 15;
 
-    /** The compiler needs to know how to delimit expressions.
-     *  The STGroup normally passes in this information, but we
-     *  can set some defaults.
-     */
-    public char delimiterStartChar = '<'; // Use <expr> by default
-    public char delimiterStopChar = '>';
-
     public static final Map<String, Interpreter.Option> supportedOptions =
         new HashMap<String, Interpreter.Option>() {
             {
@@ -90,14 +83,33 @@ public class Compiler {
 	/** Name subtemplates _sub1, _sub2, ... */
 	public static int subtemplateCount = 0;
 
-	public Compiler() { this('<', '>'); }
+	/** The compiler needs to know how to delimit expressions.
+	 *  The STGroup normally passes in this information, but we
+	 *  can set some defaults.
+	 */
+	public char delimiterStartChar = '<'; // Use <expr> by default
+	public char delimiterStopChar = '>';
+
+	public ErrorManager errMgr;
+
+	public Compiler() { this(STGroup.DEFAULT_ERR_MGR); }
+
+	public Compiler(ErrorManager errMgr) { this(errMgr, '<', '>'); }
+
+	public Compiler(char delimiterStartChar,
+					char delimiterStopChar)
+	{
+		this(STGroup.DEFAULT_ERR_MGR, delimiterStartChar, delimiterStopChar);
+	}
 
 	/** To compile a template, we need to know what the
 	 *  enclosing template is (if any) in case of regions.
 	 */
-	public Compiler(char delimiterStartChar,
-					 char delimiterStopChar)
+	public Compiler(ErrorManager errMgr,
+					char delimiterStartChar,
+					char delimiterStopChar)
 	{
+		this.errMgr = errMgr;
 		this.delimiterStartChar = delimiterStartChar;
 		this.delimiterStopChar = delimiterStopChar;
 	}
@@ -127,9 +139,9 @@ public class Compiler {
 //			is.setLine(templateToken.getLine());
 //			is.setCharPositionInLine(templateToken.getCharPositionInLine());
 //		}
-		STLexer lexer = new STLexer(is, delimiterStartChar, delimiterStopChar);
+		STLexer lexer = new STLexer(errMgr, is, delimiterStartChar, delimiterStopChar);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		STTreeBuilder p = new STTreeBuilder(tokens);
+		STTreeBuilder p = new STTreeBuilder(tokens, errMgr);
 		STTreeBuilder.templateAndEOF_return r = null;
 		try {
 			r = p.templateAndEOF();
@@ -146,14 +158,14 @@ public class Compiler {
 		System.out.println(((CommonTree)r.getTree()).toStringTree());
 		CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.getTree());
 		nodes.setTokenStream(tokens);
-		CodeGenerator gen = new CodeGenerator(nodes, name, template);
+		CodeGenerator gen = new CodeGenerator(nodes, errMgr, name, template);
 
 		CompiledST impl=null;
 		try {
 			impl = gen.template(name,args);
 		}
 		catch (RecognitionException re) {
-			ErrorManager.internalError(null, "bad tree structure", re);
+			errMgr.internalError(null, "bad tree structure", re);
 		}
 
 		return impl;

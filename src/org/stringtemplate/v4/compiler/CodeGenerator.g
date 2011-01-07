@@ -43,8 +43,10 @@ import org.stringtemplate.v4.*;
 	String outermostTemplateName; // name of overall template
 	CompiledST outermostImpl;
 	String template;
-	public CodeGenerator(TreeNodeStream input, String name, String template) {
+	ErrorManager errMgr;
+	public CodeGenerator(TreeNodeStream input, ErrorManager errMgr, String name, String template) {
 		this(input, new RecognizerSharedState());
+		this.errMgr = errMgr;
 		this.outermostTemplateName = name;
 		this.template = template;
 	}
@@ -91,7 +93,7 @@ scope {
     CompilationState state; // automatically get a new state pointer per invocation
 }
 @init {
- 	$template::state = new CompilationState(name, input.getTokenStream());
+ 	$template::state = new CompilationState(errMgr, name, input.getTokenStream());
 	$impl = $template::state.impl;
  	if ( $template.size() == 1 ) outermostImpl = $impl;
 	$impl.defineFormalArgs($args); // make sure args are defined prior to compilation
@@ -260,8 +262,8 @@ mapTemplateRef[int num_exprs]
 	|	subtemplate
 		{
 		if ( $subtemplate.nargs != $num_exprs ) {
-            ErrorManager.compileTimeError(ErrorType.ANON_ARGUMENT_MISMATCH,
-            							  $subtemplate.start.token, $subtemplate.nargs, $num_exprs);
+            errMgr.compileTimeError(ErrorType.ANON_ARGUMENT_MISMATCH,
+            						$subtemplate.start.token, $subtemplate.nargs, $num_exprs);
 		}
 		for (int i=1; i<=$num_exprs; i++) emit($subtemplate.start,Bytecode.INSTR_NULL);
         emit2($subtemplate.start, Bytecode.INSTR_NEW,

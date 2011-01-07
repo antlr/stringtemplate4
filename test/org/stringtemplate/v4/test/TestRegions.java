@@ -28,9 +28,11 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STErrorListener;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorManager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -132,7 +134,7 @@ public class TestRegions extends BaseTest {
 
         STGroupFile group = new STGroupFile(dir+"/g.stg");
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
+        group.setListener(errors);
         group.load();
         String expected = "g.stg 2:3: region a.r is embedded and thus already implicitly defined"+newline;
         String result = errors.toString();
@@ -228,9 +230,9 @@ public class TestRegions extends BaseTest {
                 ">>\n"+
                 "@a.q() ::= \"foo\"" +newline;
         STErrorListener errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
         writeFile(dir, "g.stg", g);
         STGroupFile group = new STGroupFile(dir+"/g.stg");
+		group.setListener(errors);
         ST st = group.getInstanceOf("a");
         st.render();
         String result = errors.toString();
@@ -249,7 +251,7 @@ public class TestRegions extends BaseTest {
         String sub =
             "@a.r() ::= \"A<@super.q()>B\"" +newline; // allow this; trap at runtime
         STErrorListener errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
+        group.setListener(errors);
         writeFile(dir, "sub.stg", sub);
         STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
         subGroup.importTemplates(group);

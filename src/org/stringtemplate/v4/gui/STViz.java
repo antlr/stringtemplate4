@@ -53,12 +53,15 @@ public class STViz {
 	public List<InterpEvent> allEvents;
 	public JTreeSTModel tmodel;
     public List<STMessage> errors;
+	public ErrorManager errMgr;
 
-    public STViz(DebugST root, String output,
+    public STViz(ErrorManager errMgr,
+				 DebugST root, String output,
                  final List<InterpEvent> allEvents,
                  List<String> trace,
                  List<STMessage> errors)
     {
+		this.errMgr = errMgr;
         // TODO move all this to JFrame so i can return it.
         currentST = root;
 
@@ -212,7 +215,7 @@ public class STViz {
 			highlighter.addHighlight(i, j+1, DefaultHighlighter.DefaultPainter);
 		}
 		catch (BadLocationException ble) {
-			ErrorManager.internalError(tmodel.root.st, "bad highlight location", ble);
+			errMgr.internalError(tmodel.root.st, "bad highlight location", ble);
 		}
 	}
 

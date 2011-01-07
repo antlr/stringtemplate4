@@ -5,7 +5,6 @@ import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 import org.stringtemplate.v4.misc.STRuntimeMessage;
 
@@ -60,11 +59,11 @@ public class TestModelAdaptors extends BaseTest {
 
 	@Test public void testAdaptorAndBadProp() throws Exception {
 		ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
-		ErrorManager.setErrorListener(errors);
 		String templates =
 				"foo(x) ::= \"<x.qqq>\"\n";
 		writeFile(tmpdir, "foo.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/foo.stg");
+		group.setListener(errors);
 		group.registerModelAdaptor(User.class, new UserAdaptor());
 		ST st = group.getInstanceOf("foo");
 		st.add("x", new User(100, "parrt"));
@@ -72,7 +71,6 @@ public class TestModelAdaptors extends BaseTest {
 		String result = st.render();
 		assertEquals(expecting, result);
 
-		ErrorManager.setErrorListener(ErrorManager.DEFAULT_ERROR_LISTENER);
 		STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
 		STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
 		assertEquals("User.qqq", e.propertyName);

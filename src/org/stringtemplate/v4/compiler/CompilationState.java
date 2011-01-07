@@ -25,7 +25,10 @@ public class CompilationState {
 
 	TokenStream tokens;
 
-	public CompilationState(String name, TokenStream tokens) {
+	ErrorManager errMgr;
+
+	public CompilationState(ErrorManager errMgr, String name, TokenStream tokens) {
+		this.errMgr = errMgr;
 		this.tokens = tokens;
 		impl.name = name;
 	}
@@ -41,7 +44,7 @@ public class CompilationState {
 		}
 		else {
 			if ( Interpreter.predefinedAnonSubtemplateAttributes.contains(name) ) {
-				ErrorManager.compileTimeError(ErrorType.NO_SUCH_ATTRIBUTE, id.token);
+				errMgr.compileTimeError(ErrorType.NO_SUCH_ATTRIBUTE, id.token);
 				emit(id, Bytecode.INSTR_NULL);
 			}
 			else {
@@ -58,7 +61,7 @@ public class CompilationState {
 	public void func(CommonTree id) {
 		Short funcBytecode = Compiler.funcs.get(id.getText());
 		if ( funcBytecode==null ) {
-			ErrorManager.compileTimeError(ErrorType.NO_SUCH_FUNCTION, id.token);
+			errMgr.compileTimeError(ErrorType.NO_SUCH_FUNCTION, id.token);
 			emit(id, Bytecode.INSTR_POP);
 		}
 		else {

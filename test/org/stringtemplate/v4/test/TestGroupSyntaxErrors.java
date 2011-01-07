@@ -32,7 +32,6 @@ import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorManager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -45,7 +44,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 
 		STErrorListener errors = new ErrorBuffer();
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 2:0: mismatched input 'foo' expecting STRING"+newline+
 			"t.stg 2:3: required (...)+ loop did not match anything at input '('"+newline;
@@ -61,7 +60,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 
 		STErrorListener errors = new ErrorBuffer();
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:7: mismatched input 'Super' expecting STRING"+newline;
 		String result = errors.toString();
@@ -76,7 +75,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 2:0: missing template at '<EOF>'"+newline;
 		String result = errors.toString();
@@ -91,7 +90,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:5: no viable alternative at input '::='"+newline;
 		String result = errors.toString();
@@ -106,7 +105,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:11: \\n in string"+newline;
 		String result = errors.toString();
@@ -122,7 +121,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:0: garbled template definition starting at 'foo'"+newline;
 		String result = errors.toString();
@@ -137,7 +136,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:6: mismatched input ')' expecting ID"+newline;
 		String result = errors.toString();
@@ -152,7 +151,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected =
 			"[t.stg 1:6: mismatched input ',' expecting ID, " +
@@ -169,7 +168,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected =
 			"[t.stg 1:4: no viable alternative at input 'a', " +
@@ -186,7 +185,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "[t.stg 1:15: 'b' came as a complete surprise to me]";
 		String result = errors.errors.toString();
@@ -201,7 +200,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "[t.stg 1:7: missing dictionary entry at ']']";
 		String result = errors.errors.toString();
@@ -216,7 +215,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "[t.stg 1:11: missing value for key at ']']";
 		String result = errors.errors.toString();
@@ -231,7 +230,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "[t.stg 1:17: invalid character '}']";
 		String result = errors.errors.toString();
@@ -246,7 +245,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroupFile group = null;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ErrorManager.setErrorListener(errors);
+		group.setListener(errors);
 		group.load(); // force load
 		String expected = "[t.stg 1:9: unterminated string, t.stg 1:9: missing template at '<EOF>']";
 		String result = errors.errors.toString();

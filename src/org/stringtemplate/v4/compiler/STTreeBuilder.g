@@ -49,6 +49,11 @@ import org.stringtemplate.v4.misc.ErrorType;
 }
 
 @members {
+ErrorManager errMgr;
+public STTreeBuilder(TokenStream input, ErrorManager errMgr) {
+	this(input);
+	this.errMgr = errMgr;
+}
 protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
 	throws RecognitionException
 {
@@ -124,14 +129,14 @@ option
 	:	ID
 		{
 		if ( !validOption ) {
-            ErrorManager.compileTimeError(ErrorType.NO_SUCH_OPTION, $ID, $ID.text);
+            errMgr.compileTimeError(ErrorType.NO_SUCH_OPTION, $ID, $ID.text);
 		}
 		}
 		(	'=' exprNoComma 					-> {validOption}? ^('=' ID exprNoComma)
 												->
 		|	{
 			if ( defVal==null ) {
-				ErrorManager.compileTimeError(ErrorType.NO_DEFAULT_VALUE, $ID);
+				errMgr.compileTimeError(ErrorType.NO_DEFAULT_VALUE, $ID);
 			}
 			}
 												-> {validOption&&defVal!=null}?
@@ -149,18 +154,6 @@ exprNoComma
 
 expr : mapExpr ;
 
-/*
-mapExpr
-	:	memberExpr (c=',' memberExpr {ne++;})*
-		(	':'	mapTemplateRef[ne]
-			(	(	{$c==null}?=> ',' mapTemplateRef[ne] {nt++;}
-				)+
-			|
-			)
-		)*
-	;
-*/
-
 // more complicated than necessary to avoid backtracking, which ruins
 // error handling
 mapExpr
@@ -174,21 +167,6 @@ mapExpr
 												-> ^(MAP[$col] $mapExpr $x+)
 		)*
 	;
-
-/*
-mapExpr
-options {backtrack=true;}
-	:	(	options {backtrack=true;}
-		:	memberExpr (',' memberExpr)+ ':' mapTemplateRef
-			-> ^(ZIP ^(ELEMENTS memberExpr+) mapTemplateRef) 
-		|	memberExpr -> memberExpr
-		)
-		(	{if ($x!=null) $x.clear();} // don't keep queueing x; new list for each iteration
-			c=':' x+=mapTemplateRef (',' x+=mapTemplateRef )* -> ^(MAP[$c] $mapExpr $x+)
-		)*
-	|	memberExpr
-	;
-*/
 
 /**
 expr:template(args)  apply template to expr

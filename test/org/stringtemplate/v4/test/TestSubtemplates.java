@@ -32,10 +32,8 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorManager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -186,8 +184,8 @@ public class TestSubtemplates extends BaseTest {
 
 	@Test public void testEvalSTIteratingSubtemplateInSTFromAnotherGroup() throws Exception {
 		ErrorBuffer errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
 		STGroup innerGroup = new STGroup();
+		innerGroup.setListener(errors);
 		innerGroup.defineTemplate("test", "m", "<m:samegroup()>");
 		innerGroup.defineTemplate("samegroup", "x", "hi ");
 		ST st = innerGroup.getInstanceOf("test");
@@ -208,8 +206,8 @@ public class TestSubtemplates extends BaseTest {
 
 	@Test public void testEvalSTIteratingSubtemplateInSTFromAnotherGroupSingleValue() throws Exception {
 		ErrorBuffer errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
 		STGroup innerGroup = new STGroup();
+		innerGroup.setListener(errors);
 		innerGroup.defineTemplate("test", "m", "<m:samegroup()>");
 		innerGroup.defineTemplate("samegroup", "x", "hi ");
 		ST st = innerGroup.getInstanceOf("test");
@@ -230,13 +228,13 @@ public class TestSubtemplates extends BaseTest {
 
 	@Test public void testEvalSTFromAnotherGroup() throws Exception {
 		ErrorBuffer errors = new ErrorBuffer();
-		ErrorManager.setErrorListener(errors);
 		STGroup innerGroup = new STGroup();
-		innerGroup.defineTemplate("test", "<bob()>");
+		innerGroup.setListener(errors);
 		innerGroup.defineTemplate("bob", "inner");
-		ST st = innerGroup.getInstanceOf("test");
+		ST st = innerGroup.getInstanceOf("bob");
 
 		STGroup outerGroup = new STGroup();
+		outerGroup.setListener(errors);
 		outerGroup.defineTemplate("errorMessage", "x", "<x>");
 		outerGroup.defineTemplate("bob", "outer"); // should not be visible to test() in innerGroup
 		ST outerST = outerGroup.getInstanceOf("errorMessage");
@@ -249,6 +247,5 @@ public class TestSubtemplates extends BaseTest {
 
 		assertEquals(expected, result);
 	}
-
 
 }

@@ -33,7 +33,6 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 import org.stringtemplate.v4.misc.STRuntimeMessage;
 
@@ -69,9 +68,9 @@ public class TestCoreBasics extends BaseTest {
         String templates =
             "t() ::= <<hi <name>!>>\n";
         ErrorBuffer errors = new ErrorBuffer();
-        ErrorManager.setErrorListener(errors);
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
         ST st = group.getInstanceOf("t");
         String result = null;
 		try {
@@ -151,14 +150,14 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testNoSuchProp() throws Exception {
 		ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
-		ErrorManager.setErrorListener(errors);
 		String template = "<u.qqq>";
-		ST st = new ST(template);
+		STGroup group = new STGroup();
+		group.setListener(errors);
+		ST st = new ST(group, template);
 		st.add("u", new User(1, "parrt"));
 		String expected = "";
 		String result = st.render();
 		assertEquals(expected, result);
-		ErrorManager.setErrorListener(ErrorManager.DEFAULT_ERROR_LISTENER);
 		STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
 		STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
 		assertEquals("org.stringtemplate.v4.test.BaseTest$User.qqq", e.propertyName);
@@ -166,15 +165,15 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testNullIndirectProp() throws Exception {
 		ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
-		ErrorManager.setErrorListener(errors);
+		STGroup group = new STGroup();
+		group.setListener(errors);
 		String template = "<u.(qqq)>";
-		ST st = new ST(template);
+		ST st = new ST(group, template);
 		st.add("u", new User(1, "parrt"));
 		st.add("qqq", null);
 		String expected = "";
 		String result = st.render();
 		assertEquals(expected, result);
-		ErrorManager.setErrorListener(ErrorManager.DEFAULT_ERROR_LISTENER);
 		STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
 		STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
 		assertEquals("org.stringtemplate.v4.test.BaseTest$User.null", e.propertyName);
@@ -182,15 +181,15 @@ public class TestCoreBasics extends BaseTest {
 
 	@Test public void testPropConvertsToString() throws Exception {
 		ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
-		ErrorManager.setErrorListener(errors);
+		STGroup group = new STGroup();
+		group.setListener(errors);
 		String template = "<u.(name)>";
-		ST st = new ST(template);
+		ST st = new ST(group, template);
 		st.add("u", new User(1, "parrt"));
 		st.add("name", 100);
 		String expected = "";
 		String result = st.render();
 		assertEquals(expected, result);
-		ErrorManager.setErrorListener(ErrorManager.DEFAULT_ERROR_LISTENER);
 		STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
 		STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
 		assertEquals("org.stringtemplate.v4.test.BaseTest$User.100", e.propertyName);

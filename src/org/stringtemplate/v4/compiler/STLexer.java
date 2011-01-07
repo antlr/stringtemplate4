@@ -28,6 +28,7 @@
 package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.*;
+import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
@@ -122,6 +123,8 @@ public class STLexer implements TokenSource {
      */
 	public int subtemplateDepth = 0; // start out *not* in a {...} subtemplate
 
+	ErrorManager errMgr;
+
     CharStream input;
     char c;        // current character
 
@@ -142,9 +145,16 @@ public class STLexer implements TokenSource {
         return _nextToken();
     }
 
-    public STLexer(CharStream input) { this(input, '<', '>'); }
+	public STLexer(CharStream input) { this(STGroup.DEFAULT_ERR_MGR, input, '<', '>'); }
 
-	public STLexer(CharStream input, char delimiterStartChar, char delimiterStopChar) {
+    public STLexer(ErrorManager errMgr, CharStream input) { this(errMgr, input, '<', '>'); }
+
+	public STLexer(ErrorManager errMgr,
+				   CharStream input,
+				   char delimiterStartChar,
+				   char delimiterStopChar)
+	{
+		this.errMgr = errMgr;
 		this.input = input;
 		c = (char)input.LA(1); // prime lookahead
 		this.delimiterStartChar = delimiterStartChar;
@@ -325,7 +335,7 @@ public class STLexer implements TokenSource {
             case 'u' : t = UNICODE(); break;
             default :
                 NoViableAltException e = new NoViableAltException("",0,0,input);
-                ErrorManager.lexerError(ErrorType.LEXER_ERROR, e, c);
+                errMgr.lexerError(ErrorType.LEXER_ERROR, e, c);
         }
         consume();
         match(delimiterStopChar);
@@ -337,25 +347,25 @@ public class STLexer implements TokenSource {
         char[] chars = new char[4];
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            ErrorManager.lexerError(ErrorType.LEXER_ERROR, e, c);
+            errMgr.lexerError(ErrorType.LEXER_ERROR, e, c);
         }
         chars[0] = c;
         consume();
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            ErrorManager.lexerError(ErrorType.LEXER_ERROR, e, c);
+            errMgr.lexerError(ErrorType.LEXER_ERROR, e, c);
         }
         chars[1] = c;
         consume();
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            ErrorManager.lexerError(ErrorType.LEXER_ERROR, e, c);
+            errMgr.lexerError(ErrorType.LEXER_ERROR, e, c);
         }
         chars[2] = c;
         consume();
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            ErrorManager.lexerError(ErrorType.LEXER_ERROR, e, c);
+            errMgr.lexerError(ErrorType.LEXER_ERROR, e, c);
         }
         chars[3] = c;
         // ESCAPE kills final char and >
