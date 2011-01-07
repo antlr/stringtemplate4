@@ -136,8 +136,6 @@ public class CompilationState {
 		writeShort(impl.instrs, addr, value);
 	}
 
-	public int address() { return ip; }
-
 	protected void ensureCapacity(int n) {
 		if ( (ip+n) >= impl.instrs.length ) { // ensure room for full instruction
 			byte[] c = new byte[impl.instrs.length*2];

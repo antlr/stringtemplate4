@@ -238,8 +238,8 @@ public class STGroup {
 	public CompiledST defineTemplate(String name, String argsS, String template) {
 		String[] args = argsS.split(",");
 		List<FormalArgument> a = new ArrayList<FormalArgument>();
-		for (int i = 0; i  < args.length; i ++) {
-			a.add(new FormalArgument(args[i]));
+		for (String arg : args) {
+			a.add(new FormalArgument(arg));
 		}
 		return defineTemplate(name, new CommonToken(GroupParser.ID, name),
 			a, template);

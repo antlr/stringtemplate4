@@ -870,7 +870,7 @@ public class Interpreter {
 
 	protected boolean testAttributeTrue(Object a) {
 		if ( a==null ) return false;
-		if ( a instanceof Boolean ) return ((Boolean)a).booleanValue();
+		if ( a instanceof Boolean ) return (Boolean)a;
 		if ( a instanceof Collection ) return ((Collection)a).size()>0;
 		if ( a instanceof Map ) return ((Map)a).size()>0;
 		if ( a instanceof Iterator ) return ((Iterator)a).hasNext();

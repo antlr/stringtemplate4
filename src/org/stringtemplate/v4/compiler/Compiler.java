@@ -150,7 +150,6 @@ public class Compiler {
 		catch (RecognitionException re) {
 			ErrorManager.internalError(null, "bad tree structure", re);
 		}
-		impl.dump();
 
 		return impl;
 	}
