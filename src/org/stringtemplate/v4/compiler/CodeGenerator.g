@@ -79,7 +79,9 @@ import org.stringtemplate.v4.*;
 	public void write(int addr, short value) {
 		$template::state.write(addr,value);
 	}
-	public int address() { return $template::state.impl.ip; }
+	public int address() { return $template::state.ip; }
+	public void func(CommonTree id) { $template::state.func(id); }
+	public void refAttr(CommonTree id) { $template::state.refAttr(id); }
 }
 
 templateAndEOF : template[null,null] EOF; // hush warning; ignore
@@ -93,12 +95,16 @@ scope {
 	$impl = $template::state.impl;
  	if ( $template.size() == 1 ) outermostImpl = $impl;
 	$impl.defineFormalArgs($args); // make sure args are defined prior to compilation
+	if ( name!=null && name.startsWith(Compiler.SUBTEMPLATE_PREFIX) ) {
+	    $impl.addArg(new FormalArgument("i"));
+	    $impl.addArg(new FormalArgument("i0"));
+    }
 	$impl.template = template;
 }
 	:	chunk
 		{ // finish off the CompiledST result
-        if ( $impl.stringtable!=null ) $impl.strings = $impl.stringtable.toArray();
-        $impl.codeSize = $impl.ip;
+        if ( $template::state.stringtable!=null ) $impl.strings = $template::state.stringtable.toArray();
+        $impl.codeSize = $template::state.ip;
 		}
 	;
 
@@ -147,7 +153,7 @@ region returns [String name]
 
 subtemplate returns [String name, int nargs]
 @init {
-    $name = Compiler2.getNewSubtemplateName();
+    $name = Compiler.getNewSubtemplateName();
 	List<FormalArgument> args = new ArrayList<FormalArgument>();
 }
 	:	^(	SUBTEMPLATE
@@ -224,15 +230,19 @@ conditional
 	|	expr // not all expr are valid, but reuse code gen (parser restricts syntax)
 	;
 
-exprOptions : {emit(Bytecode.INSTR_OPTIONS);} ^(OPTIONS option+) ;
+exprOptions : {emit(Bytecode.INSTR_OPTIONS);} ^(OPTIONS option*) ;
 
 option : ^('=' ID expr) {setOption($ID);} ;
 
 expr
 @init {int nt = 0, ne = 0;}
 	:	^(ZIP ^(ELEMENTS (expr {ne++;})+) mapTemplateRef[ne])
+		{emit1($ZIP, Bytecode.INSTR_ZIP_MAP, ne);}
 	|	^(MAP expr (mapTemplateRef[1] {nt++;})+)
-		{emit1($MAP, Bytecode.INSTR_ROT_MAP, nt);}
+		{
+		if ( nt>1 ) emit1($MAP, nt>1?Bytecode.INSTR_ROT_MAP:Bytecode.INSTR_MAP, nt);
+		else emit($MAP, Bytecode.INSTR_MAP);
+		}
 	|	prop
 	|	includeExpr
 	;
@@ -242,14 +252,18 @@ prop:	^(PROP expr ID)						{emit1($PROP, Bytecode.INSTR_LOAD_PROP, $ID.text);}
 	;
 	
 mapTemplateRef[int num_exprs]
-	:	^(INCLUDE ID args)
-		{emit2($INCLUDE, Bytecode.INSTR_NEW,$ID.text, $args.n+$num_exprs);}
+	:	^(	INCLUDE ID
+			{for (int i=1; i<=$num_exprs; i++) emit($INCLUDE,Bytecode.INSTR_NULL);}
+			args
+		)
+		{emit2($INCLUDE, Bytecode.INSTR_NEW, $ID.text, $args.n+$num_exprs);}
 	|	subtemplate
 		{
 		if ( $subtemplate.nargs != $num_exprs ) {
             ErrorManager.compileTimeError(ErrorType.ANON_ARGUMENT_MISMATCH,
             							  $subtemplate.start.token, $subtemplate.nargs, $num_exprs);
 		}
+		for (int i=1; i<=$num_exprs; i++) emit($subtemplate.start,Bytecode.INSTR_NULL);
         emit2($subtemplate.start, Bytecode.INSTR_NEW,
 	              $subtemplate.name,
 	              $num_exprs);
@@ -266,18 +280,18 @@ mapTemplateRef[int num_exprs]
 	;
 
 includeExpr
-	:	^(EXEC_FUNC ID expr?)		{$template::state.func($ID);}
+	:	^(EXEC_FUNC ID expr?)		{func($ID);}
 	|	^(INCLUDE ID args)			{emit2($start,Bytecode.INSTR_NEW, $ID.text, $args.n);}
 	|	^(INCLUDE_SUPER ID args)	{emit2($start,Bytecode.INSTR_SUPER_NEW, $ID.text, $args.n);}
 	|	^(INCLUDE_REGION ID)		{
 									CompiledST impl =
-										Compiler2.defineBlankRegion(outermostImpl, $ID.text);
+										Compiler.defineBlankRegion(outermostImpl, $ID.text);
 									impl.dump();
 									emit2($INCLUDE_REGION,Bytecode.INSTR_NEW,impl.name,0);
 									}
 	|	^(INCLUDE_SUPER_REGION ID)	{
-										CompiledST impl =
-										Compiler2.defineBlankRegion(outermostImpl, $ID.text);
+									CompiledST impl =
+										Compiler.defineBlankRegion(outermostImpl, $ID.text);
 									impl.dump();
 									emit2($INCLUDE_SUPER_REGION,Bytecode.INSTR_SUPER_NEW,impl.name,0);
 									}
@@ -285,13 +299,15 @@ includeExpr
 	;
 
 primary
-	:	ID				{$template::state.refAttr($ID);}
+	:	ID				{refAttr($ID);}
 	|	STRING			{emit1($STRING,Bytecode.INSTR_LOAD_STR, Misc.strip($STRING.text,1));}	
 	|	subtemplate		// push a subtemplate but ignore args since we can't pass any to it here
 		                {emit2($start,Bytecode.INSTR_NEW, $subtemplate.name, 0);}
 	|	list
-	|	^(INCLUDE_IND expr args)
-						{emit1($INCLUDE_IND, Bytecode.INSTR_NEW_IND, $args.n);}
+	|	^(	INCLUDE_IND	
+			expr 		{emit($INCLUDE_IND, Bytecode.INSTR_TOSTR);}
+			args		{emit1($INCLUDE_IND, Bytecode.INSTR_NEW_IND, $args.n);}
+		 )
 	|	^(TO_STR expr)	{emit($TO_STR, Bytecode.INSTR_TOSTR);}
 	;
 
@@ -299,5 +315,8 @@ args returns [int n=0] : ( arg {$n++;} )* ;
 
 arg : expr ;
 
-list:	^(LIST expr*) {emit(Bytecode.INSTR_LIST);}
+list:	{emit(Bytecode.INSTR_LIST);}
+		^(LIST (listElement {emit($listElement.start, Bytecode.INSTR_ADD);})* ) 
 	;
+
+listElement : expr | NULL {emit($NULL,Bytecode.INSTR_NULL);} ;

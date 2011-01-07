@@ -88,25 +88,9 @@ public class CompiledST {
     public int codeSize;
     public Interval[] sourceMap; // maps IP to range in template pattern
 
-	// temp data used during construction
-
-	/** Track unique strings; copy into CompiledST's String[] after compilation */
-	StringTable stringtable = new StringTable();
-
-	/** Track instruction location within code.instrs array; this is
-	 *  next address to write to.  Byte-addressable memory.
-	 */
-	int ip = 0;
-
-	/** If we're compiling a region or sub template, we need to know the
-	 *  enclosing template's name.  Region r in template t
-	 *  is formally called t.r.
-	 */
-	String enclosingTemplateName;
-
 	public CompiledST() {
-        instrs = new byte[Compiler2.TEMPLATE_INITIAL_CODE_SIZE];
-        sourceMap = new Interval[Compiler2.TEMPLATE_INITIAL_CODE_SIZE];
+        instrs = new byte[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
+        sourceMap = new Interval[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
 		template = "";
 	}
 
@@ -130,12 +114,15 @@ public class CompiledST {
 		if ( formalArguments==null ) return;
 		for (String a : formalArguments.keySet()) {
 			FormalArgument fa = formalArguments.get(a);
-			if ( fa.defaultValueToken !=null ) {
-				Compiler c2 = new Compiler(name,
-										   group.delimiterStartChar, group.delimiterStopChar);
-				String defArgTemplate = Misc.strip(fa.defaultValueToken.getText(), 1);
-				fa.compiledDefaultValue = c2.compile(null, defArgTemplate);
-				fa.compiledDefaultValue.name = fa.name+"-default-value";
+			if ( fa.defaultValueToken!=null ) {
+				String argSTname = fa.name + "_default_value";
+				Compiler c2 =
+					new Compiler(group.delimiterStartChar, group.delimiterStopChar);
+				String defArgTemplate =
+					Misc.strip(fa.defaultValueToken.getText(), 1);
+				fa.compiledDefaultValue =
+					c2.compile(argSTname, null, defArgTemplate);
+				fa.compiledDefaultValue.name = argSTname;
 			}
 		}
 	}

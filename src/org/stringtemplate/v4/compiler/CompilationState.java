@@ -11,7 +11,6 @@ import org.stringtemplate.v4.misc.Interval;
 /** temp data used during construction and functions that fill it / use it.
  *  Result is impl CompiledST object.
  */
-// TODO: rename Generator?
 public class CompilationState {
 	/** The compiled code implementation to fill in. */
 	CompiledST impl = new CompiledST();
@@ -24,14 +23,6 @@ public class CompilationState {
 	 */
 	int ip = 0;
 
-	/** If we're compiling a region or sub template, we need to know the
-	 *  enclosing template's name.  Region r in template t
-	 *  is formally called t.r.
-	 */
-	String enclosingTemplateName;
-
-	String name; // what template are we compiling?
-
 	TokenStream tokens;
 
 	public CompilationState(String name, TokenStream tokens) {
@@ -39,7 +30,7 @@ public class CompilationState {
 		impl.name = name;
 	}
 
-	public int defineString(String s) { return impl.stringtable.add(s); }
+	public int defineString(String s) { return stringtable.add(s); }
 
 	public void refAttr(CommonTree id) {
 		String name = id.getText();
@@ -84,25 +75,25 @@ public class CompilationState {
 			int j = opAST.getTokenStopIndex();
 			int p = ((CommonToken)tokens.get(i)).getStartIndex();
 			int q = ((CommonToken)tokens.get(j)).getStopIndex();
-			if ( !(p<0 || q<0) ) impl.sourceMap[impl.ip] = new Interval(p, q);
+			if ( !(p<0 || q<0) ) impl.sourceMap[ip] = new Interval(p, q);
 		}
-		impl.instrs[impl.ip++] = (byte)opcode;
+		impl.instrs[ip++] = (byte)opcode;
 	}
 
 	public void emit1(CommonTree opAST, short opcode, int arg) {
 		emit(opAST, opcode);
 		ensureCapacity(Bytecode.OPND_SIZE_IN_BYTES);
-		writeShort(impl.instrs, impl.ip, (short)arg);
-		impl.ip += Bytecode.OPND_SIZE_IN_BYTES;
+		writeShort(impl.instrs, ip, (short)arg);
+		ip += Bytecode.OPND_SIZE_IN_BYTES;
 	}
 
 	public void emit2(CommonTree opAST, short opcode, int arg, int arg2) {
 		emit(opAST, opcode);
 		ensureCapacity(Bytecode.OPND_SIZE_IN_BYTES * 2);
-		writeShort(impl.instrs, impl.ip, (short)arg);
-		impl.ip += Bytecode.OPND_SIZE_IN_BYTES;
-		writeShort(impl.instrs, impl.ip, (short)arg2);
-		impl.ip += Bytecode.OPND_SIZE_IN_BYTES;
+		writeShort(impl.instrs, ip, (short)arg);
+		ip += Bytecode.OPND_SIZE_IN_BYTES;
+		writeShort(impl.instrs, ip, (short)arg2);
+		ip += Bytecode.OPND_SIZE_IN_BYTES;
 	}
 
 	public void emit2(CommonTree opAST, short opcode, String s, int arg2) {
@@ -121,15 +112,15 @@ public class CompilationState {
 		int instrSize = 1 + Bytecode.OPND_SIZE_IN_BYTES;
 		System.arraycopy(impl.instrs, addr,
 						 impl.instrs, addr + instrSize,
-						 impl.ip-addr); // make room for opcode, opnd
-		int save = impl.ip;
-		impl.ip = addr;
+						 ip-addr); // make room for opcode, opnd
+		int save = ip;
+		ip = addr;
 		emit1(null,opcode, s);
-		impl.ip = save+instrSize;
+		ip = save+instrSize;
 		//System.out.println("after  insert of "+opcode+"("+s+"):"+ Arrays.toString(impl.instrs));
 		// adjust addresses for BR and BRF
 		int a=addr+instrSize;
-		while ( a < impl.ip ) {
+		while ( a < ip ) {
 			byte op = impl.instrs[a];
 			Bytecode.Instruction I = Bytecode.instructions[op];
 			if ( op == Bytecode.INSTR_BR || op == Bytecode.INSTR_BRF ) {
@@ -145,10 +136,10 @@ public class CompilationState {
 		writeShort(impl.instrs, addr, value);
 	}
 
-	public int address() { return impl.ip; }
+	public int address() { return ip; }
 
 	protected void ensureCapacity(int n) {
-		if ( (impl.ip+n) >= impl.instrs.length ) { // ensure room for full instruction
+		if ( (ip+n) >= impl.instrs.length ) { // ensure room for full instruction
 			byte[] c = new byte[impl.instrs.length*2];
 			System.arraycopy(impl.instrs, 0, c, 0, impl.instrs.length);
 			impl.instrs = c;

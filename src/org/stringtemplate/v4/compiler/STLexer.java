@@ -68,7 +68,7 @@ public class STLexer implements TokenSource {
             String txt = getText();
             if ( txt!=null ) txt = Misc.replaceEscapes(txt);
             else txt = "<no text>";
-            return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+ STParser.tokenNames[type]+">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
+            return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+ STTreeBuilder.tokenNames[type]+">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
         }
     }
 

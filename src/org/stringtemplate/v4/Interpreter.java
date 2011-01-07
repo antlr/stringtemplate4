@@ -442,7 +442,7 @@ public class Interpreter {
 		String[] optionStrings = null;
 		if ( options!=null ) {
 			optionStrings = new String[options.length];
-			for (int i=0; i< Compiler.NUM_OPTIONS; i++) {
+			for (int i=0; i< org.stringtemplate.v4.compiler.Compiler.NUM_OPTIONS; i++) {
 				optionStrings[i] = toString(self, options[i]);
 			}
 		}

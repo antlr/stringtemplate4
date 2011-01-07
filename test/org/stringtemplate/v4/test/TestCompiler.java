@@ -68,7 +68,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TestCompiler extends BaseTest {
     @Before
-    public void setUp() { Compiler.subtemplateCount = 0; }
+    public void setUp() { org.stringtemplate.v4.compiler.Compiler.subtemplateCount = 0; }
 
     @Test public void testAttr() throws Exception {
         String template = "hi <name>";
@@ -123,7 +123,7 @@ public class TestCompiler extends BaseTest {
 
 	@Test public void testIncludeWithArgs() throws Exception {
 		String template = "hi <foo(a,b)>";
-		CompiledST code = new Compiler().compile(template);
+		CompiledST code = new org.stringtemplate.v4.compiler.Compiler().compile(template);
 		String asmExpected =
 			"load_str 0, write, load_attr 1, load_attr 2, new 3 2, write";
 		String asmResult = code.instrs();
@@ -411,7 +411,7 @@ public class TestCompiler extends BaseTest {
 
     @Test public void testElseIfElse() throws Exception {
         String template = "go: <if(name)>hi, foo<elseif(user)>a user<else>bye<endif>";
-        CompiledST code = new org.stringtemplate.v4.compiler.Compiler().compile(template);
+        CompiledST code = new Compiler().compile(template);
         String asmExpected =
             "load_str 0, " +
             "write, " +
@@ -506,7 +506,7 @@ public class TestCompiler extends BaseTest {
     @Test public void testEmbeddedRegion() throws Exception {
         String template = "<@r>foo<@end>";
         // compile as if in root dir and in template 'a'
-        CompiledST code = new Compiler("a", '<', '>').compile(template);
+        CompiledST code = new Compiler('<', '>').compile("a", template);
         String asmExpected =
             "new 0 0, write";
         String asmResult = code.instrs();
@@ -519,7 +519,7 @@ public class TestCompiler extends BaseTest {
     @Test public void testRegion() throws Exception {
         String template = "x:<@r()>";
         // compile as if in root dir and in template 'a'
-        CompiledST code = new Compiler("a", '<', '>').compile(template);
+        CompiledST code = new Compiler('<', '>').compile("a", template);
         String asmExpected =
             "load_str 0, write, new 1 0, write";
         String asmResult = code.instrs();

@@ -38,7 +38,7 @@ import java.util.List;
 /** */
 public class TestNewStuff {
 	public static void main(String[] args) throws Exception {
-		Compiler2 c = new Compiler2();
+		Compiler c = new Compiler();
 
 		byte[] buffer = new byte[(int) new File(args[0]).length()];
 		FileInputStream f = new FileInputStream(args[0]);

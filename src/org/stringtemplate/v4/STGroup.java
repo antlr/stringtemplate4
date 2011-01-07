@@ -357,18 +357,17 @@ public class STGroup {
     }
 
 	/** Compile a template */
-    public CompiledST compile(String enclosingTemplateName,
+    public CompiledST compile(String name,
 							  List<FormalArgument> args,
                               String template)
     {
 		//System.out.println("STGroup.compile: "+enclosingTemplateName);
-        Compiler c = new Compiler(enclosingTemplateName,
-                                  delimiterStartChar, delimiterStopChar);
-        CompiledST code = c.compile(args, template);
-        code.nativeGroup = this;
-        code.template = template;
-        return code;
-    }
+		Compiler c = new Compiler(delimiterStartChar, delimiterStopChar);
+		CompiledST code = c.compile(name, args, template);
+		code.nativeGroup = this;
+		code.template = template;
+		return code;
+	}
 
     /** The "foo" of t() ::= "<@foo()>" is mangled to "region#t#foo" */
     public static String getMangledRegionName(String enclosingTemplateName,

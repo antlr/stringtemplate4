@@ -39,7 +39,7 @@ options {
 tokens {
 	EXPR; OPTIONS; PROP; PROP_IND; INCLUDE; INCLUDE_IND; EXEC_FUNC; INCLUDE_SUPER;
 	INCLUDE_SUPER_REGION; INCLUDE_REGION; TO_STR; LIST; MAP; ZIP; SUBTEMPLATE; ARGS;
-	ELEMENTS; REGION;
+	ELEMENTS; REGION; NULL;
 	}
 
 @header {
@@ -49,9 +49,18 @@ import org.stringtemplate.v4.misc.ErrorType;
 }
 
 @members {
+protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
+	throws RecognitionException
+{
+	throw new MismatchedTokenException(ttype, input);
+}
 }
 
-templateAndEOF : template EOF! ;
+@rulecatch {
+   catch (RecognitionException re) { throw re; }
+}
+
+templateAndEOF : template EOF -> template? ;
 
 template : element* ;
 
@@ -88,7 +97,7 @@ ifstat // ignore INDENTs in front of elseif ...
 		RDELIM
 		// kill \n for <endif> on line by itself if multi-line IF
 		({$ifstat.start.getLine()!=input.LT(1).getLine()}?=> NEWLINE)?
-		-> ^('if' $c1 $t1 ^('elseif' $c2 $t2)* ^('else' $t3)?)
+		-> ^('if' $c1 $t1? ^('elseif' $c2 $t2?)* ^('else' $t3?)?)
 	;
 
 conditional : andConditional ( '||'^ andConditional )* ;
@@ -104,13 +113,13 @@ notConditionalExpr
 		)*
 	;
 
-exprOptions : option ( ',' option )* -> ^(OPTIONS option+) ;
+exprOptions : option ( ',' option )* -> ^(OPTIONS option*) ;
 
 option
 @init {
 	String id = input.LT(1).getText();
-	String defVal = Compiler2.defaultOptionValues.get(id);
-	boolean validOption = Compiler2.supportedOptions.get(id)!=null;
+	String defVal = Compiler.defaultOptionValues.get(id);
+	boolean validOption = Compiler.supportedOptions.get(id)!=null;
 }
 	:	ID
 		{
@@ -131,10 +140,42 @@ option
 		)
 	;
 
-exprNoComma : memberExpr ( ':'^ mapTemplateRef )?;
+exprNoComma
+	:	memberExpr
+		( ':' mapTemplateRef					-> ^(MAP memberExpr mapTemplateRef)
+		|										-> memberExpr
+		)
+	;
 
 expr : mapExpr ;
 
+/*
+mapExpr
+	:	memberExpr (c=',' memberExpr {ne++;})*
+		(	':'	mapTemplateRef[ne]
+			(	(	{$c==null}?=> ',' mapTemplateRef[ne] {nt++;}
+				)+
+			|
+			)
+		)*
+	;
+*/
+
+// more complicated than necessary to avoid backtracking, which ruins
+// error handling
+mapExpr
+	:	memberExpr
+		( (c=',' memberExpr)+ col=':' mapTemplateRef
+												-> ^(ZIP[$col] ^(ELEMENTS memberExpr+) mapTemplateRef)
+		|										-> memberExpr
+		)
+		(	{if ($x!=null) $x.clear();} // don't keep queueing x; new list for each iteration
+			col=':' x+=mapTemplateRef ({$c==null}?=> ',' x+=mapTemplateRef )*
+												-> ^(MAP[$col] $mapExpr $x+)
+		)*
+	;
+
+/*
 mapExpr
 options {backtrack=true;}
 	:	(	options {backtrack=true;}
@@ -143,10 +184,11 @@ options {backtrack=true;}
 		|	memberExpr -> memberExpr
 		)
 		(	{if ($x!=null) $x.clear();} // don't keep queueing x; new list for each iteration
-			':' x+=mapTemplateRef (',' x+=mapTemplateRef )* -> ^(MAP $mapExpr $x+)
-		)+
+			c=':' x+=mapTemplateRef (',' x+=mapTemplateRef )* -> ^(MAP[$c] $mapExpr $x+)
+		)*
 	|	memberExpr
 	;
+*/
 
 /**
 expr:template(args)  apply template to expr
@@ -178,13 +220,14 @@ options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
 	;
 
 primary
-options {backtrack=true;}
 	:	ID
 	|	STRING
 	|	subtemplate
 	|	list
-	|	lp='(' expr ')' '(' args ')'			-> ^(INCLUDE_IND[$lp] expr args?)
-	|	lp='(' expr ')'							-> ^(TO_STR[$lp] expr)
+	|	lp='(' expr ')'
+		(	'(' args ')'						-> ^(INCLUDE_IND[$lp] expr args?)
+		|										-> ^(TO_STR[$lp] expr)
+		)
 	;
 
 args:	arg ( ',' arg )* -> arg+
@@ -198,4 +241,4 @@ list:	{input.LA(2)==RBRACK}? // hush warning; [] special case
 	|	lb='[' listElement ( ',' listElement )* ']' -> ^(LIST[$lb] listElement*)
 	;
 
-listElement : exprNoComma | ;
+listElement : exprNoComma | -> NULL ;
