@@ -139,8 +139,8 @@ public class Compiler {
 		is.name = srcName!=null ? srcName : name;
 		STLexer lexer = new STLexer(errMgr, is, templateToken, delimiterStartChar, delimiterStopChar);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		STTreeBuilder p = new STTreeBuilder(tokens, errMgr, templateToken);
-		STTreeBuilder.templateAndEOF_return r = null;
+		STParser p = new STParser(tokens, errMgr, templateToken);
+		STParser.templateAndEOF_return r = null;
 		try {
 			r = p.templateAndEOF();
 		}

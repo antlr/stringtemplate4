@@ -29,7 +29,7 @@
 tree grammar CodeGenerator;
 
 options {
-	tokenVocab=STTreeBuilder;
+	tokenVocab=STParser;
 	ASTLabelType=CommonTree;
 }
 

@@ -8,7 +8,7 @@ gunit TestTreeConstruction;
 
 @header{package org.stringtemplate.v4.test;}
 options {
-	parser = org.stringtemplate.v4.compiler.STTreeBuilder;
+	parser = org.stringtemplate.v4.compiler.STParser;
 	lexer = org.stringtemplate.v4.compiler.STLexer;
 }
 

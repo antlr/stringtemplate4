@@ -26,39 +26,36 @@
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/** Recognize a single StringTemplate template text, expressions, and conditionals */
+/** Build an AST from a single StringTemplate template */
 parser grammar STParser;
 
 options {
 	tokenVocab=STLexer;
-	TokenLabelType = CommonToken;
+	TokenLabelType=CommonToken;
+	output=AST;
+	ASTLabelType=CommonTree;
 }
+
+tokens {
+	EXPR; OPTIONS; PROP; PROP_IND; INCLUDE; INCLUDE_IND; EXEC_FUNC; INCLUDE_SUPER;
+	INCLUDE_SUPER_REGION; INCLUDE_REGION; TO_STR; LIST; MAP; ZIP; SUBTEMPLATE; ARGS;
+	ELEMENTS; REGION; NULL;
+	}
 
 @header {
 package org.stringtemplate.v4.compiler;
-
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.ErrorType;
 }
 
 @members {
-/** The name of the template enclosing a subtemplate or region. */
-String enclosingTemplateName;
-Compiler gen = Compiler.NOOP_GEN;
-
-public STParser(TokenStream input, Compiler gen, String enclosingTemplateName) {
-    this(input, new RecognizerSharedState(), gen, enclosingTemplateName);
+ErrorManager errMgr;
+Token templateToken;
+public STParser(TokenStream input, ErrorManager errMgr, Token templateToken) {
+	this(input);
+	this.errMgr = errMgr;
+	this.templateToken = templateToken;
 }
-public STParser(TokenStream input, RecognizerSharedState state, Compiler gen, String enclosingTemplateName) {
-    super(null,null); // overcome bug in ANTLR 3.2
-	this.input = input;
-	this.state = state;
-    if ( gen!=null ) this.gen = gen;
-    this.enclosingTemplateName = enclosingTemplateName;
-}
-
-public void indent(String indent) {	gen.emit1(Bytecode.INSTR_INDENT, indent); }
-
 protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
 	throws RecognitionException
 {
@@ -70,325 +67,158 @@ protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet f
    catch (RecognitionException re) { throw re; }
 }
 
-templateAndEOF
-	:	template EOF
-	;
+templateAndEOF : template EOF -> template? ;
 
-template
-	:	element*
-	;
+template : element* ;
 
 element
-	:	( i=INDENT )? {int start_address = gen.address();}
-		ifstat
-		// kill \n for <endif> on line by itself if multi-line IF
-		( {$ifstat.start.getLine()!=input.LT(1).getLine()}? NEWLINE )?
-		{
-		if ( $i!=null && $ifstat.start.getLine() == input.LT(1).getLine() ) {
-			// need to emit INDENT if we found indent for IF on one line
-			gen.insert(start_address, Bytecode.INSTR_INDENT, $i.text);
-			gen.emit(Bytecode.INSTR_DEDENT);
-		}
-		}
-
-	|	i=INDENT       	 {indent($i.text);}
-		exprTag          {gen.emit(Bytecode.INSTR_DEDENT);}
+	:	INDENT element -> ^(INDENT element)
+	|	ifstat
 	|	exprTag
-	|	i=INDENT         {indent($i.text);}
-		text             {gen.emit(Bytecode.INSTR_DEDENT);}
 	|	text
-	|   (i=INDENT {indent($i.text);})? region
-						 {
-						 gen.emit2(Bytecode.INSTR_NEW, $region.name, 0,
-						 		   $region.start.getStartIndex(), $region.stop.getStopIndex());
-						 gen.emit(Bytecode.INSTR_WRITE,
-						          $region.start.getStartIndex(),
-						          $region.stop.getStartIndex());
-						 }
-	|	i=INDENT         {indent($i.text);}
-	 	NEWLINE          {gen.emit(Bytecode.INSTR_NEWLINE);} 
-	 	                 {gen.emit(Bytecode.INSTR_DEDENT);}
-	|	NEWLINE          {gen.emit(Bytecode.INSTR_NEWLINE);}
+	|	region
+	|	NEWLINE
 	;
 
-text
-	:	TEXT
-		{
-		if ( $TEXT.text.length()>0 ) {
-			gen.emit1(Bytecode.INSTR_LOAD_STR, $TEXT.text,
-					  $TEXT.getStartIndex(), $TEXT.getStopIndex());
-			gen.emit(Bytecode.INSTR_WRITE,
-					 $TEXT.getStartIndex(),$TEXT.getStopIndex());
-		}
-		}
-	;
+text : TEXT ;
 
 exprTag
-	:	LDELIM
-		expr
-		(	';' exprOptions
-			{gen.emit(Bytecode.INSTR_WRITE_OPT,
-					  $LDELIM.getStartIndex(),((CommonToken)input.LT(1)).getStartIndex());}
-		|	{gen.emit(Bytecode.INSTR_WRITE,
-		              $LDELIM.getStartIndex(),((CommonToken)input.LT(1)).getStartIndex());}
-		)
+	:	LDELIM expr ( ';' exprOptions )? RDELIM
+		-> ^(EXPR[$LDELIM,"EXPR"] expr exprOptions?)
+	;
+
+region : LDELIM '@' ID RDELIM template LDELIM '@end' RDELIM -> ^(REGION ID template) ;
+
+subtemplate
+	:	lc='{' (ids+= ID ( ',' ids+= ID )* '|' )? template INDENT? '}'
+		// ignore final INDENT before } as it's not part of outer indent
+		-> ^(SUBTEMPLATE[$lc,"SUBTEMPLATE"] ^(ARGS $ids)* template)
+	;
+
+ifstat // ignore INDENTs in front of elseif ...
+	:	LDELIM 'if' '(' c1=conditional ')' RDELIM
+			t1=template
+			( INDENT? LDELIM 'elseif' '(' c2+=conditional ')' RDELIM t2+=template )*
+			( INDENT? LDELIM 'else' RDELIM t3=template )?
+			INDENT? endif= LDELIM 'endif'
 		RDELIM
+		// kill \n for <endif> on line by itself if multi-line IF
+		({$ifstat.start.getLine()!=input.LT(1).getLine()}?=> NEWLINE)?
+		-> ^('if' $c1 $t1? ^('elseif' $c2 $t2?)* ^('else' $t3?)?)
 	;
 
-region returns [String name] // match $@foo$...$@end$
-	:	LDELIM '@' ID RDELIM
-		{$name = gen.compileRegion(enclosingTemplateName, $ID.text, input, state);}
-		LDELIM '@end' RDELIM
-	;
-	
-subtemplate returns [String name, int nargs=0]
-	:	'{' subtemplateBody {$name=$subtemplateBody.name; $nargs=$subtemplateBody.nargs;}
-        INDENT? // ignore final INDENT before } as it's not part of outer indent 
-		'}'
-    ;
-    
-/** Used to parse {...} in default arguments in Group.g */
-headlessSubtemplate returns [String name, int nargs=0]
-	:	subtemplateBody {$name=$subtemplateBody.name; $nargs=$subtemplateBody.nargs;} '}'
-    ;
+conditional : andConditional ( '||'^ andConditional )* ;
 
-subtemplateBody returns [String name, int nargs=0]
-	:	( ids+=ID {$nargs++;} (',' ids+=ID {$nargs++;})* '|')?
-		{$name = gen.compileAnonTemplate(enclosingTemplateName, input, $ids, state);}
-    ;
+andConditional : notConditional ( '&&'^ notConditional )* ;
 
-/** The (...)* loop in rule template doesn't think '}' can follow it because
- *  we call template in an action (via compileAnonTemplate).  To avoid
- *  syntax errors upon '}' in rule templatee, we force '}' into FOLLOW set.
- *  I hope to make ANTLR ignore FOLLOW set for (...)* in future.
- */
-addTemplateEndTokensToFollowOfTemplateRule : template ('}'|LDELIM '@end') ;
-
-ifstat
-@init {
-    /** Tracks address of branch operand (in code block).  It's how
-     *  we backpatch forward references when generating code for IFs.
-     */
-    int prevBranchOperand = -1;
-    /** Branch instruction operands that are forward refs to end of IF.
-     *  We need to update them once we see the endif.
-     */
-    List<Integer> endRefs = new ArrayList<Integer>();
-}
-	:	LDELIM 'if' '(' conditional ')' RDELIM
-		{
-        prevBranchOperand = gen.address()+1;
-        gen.emit1(Bytecode.INSTR_BRF, -1); // write placeholder as branch target
-		}
-		template
-		(	INDENT? LDELIM 'elseif'
-			{
-			endRefs.add(gen.address()+1);
-			gen.emit1(Bytecode.INSTR_BR, -1); // br end
-			// update previous branch instruction
-			gen.write(prevBranchOperand, (short)gen.address());
-			prevBranchOperand = -1;
-			}
-			'(' conditional ')' RDELIM
-			{
-        	prevBranchOperand = gen.address()+1;
-        	gen.emit1(Bytecode.INSTR_BRF, -1); // write placeholder as branch target
-			}
-			template
-		)*
-		(	INDENT? LDELIM 'else' RDELIM
-			{
-			endRefs.add(gen.address()+1);
-			gen.emit1(Bytecode.INSTR_BR, -1); // br end
-			// update previous branch instruction
-			gen.write(prevBranchOperand, (short)gen.address());
-			prevBranchOperand = -1;
-			}
-			template
-		)?
-		INDENT? endif=LDELIM 'endif' RDELIM
-		//( {true}? NEWLINE )? // kill \on for <endif> on line by itself
-		{
-		if ( prevBranchOperand>=0 ) {
-			gen.write(prevBranchOperand, (short)gen.address());
-		}
-        for (int opnd : endRefs) gen.write(opnd, (short)gen.address());
-		}
-	;
-		
-conditional
-	:	andConditional ('||' andConditional {gen.emit(Bytecode.INSTR_OR);})*
-	;
-	
-andConditional
-	:	notConditional ('&&' notConditional {gen.emit(Bytecode.INSTR_AND);})*
-	;
-
-notConditional
-	:	'!' notConditionalExpr  		{gen.emit(Bytecode.INSTR_NOT);}
-	|	'!' '(' conditional ')' {gen.emit(Bytecode.INSTR_NOT);}
-	|	memberExpr
-	;
+notConditional : ( '!'^ notConditionalExpr | '!'^ '('! conditional ')'! | memberExpr );
 
 notConditionalExpr
-	:	o=ID               {gen.refAttr($o);}
-		(	'.' p=ID       {gen.emit1(Bytecode.INSTR_LOAD_PROP, $p.text,
-					                  $p.getStartIndex(), $p.getStopIndex());}
-		|	'.' lp='(' mapExpr rp=')'
-						   {gen.emit(Bytecode.INSTR_LOAD_PROP_IND,
-						   		     $lp.getStartIndex(),$rp.getStartIndex());}
+	:	(ID->ID)
+		(	p='.' prop=ID						-> ^(PROP[$p,"PROP"] $notConditionalExpr $prop)
+		|	p='.' '(' mapExpr ')'				-> ^(PROP_IND[$p,"PROP_IND"] $notConditionalExpr mapExpr)
 		)*
 	;
 
-exprOptions
-	:	{gen.emit(Bytecode.INSTR_OPTIONS);} option (',' option)*
-	;
+exprOptions : option ( ',' option )* -> ^(OPTIONS option*) ;
 
 option
-	:	ID ( '=' exprNoComma | {gen.defaultOption($ID);} ) {gen.setOption($ID);}
+@init {
+	String id = input.LT(1).getText();
+	String defVal = Compiler.defaultOptionValues.get(id);
+	boolean validOption = Compiler.supportedOptions.get(id)!=null;
+}
+	:	ID
+		{
+		if ( !validOption ) {
+            errMgr.compileTimeError(ErrorType.NO_SUCH_OPTION, templateToken, $ID, $ID.text);
+		}
+		}
+		(	'=' exprNoComma 					-> {validOption}? ^('=' ID exprNoComma)
+												->
+		|	{
+			if ( defVal==null ) {
+				errMgr.compileTimeError(ErrorType.NO_DEFAULT_VALUE, templateToken, $ID);
+			}
+			}
+												-> {validOption&&defVal!=null}?
+												   ^(EQUALS["="] ID STRING[$ID,'"'+defVal+'"'])
+												->
+		)
 	;
-	
+
 exprNoComma
 	:	memberExpr
-		(	':' mapTemplateRef[1]
-						   {
-						   gen.emit(Bytecode.INSTR_MAP,
-								    $mapTemplateRef.start.getStartIndex(),
-								    $mapTemplateRef.stop.getStopIndex());
-						   }
-		)?
+		( ':' mapTemplateRef					-> ^(MAP memberExpr mapTemplateRef)
+		|										-> memberExpr
+		)
 	;
 
 expr : mapExpr ;
 
+// more complicated than necessary to avoid backtracking, which ruins
+// error handling
 mapExpr
-@init {int nt=1, ne=1; int a=$start.getStartIndex();}
-	:	memberExpr (c=',' memberExpr {ne++;} )*
-		(	':'
-//			{for (int i=1; i<=ne; i++) gen.emit(Bytecode.INSTR_NULL);}
-			mapTemplateRef[ne]
-			(	(	{$c==null}?=> ','
-	//				{for (int i=1; i<=ne; i++) gen.emit(Bytecode.INSTR_NULL);}
-					mapTemplateRef[ne] {nt++;}
-				)+
-				{
-			   	gen.emit1(Bytecode.INSTR_ROT_MAP, nt, a,
-			              ((CommonToken)input.LT(-1)).getStopIndex());
-			   	}
-			|	{
-                if ( $c!=null ) gen.emit1(Bytecode.INSTR_ZIP_MAP, ne, a,
-			                              ((CommonToken)input.LT(-1)).getStopIndex());
-			    else gen.emit(Bytecode.INSTR_MAP, a,
-				              ((CommonToken)input.LT(-1)).getStopIndex());
-			    }
-			)
+	:	memberExpr
+		( (c=',' memberExpr)+ col=':' mapTemplateRef
+												-> ^(ZIP[$col] ^(ELEMENTS memberExpr+) mapTemplateRef)
+		|										-> memberExpr
+		)
+		(	{if ($x!=null) $x.clear();} // don't keep queueing x; new list for each iteration
+			col=':' x+=mapTemplateRef ({$c==null}?=> ',' x+=mapTemplateRef )*
+												-> ^(MAP[$col] $mapExpr $x+)
 		)*
 	;
-
-memberExpr
-	:	includeExpr
-		(	'.' ID         {gen.emit1(Bytecode.INSTR_LOAD_PROP, $ID.text,
-					                  $ID.getStartIndex(), $ID.getStopIndex());}
-		|	'.' lp='(' mapExpr rp=')'
-						   {gen.emit(Bytecode.INSTR_LOAD_PROP_IND,
-						   		     $lp.getStartIndex(),$rp.getStartIndex());}
-		)*
-	;
-	
-includeExpr
-options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
-	:	{Compiler.funcs.containsKey(input.LT(1).getText())}? // predefined function
-		ID '(' expr ')'    {gen.func($ID);}
-	|	(s='super' '.')? ID '(' args ')'
-						   {
-						   gen.emit2($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW,
-							         $ID.text,
-								     $args.n,
-								     $start.getStartIndex(), $ID.getStopIndex());
-						   }
-	|	'@' (s='super' '.')? ID '(' rp=')'	// convert <@r()> to <region__enclosingTemplate__r()>
-						   {
-						   gen.defineBlankRegion(enclosingTemplateName, $ID.text);
-						   String mangled = STGroup.getMangledRegionName(enclosingTemplateName, $ID.text);
-						   gen.emit2($s!=null?Bytecode.INSTR_SUPER_NEW:Bytecode.INSTR_NEW,
-							   	    mangled,
-							   	    0,
-								    $start.getStartIndex(), $rp.getStartIndex());
-						   }
-	|	primary
-	;
-
-primary
-	:	o=ID	           {gen.refAttr($o);}
-	|	STRING             {gen.emit1(Bytecode.INSTR_LOAD_STR,
-									  Misc.strip($STRING.text,1),
-							 		  $STRING.getStartIndex(), $STRING.getStopIndex());}
-	|	subtemplate // push a subtemplate but ignore args since we can't pass any to it here
-		                   {gen.emit2(Bytecode.INSTR_NEW, $subtemplate.name, 0,
-									  $subtemplate.start.getStartIndex(),
-									  $subtemplate.stop.getStopIndex());}
-	|	list
-	|	lp='(' expr rp=')' 
-		{gen.emit(Bytecode.INSTR_TOSTR, $lp.getStartIndex(),$rp.getStartIndex());}
-		(	'(' args ')' // indirect call
-			{
-			gen.emit1(Bytecode.INSTR_NEW_IND, $args.n, $lp.getStartIndex(),$rp.getStartIndex());
-			}
-		)?
-	;
-
-args returns [int n=0]
-	:	arg {$n=1;} (',' arg {$n++;})*
-	|
-	;
-
-arg : exprNoComma ;
 
 /**
 expr:template(args)  apply template to expr
 expr:{arg | ...}     apply subtemplate to expr
 expr:(e)(args)       convert e to a string template name and apply to expr
 */
-mapTemplateRef[int num_exprs]
-	:	{for (int i=1; i<=num_exprs; i++) gen.emit(Bytecode.INSTR_NULL);}
-		ID  '(' args ')'   {
-						   gen.emit2(Bytecode.INSTR_NEW,$ID.text, $args.n+$num_exprs,
-                   		 	         $ID.getStartIndex(), $ID.getStopIndex());
-                   		   }
-	|	{for (int i=1; i<=num_exprs; i++) gen.emit(Bytecode.INSTR_NULL);}
-		subtemplate
-		{
-		if ( $subtemplate.nargs != $num_exprs ) {
-            ErrorManager.compileTimeError(ErrorType.ANON_ARGUMENT_MISMATCH,
-            							  $subtemplate.start, $subtemplate.nargs, $num_exprs);
-		}
-        gen.emit2(Bytecode.INSTR_NEW,
-	              $subtemplate.name,
-	              $num_exprs,
-				  $subtemplate.start.getStartIndex(),
-				  $subtemplate.stop.getStopIndex());
-		}
-	|	lp='(' mapExpr rp=')' 
-        {gen.emit(Bytecode.INSTR_TOSTR,
-                  $lp.getStartIndex(),$rp.getStartIndex());}
-		{for (int i=1; i<=num_exprs; i++) gen.emit(Bytecode.INSTR_NULL);}
-		'(' args ')'
-		{
-		gen.emit1(Bytecode.INSTR_NEW_IND, $args.n+$num_exprs,
-				  $lp.getStartIndex(),$rp.getStartIndex());
-		}
-	;
-	
-list
-	:	{input.LA(2)==RBRACK}? // hush warning; [] special case
-		{gen.emit(Bytecode.INSTR_LIST);} '[' ']'
-	|	{gen.emit(Bytecode.INSTR_LIST);} '[' listElement (',' listElement)* ']'
+mapTemplateRef
+	:	ID '(' args ')'							-> ^(INCLUDE ID args?)
+	|	subtemplate
+	|	lp='(' mapExpr rp=')' '(' args ')'		-> ^(INCLUDE_IND mapExpr args?)
 	;
 
-listElement
-    :   exprNoComma {gen.emit(Bytecode.INSTR_ADD,
-					          $exprNoComma.start.getStartIndex(),
-							  $exprNoComma.stop.getStopIndex());}
-	|	{gen.emit(Bytecode.INSTR_NULL); gen.emit(Bytecode.INSTR_ADD);}
-    ;
-    
+memberExpr
+	:	(includeExpr->includeExpr)
+		(	p='.' ID							-> ^(PROP[$p,"PROP"] $memberExpr ID)
+		|	p='.' '(' mapExpr ')'				-> ^(PROP_IND[$p,"PROP_IND"] $memberExpr mapExpr)
+		)*
+	;
+
+includeExpr
+options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
+	:	{Compiler.funcs.containsKey(input.LT(1).getText())}? // predefined function
+		ID '(' expr? ')'						-> ^(EXEC_FUNC ID expr?)
+	|	'super' '.' ID '(' args ')'				-> ^(INCLUDE_SUPER ID args?)
+	|	ID '(' args ')'							-> ^(INCLUDE ID args?)
+	|	'@' 'super' '.' ID '(' rp=')'			-> ^(INCLUDE_SUPER_REGION ID)
+	|	'@' ID '(' rp=')'						-> ^(INCLUDE_REGION ID)
+	|	primary
+	;
+
+primary
+	:	ID
+	|	STRING
+	|	subtemplate
+	|	list
+	|	lp='(' expr ')'
+		(	'(' args ')'						-> ^(INCLUDE_IND[$lp] expr args?)
+		|										-> ^(TO_STR[$lp] expr)
+		)
+	;
+
+args:	arg ( ',' arg )* -> arg+
+	|
+	;
+
+arg : exprNoComma ;
+
+list:	{input.LA(2)==RBRACK}? // hush warning; [] special case
+		lb='[' ']' -> LIST[$lb]
+	|	lb='[' listElement ( ',' listElement )* ']' -> ^(LIST[$lb] listElement*)
+	;
+
+listElement : exprNoComma | -> NULL ;

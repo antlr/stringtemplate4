@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 public class TestTreeConstruction extends gUnitBase {
 	@Before public void setup() {
 	    lexerClassName = "org.stringtemplate.v4.compiler.STLexer";
-	    parserClassName = "org.stringtemplate.v4.compiler.STTreeBuilder";
+	    parserClassName = "org.stringtemplate.v4.compiler.STParser";
 	}
 	@Test public void test_template1() throws Exception {
 		// gunit test on line 16
