@@ -27,10 +27,13 @@
  */
 package org.stringtemplate.v4.misc;
 
+import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STErrorListener;
+
+import java.util.Stack;
 
 /** Track errors per thread; e.g., one server transaction's errors
  *  will go in one grouping since each has it's own thread.
@@ -66,6 +69,23 @@ public class ErrorManager {
             }
         };
 
+	/** As we parse group file, there is no embedded context.
+	 *  We read entire templates (e.g., <<...>>) as single
+	 *  tokens and so errors can use the line/charPos of the
+	 *  GroupLexer.  To parse templates during CodeGenerator pass,
+	 *  we must assume templates start at charPos=0 even when they
+	 *  start in middle of line:
+	 *
+	 *  t() ::= <<foo>>
+	 *
+	 *  Here, the template starts at charPos 10, but the STLexer
+	 *  thinks that the charPos is 0.  If we want to get correct
+	 *  error info, we push the template token onto the context
+	 *  stack and then all errors are relative to that.  Should
+	 *  only be 0 or 1 deep, but it's general.
+	 */
+	public Stack<Token> context = new Stack<Token>();
+
 	public final STErrorListener listener;
 
 	public ErrorManager() { this(DEFAULT_ERROR_LISTENER); }
@@ -73,15 +93,16 @@ public class ErrorManager {
 		this.listener = listener;
 	}
 
-    public void compileTimeError(ErrorType error, Token t) {
-        String srcName = t.getInputStream().getSourceName();
-        if ( srcName!=null ) srcName = Misc.getFileName(srcName);
-        listener.compileTimeError(
+	public void compileTimeError(ErrorType error, Token t) {
+		String srcName = t.getInputStream().getSourceName();
+		if ( srcName!=null ) srcName = Misc.getFileName(srcName);
+		t = getContextAdjustedToken(t);
+		listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,t,null,t.getText())
         );
     }
 
-    public void lexerError(ErrorType error, RecognitionException e, Object arg) {
+	public void lexerError(ErrorType error, RecognitionException e, Object arg) {
         listener.compileTimeError(
             new STCompiletimeMessage(error,null,null,e,arg)
         );
@@ -89,6 +110,7 @@ public class ErrorManager {
 
     public void compileTimeError(ErrorType error, Token t, Object arg) {
         String srcName = t.getInputStream().getSourceName();
+		t = getContextAdjustedToken(t);
         srcName = Misc.getFileName(srcName);
         listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,t,null,arg)
@@ -97,13 +119,27 @@ public class ErrorManager {
 
     public void compileTimeError(ErrorType error, Token t, Object arg, Object arg2) {
         String srcName = t.getInputStream().getSourceName();
+		t = getContextAdjustedToken(t);
         if ( srcName!=null ) srcName = Misc.getFileName(srcName);
         listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,t,null,arg,arg2)
         );
     }
 
+	Token getContextAdjustedToken(Token t) {
+		if ( context.size()>0 && context.peek()!=null ) {
+			t = new CommonToken(t);
+			t.setLine(t.getLine() + context.peek().getLine() - 1);
+			t.setCharPositionInLine(t.getCharPositionInLine() +
+									context.peek().getCharPositionInLine());
+			set char index too
+		}
+		return t;
+	}
+
     public void syntaxError(ErrorType error, String srcName, RecognitionException e, String msg) {
+		Token t = e.token;
+		t = getContextAdjustedToken(t);
         listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,e.token,e,msg)
         );

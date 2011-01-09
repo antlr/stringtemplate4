@@ -135,40 +135,42 @@ public class Compiler {
 	{
 		ANTLRStringStream is = new ANTLRStringStream(template);
 		is.name = name;
-//		if ( templateToken != null ) {
-//			is.setLine(templateToken.getLine());
-//			is.setCharPositionInLine(templateToken.getCharPositionInLine());
-//		}
+		errMgr.context.push(templateToken);
 		STLexer lexer = new STLexer(errMgr, is, delimiterStartChar, delimiterStopChar);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		STTreeBuilder p = new STTreeBuilder(tokens, errMgr);
 		STTreeBuilder.templateAndEOF_return r = null;
 		try {
-			r = p.templateAndEOF();
-		}
-		catch (RecognitionException re) {
-			throwSTException(tokens, p, re);
-		}
-		if ( p.getNumberOfSyntaxErrors()>0 || r.getTree()==null ) {
-			CompiledST impl = new CompiledST();
-			impl.defineFormalArgs(args);
+			try {
+				r = p.templateAndEOF();
+			}
+			catch (RecognitionException re) {
+				throwSTException(tokens, p, re);
+			}
+			if ( p.getNumberOfSyntaxErrors()>0 || r.getTree()==null ) {
+				CompiledST impl = new CompiledST();
+				impl.defineFormalArgs(args);
+				return impl;
+			}
+
+			System.out.println(((CommonTree)r.getTree()).toStringTree());
+			CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.getTree());
+			nodes.setTokenStream(tokens);
+			CodeGenerator gen = new CodeGenerator(nodes, errMgr, name, template);
+
+			CompiledST impl=null;
+			try {
+				impl = gen.template(name,args);
+			}
+			catch (RecognitionException re) {
+				errMgr.internalError(null, "bad tree structure", re);
+			}
+
 			return impl;
 		}
-
-		System.out.println(((CommonTree)r.getTree()).toStringTree());
-		CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.getTree());
-		nodes.setTokenStream(tokens);
-		CodeGenerator gen = new CodeGenerator(nodes, errMgr, name, template);
-
-		CompiledST impl=null;
-		try {
-			impl = gen.template(name,args);
+		finally {
+			errMgr.context.pop();
 		}
-		catch (RecognitionException re) {
-			errMgr.internalError(null, "bad tree structure", re);
-		}
-
-		return impl;
 	}
 
 	public static CompiledST defineBlankRegion(CompiledST outermostImpl, String name) {
