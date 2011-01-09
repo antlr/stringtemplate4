@@ -264,6 +264,7 @@ BIGSTRING
 ANONYMOUS_TEMPLATE
     :	'{'
     	{
+		Token templateToken = new CommonToken(input, ANONYMOUS_TEMPLATE, 0, getCharIndex(), getCharIndex());
 		STLexer lexer =
 			new STLexer(group.errMgr, input, templateToken, group.delimiterStartChar, group.delimiterStopChar);
 		lexer.subtemplateDepth = 1;
