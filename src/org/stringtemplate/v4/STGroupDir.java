@@ -167,7 +167,7 @@ public class STGroupDir extends STGroup {
 			parser.templateDef(prefix);
 		}
 		catch (RecognitionException re) {
-			errMgr.syntaxError(ErrorType.SYNTAX_ERROR,
+			errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR,
 									 Misc.getFileName(f.getFile()),
 									 re, re.getMessage());
 		}
@@ -175,4 +175,5 @@ public class STGroupDir extends STGroup {
 	}
 
 	public String getName() { return groupDirName; }
+	public String getFileName() { return root.getFile(); }	
 }

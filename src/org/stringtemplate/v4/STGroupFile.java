@@ -124,4 +124,5 @@ public class STGroupFile extends STGroup {
     }
 
     public String getName() { return Misc.getFileNameNoSuffix(fileName); }
+	public String getFileName() { return fileName; }	
 }

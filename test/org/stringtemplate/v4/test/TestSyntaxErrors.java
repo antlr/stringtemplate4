@@ -27,15 +27,12 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
 import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.compiler.STException;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorType;
-import org.stringtemplate.v4.misc.STCompiletimeMessage;
 
 import static org.junit.Assert.assertEquals;
 
@@ -43,51 +40,49 @@ public class TestSyntaxErrors extends BaseTest {
     @Test public void testEmptyExpr() throws Exception {
         String template = " <> ";
         STGroup group = new STGroup();
-		String result = null;
+		ErrorBuffer errors = new ErrorBuffer();
+		group.setListener(errors);
 		try {
         	group.defineTemplate("test", template);
 		}
 		catch (STException se) {
-            RecognitionException re = (RecognitionException)se.getCause();
-            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,
-                                              re.token.getInputStream().getSourceName(),
-                                              re.token,re,se.getMessage()).toString();
+			;
 		}
-        String expected = "test 1:0: this doesn't look like a template: \" <> \"";
+		String result = errors.toString();
+        String expected = "test 1:0: this doesn't look like a template: \" <> \""+newline;
         assertEquals(expected, result);
     }
 
     @Test public void testEmptyExpr2() throws Exception {
         String template = "hi <> ";
         STGroup group = new STGroup();
-		String result = null;
+		ErrorBuffer errors = new ErrorBuffer();
+		group.setListener(errors);
 		try {
         	group.defineTemplate("test", template);
 		}
 		catch (STException se) {
-            RecognitionException re = (RecognitionException)se.getCause();
-            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,
-                                              re.token.getInputStream().getSourceName(),
-                                              re.token,re,se.getMessage()).toString();
+			;
 		}
-        String expected = "test 1:3: doesn't look like an expression";
+		String result = errors.toString();
+        String expected = "test 1:3: doesn't look like an expression"+newline;
         assertEquals(expected, result);
     }
 
     @Test public void testWeirdChar() throws Exception {
         String template = "   <*>";
         STGroup group = new STGroup();
-		String result = null;
+		ErrorBuffer errors = new ErrorBuffer();
+		group.setListener(errors);
 		try {
         	group.defineTemplate("test", template);
 		}
 		catch (STException se) {
-            RecognitionException re = (RecognitionException)se.getCause();
-            result = new STCompiletimeMessage(ErrorType.SYNTAX_ERROR,
-                                              null,
-                                              re.token,re,se.getMessage()).toString();
+			;
 		}
-        String expected = "1:4: invalid character '*' at 1:4";
+		String result = errors.toString();
+        String expected = "test 1:4: invalid character '*'"+newline +
+						  "test 1:0: this doesn't look like a template: \"   <*>\""+newline;
         assertEquals(expected, result);
     }
 

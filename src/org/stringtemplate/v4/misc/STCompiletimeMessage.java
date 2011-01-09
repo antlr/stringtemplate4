@@ -29,44 +29,53 @@ package org.stringtemplate.v4.misc;
 
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
+import org.stringtemplate.v4.compiler.GroupParser;
 
 /** Used for semantic errors that occur at compile time not during
- *  interpretation.
+ *  interpretation. For ST parsing ONLY not group parsing.
  */
 public class STCompiletimeMessage extends STMessage {
-    Token token;
+	Token templateToken; // overall token pulled from group file
+    Token token;         // token inside template
     String srcName;
 
-    public STCompiletimeMessage(ErrorType error, String srcName, Token t) {
-        this(error, srcName, t, null);
+    public STCompiletimeMessage(ErrorType error, String srcName, Token templateToken, Token t) {
+        this(error, srcName, templateToken, t, null);
     }
-    public STCompiletimeMessage(ErrorType error, String srcName, Token t, Throwable cause) {
-        this(error, srcName, t, cause, null);
+    public STCompiletimeMessage(ErrorType error, String srcName, Token templateToken, Token t, Throwable cause) {
+        this(error, srcName, templateToken, t, cause, null);
     }
-    public STCompiletimeMessage(ErrorType error, String srcName, Token t,
+    public STCompiletimeMessage(ErrorType error, String srcName, Token templateToken, Token t,
                                 Throwable cause, Object arg)
     {
-        super(error, null, cause, arg);
-        this.token = t;
-        this.srcName = srcName;
+		this(error, srcName, templateToken, t, cause, arg, null);
     }
-    public STCompiletimeMessage(ErrorType error, String srcName, Token t,
-                                Throwable cause, Object arg, Object arg2)
+    public STCompiletimeMessage(ErrorType error, String srcName, Token templateToken,
+								Token t, Throwable cause, Object arg, Object arg2)
     {
-        super(error, null, cause, arg, arg2);
-        this.token = t;
-        this.srcName = srcName;
+		super(error, null, cause, arg, arg2);
+		this.templateToken = templateToken;
+		this.token = t;
+		this.srcName = srcName;
     }
 
     public String toString() {
         RecognitionException re = (RecognitionException)cause;
-        String filepos = null;
-        if ( re!=null ) {
-            filepos = re.line+":"+re.charPositionInLine;
-        }
-        else if ( token!=null ) {
-            filepos = token.getLine()+":"+token.getCharPositionInLine();
-        }
+		int line = 0;
+		int charPos = -1;
+		if ( token!=null ) {
+			line = token.getLine();
+			charPos = token.getCharPositionInLine();
+			if ( templateToken!=null ) {
+				int templateDelimiterSize = 1;
+				if ( templateToken.getType()== GroupParser.BIGSTRING ) {
+					templateDelimiterSize = 2;
+				}
+				line += templateToken.getLine() - 1;
+				charPos += templateToken.getCharPositionInLine() + templateDelimiterSize;
+			}
+		}
+        String filepos = line+":"+charPos;
         if ( srcName!=null ) {
             return srcName+" "+filepos+": "+String.format(error.message, arg, arg2);
         }

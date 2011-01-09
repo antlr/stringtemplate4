@@ -79,6 +79,7 @@ public class BaseTest {
         STLexer lexer =
             new STLexer(STGroup.DEFAULT_ERR_MGR,
 						new ANTLRStringStream(template),
+						null,
 						delimiterStartChar,
 						delimiterStopChar);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);

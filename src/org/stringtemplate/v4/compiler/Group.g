@@ -52,7 +52,7 @@ public void displayRecognitionError(String[] tokenNames,
                                     RecognitionException e)
 {
     String msg = getErrorMessage(e, tokenNames);
-    group.errMgr.syntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
+    group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 }
 public String getSourceName() {
     String fullFileName = super.getSourceName();
@@ -61,7 +61,7 @@ public String getSourceName() {
 }
 public void error(String msg) {
     NoViableAltException e = new NoViableAltException("", 0, 0, input);
-    group.errMgr.syntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
+    group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
     recover(input, null);
 }
 }
@@ -80,7 +80,7 @@ public void reportError(RecognitionException e) {
     else {
         msg = getErrorMessage(e, getTokenNames());
     }
-    group.errMgr.syntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
+    group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 }
 public String getSourceName() {
     String fullFileName = super.getSourceName();
@@ -137,7 +137,7 @@ templateDef[String prefix]
 	    	template = "";
 	    	String msg = "missing template at '"+input.LT(1).getText()+"'";
             NoViableAltException e = new NoViableAltException("", 0, 0, input);
-    	    group.errMgr.syntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
+    	    group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
     	    }
 	    )
 	    {
@@ -185,10 +185,10 @@ dictDef
 	:	ID '::=' dict
         {
         if ( group.rawGetDictionary($ID.text)!=null ) {
-			group.errMgr.compileTimeError(ErrorType.MAP_REDEFINITION, $ID);
+			group.errMgr.compileTimeError(ErrorType.MAP_REDEFINITION, null, $ID);
         }
         else if ( group.rawGetTemplate($ID.text)!=null ) {
-			group.errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION_AS_MAP, $ID);
+			group.errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION_AS_MAP, null, $ID);
         }
         else {
             group.defineDictionary($ID.text, $dict.mapping);
@@ -239,7 +239,7 @@ STRING
 		|	{
 			String msg = "\\n in string";
     		NoViableAltException e = new NoViableAltException("", 0, 0, input);
-			group.errMgr.syntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
+			group.errMgr.groupLexerError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 			}
 			'\n'
 		|	~('\\'|'"'|'\n')
@@ -265,7 +265,7 @@ ANONYMOUS_TEMPLATE
     :	'{'
     	{
 		STLexer lexer =
-			new STLexer(group.errMgr, input, group.delimiterStartChar, group.delimiterStopChar);
+			new STLexer(group.errMgr, input, templateToken, group.delimiterStartChar, group.delimiterStopChar);
 		lexer.subtemplateDepth = 1;
 		Token t = lexer.nextToken();
 		while ( lexer.subtemplateDepth>=1 || t.getType()!=STLexer.RCURLY ) {

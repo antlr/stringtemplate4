@@ -34,6 +34,7 @@ import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.ErrorType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -115,62 +116,58 @@ public class Compiler {
 	}
 
 	public CompiledST compile(String template) {
-		CompiledST code = compile(null, null, template, null);
+		CompiledST code = compile(null, null, null, template, null);
 		code.hasFormalArgs = false;
 		return code;
 	}
 
 	/** Compile full template with unknown formal args. */
 	public CompiledST compile(String name, String template) {
-		CompiledST code = compile(name, null, template, null);
+		CompiledST code = compile(null, name, null, template, null);
 		code.hasFormalArgs = false;
 		return code;
 	}
 
 	/** Compile full template with respect to a list of formal args. */
-	public CompiledST compile(String name,
+	public CompiledST compile(String srcName,
+							  String name,
 							  List<FormalArgument> args,
 							  String template,
 							  Token templateToken)
 	{
 		ANTLRStringStream is = new ANTLRStringStream(template);
-		is.name = name;
-		errMgr.context.push(templateToken);
-		STLexer lexer = new STLexer(errMgr, is, delimiterStartChar, delimiterStopChar);
+		is.name = srcName!=null ? srcName : name;
+		STLexer lexer = new STLexer(errMgr, is, templateToken, delimiterStartChar, delimiterStopChar);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		STTreeBuilder p = new STTreeBuilder(tokens, errMgr);
+		STTreeBuilder p = new STTreeBuilder(tokens, errMgr, templateToken);
 		STTreeBuilder.templateAndEOF_return r = null;
 		try {
-			try {
-				r = p.templateAndEOF();
-			}
-			catch (RecognitionException re) {
-				throwSTException(tokens, p, re);
-			}
-			if ( p.getNumberOfSyntaxErrors()>0 || r.getTree()==null ) {
-				CompiledST impl = new CompiledST();
-				impl.defineFormalArgs(args);
-				return impl;
-			}
-
-			System.out.println(((CommonTree)r.getTree()).toStringTree());
-			CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.getTree());
-			nodes.setTokenStream(tokens);
-			CodeGenerator gen = new CodeGenerator(nodes, errMgr, name, template);
-
-			CompiledST impl=null;
-			try {
-				impl = gen.template(name,args);
-			}
-			catch (RecognitionException re) {
-				errMgr.internalError(null, "bad tree structure", re);
-			}
-
+			r = p.templateAndEOF();
+		}
+		catch (RecognitionException re) {
+			reportMessageAndThrowSTException(tokens, templateToken, p, re);
+			return null;
+		}
+		if ( p.getNumberOfSyntaxErrors()>0 || r.getTree()==null ) {
+			CompiledST impl = new CompiledST();
+			impl.defineFormalArgs(args);
 			return impl;
 		}
-		finally {
-			errMgr.context.pop();
+
+		System.out.println(((CommonTree)r.getTree()).toStringTree());
+		CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.getTree());
+		nodes.setTokenStream(tokens);
+		CodeGenerator gen = new CodeGenerator(nodes, errMgr, name, template, templateToken);
+
+		CompiledST impl=null;
+		try {
+			impl = gen.template(name,args);
 		}
+		catch (RecognitionException re) {
+			errMgr.internalError(null, "bad tree structure", re);
+		}
+
+		return impl;
 	}
 
 	public static CompiledST defineBlankRegion(CompiledST outermostImpl, String name) {
@@ -189,25 +186,30 @@ public class Compiler {
 		return SUBTEMPLATE_PREFIX+subtemplateCount;
 	}
 
-	protected void throwSTException(TokenStream tokens, Parser parser, RecognitionException re) {
-		String msg = parser.getErrorMessage(re, parser.getTokenNames());
+	protected void reportMessageAndThrowSTException(TokenStream tokens, Token templateToken,
+													Parser parser, RecognitionException re)
+	{
 		if ( re.token.getType() == STLexer.EOF_TYPE ) {
-			throw new STException("premature EOF", re);
+			String msg = "premature EOF";
+			errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
 		}
 		else if ( re instanceof NoViableAltException) {
-			throw new STException(
-				"'"+re.token.getText()+"' came as a complete surprise to me",re);
+			String msg = "'"+re.token.getText()+"' came as a complete surprise to me";
+			errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
 		}
 		else if ( tokens.index() == 0 ) { // couldn't parse anything
-			throw new STException(
-				"this doesn't look like a template: \""+tokens+"\"", re);
+			String msg = "this doesn't look like a template: \""+tokens+"\"";
+			errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
 		}
 		else if ( tokens.LA(1) == STLexer.LDELIM ) { // couldn't parse expr
-			throw new STException("doesn't look like an expression", re);
+			String msg = "doesn't look like an expression";
+			errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
 		}
 		else {
-			throw new STException(msg, re);
+			String msg = parser.getErrorMessage(re, parser.getTokenNames());
+			errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
 		}
+		throw new STException();
 	}
 
 }

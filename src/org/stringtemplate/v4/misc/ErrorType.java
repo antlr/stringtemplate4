@@ -48,7 +48,7 @@ public enum ErrorType {
     MAP_REDEFINITION("redefinition of dictionary %s"),
     ALIAS_TARGET_UNDEFINED("cannot alias %s to undefined template: %s"),
     TEMPLATE_REDEFINITION_AS_MAP("redefinition of template %s as a map"),
-    LEXER_ERROR("lexer error or bad character %s"),
+    LEXER_ERROR("%s"),
     NO_DEFAULT_VALUE("missing dictionary default value"),
     NO_SUCH_FUNCTION("no such function: %s"),
     NO_SUCH_REGION("template %s doesn't have a region called %s"),

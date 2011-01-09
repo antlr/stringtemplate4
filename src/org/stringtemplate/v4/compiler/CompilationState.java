@@ -1,6 +1,7 @@
 package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.stringtemplate.v4.Interpreter;
@@ -35,7 +36,7 @@ public class CompilationState {
 
 	public int defineString(String s) { return stringtable.add(s); }
 
-	public void refAttr(CommonTree id) {
+	public void refAttr(Token templateToken, CommonTree id) {
 		String name = id.getText();
 		if ( impl.formalArguments!=null && impl.formalArguments.get(name)!=null ) {
 			FormalArgument arg = impl.formalArguments.get(name);
@@ -44,7 +45,7 @@ public class CompilationState {
 		}
 		else {
 			if ( Interpreter.predefinedAnonSubtemplateAttributes.contains(name) ) {
-				errMgr.compileTimeError(ErrorType.NO_SUCH_ATTRIBUTE, id.token);
+				errMgr.compileTimeError(ErrorType.NO_SUCH_ATTRIBUTE, templateToken, id.token);
 				emit(id, Bytecode.INSTR_NULL);
 			}
 			else {
@@ -58,10 +59,10 @@ public class CompilationState {
 		emit1(id, Bytecode.INSTR_STORE_OPTION, O.ordinal());
 	}
 
-	public void func(CommonTree id) {
+	public void func(Token templateToken, CommonTree id) {
 		Short funcBytecode = Compiler.funcs.get(id.getText());
 		if ( funcBytecode==null ) {
-			errMgr.compileTimeError(ErrorType.NO_SUCH_FUNCTION, id.token);
+			errMgr.compileTimeError(ErrorType.NO_SUCH_FUNCTION, templateToken, id.token);
 			emit(id, Bytecode.INSTR_POP);
 		}
 		else {

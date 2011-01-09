@@ -121,7 +121,8 @@ public class ST {
 
     public ST(STGroup group, String template) {
         groupThatCreatedThisInstance = group;
-        impl = groupThatCreatedThisInstance.compile(null, null, template, null);
+        impl = groupThatCreatedThisInstance.compile(group.getFileName(), null,
+													null, template, null);
 		impl.hasFormalArgs = false;
         impl.name = UNKNOWN_NAME;
         impl.defineImplicitlyDefinedTemplates(groupThatCreatedThisInstance);

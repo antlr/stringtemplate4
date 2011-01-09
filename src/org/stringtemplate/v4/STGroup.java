@@ -27,7 +27,10 @@
 */
 package org.stringtemplate.v4;
 
-import org.antlr.runtime.*;
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.Token;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.debug.DebugST;
@@ -176,7 +179,7 @@ public class STGroup {
 		}
 		ST st = createStringTemplate();
 		st.groupThatCreatedThisInstance = this;
-		st.impl = compile(null, null, template, templateToken);
+		st.impl = compile(getFileName(), null, null, template, templateToken);
 		st.impl.hasFormalArgs = false;
 		st.impl.name = ST.UNKNOWN_NAME;
 		st.impl.defineImplicitlyDefinedTemplates(this);
@@ -230,17 +233,26 @@ public class STGroup {
         return null;
     }
 
-    public CompiledST rawGetTemplate(String name) { return templates.get(name); }
+	public CompiledST rawGetTemplate(String name) { return templates.get(name); }
 	public Map<String,Object> rawGetDictionary(String name) { return dictionaries.get(name); }
 	public boolean isDictionary(String name) { return dictionaries.get(name)!=null; }
 
-    // for testing
-    public CompiledST defineTemplate(String templateName, String template) {
-		return defineTemplate(templateName,	new CommonToken(GroupParser.ID, templateName),
-			null, template, null);
+	// for testing
+	public CompiledST defineTemplate(String templateName, String template) {
+		try {
+			CompiledST impl =
+				defineTemplate(templateName,
+							   new CommonToken(GroupParser.ID, templateName),
+							   null, template, null);
+			return impl;
+		}
+		catch (STException se) {
+			System.err.println("eh?");
+		}
+		return null;
 	}
 
-    // for testing
+	// for testing
 	public CompiledST defineTemplate(String name, String argsS, String template) {
 		String[] args = argsS.split(",");
 		List<FormalArgument> a = new ArrayList<FormalArgument>();
@@ -266,7 +278,7 @@ public class STGroup {
         template = Misc.trimOneStartingNewline(template);
         template = Misc.trimOneTrailingNewline(template);
 		// compile, passing in templateName as enclosing name for any embedded regions
-        CompiledST code = compile(templateName, args, template, templateToken);
+        CompiledST code = compile(getFileName(), templateName, args, template, templateToken);
         code.name = templateName;
         rawDefineTemplate(templateName, code, nameT);
 		code.defineArgDefaultValueTemplates(this);
@@ -281,7 +293,7 @@ public class STGroup {
         String target = targetT.getText();
         CompiledST targetCode = templates.get(target);
         if ( targetCode==null ){
-            errMgr.compileTimeError(ErrorType.ALIAS_TARGET_UNDEFINED, aliasT, alias, target);
+            errMgr.compileTimeError(ErrorType.ALIAS_TARGET_UNDEFINED, null, aliasT, alias, target);
             return null;
         }
         templates.put(alias, targetCode);
@@ -293,11 +305,11 @@ public class STGroup {
 								   String template)
     {
         String name = regionT.getText();
-        CompiledST code = compile(enclosingTemplateName, null, template, regionT);
+        CompiledST code = compile(getFileName(), enclosingTemplateName, null, template, regionT);
         String mangled = getMangledRegionName(enclosingTemplateName, name);
 
         if ( lookupTemplate(mangled)==null ) {
-            errMgr.compileTimeError(ErrorType.NO_SUCH_REGION, regionT,
+            errMgr.compileTimeError(ErrorType.NO_SUCH_REGION, null, regionT,
                                           enclosingTemplateName, name);
             return new CompiledST();
         }
@@ -328,51 +340,50 @@ public class STGroup {
             }
 		}
 		catch (STException e) {
-			RecognitionException re = (RecognitionException)e.getCause();
-			re.charPositionInLine =
-				re.charPositionInLine+n;
-			errMgr.syntaxError(ErrorType.SYNTAX_ERROR,
-				Misc.getFileName(templateToken.getInputStream().getSourceName()),
-				re, e.getMessage());
+			// after getting syntax error in a template, we emit msg
+			// and throw exception to blast all the way out here.
 		}
 	}
 
-    public void rawDefineTemplate(String name, CompiledST code, Token defT) {
-        CompiledST prev = templates.get(name);
-        if ( prev!=null ) {
-            if ( !prev.isRegion ) {
-                errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, defT);
-                return;
-            }
-            if ( prev.isRegion && prev.regionDefType== ST.RegionType.EMBEDDED ) {
-                errMgr.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
-                                              defT,
-                                              getUnMangledTemplateName(name));
-                return;
-            }
-            else if ( prev.isRegion && prev.regionDefType== ST.RegionType.EXPLICIT ) {
-                errMgr.compileTimeError(ErrorType.REGION_REDEFINITION,
-                                              defT,
-                                              getUnMangledTemplateName(name));
-                return;
-            }
-        }
-        templates.put(name, code);
-    }
+	public void rawDefineTemplate(String name, CompiledST code, Token defT) {
+		CompiledST prev = templates.get(name);
+		if ( prev!=null ) {
+			if ( !prev.isRegion ) {
+				errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, null, defT);
+				return;
+			}
+			if ( prev.isRegion && prev.regionDefType== ST.RegionType.EMBEDDED ) {
+				errMgr.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
+										null,
+										defT,
+										getUnMangledTemplateName(name));
+				return;
+			}
+			else if ( prev.isRegion && prev.regionDefType== ST.RegionType.EXPLICIT ) {
+				errMgr.compileTimeError(ErrorType.REGION_REDEFINITION,
+										null,
+										defT,
+										getUnMangledTemplateName(name));
+				return;
+			}
+		}
+		templates.put(name, code);
+	}
 
-    public void undefineTemplate(String name) {
-        templates.remove(name);
-    }
+	public void undefineTemplate(String name) {
+		templates.remove(name);
+	}
 
 	/** Compile a template */
-    public CompiledST compile(String name,
+	public CompiledST compile(String srcName,
+							  String name,
 							  List<FormalArgument> args,
-                              String template,
+							  String template,
 							  Token templateToken) // for error location
     {
 		//System.out.println("STGroup.compile: "+enclosingTemplateName);
 		Compiler c = new Compiler(errMgr, delimiterStartChar, delimiterStopChar);
-		CompiledST code = c.compile(name, args, template, templateToken);
+		CompiledST code = c.compile(srcName, name, args, template, templateToken);
 		code.nativeGroup = this;
 		code.template = template;
 		return code;
@@ -539,6 +550,7 @@ public class STGroup {
 	}
 
     public String getName() { return "<no name>;"; }
+	public String getFileName() { return null; }
 
     public String toString() { return getName(); }
 

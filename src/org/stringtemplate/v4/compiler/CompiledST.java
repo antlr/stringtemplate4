@@ -121,7 +121,8 @@ public class CompiledST {
 				String defArgTemplate =
 					Misc.strip(fa.defaultValueToken.getText(), 1);
 				fa.compiledDefaultValue =
-					c2.compile(argSTname, null, defArgTemplate, fa.defaultValueToken);
+					c2.compile(nativeGroup.getFileName(), argSTname, null,
+							   defArgTemplate, fa.defaultValueToken);
 				fa.compiledDefaultValue.name = argSTname;
 			}
 		}

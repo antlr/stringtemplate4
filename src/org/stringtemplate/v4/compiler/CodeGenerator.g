@@ -42,13 +42,15 @@ import org.stringtemplate.v4.*;
 @members {
 	String outermostTemplateName; // name of overall template
 	CompiledST outermostImpl;
+	Token templateToken;
 	String template;
 	ErrorManager errMgr;
-	public CodeGenerator(TreeNodeStream input, ErrorManager errMgr, String name, String template) {
+	public CodeGenerator(TreeNodeStream input, ErrorManager errMgr, String name, String template, Token templateToken) {
 		this(input, new RecognizerSharedState());
 		this.errMgr = errMgr;
 		this.outermostTemplateName = name;
 		this.template = template;
+		this.templateToken = templateToken;
 	}
 
 	// convience funcs to hide offensive sending of emit messages to
@@ -82,8 +84,8 @@ import org.stringtemplate.v4.*;
 		$template::state.write(addr,value);
 	}
 	public int address() { return $template::state.ip; }
-	public void func(CommonTree id) { $template::state.func(id); }
-	public void refAttr(CommonTree id) { $template::state.refAttr(id); }
+	public void func(CommonTree id) { $template::state.func(templateToken, id); }
+	public void refAttr(CommonTree id) { $template::state.refAttr(templateToken, id); }
 }
 
 templateAndEOF : template[null,null] EOF; // hush warning; ignore
@@ -263,7 +265,7 @@ mapTemplateRef[int num_exprs]
 		{
 		if ( $subtemplate.nargs != $num_exprs ) {
             errMgr.compileTimeError(ErrorType.ANON_ARGUMENT_MISMATCH,
-            						$subtemplate.start.token, $subtemplate.nargs, $num_exprs);
+            						templateToken, $subtemplate.start.token, $subtemplate.nargs, $num_exprs);
 		}
 		for (int i=1; i<=$num_exprs; i++) emit($subtemplate.start,Bytecode.INSTR_NULL);
         emit2($subtemplate.start, Bytecode.INSTR_NEW,

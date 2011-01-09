@@ -50,9 +50,11 @@ import org.stringtemplate.v4.misc.ErrorType;
 
 @members {
 ErrorManager errMgr;
-public STTreeBuilder(TokenStream input, ErrorManager errMgr) {
+Token templateToken;
+public STTreeBuilder(TokenStream input, ErrorManager errMgr, Token templateToken) {
 	this(input);
 	this.errMgr = errMgr;
+	this.templateToken = templateToken;
 }
 protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
 	throws RecognitionException
@@ -129,14 +131,14 @@ option
 	:	ID
 		{
 		if ( !validOption ) {
-            errMgr.compileTimeError(ErrorType.NO_SUCH_OPTION, $ID, $ID.text);
+            errMgr.compileTimeError(ErrorType.NO_SUCH_OPTION, templateToken, $ID, $ID.text);
 		}
 		}
 		(	'=' exprNoComma 					-> {validOption}? ^('=' ID exprNoComma)
 												->
 		|	{
 			if ( defVal==null ) {
-				errMgr.compileTimeError(ErrorType.NO_DEFAULT_VALUE, $ID);
+				errMgr.compileTimeError(ErrorType.NO_DEFAULT_VALUE, templateToken, $ID);
 			}
 			}
 												-> {validOption&&defVal!=null}?

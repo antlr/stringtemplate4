@@ -27,13 +27,10 @@
  */
 package org.stringtemplate.v4.misc;
 
-import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STErrorListener;
-
-import java.util.Stack;
 
 /** Track errors per thread; e.g., one server transaction's errors
  *  will go in one grouping since each has it's own thread.
@@ -84,7 +81,7 @@ public class ErrorManager {
 	 *  stack and then all errors are relative to that.  Should
 	 *  only be 0 or 1 deep, but it's general.
 	 */
-	public Stack<Token> context = new Stack<Token>();
+	//public Stack<Token> context = new Stack<Token>();
 
 	public final STErrorListener listener;
 
@@ -93,57 +90,48 @@ public class ErrorManager {
 		this.listener = listener;
 	}
 
-	public void compileTimeError(ErrorType error, Token t) {
+	public void compileTimeError(ErrorType error, Token templateToken, Token t) {
 		String srcName = t.getInputStream().getSourceName();
 		if ( srcName!=null ) srcName = Misc.getFileName(srcName);
-		t = getContextAdjustedToken(t);
 		listener.compileTimeError(
-            new STCompiletimeMessage(error,srcName,t,null,t.getText())
+            new STCompiletimeMessage(error,srcName,templateToken,t,null,t.getText())
         );
     }
 
-	public void lexerError(ErrorType error, RecognitionException e, Object arg) {
+	public void lexerError(String srcName, String msg, Token templateToken, RecognitionException e) {
         listener.compileTimeError(
-            new STCompiletimeMessage(error,null,null,e,arg)
+            new STLexerMessage(srcName, msg, templateToken, e)
         );
     }
 
-    public void compileTimeError(ErrorType error, Token t, Object arg) {
+    public void compileTimeError(ErrorType error, Token templateToken, Token t, Object arg) {
         String srcName = t.getInputStream().getSourceName();
-		t = getContextAdjustedToken(t);
         srcName = Misc.getFileName(srcName);
         listener.compileTimeError(
-            new STCompiletimeMessage(error,srcName,t,null,arg)
+            new STCompiletimeMessage(error,srcName,templateToken,t,null,arg)
         );
     }
 
-    public void compileTimeError(ErrorType error, Token t, Object arg, Object arg2) {
+    public void compileTimeError(ErrorType error, Token templateToken, Token t, Object arg, Object arg2) {
         String srcName = t.getInputStream().getSourceName();
-		t = getContextAdjustedToken(t);
         if ( srcName!=null ) srcName = Misc.getFileName(srcName);
         listener.compileTimeError(
-            new STCompiletimeMessage(error,srcName,t,null,arg,arg2)
+            new STCompiletimeMessage(error,srcName,templateToken,t,null,arg,arg2)
         );
     }
 
-	Token getContextAdjustedToken(Token t) {
-		if ( context.size()>0 && context.peek()!=null ) {
-			t = new CommonToken(t);
-			t.setLine(t.getLine() + context.peek().getLine() - 1);
-			t.setCharPositionInLine(t.getCharPositionInLine() +
-									context.peek().getCharPositionInLine());
-			set char index too
-		}
-		return t;
+	public void groupSyntaxError(ErrorType error, String srcName, RecognitionException e, String msg) {
+		Token t = e.token;
+		listener.compileTimeError(
+			new STGroupCompiletimeMessage(error,srcName,e.token,e,msg)
+		);
 	}
 
-    public void syntaxError(ErrorType error, String srcName, RecognitionException e, String msg) {
-		Token t = e.token;
-		t = getContextAdjustedToken(t);
-        listener.compileTimeError(
-            new STCompiletimeMessage(error,srcName,e.token,e,msg)
-        );
-    }
+	public void groupLexerError(ErrorType error, String srcName, RecognitionException e, String msg) {
+		listener.compileTimeError(
+			new STGroupCompiletimeMessage(error,srcName,e.token,e,msg)
+		);
+	}
 
     public void runTimeError(ST self, int ip, ErrorType error) {
         listener.runTimeError(new STRuntimeMessage(error,ip,self));

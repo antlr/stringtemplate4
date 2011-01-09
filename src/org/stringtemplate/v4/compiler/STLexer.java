@@ -30,7 +30,6 @@ package org.stringtemplate.v4.compiler;
 import org.antlr.runtime.*;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorManager;
-import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
 
 import java.util.ArrayList;
@@ -125,6 +124,8 @@ public class STLexer implements TokenSource {
 
 	ErrorManager errMgr;
 
+	Token templateToken; // template embedded in a group file? this is the template
+
     CharStream input;
     char c;        // current character
 
@@ -145,18 +146,22 @@ public class STLexer implements TokenSource {
         return _nextToken();
     }
 
-	public STLexer(CharStream input) { this(STGroup.DEFAULT_ERR_MGR, input, '<', '>'); }
+	public STLexer(CharStream input) { this(STGroup.DEFAULT_ERR_MGR, input, null, '<', '>'); }
 
-    public STLexer(ErrorManager errMgr, CharStream input) { this(errMgr, input, '<', '>'); }
+    public STLexer(ErrorManager errMgr, CharStream input, Token templateToken) {
+		this(errMgr, input, templateToken, '<', '>');
+	}
 
 	public STLexer(ErrorManager errMgr,
 				   CharStream input,
+				   Token templateToken,
 				   char delimiterStartChar,
 				   char delimiterStopChar)
 	{
 		this.errMgr = errMgr;
 		this.input = input;
 		c = (char)input.LA(1); // prime lookahead
+		this.templateToken = templateToken;
 		this.delimiterStartChar = delimiterStartChar;
 		this.delimiterStopChar = delimiterStopChar;
 	}
@@ -269,8 +274,8 @@ public class STLexer implements TokenSource {
 						throw new STException("EOF inside ST expression at "+
 							re.line+":"+re.charPositionInLine, re);
 					}
-                    throw new STException("invalid character '"+c+"' at "+
-							re.line+":"+re.charPositionInLine, re);
+					errMgr.lexerError(input.getSourceName(), "invalid character '"+c+"'", templateToken, re);
+					consume();
             }
         }
     }
@@ -335,7 +340,7 @@ public class STLexer implements TokenSource {
             case 'u' : t = UNICODE(); break;
             default :
                 NoViableAltException e = new NoViableAltException("",0,0,input);
-                errMgr.lexerError(ErrorType.LEXER_ERROR, e, c);
+                errMgr.lexerError(input.getSourceName(), "invalid escaped char: '"+c+"'", templateToken, e);
         }
         consume();
         match(delimiterStopChar);
@@ -347,25 +352,25 @@ public class STLexer implements TokenSource {
         char[] chars = new char[4];
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            errMgr.lexerError(ErrorType.LEXER_ERROR, e, c);
+            errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+c+"'", templateToken, e);
         }
         chars[0] = c;
         consume();
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            errMgr.lexerError(ErrorType.LEXER_ERROR, e, c);
+			errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+c+"'", templateToken, e);
         }
         chars[1] = c;
         consume();
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            errMgr.lexerError(ErrorType.LEXER_ERROR, e, c);
+			errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+c+"'", templateToken, e);
         }
         chars[2] = c;
         consume();
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            errMgr.lexerError(ErrorType.LEXER_ERROR, e, c);
+			errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+c+"'", templateToken, e);
         }
         chars[3] = c;
         // ESCAPE kills final char and >
