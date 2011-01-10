@@ -30,6 +30,7 @@ package org.stringtemplate.v4;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.debug.DebugST;
+import org.stringtemplate.v4.debug.EvalExprEvent;
 import org.stringtemplate.v4.debug.EvalTemplateEvent;
 import org.stringtemplate.v4.debug.InterpEvent;
 import org.stringtemplate.v4.misc.*;
@@ -47,7 +48,7 @@ import java.util.*;
  *  This interpreter is a stack-based bytecode interpreter.  All operands
  *  go onto an operand stack.
  *
- *  If the group we're executed relative to has debug set, we track
+ *  If the group that we're executing relative to has debug set, we track
  *  interpreter events. For now, I am only tracking instance creation events.
  *  These are used by STViz to pair up output chunks with the template
  *  expressions that generate them.
@@ -89,13 +90,7 @@ public class Interpreter {
 	// TODO: track the pieces not a string and track what it contributes to output
 	protected List<String> executeTrace;
 
-	/** Interpetering in debug mode has side-effects; we add interpEvents
-	 *  to each ST. This set tracks whether we've added events to a
-	 *  particular ST before.  If we've not seen it during this execution,
-	 *  wipe it's interpEvents before adding new events.
-	 *  TODO: necessary but kind of a gross implementation; clean up?
-	 */
-	protected Set<ST> templateInterpEventsInitialized;
+	Map<ST, List<InterpEvent>> debugInfo;
 
 	public Interpreter(STGroup group) {
 		this(group,Locale.getDefault(),group.errMgr);
@@ -113,10 +108,10 @@ public class Interpreter {
 		this.group = group;
 		this.locale = locale;
 		this.errMgr = errMgr;
-		if ( group.debug ) {
+		if ( STGroup.debug ) {
 			events = new ArrayList<InterpEvent>();
-			templateInterpEventsInitialized = new HashSet<ST>();
 			executeTrace = new ArrayList<String>();
+			debugInfo = new HashMap<ST, List<InterpEvent>>();
 		}
 	}
 
@@ -135,7 +130,7 @@ public class Interpreter {
 		byte[] code = self.impl.instrs;        // which code block are we executing
 		int ip = 0;
 		while ( ip < self.impl.codeSize ) {
-			if ( trace || group.debug ) trace(self, ip);
+			if ( trace || STGroup.debug ) trace(self, ip);
 			short opcode = code[ip];
 			current_ip = ip;
 			ip++; //jump to next instruction or first byte of operand
@@ -383,18 +378,14 @@ public class Interpreter {
 			}
 			prevOpcode = opcode;
 		}
-		if ( group.debug ) {
+		if ( STGroup.debug ) {
 			int stop = out.index() - 1;
 			EvalTemplateEvent e = new EvalTemplateEvent((DebugST)self, start, stop);
 			//System.out.println("eval template "+self+": "+e);
 			events.add(e);
 			if ( self.enclosingInstance!=null ) {
 				DebugST parent = (DebugST)self.enclosingInstance;
-				if ( !templateInterpEventsInitialized.contains(parent) ) { // seen this ST before
-					parent.interpEvents.clear();
-					templateInterpEventsInitialized.add(parent);
-				}
-				parent.interpEvents.add(e);
+				getEvents(parent).add(e);
 			}
 		}
 		return n;
@@ -430,15 +421,17 @@ public class Interpreter {
 	 *  E.g., <name>
 	 */
 	protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
-//        int start = out.index(); // track char we're about to write
+        int start = out.index(); // track char we're about to write
 		int n = writeObject(out, self, o, null);
-/*
-        if ( group.debug ) {
-            Interval templateLocation = self.code.sourceMap[ip];
+        if ( STGroup.debug ) {
+            Interval templateLocation = self.impl.sourceMap[current_ip];
             int exprStart=templateLocation.a, exprStop=templateLocation.b;
-            events.add( new EvalExprEvent((DebugST)self, start, out.index()-1, exprStart, exprStop) );
+			EvalExprEvent e = new EvalExprEvent((DebugST) self,
+												start, out.index() - 1,
+												exprStart, exprStop);
+			System.out.println(e);
+			events.add(e);
         }
-         */
 		return n;
 	}
 
@@ -448,7 +441,7 @@ public class Interpreter {
 	protected int writeObjectWithOptions(STWriter out, ST self, Object o,
 										 Object[] options)
 	{
-//        int start = out.index(); // track char we're about to write
+        int start = out.index(); // track char we're about to write
 		// precompute all option values (render all the way to strings)
 		String[] optionStrings = null;
 		if ( options!=null ) {
@@ -466,13 +459,15 @@ public class Interpreter {
 		if ( options!=null && options[Option.ANCHOR.ordinal()]!=null ) {
 			out.popAnchorPoint();
 		}
-/*
-        if ( group.debug ) {
-            Interval templateLocation = self.code.sourceMap[ip];
+        if ( STGroup.debug ) {
+            Interval templateLocation = self.impl.sourceMap[current_ip];
             int exprStart=templateLocation.a, exprStop=templateLocation.b;
-            events.add( new EvalExprEvent((DebugST)self, start, out.index()-1, exprStart, exprStop) );
+			EvalExprEvent e = new EvalExprEvent((DebugST) self,
+												start, out.index() - 1,
+												exprStart, exprStop);
+			System.out.println(e);
+			events.add(e);
         }
-         */
 		return n;
 	}
 
@@ -954,7 +949,7 @@ public class Interpreter {
 		tr.append(self.getEnclosingInstanceStackString());
 		tr.append(", sp="+sp+", nw="+ nwline);
 		String s = tr.toString();
-		if ( group.debug ) executeTrace.add(s);
+		if ( STGroup.debug ) executeTrace.add(s);
 		if ( trace ) System.out.println(s);
 	}
 
@@ -980,6 +975,12 @@ public class Interpreter {
 	}
 
 	public List<InterpEvent> getEvents() { return events; }
+	public List<InterpEvent> getEvents(ST st) {
+		if ( debugInfo.get(st)==null ) {
+			debugInfo.put(st, new ArrayList<InterpEvent>());
+		}
+		return debugInfo.get(st);
+	}
 	public List<String> getExecutionTrace() { return executeTrace; }
 
 	public static int getShort(byte[] memory, int index) {

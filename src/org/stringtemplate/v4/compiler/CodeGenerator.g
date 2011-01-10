@@ -40,10 +40,10 @@ import org.stringtemplate.v4.*;
 }
 
 @members {
-	String outermostTemplateName; // name of overall template
+	String outermostTemplateName;	// name of overall template
 	CompiledST outermostImpl;
-	Token templateToken;
-	String template;
+	Token templateToken;			// overall template token
+	String template;  				// overall template text
 	ErrorManager errMgr;
 	public CodeGenerator(TreeNodeStream input, ErrorManager errMgr, String name, String template, Token templateToken) {
 		this(input, new RecognizerSharedState());
@@ -103,7 +103,7 @@ scope {
 	    $impl.addArg(new FormalArgument("i"));
 	    $impl.addArg(new FormalArgument("i0"));
     }
-	$impl.template = template;
+	$impl.template = template; // always forget the entire template; char indexes are relative to it
 }
 	:	chunk
 		{ // finish off the CompiledST result
@@ -167,6 +167,11 @@ subtemplate returns [String name, int nargs]
 			{
 			CompiledST sub = $template.impl;
 			sub.isAnonSubtemplate = true;
+			if ( STGroup.debug ) {
+				sub.ast = $SUBTEMPLATE;
+				sub.ast.setUnknownTokenBoundaries();
+				sub.tokens = input.getTokenStream();
+			}
 			sub.dump();
 			outermostImpl.addImplicitlyDefinedTemplate(sub);
 			}

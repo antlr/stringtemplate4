@@ -27,6 +27,7 @@
  */
 package org.stringtemplate.v4.debug;
 
+/** An event that happens when building ST trees, adding attributes etc... */
 public class ConstructionEvent {
     public Throwable stack;
     public ConstructionEvent() { stack = new Throwable(); }

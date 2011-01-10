@@ -27,6 +27,8 @@
  */
 package org.stringtemplate.v4.compiler;
 
+import org.antlr.runtime.TokenStream;
+import org.antlr.runtime.tree.CommonTree;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.Interval;
@@ -45,12 +47,16 @@ public class CompiledST {
     public String name;
 
     /** The original, immutable pattern (not really used again after
-     *  initial "compilation"). Useful for debugging.
+     *  initial "compilation"). Useful for debugging.  Even for
+	 *  subtemplates, this is entire overall template.
      */
     public String template;
 
-    /** Where within a template does the subtemplate start? */
-    public int embeddedStart=-1, embeddedStop=-1; // if subtemplate
+	/** Overall token stream for template (debug only) */
+	public TokenStream tokens;
+
+	/** How do we interpret syntax of template? (debug only) */
+	public CommonTree ast;
 
 	/** Must be non null map if !noFormalArgs */
     public Map<String, FormalArgument> formalArguments;
@@ -151,6 +157,27 @@ public class CompiledST {
             }
         }
     }
+
+	public String getTemplateSource() {
+		Interval r = getTemplateRange();
+		return template.substring(r.a, r.b+1);
+	}
+
+	public Interval getTemplateRange() {
+		if ( isAnonSubtemplate ) {
+			Interval start = sourceMap[0];
+			Interval stop = null;
+			for (int i = sourceMap.length-1; i>0; i--) {
+				Interval I = sourceMap[i];
+				if ( I!=null ) {
+					stop = I;
+					break;
+				}
+			}
+			if ( template!=null ) return new Interval(start.a, stop.b);
+		}
+		return new Interval(0, template.length()-1);
+	}
 
     public String instrs() {
         BytecodeDisassembler dis = new BytecodeDisassembler(this);

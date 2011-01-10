@@ -121,12 +121,13 @@ public class STGroup {
 
 	public static final ErrorManager DEFAULT_ERR_MGR = new ErrorManager();
 
+	public static boolean debug = false;
+
 	/** The errMgr for entire group; all compilations and executions.
 	 *  This gets copied to parsers, walkers, and interpreters.
 	 */
 	public ErrorManager errMgr = STGroup.DEFAULT_ERR_MGR;
 
-	public boolean debug = false;
 
     public STGroup() { ; }
 

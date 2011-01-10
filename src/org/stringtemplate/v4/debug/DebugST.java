@@ -27,10 +27,7 @@
  */
 package org.stringtemplate.v4.debug;
 
-import org.stringtemplate.v4.AutoIndentWriter;
-import org.stringtemplate.v4.Interpreter;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STWriter;
+import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.gui.STViz;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
@@ -45,26 +42,30 @@ import java.util.Locale;
  *  Setting debug mode in STGroup makes it create these instead of STs.
  */
 public class DebugST extends ST {
-    /** Track all events that occur during rendering. */
-    public List<InterpEvent> interpEvents = new ArrayList<InterpEvent>();
-
-    /** Track construction-time add attribute "events"; used for ST user-level debugging */
-    public MultiMap<String, AddAttributeEvent> addAttrEvents = new MultiMap<String, AddAttributeEvent>();
+	public static class State {
+		/** Track all events that occur during rendering. */
+		public List<InterpEvent> interpEvents = new ArrayList<InterpEvent>();
+	}
 
 	/** Record who made us? ConstructionEvent creates Exception to grab stack */
-    public ConstructionEvent newSTEvent = new ConstructionEvent();
+	public ConstructionEvent newSTEvent = new ConstructionEvent();
+
+	/** Track construction-time add attribute "events"; used for ST user-level debugging */
+	public MultiMap<String, AddAttributeEvent> addAttrEvents = new MultiMap<String, AddAttributeEvent>();
+
+	//public Interpreter interp; // set when we start interpreter in inspect()
 
 	public DebugST() {}
 
 	public DebugST(ST proto) { super(proto); }
 
-    @Override
-    public void add(String name, Object value) {
-        if ( groupThatCreatedThisInstance.debug ) {
-            addAttrEvents.map(name, new AddAttributeEvent(name, value));
-        }
-        super.add(name, value);
-    }
+	@Override
+	public void add(String name, Object value) {
+		if ( STGroup.debug ) {
+			addAttrEvents.map(name, new AddAttributeEvent(name, value));
+		}
+		super.add(name, value);
+	}
 
 // LAUNCH A WINDOW TO INSPECT TEMPLATE HIERARCHY
 
@@ -86,7 +87,7 @@ public class DebugST extends ST {
         wr.setLineWidth(lineWidth);
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
         interp.exec(wr, this); // render and track events
-        new STViz(errMgr, this, out.toString(), interp.getEvents(),
+        new STViz(errMgr, this, out.toString(), interp,
                   interp.getExecutionTrace(), errors.errors);
         return interp.getEvents();
     }

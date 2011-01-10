@@ -27,6 +27,7 @@
  */
 package org.stringtemplate.v4.gui;
 
+import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.debug.DebugST;
 import org.stringtemplate.v4.debug.InterpEvent;
 
@@ -35,7 +36,8 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 public class JTreeSTModel implements TreeModel {
-    Wrapper root;
+    public Wrapper root;
+	public Interpreter interp;
 
 	public static class Wrapper {
 		public DebugST st;
@@ -55,11 +57,14 @@ public class JTreeSTModel implements TreeModel {
 		}
 	}
 
-    public JTreeSTModel(DebugST root) { this.root = new Wrapper(root); }
+    public JTreeSTModel(Interpreter interp, DebugST root) {
+		this.interp = interp;
+		this.root = new Wrapper(root);
+	}
 
     public int getChildCount(Object parent) {
         DebugST st = ((Wrapper) parent).st;
-        return st.interpEvents.size();
+        return interp.getEvents(st).size();
     }
 
     public int getIndexOfChild(DebugST parent, DebugST child){
@@ -71,7 +76,7 @@ public class JTreeSTModel implements TreeModel {
         DebugST parentST = ((Wrapper) parent).st;
         DebugST childST = ((Wrapper) child).st;
         int i = 0;
-        for (InterpEvent e : parentST.interpEvents) {
+        for (InterpEvent e : interp.getEvents(parentST)) {
             if ( e.self == childST ) return i;
             i++;
         }
@@ -80,7 +85,7 @@ public class JTreeSTModel implements TreeModel {
 
     public Object getChild(Object parent, int index){
         DebugST st = ((Wrapper) parent).st;
-        return new Wrapper(st.interpEvents.get(index).self);
+        return new Wrapper(interp.getEvents(st).get(index).self);
     }
 
     public boolean isLeaf(Object node) {

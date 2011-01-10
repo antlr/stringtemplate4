@@ -56,10 +56,11 @@ public class STViewFrame extends JFrame {
 		attributeScrollPane = new JScrollPane();
 		attributes = new JList();
 		tabbedPane1 = new JTabbedPane();
-		scrollPane13 = new JScrollPane();
+		panel1 = new JPanel();
+		scrollPane3 = new JScrollPane();
 		template = new JTextPane();
-		scrollPane14 = new JScrollPane();
-		stacktrace = new JTextPane();
+		scrollPane2 = new JScrollPane();
+		ast = new JTree();
 		scrollPane15 = new JScrollPane();
 		bytecode = new JTextPane();
 		scrollPane1 = new JScrollPane();
@@ -120,18 +121,23 @@ public class STViewFrame extends JFrame {
 					//======== tabbedPane1 ========
 					{
 
-						//======== scrollPane13 ========
+						//======== panel1 ========
 						{
-							scrollPane13.setViewportView(template);
-						}
-						tabbedPane1.addTab("template", scrollPane13);
+							panel1.setLayout(new BoxLayout(panel1, BoxLayout.X_AXIS));
 
+							//======== scrollPane3 ========
+							{
+								scrollPane3.setViewportView(template);
+							}
+							panel1.add(scrollPane3);
 
-						//======== scrollPane14 ========
-						{
-							scrollPane14.setViewportView(stacktrace);
+							//======== scrollPane2 ========
+							{
+								scrollPane2.setViewportView(ast);
+							}
+							panel1.add(scrollPane2);
 						}
-						tabbedPane1.addTab("stack trace", scrollPane14);
+						tabbedPane1.addTab("template", panel1);
 
 
 						//======== scrollPane15 ========
@@ -174,15 +180,16 @@ public class STViewFrame extends JFrame {
 	protected JScrollPane treeScrollPane;
 	protected JTree tree;
 	protected JScrollPane scrollPane7;
-	protected JTextPane output;
+	public JTextPane output;
 	protected JSplitPane bottomSplitPane;
 	protected JScrollPane attributeScrollPane;
 	protected JList attributes;
 	protected JTabbedPane tabbedPane1;
-	protected JScrollPane scrollPane13;
-	protected JTextPane template;
-	protected JScrollPane scrollPane14;
-	protected JTextPane stacktrace;
+	private JPanel panel1;
+	private JScrollPane scrollPane3;
+	public JTextPane template;
+	private JScrollPane scrollPane2;
+	public JTree ast;
 	protected JScrollPane scrollPane15;
 	protected JTextPane bytecode;
 	private JScrollPane scrollPane1;

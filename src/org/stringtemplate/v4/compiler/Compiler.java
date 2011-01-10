@@ -162,6 +162,12 @@ public class Compiler {
 		CompiledST impl=null;
 		try {
 			impl = gen.template(name,args);
+			// only save tree/token stream when debugging
+			if ( STGroup.debug ) {
+				impl.ast = (CommonTree)r.getTree();
+				impl.ast.setUnknownTokenBoundaries();
+				impl.tokens = tokens;
+			}
 		}
 		catch (RecognitionException re) {
 			errMgr.internalError(null, "bad tree structure", re);
