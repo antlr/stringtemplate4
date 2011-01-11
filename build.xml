@@ -30,6 +30,11 @@
 			outputdirectory="${build.dir}/gen/org/stringtemplate/v4/compiler">
 			<classpath refid="classpath"/>
 		</antlr:ant-antlr3>
+		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
+			target="${source}/org/stringtemplate/v4/compiler/CodeGenerator.g"
+			outputdirectory="${build.dir}/gen/org/stringtemplate/v4/compiler">
+			<classpath refid="classpath"/>
+		</antlr:ant-antlr3>
 	</target>
 
     <target name="clean">
