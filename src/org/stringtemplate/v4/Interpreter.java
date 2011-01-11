@@ -425,7 +425,12 @@ public class Interpreter {
 		int n = writeObject(out, self, o, null);
         if ( STGroup.debug ) {
             Interval templateLocation = self.impl.sourceMap[current_ip];
-            int exprStart=templateLocation.a, exprStop=templateLocation.b;
+			int exprStart=-1;
+			int exprStop=-1;
+			if ( templateLocation!=null ) {
+            	exprStart=templateLocation.a;
+				exprStop=templateLocation.b;
+			}
 			EvalExprEvent e = new EvalExprEvent((DebugST) self,
 												start, out.index() - 1,
 												exprStart, exprStop);

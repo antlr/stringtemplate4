@@ -32,6 +32,7 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
 import org.junit.Before;
 import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.compiler.STLexer;
 import org.stringtemplate.v4.misc.Misc;
 
@@ -49,7 +50,8 @@ public class BaseTest {
     @Before
     public void setUp() {
         STGroup.defaultGroup = new STGroup();
-        org.stringtemplate.v4.compiler.Compiler.subtemplateCount = 0;
+        Compiler.subtemplateCount = 0;
+		STGroup.debug = false;
     }
 
     public static void writeFile(String dir, String fileName, String content) {
