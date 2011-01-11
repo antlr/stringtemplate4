@@ -195,7 +195,7 @@ public class STGroup {
     }
 
 	/** Look up a fully-qualified name */
-    protected CompiledST lookupTemplate(String name) {
+    public CompiledST lookupTemplate(String name) {
         CompiledST code = templates.get(name);
         if ( code==NOT_FOUND_ST ) return null;
         // try to load from disk and look up again

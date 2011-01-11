@@ -436,6 +436,83 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
+	@Test public void testNamedArgsInOrder() throws Exception {
+		String dir = getRandomDir();
+		String groupFile =
+			"f(x,y) ::= \"<x><y>\"\n" +
+			"g() ::= \"<f(x={a},y={b})>\"";
+		writeFile(dir, "group.stg", groupFile);
+		STGroupFile group = new STGroupFile(dir+"/group.stg");
+		ST st = group.getInstanceOf("g");
+		String expected = "ab";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testNamedArgsOutOfOrder() throws Exception {
+		String dir = getRandomDir();
+		String groupFile =
+			"f(x,y) ::= \"<x><y>\"\n" +
+			"g() ::= \"<f(y={b},x={a})>\"";
+		writeFile(dir, "group.stg", groupFile);
+		STGroupFile group = new STGroupFile(dir+"/group.stg");
+		ST st = group.getInstanceOf("g");
+		String expected = "ab";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testUnknownNamedArg() throws Exception {
+		String dir = getRandomDir();
+		String groupFile =
+			"f(x,y) ::= \"<x><y>\"\n" +
+			"g() ::= \"<f(x={a},z={b})>\"";
+		   //012345678901234567
+
+		writeFile(dir, "group.stg", groupFile);
+		STGroupFile group = new STGroupFile(dir+"/group.stg");
+		ErrorBuffer errors = new ErrorBuffer();
+		group.setListener(errors);
+		ST st = group.getInstanceOf("g");
+		st.render();
+		String expected = "context [g] 1:1 attribute z isn't defined"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testMissingNamedArg() throws Exception {
+		String dir = getRandomDir();
+		String groupFile =
+			"f(x,y) ::= \"<x><y>\"\n" +
+			"g() ::= \"<f(x={a},{b})>\"";
+		   //012345678901234567
+
+		writeFile(dir, "group.stg", groupFile);
+		STGroupFile group = new STGroupFile(dir+"/group.stg");
+		ErrorBuffer errors = new ErrorBuffer();
+		group.setListener(errors);
+		group.load();
+		String expected = "group.stg 2:28: mismatched input '{' expecting ID"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testNamedArgsNotAllowInIndirectInclude() throws Exception {
+		String dir = getRandomDir();
+		String groupFile =
+			"f(x,y) ::= \"<x><y>\"\n" +
+			"g(name) ::= \"<(name)(x={a},y={b})>\"";
+		   //0123456789012345678901234567890
+		writeFile(dir, "group.stg", groupFile);
+		STGroupFile group = new STGroupFile(dir+"/group.stg");
+		ErrorBuffer errors = new ErrorBuffer();
+		group.setListener(errors);
+		group.load();
+		String expected = "group.stg 2:22: '=' came as a complete surprise to me"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
     @Test public void testCantSeeGroupDirIfGroupFileOfSameName() throws Exception {
         String dir = getRandomDir();
         String a = "a() ::= <<dir1 a>>\n";

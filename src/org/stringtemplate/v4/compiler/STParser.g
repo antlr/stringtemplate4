@@ -178,7 +178,7 @@ expr:(e)(args)       convert e to a string template name and apply to expr
 mapTemplateRef
 	:	ID '(' args ')'							-> ^(INCLUDE ID args?)
 	|	subtemplate
-	|	lp='(' mapExpr rp=')' '(' args ')'		-> ^(INCLUDE_IND mapExpr args?)
+	|	lp='(' mapExpr rp=')' '(' argExprList? ')'-> ^(INCLUDE_IND mapExpr argExprList?)
 	;
 
 memberExpr
@@ -205,16 +205,21 @@ primary
 	|	subtemplate
 	|	list
 	|	lp='(' expr ')'
-		(	'(' args ')'						-> ^(INCLUDE_IND[$lp] expr args?)
+		(	'(' argExprList? ')'				-> ^(INCLUDE_IND[$lp] expr argExprList?)
 		|										-> ^(TO_STR[$lp] expr)
 		)
 	;
 
-args:	arg ( ',' arg )* -> arg+
+args:	argExprList
+	|	namedArg ( ',' namedArg )* -> namedArg+
 	|
 	;
 
+argExprList : arg ( ',' arg )* -> arg+ ;
+
 arg : exprNoComma ;
+
+namedArg : ID '=' arg -> ^('=' ID arg) ;
 
 list:	{input.LA(2)==RBRACK}? // hush warning; [] special case
 		lb='[' ']' -> LIST[$lb]

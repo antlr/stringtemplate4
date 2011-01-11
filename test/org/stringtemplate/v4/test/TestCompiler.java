@@ -102,6 +102,7 @@ public class TestCompiler extends BaseTest {
 		CompiledST code = new Compiler().compile(template);
 		String asmExpected =
 			"super_new 0 0, write";
+		code.dump();
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[foo]";
@@ -117,6 +118,18 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[a, _sub1, foo]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
+
+	@Test public void testSuperIncludeWithNamedArgs() throws Exception {
+		String template = "<super.foo(x=a,y={b})>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"args, load_attr 0, store_arg 1, new 2 0, store_arg 3, super_new_box_args 4, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[a, x, _sub1, y, foo]";
 		String stringsResult = Arrays.toString(code.strings);
 		assertEquals(stringsExpected, stringsResult);
 	}

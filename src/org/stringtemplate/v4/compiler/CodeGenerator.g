@@ -86,6 +86,7 @@ import org.stringtemplate.v4.*;
 	public int address() { return $template::state.ip; }
 	public void func(CommonTree id) { $template::state.func(templateToken, id); }
 	public void refAttr(CommonTree id) { $template::state.refAttr(templateToken, id); }
+	public int defineString(String s) { return $template::state.defineString(s); }
 }
 
 templateAndEOF : template[null,null] EOF; // hush warning; ignore
@@ -265,7 +266,10 @@ mapTemplateRef[int num_exprs]
 			{for (int i=1; i<=$num_exprs; i++) emit($INCLUDE,Bytecode.INSTR_NULL);}
 			args
 		)
-		{emit2($INCLUDE, Bytecode.INSTR_NEW, $ID.text, $args.n+$num_exprs);}
+		{
+		if ( $args.namedArgs ) emit1($INCLUDE, Bytecode.INSTR_NEW_BOX_ARGS, $ID.text);
+		else emit2($INCLUDE, Bytecode.INSTR_NEW, $ID.text, $args.n+$num_exprs);
+		}
 	|	subtemplate
 		{
 		if ( $subtemplate.nargs != $num_exprs ) {
@@ -290,8 +294,16 @@ mapTemplateRef[int num_exprs]
 
 includeExpr
 	:	^(EXEC_FUNC ID expr?)		{func($ID);}
-	|	^(INCLUDE ID args)			{emit2($start,Bytecode.INSTR_NEW, $ID.text, $args.n);}
-	|	^(INCLUDE_SUPER ID args)	{emit2($start,Bytecode.INSTR_SUPER_NEW, $ID.text, $args.n);}
+	|	^(INCLUDE ID args)
+		{
+		if ( $args.namedArgs ) emit1($INCLUDE, Bytecode.INSTR_NEW_BOX_ARGS, $ID.text);
+		else emit2($INCLUDE, Bytecode.INSTR_NEW, $ID.text, $args.n);
+		}
+	|	^(INCLUDE_SUPER ID args)
+		{
+		if ( $args.namedArgs ) emit1($INCLUDE_SUPER, Bytecode.INSTR_SUPER_NEW_BOX_ARGS, $ID.text);
+		else emit2($INCLUDE_SUPER, Bytecode.INSTR_SUPER_NEW, $ID.text, $args.n);
+		}
 	|	^(INCLUDE_REGION ID)		{
 									CompiledST impl =
 										Compiler.defineBlankRegion(outermostImpl, $ID.text);
@@ -320,9 +332,16 @@ primary
 	|	^(TO_STR expr)	{emit($TO_STR, Bytecode.INSTR_TOSTR);}
 	;
 
-args returns [int n=0] : ( arg {$n++;} )* ;
-
 arg : expr ;
+
+args returns [int n=0, boolean namedArgs=false]
+	:	( arg {$n++;} )+
+	|	{emit($args.start, Bytecode.INSTR_ATTRS); $namedArgs=true;}
+		(	^(eq='=' ID expr)
+			{$n++; emit1($eq, Bytecode.INSTR_STORE_ATTR, defineString($ID.text));}
+		)+
+	|
+ 	;
 
 list:	{emit(Bytecode.INSTR_LIST);}
 		^(LIST (listElement {emit($listElement.start, Bytecode.INSTR_ADD);})* ) 

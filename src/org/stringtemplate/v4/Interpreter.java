@@ -194,32 +194,32 @@ public class Interpreter {
 					sp--; // pop template name
 					operands[++sp] = st;
 					break;
+				case Bytecode.INSTR_NEW_BOX_ARGS :
+					nameIndex = getShort(code, ip);
+					ip += Bytecode.OPND_SIZE_IN_BYTES;
+					name = self.impl.strings[nameIndex];
+					Map<String,Object> attrs = (Map<String,Object>)operands[sp--];
+					// look up in original hierarchy not enclosing template (variable group)
+					// see TestSubtemplates.testEvalSTFromAnotherGroup()
+					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, ip, name);
+					// get n args and store into st's attr list
+					storeArgs(self, attrs, st);
+					operands[++sp] = st;
+					break;
 				case Bytecode.INSTR_SUPER_NEW :
 					nameIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = self.impl.strings[nameIndex];
 					nargs = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
-
-					CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
-					if ( imported==null ) {
-						errMgr.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
-												  name);
-						st = self.groupThatCreatedThisInstance.createStringTemplate();
-						st.impl = new CompiledST();
-						operands[++sp] = st;
-						break;
-					}
-
-					st = imported.nativeGroup.createStringTemplate();
-					st.enclosingInstance = self; // self invoked super.name()
-					st.groupThatCreatedThisInstance = group;
-					st.impl = imported;
-
-					// get n args and store into st's attr list
-					storeArgs(self, nargs, st);
-					sp -= nargs;
-					operands[++sp] = st;
+					super_new(self, name, nargs);
+					break;
+				case Bytecode.INSTR_SUPER_NEW_BOX_ARGS :
+					nameIndex = getShort(code, ip);
+					ip += Bytecode.OPND_SIZE_IN_BYTES;
+					name = self.impl.strings[nameIndex];
+					attrs = (Map<String,Object>)operands[sp--];
+					super_new(self, name, attrs);
 					break;
 				case Bytecode.INSTR_STORE_OPTION:
 					int optionIndex = getShort(code, ip);
@@ -227,6 +227,14 @@ public class Interpreter {
 					o = operands[sp--];    // value to store
 					options = (Object[])operands[sp]; // get options
 					options[optionIndex] = o; // store value into options on stack
+					break;
+				case Bytecode.INSTR_STORE_ARGS:
+					nameIndex = getShort(code, ip);
+					name = self.impl.strings[nameIndex];
+					ip += Bytecode.OPND_SIZE_IN_BYTES;
+					o = operands[sp--];
+					attrs = (Map<String,Object>)operands[sp];
+					attrs.put(name, o); // leave attrs on stack
 					break;
 				case Bytecode.INSTR_WRITE :
 					o = operands[sp--];
@@ -275,6 +283,9 @@ public class Interpreter {
 					break;
 				case Bytecode.INSTR_OPTIONS :
 					operands[++sp] = new Object[Compiler.NUM_OPTIONS];
+					break;
+				case Bytecode.INSTR_ARGS:
+					operands[++sp] = new HashMap<String,Object>();
 					break;
 				case Bytecode.INSTR_LIST :
 					operands[++sp] = new ArrayList<Object>();
@@ -391,6 +402,85 @@ public class Interpreter {
 		return n;
 	}
 
+	// TODO: refactor to remove dup'd code
+
+	void super_new(ST self, String name, int nargs) {
+		ST st = null;
+		CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
+		if ( imported==null ) {
+			errMgr.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
+								name);
+			st = self.groupThatCreatedThisInstance.createStringTemplate();
+			st.impl = new CompiledST();
+			sp -= nargs;
+			operands[++sp] = st;
+			return;
+		}
+
+		st = imported.nativeGroup.createStringTemplate();
+		st.enclosingInstance = self; // self invoked super.name()
+		st.groupThatCreatedThisInstance = group;
+		st.impl = imported;
+
+		// get n args and store into st's attr list
+		storeArgs(self, nargs, st);
+		sp -= nargs;
+		operands[++sp] = st;
+	}
+
+	void super_new(ST self, String name, Map<String,Object> attrs) {
+		ST st = null;
+		CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
+		if ( imported==null ) {
+			errMgr.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
+								name);
+			st = self.groupThatCreatedThisInstance.createStringTemplate();
+			st.impl = new CompiledST();
+			operands[++sp] = st;
+			return;
+		}
+
+		st = imported.nativeGroup.createStringTemplate();
+		st.enclosingInstance = self; // self invoked super.name()
+		st.groupThatCreatedThisInstance = group;
+		st.impl = imported;
+
+		// get n args and store into st's attr list
+		storeArgs(self, attrs, st);
+		operands[++sp] = st;
+	}
+
+	void storeArgs(ST self, Map<String,Object> attrs, ST st) {
+		int nformalArgs = 0;
+		if ( st.impl.formalArguments!=null ) nformalArgs = st.impl.formalArguments.size();
+		int nargs = 0;
+		if ( attrs!=null ) nargs = attrs.size();
+
+		if ( nargs < (nformalArgs-st.impl.getNumberOfArgsWithDefaultValues()) ||
+			 nargs > nformalArgs )
+		{
+			errMgr.runTimeError(self,
+								current_ip,
+								ErrorType.ARGUMENT_COUNT_MISMATCH,
+								nargs,
+								st.impl.name,
+								nformalArgs);
+		}
+
+		for (String argName : attrs.keySet()) {
+			// don't let it throw an exception in rawSetAttribute
+			if ( !st.impl.formalArguments.containsKey(argName) ) {
+				errMgr.runTimeError(self,
+									current_ip,
+									ErrorType.NO_SUCH_ATTRIBUTE,
+									argName);
+				continue;
+			}
+			Object o = attrs.get(argName);
+			st.rawSetAttribute(argName, o);
+		}
+	}
+
 	void storeArgs(ST self, int nargs, ST st) {
 		int nformalArgs = 0;
 		if ( st.impl.formalArguments!=null ) nformalArgs = st.impl.formalArguments.size();
@@ -398,13 +488,15 @@ public class Interpreter {
 		int numToStore = Math.min(nargs, nformalArgs);
 		if ( st.impl.isAnonSubtemplate ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
 
-		if ( nargs != (nformalArgs-st.impl.getNumberOfArgsWithDefaultValues()) ) {
+		if ( nargs < (nformalArgs-st.impl.getNumberOfArgsWithDefaultValues()) ||
+			 nargs > nformalArgs )
+		{
 			errMgr.runTimeError(self,
-									  current_ip,
-									  ErrorType.ARGUMENT_COUNT_MISMATCH,
-									  nargs,
-									  st.impl.name,
-									  nformalArgs);
+								current_ip,
+								ErrorType.ARGUMENT_COUNT_MISMATCH,
+								nargs,
+								st.impl.name,
+								nformalArgs);
 		}
 
 		if ( st.impl.formalArguments==null ) return;
