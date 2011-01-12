@@ -61,7 +61,7 @@ public class Bytecode {
     public static final short INSTR_LOAD_PROP       = 4;
     public static final short INSTR_LOAD_PROP_IND   = 5;
 	public static final short INSTR_STORE_OPTION    = 6;
-	public static final short INSTR_STORE_ARGS 		= 7;
+	public static final short INSTR_STORE_ARG		= 7;
     public static final short INSTR_NEW             = 8;  // create new template instance
 	public static final short INSTR_NEW_IND         = 9;  // create new instance using value on stack
 	public static final short INSTR_NEW_BOX_ARGS    = 10; // create new instance using args in Map on stack

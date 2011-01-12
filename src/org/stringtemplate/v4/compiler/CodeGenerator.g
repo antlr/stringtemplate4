@@ -336,9 +336,9 @@ arg : expr ;
 
 args returns [int n=0, boolean namedArgs=false]
 	:	( arg {$n++;} )+
-	|	{emit($args.start, Bytecode.INSTR_ATTRS); $namedArgs=true;}
+	|	{emit($args.start, Bytecode.INSTR_ARGS); $namedArgs=true;}
 		(	^(eq='=' ID expr)
-			{$n++; emit1($eq, Bytecode.INSTR_STORE_ATTR, defineString($ID.text));}
+			{$n++; emit1($eq, Bytecode.INSTR_STORE_ARG, defineString($ID.text));}
 		)+
 	|
  	;

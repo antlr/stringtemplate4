@@ -228,7 +228,7 @@ public class Interpreter {
 					options = (Object[])operands[sp]; // get options
 					options[optionIndex] = o; // store value into options on stack
 					break;
-				case Bytecode.INSTR_STORE_ARGS:
+				case Bytecode.INSTR_STORE_ARG:
 					nameIndex = getShort(code, ip);
 					name = self.impl.strings[nameIndex];
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
