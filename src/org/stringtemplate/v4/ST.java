@@ -378,4 +378,23 @@ public class ST {
         return impl.name+"()";
     }
 
+	// ST.format("name, phone | <name>:<phone>", n, p);
+	// ST.format("<%1>:<%2>", n, p);
+	// ST.format("<name>:<phone>", "name", x, "phone", y);
+	public static String format(String template, Object... attributes) {
+		return format(STWriter.NO_WRAP, template, attributes);
+	}
+
+	public static String format(int lineWidth, String template, Object... attributes) {
+		template = template.replaceAll("%([0-9]+)", "arg$1");
+		System.out.println(template);
+
+		ST st = new ST(template);
+		int i = 1;
+		for (Object a : attributes) {
+			st.add("arg"+i, a);
+			i++;
+		}
+		return st.render(lineWidth);
+	}
 }

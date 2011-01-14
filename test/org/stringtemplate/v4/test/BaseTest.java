@@ -104,6 +104,8 @@ public class BaseTest {
         public int id;
         public String name;
         public User(int id, String name) { this.id = id; this.name = name; }
+		public boolean isManager() { return true; }
+		public boolean hasParkingSpot() { return true; }
         public String getName() { return name; }
     }
 

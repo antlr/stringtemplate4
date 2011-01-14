@@ -73,6 +73,9 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 		Method m = Misc.getMethod(c, "get" + methodSuffix);
 		if ( m==null ) {
 			m = Misc.getMethod(c, "is"+methodSuffix);
+			if ( m==null ) {
+				m = Misc.getMethod(c, "has"+methodSuffix);
+			}
 		}
 		try {
 			if ( m != null ) {

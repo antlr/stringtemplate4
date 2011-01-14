@@ -140,6 +140,24 @@ public class TestCoreBasics extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testBooleanISProp() throws Exception {
+		String template = "<t.manager>"; // call isManager
+		ST st = new ST(template);
+		st.add("t", new User(32, "Ter"));
+		String expected = "true";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testBooleanHASProp() throws Exception {
+		String template = "<t.parkingSpot>"; // call hasParkingSpot
+		ST st = new ST(template);
+		st.add("t", new User(32, "Ter"));
+		String expected = "true";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testNullAttrProp() throws Exception {
 		String template = "<u.id>: <u.name>";
 		ST st = new ST(template);

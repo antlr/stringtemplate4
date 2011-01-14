@@ -81,7 +81,7 @@
             <fileset dir="${source}"/>
         </copy>
 
-        <zip destfile="${dist.dir}/ST4-${version}-src.zip"
+        <zip destfile="${dist.dir}/ST-${version}-src.zip"
              basedir="${src.dist.dir}"
                 >
         </zip>
