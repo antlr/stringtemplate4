@@ -592,7 +592,9 @@ public class Interpreter {
 					errMgr.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
 				}
 			}
-			n = exec(out, (ST)o);
+			int save = current_ip;
+			try {n = exec(out, (ST)o);}
+			finally {current_ip = save;}
 		}
 		else {
 			o = convertAnythingIteratableToIterator(o); // normalize
