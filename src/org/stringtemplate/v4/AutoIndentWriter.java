@@ -127,7 +127,7 @@ public class AutoIndentWriter implements STWriter {
 			if ( c=='\r' ) continue;
             if ( c=='\n' ) {
 				atStartOfLine = true;
-				charPosition = -1; // set so the write below sets to 0
+				charPosition = -newline.length(); // set so the write below sets to 0
 				out.write(newline);
 				n += newline.length();
 				charIndex += newline.length();
