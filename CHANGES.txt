@@ -13,6 +13,6 @@ CHANGES
 * Fixed some unit testing the Windows friendly
 * Fix bug in triple if-elseif-elseif-elseif; added unit tests
 * bug where I did not say current_ip when calling exec() from writeObject
-
+* Updated README to include install information
+ 
 4.0b1 -- January 14, 2011
-
