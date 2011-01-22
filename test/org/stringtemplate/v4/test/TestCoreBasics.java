@@ -129,6 +129,15 @@ public class TestCoreBasics extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testPropWithNoAttr() throws Exception {
+		String template = "<foo.a>: <ick>"; // checks field and method getter
+		ST st = new ST(template);
+		st.add("foo", new HashMap() {{put("a","b");}});
+		String expected = "1: parrt";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testSTProp() throws Exception {
 		String template = "<t.x>"; // get x attr of template t
 		ST st = new ST(template);
