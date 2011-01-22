@@ -133,7 +133,7 @@ public class TestCoreBasics extends BaseTest {
 		String template = "<foo.a>: <ick>"; // checks field and method getter
 		ST st = new ST(template);
 		st.add("foo", new HashMap() {{put("a","b");}});
-		String expected = "1: parrt";
+		String expected = "b: ";
 		String result = st.render();
 		assertEquals(expected, result);
 	}
@@ -225,10 +225,9 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testInclude() throws Exception {
         String template = "load <box()>;";
         ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box", "kewl\ndaddy");
+        st.impl.nativeGroup.defineTemplate("box", "kewl"+newline+"daddy");
         String expected =
-            "load kewl\n" +
-            "daddy;";
+            "load kewl"+newline+"daddy;";
         String result = st.render();
         assertEquals(expected, result);
     }
@@ -493,6 +492,15 @@ public class TestCoreBasics extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testEmptyIFTemplate() throws Exception {
+		String template = "<if(x)>fail<elseif(name)><endif>";
+		ST st = new ST(template);
+		st.add("name", "Ter");
+		String expected = "";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testCondParens() throws Exception {
 		String template = "<if(!(x||y)&&!z)>works<endif>";
 		ST st = new ST(template);
@@ -522,24 +530,44 @@ public class TestCoreBasics extends BaseTest {
 		// insert of indent instr was not working; ok now
 		String dir = getRandomDir();
 		String groupFile =
-			"a(scope) ::= <<\n" +
-			"foo\n" +
-			"    <if(scope)>oops<endif>\n" +
-			"bar\n" +
-			">>\n";
+			"a(scope) ::= <<" +newline+
+			"foo" +newline+
+			"    <if(scope)>oops<endif>" +newline+
+			"bar" +newline+
+			">>";
 		writeFile(dir, "group.stg", groupFile);
 		STGroupFile group = new STGroupFile(dir+"/group.stg");
 		ST st = group.getInstanceOf("a");
 		st.impl.dump();
-		String expected = "foo\n" +
-						  "bar";
+		String expected = "foo" +newline+
+			"bar";
 		String result = st.render();
 		assertEquals(expected, result);
 	}
 
-    @Test public void testNotTrueCond() throws Exception {
-        String template = "<if(!name)>works<endif>";
-        ST st = new ST(template);
+	@Test public void testElseIf2() throws Exception {
+		String template =
+			"<if(x)>fail1<elseif(y)>fail2<elseif(z)>works<else>fail3<endif>";
+		ST st = new ST(template);
+		st.add("z", "blort");
+		String expected = "works";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testElseIf3() throws Exception {
+		String template =
+			"<if(x)><elseif(y)><elseif(z)>works<else><endif>";
+		ST st = new ST(template);
+		st.add("z", "blort");
+		String expected = "works";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testNotTrueCond() throws Exception {
+		String template = "<if(!name)>works<endif>";
+		ST st = new ST(template);
         st.add("name", "Ter");
         String expected = "";
         String result = st.render();

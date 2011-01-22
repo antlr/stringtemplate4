@@ -104,7 +104,7 @@ ifstat // ignore INDENTs in front of elseif ...
 		RDELIM
 		// kill \n for <endif> on line by itself if multi-line IF
 		({$ifstat.start.getLine()!=input.LT(1).getLine()}?=> NEWLINE)?
-		-> ^('if' $c1 $t1? ^('elseif' $c2 $t2?)* ^('else' $t3?)?)
+		-> ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?)
 	;
 
 conditional : andConditional ( '||'^ andConditional )* ;

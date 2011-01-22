@@ -10,6 +10,9 @@ CHANGES
 4.0b2 --
 
 * Order of static init issue; an error mgr was null.
+* Fixed some unit testing the Windows friendly
+* Fix bug in triple if-elseif-elseif-elseif; added unit tests
+* bug where I did not say current_ip when calling exec() from writeObject
 
 4.0b1 -- January 14, 2011
 
