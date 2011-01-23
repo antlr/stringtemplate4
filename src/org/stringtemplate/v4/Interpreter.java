@@ -117,6 +117,12 @@ public class Interpreter {
 
 	/** Execute template self and return how many characters it wrote to out */
 	public int exec(STWriter out, ST self) {
+		int save = current_ip;
+		try {return _exec(out, self);}
+		finally {current_ip = save;}
+	}
+
+	protected int _exec(STWriter out, ST self) {
 		int start = out.index(); // track char we're about to write
 		int prevOpcode = 0;
 		int n = 0; // how many char we write out
@@ -592,9 +598,7 @@ public class Interpreter {
 					errMgr.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
 				}
 			}
-			int save = current_ip;
-			try {n = exec(out, (ST)o);}
-			finally {current_ip = save;}
+			n = exec(out, (ST)o);
 		}
 		else {
 			o = convertAnythingIteratableToIterator(o); // normalize
