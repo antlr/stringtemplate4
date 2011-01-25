@@ -99,6 +99,7 @@ public class ErrorManager {
     }
 
 	public void lexerError(String srcName, String msg, Token templateToken, RecognitionException e) {
+		if ( srcName!=null ) srcName = Misc.getFileName(srcName);
         listener.compileTimeError(
             new STLexerMessage(srcName, msg, templateToken, e)
         );
@@ -106,7 +107,7 @@ public class ErrorManager {
 
     public void compileTimeError(ErrorType error, Token templateToken, Token t, Object arg) {
         String srcName = t.getInputStream().getSourceName();
-        srcName = Misc.getFileName(srcName);
+		if ( srcName!=null ) srcName = Misc.getFileName(srcName);
         listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,templateToken,t,null,arg)
         );

@@ -46,7 +46,7 @@ public class TestSyntaxErrors extends BaseTest {
         	group.defineTemplate("test", template);
 		}
 		catch (STException se) {
-			;
+			assert false;
 		}
 		String result = errors.toString();
         String expected = "test 1:0: this doesn't look like a template: \" <> \""+newline;
@@ -62,29 +62,46 @@ public class TestSyntaxErrors extends BaseTest {
         	group.defineTemplate("test", template);
 		}
 		catch (STException se) {
-			;
+			assert false;
 		}
 		String result = errors.toString();
         String expected = "test 1:3: doesn't look like an expression"+newline;
         assertEquals(expected, result);
     }
 
-    @Test public void testWeirdChar() throws Exception {
-        String template = "   <*>";
-        STGroup group = new STGroup();
+	@Test public void testWeirdChar() throws Exception {
+		String template = "   <*>";
+		STGroup group = new STGroup();
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		try {
-        	group.defineTemplate("test", template);
+			group.defineTemplate("test", template);
 		}
 		catch (STException se) {
-			;
+			assert false;
 		}
 		String result = errors.toString();
-        String expected = "test 1:4: invalid character '*'"+newline +
+		String expected = "test 1:4: invalid character '*'"+newline +
 						  "test 1:0: this doesn't look like a template: \"   <*>\""+newline;
-        assertEquals(expected, result);
-    }
+		assertEquals(expected, result);
+	}
+
+	@Test public void testWeirdChar2() throws Exception {
+		String template = "\n<\\\n";
+		STGroup group = new STGroup();
+		ErrorBuffer errors = new ErrorBuffer();
+		group.setListener(errors);
+		try {
+			group.defineTemplate("test", template);
+		}
+		catch (STException se) {
+			assert false;
+		}
+		String result = errors.toString();
+		String expected = "test 1:2: invalid escaped char: '<EOF>'\n" +
+						  "test 1:2: expecting '>', found '<EOF>'"+newline;
+		assertEquals(expected, result);
+	}
 
     @Test public void testValidButOutOfPlaceChar() throws Exception {
         String templates =
@@ -130,10 +147,26 @@ public class TestSyntaxErrors extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Test public void testEOFInExpr() throws Exception {
-        String templates =
-            "foo() ::= \"hi <name:{x|[<aaa.bb>]}\"\n";
-        writeFile(tmpdir, "t.stg", templates);
+	@Test public void testEOFInExpr() throws Exception {
+		String templates =
+			"foo() ::= \"hi <name\"";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroupFile group = null;
+		STErrorListener errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		group.load(); // force load
+		String expected = "t.stg 1:19: premature EOF"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
+
+	@Test public void testEOFInExpr2() throws Exception {
+		String templates =
+			"foo() ::= \"hi <name:{x|[<aaa.bb>]}\"\n";
+		writeFile(tmpdir, "t.stg", templates);
 
 		STGroupFile group = null;
 		STErrorListener errors = new ErrorBuffer();
@@ -141,6 +174,22 @@ public class TestSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:34: premature EOF"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testEOFInString() throws Exception {
+		String templates =
+			"foo() ::= << <f(\"foo>>\n";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroupFile group = null;
+		STErrorListener errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		group.load(); // force load
+		String expected = "t.stg 1:20: EOF in string"+newline +
+						  "t.stg 1:20: premature EOF"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}

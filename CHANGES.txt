@@ -7,7 +7,11 @@ University of San Francisco
 
 CHANGES
 
-4.0b2 --
+4.0b3 --
+
+* exception in lexer blew out of parsing
+
+4.0b2 -- January 22, 2011
 
 * Order of static init issue; an error mgr was null.
 * Fixed some unit testing the Windows friendly

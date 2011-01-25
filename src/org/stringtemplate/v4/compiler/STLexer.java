@@ -168,8 +168,11 @@ public class STLexer implements TokenSource {
 
     /** Ensure x is next character on the input stream */
     public void match(char x) {
-        if ( c == x) consume();
-        else throw new Error(getErrorHeader()+": expecting "+x+"; found "+c);
+        if ( c != x ) {
+			NoViableAltException e = new NoViableAltException("",0,0,input);
+			errMgr.lexerError(input.getSourceName(), "expecting '"+x+"', found '"+str(c)+"'", templateToken, e);
+		}
+		consume();
     }
 
     protected void consume() {
@@ -270,11 +273,7 @@ public class STLexer implements TokenSource {
 						new NoViableAltException("",0,0,input);
                     re.line = startLine;
                     re.charPositionInLine = startCharPositionInLine;
-					if ( c==EOF ) {
-						throw new STException("EOF inside ST expression at "+
-							re.line+":"+re.charPositionInLine, re);
-					}
-					errMgr.lexerError(input.getSourceName(), "invalid character '"+c+"'", templateToken, re);
+					errMgr.lexerError(input.getSourceName(), "invalid character '"+str(c)+"'", templateToken, re);
 					consume();
             }
         }
@@ -339,8 +338,9 @@ public class STLexer implements TokenSource {
                 break;
             case 'u' : t = UNICODE(); break;
             default :
+				t = SKIP;
                 NoViableAltException e = new NoViableAltException("",0,0,input);
-                errMgr.lexerError(input.getSourceName(), "invalid escaped char: '"+c+"'", templateToken, e);
+                errMgr.lexerError(input.getSourceName(), "invalid escaped char: '"+str(c)+"'", templateToken, e);
         }
         consume();
         match(delimiterStopChar);
@@ -352,25 +352,25 @@ public class STLexer implements TokenSource {
         char[] chars = new char[4];
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+c+"'", templateToken, e);
+            errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(c)+"'", templateToken, e);
         }
         chars[0] = c;
         consume();
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-			errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+c+"'", templateToken, e);
+			errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(c)+"'", templateToken, e);
         }
         chars[1] = c;
         consume();
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-			errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+c+"'", templateToken, e);
+			errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(c)+"'", templateToken, e);
         }
         chars[2] = c;
         consume();
         if ( !isUnicodeLetter(c) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-			errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+c+"'", templateToken, e);
+			errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(c)+"'", templateToken, e);
         }
         chars[3] = c;
         // ESCAPE kills final char and >
@@ -449,8 +449,8 @@ public class STLexer implements TokenSource {
 					new MismatchedTokenException((int)'"', input);
 				re.line = input.getLine();
 				re.charPositionInLine = input.getCharPositionInLine();
-				throw new STException("EOF inside string/template at "+
-					startLine+":"+startCharPositionInLine, re);
+				errMgr.lexerError(input.getSourceName(), "EOF in string", templateToken, re);
+				break;
 			}
         }
         buf.append(c);
@@ -513,11 +513,16 @@ public class STLexer implements TokenSource {
 		return t;
 	}
 
-    public String getErrorHeader() {
-        return startLine+":"+startCharPositionInLine;
-    }
-
+//    public String getErrorHeader() {
+//        return startLine+":"+startCharPositionInLine;
+//    }
+//
     public String getSourceName() {
         return "no idea";
     }
+
+	public static String str(int c) {
+		if ( c==EOF ) return "<EOF>";
+		return String.valueOf((char)c);
+	}
 }
