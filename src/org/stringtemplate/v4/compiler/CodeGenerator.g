@@ -150,7 +150,7 @@ region returns [String name]
 			CompiledST sub = $template.impl;
 	        sub.isRegion = true;
 	        sub.regionDefType = ST.RegionType.EMBEDDED;
-			sub.dump();
+			//sub.dump();
 			outermostImpl.addImplicitlyDefinedTemplate(sub);
 			}
 		 )
@@ -173,7 +173,7 @@ subtemplate returns [String name, int nargs]
 				sub.ast.setUnknownTokenBoundaries();
 				sub.tokens = input.getTokenStream();
 			}
-			sub.dump();
+			//sub.dump();
 			outermostImpl.addImplicitlyDefinedTemplate(sub);
 			}
 		 )
@@ -307,13 +307,13 @@ includeExpr
 	|	^(INCLUDE_REGION ID)		{
 									CompiledST impl =
 										Compiler.defineBlankRegion(outermostImpl, $ID.text);
-									impl.dump();
+									//impl.dump();
 									emit2($INCLUDE_REGION,Bytecode.INSTR_NEW,impl.name,0);
 									}
 	|	^(INCLUDE_SUPER_REGION ID)	{
 									CompiledST impl =
 										Compiler.defineBlankRegion(outermostImpl, $ID.text);
-									impl.dump();
+									//impl.dump();
 									emit2($INCLUDE_SUPER_REGION,Bytecode.INSTR_SUPER_NEW,impl.name,0);
 									}
 	|	primary
