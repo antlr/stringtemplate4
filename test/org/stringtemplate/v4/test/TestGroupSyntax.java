@@ -28,8 +28,10 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
+import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.Misc;
 
 import static org.junit.Assert.assertEquals;
@@ -153,6 +155,31 @@ public class TestGroupSyntax extends BaseTest {
 			"[<a>]" + Misc.newline+
 			">>"+ Misc.newline;
 		String result = group.show();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testMessedUpTemplateDoesntCauseRuntimeError() throws Exception {
+		String templates =
+			"main(p) ::= <<\n" +
+			"<f(x=\"abc\")>\n" +
+			">>\n" +
+			"\n" +
+			"f() ::= <<\n" +
+			"<x>\n" +
+			">>\n";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroupFile group = null;
+		ErrorBuffer errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		ST st = group.getInstanceOf("main");
+		st.render();
+
+		String expected = "[context [main] 1:1 passed 1 arg(s) to template f with 0 declared arg(s)," +
+						  " context [main] 1:1 attribute x isn't defined," +
+						  " context [main f] 1:1 attribute x isn't defined]";
+		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
 }

@@ -475,7 +475,7 @@ public class Interpreter {
 
 		for (String argName : attrs.keySet()) {
 			// don't let it throw an exception in rawSetAttribute
-			if ( !st.impl.formalArguments.containsKey(argName) ) {
+			if ( st.impl.formalArguments==null || !st.impl.formalArguments.containsKey(argName) ) {
 				errMgr.runTimeError(self,
 									current_ip,
 									ErrorType.NO_SUCH_ATTRIBUTE,
