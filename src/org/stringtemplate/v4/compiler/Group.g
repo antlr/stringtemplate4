@@ -270,6 +270,12 @@ ANONYMOUS_TEMPLATE
 		lexer.subtemplateDepth = 1;
 		Token t = lexer.nextToken();
 		while ( lexer.subtemplateDepth>=1 || t.getType()!=STLexer.RCURLY ) {
+			if ( t.getType()==STLexer.EOF_TYPE ) {
+            	MismatchedTokenException e = new MismatchedTokenException('}', input);
+				String msg = "missing final '}' in {...} anonymous template";
+    			group.errMgr.groupLexerError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
+				break;
+			}
 			t = lexer.nextToken();
 		}
 		}

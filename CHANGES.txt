@@ -10,6 +10,7 @@ CHANGES
 4.0b3 --
 
 * exception in lexer blew out of parsing
+* missing '}' in {...} caused infinite loop
 
 4.0b2 -- January 22, 2011
 

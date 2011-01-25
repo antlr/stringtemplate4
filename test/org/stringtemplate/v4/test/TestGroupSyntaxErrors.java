@@ -82,6 +82,22 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testUnclosedTemplate() throws Exception {
+		String templates =
+			"foo() ::= {";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroupFile group = null;
+		STErrorListener errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		group.load(); // force load
+		String expected = "t.stg 1:11: missing final '}' in {...} anonymous template" +newline+
+						  "t.stg 1:10: no viable alternative at input '{'"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
     @Test public void testParen() throws Exception {
         String templates =
             "foo( ::= << >>\n";
