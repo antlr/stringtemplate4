@@ -35,20 +35,34 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import static org.junit.Assert.assertEquals;
 
 public class TestOptions extends BaseTest {
-    @Test public void testSeparator() throws Exception {
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
-        group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
-        st.add("name", "Ter");
-        st.add("name", "Tom");
-        st.add("name", "Sumana");
-        String expected = "hi Ter, Tom, Sumana!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testSeparator() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		st.add("name", "Tom");
+		st.add("name", "Sumana");
+		String expected = "hi Ter, Tom, Sumana!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testSeparatorWithSpaces() throws Exception {
+		STGroup group = new STGroup();
+		STGroup.debug = true;
+		group.defineTemplate("test", "name", "hi <name; separator= \", \">!");
+		ST st = group.getInstanceOf("test");
+		System.out.println(st.impl.ast.toStringTree());
+		st.add("name", "Ter");
+		st.add("name", "Tom");
+		st.add("name", "Sumana");
+		String expected = "hi Ter, Tom, Sumana!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testAttrSeparator() throws Exception {
-        STGroup group = new org.stringtemplate.v4.STGroup();
+        STGroup group = new STGroup();
         group.defineTemplate("test", "name,sep", "hi <name; separator=sep>!");
         ST st = group.getInstanceOf("test");
         st.add("sep", ", ");
@@ -61,7 +75,7 @@ public class TestOptions extends BaseTest {
     }
 
     @Test public void testIncludeSeparator() throws Exception {
-        org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroup();
+        STGroup group = new STGroup();
         group.defineTemplate("foo", "|");
         group.defineTemplate("test", "name,sep", "hi <name; separator=foo()>!");
         ST st = group.getInstanceOf("test");
@@ -75,9 +89,9 @@ public class TestOptions extends BaseTest {
     }
 
     @Test public void testSubtemplateSeparator() throws Exception {
-        STGroup group = new org.stringtemplate.v4.STGroup();
+        STGroup group = new STGroup();
         group.defineTemplate("test", "name,sep", "hi <name; separator={<sep> _}>!");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
+        ST st = group.getInstanceOf("test");
         st.add("sep", ",");
         st.add("name", "Ter");
         st.add("name", "Tom");
@@ -88,7 +102,7 @@ public class TestOptions extends BaseTest {
     }
 
     @Test public void testSeparatorWithNullFirstValueAndNullOption() throws Exception {
-        STGroup group = new org.stringtemplate.v4.STGroup();
+        STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; null=\"n/a\", separator=\", \">!");
         ST st = group.getInstanceOf("test");
         st.add("name", null);

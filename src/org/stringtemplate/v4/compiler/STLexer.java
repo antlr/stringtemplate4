@@ -68,7 +68,10 @@ public class STLexer implements TokenSource {
             String txt = getText();
             if ( txt!=null ) txt = Misc.replaceEscapes(txt);
             else txt = "<no text>";
-            return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+ STParser.tokenNames[type]+">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
+			String tokenName = null;
+			if ( type==EOF_TYPE ) tokenName = "EOF";
+			else tokenName = STParser.tokenNames[type];
+			return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+ tokenName +">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
         }
     }
 
@@ -141,11 +144,6 @@ public class STLexer implements TokenSource {
      */
     List<Token> tokens = new ArrayList<Token>();
 
-    public Token nextToken() {
-        if ( tokens.size()>0 ) { return tokens.remove(0); }
-        return _nextToken();
-    }
-
 	public STLexer(CharStream input) { this(STGroup.DEFAULT_ERR_MGR, input, null, '<', '>'); }
 
     public STLexer(ErrorManager errMgr, CharStream input, Token templateToken) {
@@ -164,6 +162,14 @@ public class STLexer implements TokenSource {
 		this.templateToken = templateToken;
 		this.delimiterStartChar = delimiterStartChar;
 		this.delimiterStopChar = delimiterStopChar;
+	}
+
+	public Token nextToken() {
+		Token t = null;
+		if ( tokens.size()>0 ) { t = tokens.remove(0); }
+		else t = _nextToken();
+		//System.out.println(t);
+		return t;
 	}
 
     /** Ensure x is next character on the input stream */
@@ -224,7 +230,9 @@ public class STLexer implements TokenSource {
     protected Token inside() {
         while ( true ) {
             switch ( c ) {
-                case ' ': case '\t': case '\n': case '\r': consume(); continue;
+                case ' ': case '\t': case '\n': case '\r':
+					consume();
+					return SKIP;
                 case '.' :
 					consume();
 					if ( input.LA(1)=='.' && input.LA(2)=='.' ) {
