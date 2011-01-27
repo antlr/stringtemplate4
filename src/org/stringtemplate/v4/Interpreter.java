@@ -1019,7 +1019,7 @@ public class Interpreter {
 				defaultArgST.enclosingInstance = invokedST.enclosingInstance;
 				defaultArgST.groupThatCreatedThisInstance = group;
 				defaultArgST.impl = arg.compiledDefaultValue;
-				System.out.println("setting def arg "+arg.name+" to "+defaultArgST);
+				//System.out.println("setting def arg "+arg.name+" to "+defaultArgST);
 				// If default arg is template with single expression
 				// wrapped in parens, x={<(...)>}, then eval to string
 				// rather than setting x to the template for later
