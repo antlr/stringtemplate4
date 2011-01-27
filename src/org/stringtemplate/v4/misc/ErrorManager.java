@@ -32,9 +32,6 @@ import org.antlr.runtime.Token;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STErrorListener;
 
-/** Track errors per thread; e.g., one server transaction's errors
- *  will go in one grouping since each has it's own thread.
- */
 public class ErrorManager {
     public static STErrorListener DEFAULT_ERROR_LISTENER =
         new STErrorListener() {
@@ -65,23 +62,6 @@ public class ErrorManager {
                 }
             }
         };
-
-	/** As we parse group file, there is no embedded context.
-	 *  We read entire templates (e.g., <<...>>) as single
-	 *  tokens and so errors can use the line/charPos of the
-	 *  GroupLexer.  To parse templates during CodeGenerator pass,
-	 *  we must assume templates start at charPos=0 even when they
-	 *  start in middle of line:
-	 *
-	 *  t() ::= <<foo>>
-	 *
-	 *  Here, the template starts at charPos 10, but the STLexer
-	 *  thinks that the charPos is 0.  If we want to get correct
-	 *  error info, we push the template token onto the context
-	 *  stack and then all errors are relative to that.  Should
-	 *  only be 0 or 1 deep, but it's general.
-	 */
-	//public Stack<Token> context = new Stack<Token>();
 
 	public final STErrorListener listener;
 
