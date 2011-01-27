@@ -12,6 +12,8 @@ CHANGES
 * exception in lexer blew out of parsing
 * missing '}' in {...} caused infinite loop
 * NPE in storeArgs if empty arg list
+* removed debugging prints.
+* x={<(...)>} default arg was hardcoded to <...> not $..$ or whatever.
 
 4.0b2 -- January 22, 2011
 
