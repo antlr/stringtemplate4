@@ -17,6 +17,7 @@ CHANGES
 * The grammar needed to match and ignore an optional INDENT before region @end
 * when redefining a region (template) the newline before the >> was kept.
 * WS not ignored in front of STRING token in expressions.
+* closing STViz doesn't exit vm now.
 
 4.0b2 -- January 22, 2011
 

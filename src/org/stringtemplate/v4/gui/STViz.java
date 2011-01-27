@@ -139,7 +139,7 @@ public class STViz {
 
         m.output.addCaretListener(caretListenerLabel);
 
-        m.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        m.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         m.pack();
         m.setSize(800,600);
         m.topSplitPane.setBorder(null);
