@@ -118,9 +118,14 @@ chunk
 	;
 	
 element
-	:	^(INDENT {$template::state.indent($INDENT.text);} element {$template::state.emit(Bytecode.INSTR_DEDENT);})
-	|	ifstat
-	|	exprElement
+	:	^(INDENT compoundElement) // ignore indent in front of IF and region blocks
+	|	compoundElement
+	|	^(INDENT {$template::state.indent($INDENT.text);} singleElement {$template::state.emit(Bytecode.INSTR_DEDENT);})
+	|	singleElement
+	;
+
+singleElement
+	:	exprElement
 	|	TEXT
 		{
 		if ( $TEXT.text.length()>0 ) {
@@ -128,14 +133,19 @@ element
 			emit($TEXT,Bytecode.INSTR_WRITE);
 		}
 		}
+
+	|	NEWLINE {emit(Bytecode.INSTR_NEWLINE);}
+	;
+
+compoundElement
+	:	ifstat
 	|	region
 		{
 		emit2($region.start, Bytecode.INSTR_NEW, $region.name, 0);
 		emit($region.start, Bytecode.INSTR_WRITE);
 		}
-	|	NEWLINE {emit(Bytecode.INSTR_NEWLINE);}
 	;
-
+	
 exprElement
 @init { short op = Bytecode.INSTR_WRITE; }
 	:	^( EXPR expr (exprOptions {op=Bytecode.INSTR_WRITE_OPT;})? )

@@ -87,7 +87,12 @@ exprTag
 		-> ^(EXPR[$LDELIM,"EXPR"] expr exprOptions?)
 	;
 
-region : LDELIM '@' ID RDELIM template LDELIM '@end' RDELIM -> ^(REGION ID template) ;
+region
+	:	LDELIM '@' ID RDELIM NEWLINE?
+		template
+		INDENT? LDELIM '@end' RDELIM NEWLINE?
+		-> ^(REGION ID template)
+	;
 
 subtemplate
 	:	lc='{' (ids+= ID ( ',' ids+= ID )* '|' )? template INDENT? '}'

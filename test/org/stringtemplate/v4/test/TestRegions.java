@@ -141,6 +141,24 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
+	@Test public void testIndentBeforeRegionIsIgnored() throws Exception {
+		String dir = getRandomDir();
+		String g = "a() ::= <<[\n" +
+				   "  <@r>\n" +
+				   "  foo\n" +
+				   "  <@end>\n" +
+				   "]>>\n";
+		writeFile(dir, "g.stg", g);
+
+		STGroupFile group = new STGroupFile(dir+"/g.stg");
+		ST st = group.getInstanceOf("a");
+		String expected = "[\n" +
+						  "  foo\n" +
+						  "]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
     //
 
     @Test public void testRegionOverrideRefSuperRegion() throws Exception {
