@@ -15,6 +15,7 @@ CHANGES
 * removed debugging prints.
 * x={<(...)>} default arg was hardcoded to <...> not $..$ or whatever.
 * The grammar needed to match and ignore an optional INDENT before region @end
+* when redefining a region (template) the newline before the >> was kept.
 
 4.0b2 -- January 22, 2011
 

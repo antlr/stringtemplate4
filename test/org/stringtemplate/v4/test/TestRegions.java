@@ -159,6 +159,28 @@ public class TestRegions extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testRegionOverrideStripsNewlines() throws Exception {
+		String dir = getRandomDir();
+		String g =
+				"a() ::= \"X<@r()>Y\"" +
+				"@a.r() ::= <<\n" +
+				"foo\n" +
+				">>\n";
+		writeFile(dir, "g.stg", g);
+		STGroupFile group = new STGroupFile(dir+"/g.stg");
+
+		String sub =
+				"@a.r() ::= \"A<@super.r()>B\"" +newline;
+		writeFile(dir, "sub.stg", sub);
+		STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
+		subGroup.importTemplates(group);
+
+		ST st = subGroup.getInstanceOf("a");
+		String result = st.render();
+		String expecting = "XAfooBY";
+		assertEquals(expecting, result);
+	}
+
     //
 
     @Test public void testRegionOverrideRefSuperRegion() throws Exception {
