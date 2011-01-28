@@ -7,7 +7,7 @@ University of San Francisco
 
 CHANGES
 
-4.0b3 --
+4.0b3 -- January 28, 2011
 
 * exception in lexer blew out of parsing
 * missing '}' in {...} caused infinite loop
