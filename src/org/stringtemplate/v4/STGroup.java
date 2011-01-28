@@ -112,8 +112,6 @@ public class STGroup {
 	protected Map<Class, ModelAdaptor> typeToAdaptorCache =
 		Collections.synchronizedMap(new LinkedHashMap<Class, ModelAdaptor>());
 
-	public static STGroup defaultGroup = new STGroup();
-
     /** Used to indicate that the template doesn't exist.
      *  Prevents duplicate group file loads and unnecessary file checks.
      */
@@ -123,11 +121,12 @@ public class STGroup {
 
 	public static boolean debug = false;
 
+	public static STGroup defaultGroup = new STGroup();
+
 	/** The errMgr for entire group; all compilations and executions.
 	 *  This gets copied to parsers, walkers, and interpreters.
 	 */
 	public ErrorManager errMgr = STGroup.DEFAULT_ERR_MGR;
-
 
     public STGroup() { ; }
 
@@ -248,7 +247,8 @@ public class STGroup {
 			return impl;
 		}
 		catch (STException se) {
-			System.err.println("eh?");
+			// we have reported the error; the exception just blasts us
+			// out of parsing this template
 		}
 		return null;
 	}
@@ -306,6 +306,8 @@ public class STGroup {
 								   String template)
     {
         String name = regionT.getText();
+		template = Misc.trimOneStartingNewline(template);
+		template = Misc.trimOneTrailingNewline(template);
         CompiledST code = compile(getFileName(), enclosingTemplateName, null, template, regionT);
         String mangled = getMangledRegionName(enclosingTemplateName, name);
 
@@ -475,6 +477,10 @@ public class STGroup {
 	 *  render()ing your templates for efficiency.
 	 */
 	public void registerModelAdaptor(Class attributeType, ModelAdaptor adaptor) {
+		if ( attributeType.isPrimitive() ) {
+			throw new IllegalArgumentException("can't register ModelAdaptor for primitive type "+
+											   attributeType.getSimpleName());
+		}
 		adaptors.put(attributeType, adaptor);
 		invalidateModelAdaptorCache(attributeType);
 	}
@@ -516,6 +522,10 @@ public class STGroup {
 	 *  object in question is instanceof(attributeType).
      */
     public void registerRenderer(Class attributeType, AttributeRenderer r) {
+		if ( attributeType.isPrimitive() ) {
+			throw new IllegalArgumentException("can't register renderer for primitive type "+
+											   attributeType.getSimpleName());
+		}
 		// TODO: invalidate cache
         if ( renderers ==null ) {
             renderers =

@@ -18,6 +18,7 @@ CHANGES
 * when redefining a region (template) the newline before the >> was kept.
 * WS not ignored in front of STRING token in expressions.
 * closing STViz doesn't exit vm now.
+* throws exception if registering renderer or model adaptor for primitive
 
 4.0b2 -- January 22, 2011
 
