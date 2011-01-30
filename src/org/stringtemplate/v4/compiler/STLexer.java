@@ -282,6 +282,9 @@ public class STLexer implements TokenSource {
                     re.line = startLine;
                     re.charPositionInLine = startCharPositionInLine;
 					errMgr.lexerError(input.getSourceName(), "invalid character '"+str(c)+"'", templateToken, re);
+					if (c==EOF) {
+						return newToken(EOF_TYPE);
+					}
 					consume();
             }
         }

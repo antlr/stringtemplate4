@@ -69,6 +69,24 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
+	@Test public void testUnterminatedExpr() throws Exception {
+		String template = "hi <t()$";
+		STGroup group = new STGroup();
+		ErrorBuffer errors = new ErrorBuffer();
+		group.setListener(errors);
+		try {
+			group.defineTemplate("test", template);
+		}
+		catch (STException se) {
+			assert false;
+		}
+		String result = errors.toString();
+		String expected = "test 1:7: invalid character '$'" +newline+
+			"test 1:7: invalid character '<EOF>'" +newline+
+			"test 1:7: premature EOF"+newline;
+		assertEquals(expected, result);
+	}
+
 	@Test public void testWeirdChar() throws Exception {
 		String template = "   <*>";
 		STGroup group = new STGroup();

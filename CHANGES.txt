@@ -10,6 +10,7 @@ CHANGES
 4.0b4 --
 
 * added write to file methods
+* had infinite loop for expr: "<t()$"
 
 4.0b3 -- January 28, 2011
 
