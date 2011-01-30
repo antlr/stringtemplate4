@@ -32,9 +32,7 @@ import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.STNoSuchPropertyException;
-import org.stringtemplate.v4.misc.STRuntimeMessage;
+import org.stringtemplate.v4.misc.*;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -739,6 +737,37 @@ public class TestCoreBasics extends BaseTest {
 		String expected =
 			"case Ter, case Tom";
 		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	/** (...) forces early eval to string.
+	 * We need an STWriter so I must pick one.  toString(...) is used to
+	 * ensure b is property name in <a.b>.  It's used to eval default args
+	 * (usually strings). It's use to eval option values (usually strings).
+	 * So in general no-indent is fine.  Now, if I used indent-writer, it
+	 * would mostly work too.  What about <(t())> when t() is huge and indented
+	 * but you had called render() with a no-indent-writer?  now *part* your
+	 * input is indented!
+	 */
+	@Test public void testEarlyEvalIndent() throws Exception {
+		String templates =
+			"t() ::= <<  abc>>\n" +
+			"main() ::= <<\n" +
+			"<t()>\n" +
+			"<(t())>\n" + // early eval ignores indents; mostly for simply strings
+			"  <t()>\n" +
+			"  <(t())>\n" +
+			">>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ST st = group.getInstanceOf("main");
+		String result = st.render();
+		String expected =
+			"  abc" +newline+
+			"abc"+newline+
+			"    abc" +newline+
+			"  abc";
 		assertEquals(expected, result);
 	}
 
