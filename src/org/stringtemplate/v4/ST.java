@@ -32,8 +32,7 @@ import org.stringtemplate.v4.compiler.FormalArgument;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.*;
 
 /** An instance of the StringTemplate. It consists primarily of
@@ -359,7 +358,42 @@ public class ST {
 		return interp.exec(out, this);
 	}
 
-    public String render() { return render(Locale.getDefault()); }
+	public int write(File outputFile, STErrorListener listener)
+		throws IOException
+	{
+		return write(outputFile, listener, Locale.getDefault(), STWriter.NO_WRAP);
+	}
+
+	public int write(File outputFile, STErrorListener listener, int lineWidth)
+		throws IOException
+	{
+		return write(outputFile, listener, Locale.getDefault(), lineWidth);
+	}
+
+	public int write(File outputFile,
+					 STErrorListener listener,
+					 Locale locale,
+					 int lineWidth)
+		throws IOException
+	{
+		Writer bw = null;
+		try {
+			FileOutputStream fos = new FileOutputStream(outputFile);
+			OutputStreamWriter osw = new OutputStreamWriter(fos);
+			bw = new BufferedWriter(osw);
+			AutoIndentWriter w = new AutoIndentWriter(bw);
+			w.setLineWidth(lineWidth);
+			int n = write(w, locale, listener);
+			bw.close();
+			bw = null;
+			return n;
+		}
+		finally {
+			if (bw != null) bw.close();
+		}
+	}
+
+	public String render() { return render(Locale.getDefault()); }
 
     public String render(int lineWidth) { return render(Locale.getDefault(), lineWidth); }
 
