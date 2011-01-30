@@ -358,20 +358,25 @@ public class ST {
 		return interp.exec(out, this);
 	}
 
-	public int write(File outputFile, STErrorListener listener)
-		throws IOException
-	{
-		return write(outputFile, listener, Locale.getDefault(), STWriter.NO_WRAP);
+	public int write(File outputFile, STErrorListener listener) throws IOException {
+		return write(outputFile, listener, "UTF-8", Locale.getDefault(), STWriter.NO_WRAP);
 	}
 
-	public int write(File outputFile, STErrorListener listener, int lineWidth)
+	public int write(File outputFile, STErrorListener listener, String encoding)
 		throws IOException
 	{
-		return write(outputFile, listener, Locale.getDefault(), lineWidth);
+		return write(outputFile, listener, encoding, Locale.getDefault(), STWriter.NO_WRAP);
+	}
+
+	public int write(File outputFile, STErrorListener listener, String encoding, int lineWidth)
+		throws IOException
+	{
+		return write(outputFile, listener, encoding, Locale.getDefault(), lineWidth);
 	}
 
 	public int write(File outputFile,
 					 STErrorListener listener,
+					 String encoding,
 					 Locale locale,
 					 int lineWidth)
 		throws IOException
@@ -379,7 +384,7 @@ public class ST {
 		Writer bw = null;
 		try {
 			FileOutputStream fos = new FileOutputStream(outputFile);
-			OutputStreamWriter osw = new OutputStreamWriter(fos);
+			OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
 			bw = new BufferedWriter(osw);
 			AutoIndentWriter w = new AutoIndentWriter(bw);
 			w.setLineWidth(lineWidth);
