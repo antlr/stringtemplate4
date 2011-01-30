@@ -9,6 +9,8 @@ CHANGES
 
 4.0b4 --
 
+* added write to file methods
+
 4.0b3 -- January 28, 2011
 
 * exception in lexer blew out of parsing
@@ -29,5 +31,5 @@ CHANGES
 * Fix bug in triple if-elseif-elseif-elseif; added unit tests
 * bug where I did not say current_ip when calling exec() from writeObject
 * Updated README to include install information
- 
+
 4.0b1 -- January 14, 2011
