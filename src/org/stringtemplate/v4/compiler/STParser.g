@@ -91,7 +91,7 @@ region
 	:	LDELIM '@' ID RDELIM NEWLINE?
 		template
 		INDENT? LDELIM '@end' RDELIM NEWLINE?
-		-> ^(REGION ID template)
+		-> ^(REGION ID template?)
 	;
 
 subtemplate
