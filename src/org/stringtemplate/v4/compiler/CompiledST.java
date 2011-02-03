@@ -122,8 +122,7 @@ public class CompiledST {
 			FormalArgument fa = formalArguments.get(a);
 			if ( fa.defaultValueToken!=null ) {
 				String argSTname = fa.name + "_default_value";
-				Compiler c2 =
-					new Compiler(group.errMgr, group.delimiterStartChar, group.delimiterStopChar);
+				Compiler c2 = new Compiler(group);
 				String defArgTemplate =
 					Misc.strip(fa.defaultValueToken.getText(), 1);
 				fa.compiledDefaultValue =

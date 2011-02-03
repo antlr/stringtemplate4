@@ -107,7 +107,7 @@ public class STGroupFile extends STGroup {
 
 	protected CompiledST load(String name) {
         if ( !alreadyLoaded ) load();
-        return templates.get(name);
+        return rawGetTemplate(name);
     }
 
     public void load() {

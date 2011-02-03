@@ -133,7 +133,7 @@ public class STGroupDir extends STGroup {
             errMgr.internalError(null, "can't close template file stream "+name, ioe);
         }
         loadGroupFile(parent, root+parent+".stg");
-        return templates.get(name);
+        return rawGetTemplate(name);
     }
 
 	/** Load full path name .st file relative to root by prefix */
@@ -171,7 +171,7 @@ public class STGroupDir extends STGroup {
 									 Misc.getFileName(f.getFile()),
 									 re, re.getMessage());
 		}
-		return templates.get(templateName);
+		return rawGetTemplate(templateName);
 	}
 
 	public String getName() { return groupDirName; }

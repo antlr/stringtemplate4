@@ -195,7 +195,7 @@ public class STGroup {
 
 	/** Look up a fully-qualified name */
     public CompiledST lookupTemplate(String name) {
-        CompiledST code = templates.get(name);
+        CompiledST code = rawGetTemplate(name);
         if ( code==NOT_FOUND_ST ) return null;
         // try to load from disk and look up again
         if ( code==null ) code = load(name);
@@ -292,7 +292,7 @@ public class STGroup {
     public CompiledST defineTemplateAlias(Token aliasT, Token targetT) {
         String alias = aliasT.getText();
         String target = targetT.getText();
-        CompiledST targetCode = templates.get(target);
+        CompiledST targetCode = rawGetTemplate(target);
         if ( targetCode==null ){
             errMgr.compileTimeError(ErrorType.ALIAS_TARGET_UNDEFINED, null, aliasT, alias, target);
             return null;
@@ -303,7 +303,8 @@ public class STGroup {
 
     public CompiledST defineRegion(String enclosingTemplateName,
                                    Token regionT,
-								   String template)
+								   String template,
+								   Token templateToken)
     {
         String name = regionT.getText();
 		template = Misc.trimOneStartingNewline(template);
@@ -334,7 +335,7 @@ public class STGroup {
     {
         try {
             if ( regionSurroundingTemplateName!=null ) {
-                defineRegion(regionSurroundingTemplateName, nameToken, template);
+                defineRegion(regionSurroundingTemplateName, nameToken, template, templateToken);
             }
             else {
                 defineTemplate(templateName, nameToken, args, template, templateToken);
@@ -347,7 +348,7 @@ public class STGroup {
 	}
 
 	public void rawDefineTemplate(String name, CompiledST code, Token defT) {
-		CompiledST prev = templates.get(name);
+		CompiledST prev = rawGetTemplate(name);
 		if ( prev!=null ) {
 			if ( !prev.isRegion ) {
 				errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, null, defT);
@@ -383,7 +384,7 @@ public class STGroup {
 							  Token templateToken) // for error location
     {
 		//System.out.println("STGroup.compile: "+enclosingTemplateName);
-		Compiler c = new Compiler(errMgr, delimiterStartChar, delimiterStopChar);
+		Compiler c = new Compiler(this);
 		CompiledST code = c.compile(srcName, name, args, template, templateToken);
 		code.nativeGroup = this;
 		code.template = template;
@@ -567,7 +568,7 @@ public class STGroup {
         StringBuilder buf = new StringBuilder();
         if ( imports!=null ) buf.append(" : "+imports);
         for (String name : templates.keySet()) {
-			CompiledST c = templates.get(name);
+			CompiledST c = rawGetTemplate(name);
 			if ( c.isAnonSubtemplate || c==NOT_FOUND_ST ) continue;
             int slash = name.lastIndexOf('/');
             name = name.substring(slash+1, name.length());

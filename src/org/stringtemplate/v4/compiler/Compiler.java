@@ -33,7 +33,6 @@ import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.ErrorType;
 
 import java.util.HashMap;
@@ -84,36 +83,10 @@ public class Compiler {
 	/** Name subtemplates _sub1, _sub2, ... */
 	public static int subtemplateCount = 0;
 
-	/** The compiler needs to know how to delimit expressions.
-	 *  The STGroup normally passes in this information, but we
-	 *  can set some defaults.
-	 */
-	public char delimiterStartChar = '<'; // Use <expr> by default
-	public char delimiterStopChar = '>';
+	public STGroup group;
 
-	public ErrorManager errMgr;
-
-	public Compiler() { this(STGroup.DEFAULT_ERR_MGR); }
-
-	public Compiler(ErrorManager errMgr) { this(errMgr, '<', '>'); }
-
-	public Compiler(char delimiterStartChar,
-					char delimiterStopChar)
-	{
-		this(STGroup.DEFAULT_ERR_MGR, delimiterStartChar, delimiterStopChar);
-	}
-
-	/** To compile a template, we need to know what the
-	 *  enclosing template is (if any) in case of regions.
-	 */
-	public Compiler(ErrorManager errMgr,
-					char delimiterStartChar,
-					char delimiterStopChar)
-	{
-		this.errMgr = errMgr;
-		this.delimiterStartChar = delimiterStartChar;
-		this.delimiterStopChar = delimiterStopChar;
-	}
+	public Compiler() { this(STGroup.defaultGroup); }
+	public Compiler(STGroup group) { this.group = group; }
 
 	public CompiledST compile(String template) {
 		CompiledST code = compile(null, null, null, template, null);
@@ -137,9 +110,9 @@ public class Compiler {
 	{
 		ANTLRStringStream is = new ANTLRStringStream(template);
 		is.name = srcName!=null ? srcName : name;
-		STLexer lexer = new STLexer(errMgr, is, templateToken, delimiterStartChar, delimiterStopChar);
+		STLexer lexer = new STLexer(group.errMgr, is, templateToken, group.delimiterStartChar, group.delimiterStopChar);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		STParser p = new STParser(tokens, errMgr, templateToken);
+		STParser p = new STParser(tokens, group.errMgr, templateToken);
 		STParser.templateAndEOF_return r = null;
 		try {
 			r = p.templateAndEOF();
@@ -157,7 +130,7 @@ public class Compiler {
 		//System.out.println(((CommonTree)r.getTree()).toStringTree());
 		CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.getTree());
 		nodes.setTokenStream(tokens);
-		CodeGenerator gen = new CodeGenerator(nodes, errMgr, name, template, templateToken);
+		CodeGenerator gen = new CodeGenerator(nodes, group.errMgr, name, template, templateToken);
 
 		CompiledST impl=null;
 		try {
@@ -170,7 +143,7 @@ public class Compiler {
 			}
 		}
 		catch (RecognitionException re) {
-			errMgr.internalError(null, "bad tree structure", re);
+			group.errMgr.internalError(null, "bad tree structure", re);
 		}
 
 		return impl;
@@ -197,23 +170,23 @@ public class Compiler {
 	{
 		if ( re.token.getType() == STLexer.EOF_TYPE ) {
 			String msg = "premature EOF";
-			errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
+			group.errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
 		}
 		else if ( re instanceof NoViableAltException) {
 			String msg = "'"+re.token.getText()+"' came as a complete surprise to me";
-			errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
+			group.errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
 		}
 		else if ( tokens.index() == 0 ) { // couldn't parse anything
 			String msg = "this doesn't look like a template: \""+tokens+"\"";
-			errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
+			group.errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
 		}
 		else if ( tokens.LA(1) == STLexer.LDELIM ) { // couldn't parse expr
 			String msg = "doesn't look like an expression";
-			errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
+			group.errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
 		}
 		else {
 			String msg = parser.getErrorMessage(re, parser.getTokenNames());
-			errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
+			group.errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
 		}
 		throw new STException(); // we have reported the error, so just blast out
 	}

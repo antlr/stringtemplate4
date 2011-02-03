@@ -57,6 +57,7 @@ package org.stringtemplate.v4.test;
 import org.junit.Before;
 import org.junit.Test;
 import org.stringtemplate.v4.STErrorListener;
+import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.misc.ErrorBuffer;
@@ -161,7 +162,9 @@ public class TestCompiler extends BaseTest {
 	@Test public void testAnonIncludeArgMismatch() throws Exception {
 		STErrorListener errors = new ErrorBuffer();
 		String template = "<a:{foo}>";
-		CompiledST code = new Compiler(new ErrorManager(errors)).compile(template);
+		STGroup g = new STGroup();
+		g.errMgr = new ErrorManager(errors);
+		CompiledST code = new Compiler(g).compile(template);
 		String expected = "1:3: anonymous template has 0 arg(s) but mapped across 1 value(s)"+newline;
 		assertEquals(expected, errors.toString());
 	}
@@ -169,7 +172,9 @@ public class TestCompiler extends BaseTest {
 	@Test public void testAnonIncludeArgMismatch2() throws Exception {
 		STErrorListener errors = new ErrorBuffer();
 		String template = "<a,b:{x|foo}>";
-		CompiledST code = new Compiler(new ErrorManager(errors)).compile(template);
+		STGroup g = new STGroup();
+		g.errMgr = new ErrorManager(errors);
+		CompiledST code = new Compiler(g).compile(template);
 		String expected = "1:5: anonymous template has 1 arg(s) but mapped across 2 value(s)"+newline;
 		assertEquals(expected, errors.toString());
 	}
@@ -177,7 +182,9 @@ public class TestCompiler extends BaseTest {
 	@Test public void testAnonIncludeArgMismatch3() throws Exception {
 		STErrorListener errors = new ErrorBuffer();
 		String template = "<a:{x|foo},{bar}>";
-		CompiledST code = new Compiler(new ErrorManager(errors)).compile(template);
+		STGroup g = new STGroup();
+		g.errMgr = new ErrorManager(errors);
+		CompiledST code = new Compiler(g).compile(template);
 		String expected = "1:11: anonymous template has 0 arg(s) but mapped across 1 value(s)"+newline;
 		assertEquals(expected, errors.toString());
 	}
@@ -516,7 +523,7 @@ public class TestCompiler extends BaseTest {
     @Test public void testEmbeddedRegion() throws Exception {
         String template = "<@r>foo<@end>";
         // compile as if in root dir and in template 'a'
-        CompiledST code = new Compiler('<', '>').compile("a", template);
+        CompiledST code = new Compiler().compile("a", template);
         String asmExpected =
             "new 0 0, write";
         String asmResult = code.instrs();
@@ -529,7 +536,7 @@ public class TestCompiler extends BaseTest {
     @Test public void testRegion() throws Exception {
         String template = "x:<@r()>";
         // compile as if in root dir and in template 'a'
-        CompiledST code = new Compiler('<', '>').compile("a", template);
+        CompiledST code = new Compiler().compile("a", template);
         String asmExpected =
             "load_str 0, write, new 1 0, write";
         String asmResult = code.instrs();
