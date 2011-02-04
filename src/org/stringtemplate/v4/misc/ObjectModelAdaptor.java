@@ -66,7 +66,10 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 				throwNoSuchProperty(c.getName() + "." + propertyName);
 			}
 		}
+		return lookupMethod(o, propertyName, value, c);
+	}
 
+	public Object lookupMethod(Object o, String propertyName, Object value, Class c) {
 		// try getXXX and isXXX properties, look up using reflection
 		String methodSuffix = Character.toUpperCase(propertyName.charAt(0))+
 			propertyName.substring(1, propertyName.length());
