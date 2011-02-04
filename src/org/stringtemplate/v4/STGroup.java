@@ -51,7 +51,7 @@ public class STGroup {
     public static final String DEFAULT_KEY = "default";
 
     /** Load files using what encoding? */
-    public String encoding;
+    public String encoding = "UTF-8";
 
     /** Every group can import templates/dictionaries from other groups.
      *  The list must be synchronized (see importTemplates).
