@@ -188,16 +188,67 @@ public class TestIndentation extends BaseTest {
 		assertEquals(expecting, t.render());
 	}
 
-    @Test public void testIndentedIFWithValueExpr() throws Exception {
-        ST t = new ST(
-            "begin"+newline+
-            "    <if(x)>foo<endif>"+newline+
-            "end"+newline);
-        t.add("x", "x");
-        String expecting="begin"+newline+"    foo"+newline+"end"+newline;
-        String result = t.render();
-        assertEquals(expecting, result);
-    }
+	@Test public void testIndentedIFWithValueExpr() throws Exception {
+		ST t = new ST(
+			"begin"+newline+
+			"    <if(x)>foo<endif>"+newline+
+			"end"+newline);
+		t.add("x", "x");
+		String expecting="begin"+newline+"    foo"+newline+"end"+newline;
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testIndentedIFWithElse() throws Exception {
+		ST t = new ST(
+			"begin"+newline+
+			"    <if(x)>foo<else>bar<endif>"+newline+
+			"end"+newline);
+		t.add("x", "x");
+		String expecting="begin"+newline+"    foo"+newline+"end"+newline;
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testIndentedIFWithElse2() throws Exception {
+		ST t = new ST(
+			"begin"+newline+
+			"    <if(x)>foo<else>bar<endif>"+newline+
+			"end"+newline);
+		t.add("x", false);
+		String expecting="begin"+newline+"    bar"+newline+"end"+newline;
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testIndentedIFWithNewlineBeforeText() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("t", "x",
+			"begin"+newline+
+			"    <if(x)>\n" +
+			"foo\n" +  // no indent; ignore IF indent
+			"    <endif>"+newline+	  // ignore indent on if-tags on line by themselves
+			"end"+newline);
+		ST t = group.getInstanceOf("t");
+		t.add("x", "x");
+		String expecting="begin"+newline+"foo"+newline+"end";
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testIndentedIFWithEndifNextLine() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("t", "x",
+			"begin"+newline+
+			"    <if(x)>foo\n" +      // use indent and keep newline
+			"    <endif>"+newline+	  // ignore indent on if-tags on line by themselves
+			"end"+newline);
+		ST t = group.getInstanceOf("t");
+		t.add("x", "x");
+		String expecting="begin"+newline+"    foo"+newline+"end";
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
 
     @Test public void testIFWithIndentOnMultipleLines() throws Exception {
         ST t = new ST(

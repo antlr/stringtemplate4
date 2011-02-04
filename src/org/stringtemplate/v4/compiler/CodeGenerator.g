@@ -118,8 +118,8 @@ chunk
 	;
 	
 element
-	:	^(INDENT compoundElement) // ignore indent in front of IF and region blocks
-	|	compoundElement
+	:	^(INDENT compoundElement[$INDENT.text]) // ignore indent in front of IF and region blocks
+	|	compoundElement[null]
 	|	^(INDENT {$template::state.indent($INDENT.text);} singleElement {$template::state.emit(Bytecode.INSTR_DEDENT);})
 	|	singleElement
 	;
@@ -137,9 +137,9 @@ singleElement
 	|	NEWLINE {emit(Bytecode.INSTR_NEWLINE);}
 	;
 
-compoundElement
-	:	ifstat
-	|	region
+compoundElement[String indent]
+	:	ifstat[indent]
+	|	region[indent]
 		{
 		emit2($region.start, Bytecode.INSTR_NEW, $region.name, 0);
 		emit($region.start, Bytecode.INSTR_WRITE);
@@ -152,7 +152,7 @@ exprElement
 		{emit($EXPR, op);}
 	;
 
-region returns [String name]
+region[String indent] returns [String name]
 	:	^(	REGION ID
 			{$name = STGroup.getMangledRegionName(outermostTemplateName, $ID.text);}
 			template[$name,null]
@@ -189,7 +189,7 @@ subtemplate returns [String name, int nargs]
 		 )
 	;
 
-ifstat
+ifstat[String indent]
 @init {
     /** Tracks address of branch operand (in code block).  It's how
      *  we backpatch forward references when generating code for IFs.
@@ -199,6 +199,10 @@ ifstat
      *  We need to update them once we see the endif.
      */
     List<Integer> endRefs = new ArrayList<Integer>();
+    if ( true && indent!=null ) $template::state.indent(indent);
+}
+@after {
+	if ( true && indent!=null ) $template::state.emit(Bytecode.INSTR_DEDENT);
 }
 	:	^(	i='if' conditional
 			{

@@ -72,14 +72,22 @@ templateAndEOF : template EOF -> template? ;
 template : element* ;
 
 element
-	:	INDENT element -> ^(INDENT element)
-	|	ifstat
-	|	exprTag
-	|	text
-	|	region
-	|	NEWLINE
+	:	INDENT singleElement -> ^(INDENT singleElement)
+	|	singleElement
+	|	compoundElement
 	;
 
+singleElement
+	:	exprTag
+	|	text
+	|	NEWLINE
+	;
+	
+compoundElement
+	:	ifstat
+	|	region
+	;
+	
 text : TEXT ;
 
 exprTag
@@ -88,7 +96,7 @@ exprTag
 	;
 
 region
-	:	LDELIM '@' ID RDELIM NEWLINE?
+	:	INDENT? LDELIM '@' ID RDELIM NEWLINE?
 		template
 		INDENT? LDELIM '@end' RDELIM NEWLINE?
 		-> ^(REGION ID template?)
@@ -100,8 +108,9 @@ subtemplate
 		-> ^(SUBTEMPLATE[$lc,"SUBTEMPLATE"] ^(ARGS $ids)* template)
 	;
 
-ifstat // ignore INDENTs in front of elseif ...
-	:	LDELIM 'if' '(' c1=conditional ')' RDELIM
+ifstat
+@init {Token indent=null;}
+	:	i=INDENT? LDELIM 'if' '(' c1=conditional ')' RDELIM {if (input.LA(1)!=NEWLINE) indent=$i;}
 			t1=template
 			( INDENT? LDELIM 'elseif' '(' c2+=conditional ')' RDELIM t2+=template )*
 			( INDENT? LDELIM 'else' RDELIM t3=template )?
@@ -109,6 +118,7 @@ ifstat // ignore INDENTs in front of elseif ...
 		RDELIM
 		// kill \n for <endif> on line by itself if multi-line IF
 		({$ifstat.start.getLine()!=input.LT(1).getLine()}?=> NEWLINE)?
+		-> {indent!=null}? ^({indent} ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?))
 		-> ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?)
 	;
 
