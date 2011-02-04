@@ -199,10 +199,10 @@ ifstat[String indent]
      *  We need to update them once we see the endif.
      */
     List<Integer> endRefs = new ArrayList<Integer>();
-    if ( true && indent!=null ) $template::state.indent(indent);
+    if ( indent!=null ) $template::state.indent(indent);
 }
 @after {
-	if ( true && indent!=null ) $template::state.emit(Bytecode.INSTR_DEDENT);
+	if ( indent!=null ) $template::state.emit(Bytecode.INSTR_DEDENT);
 }
 	:	^(	i='if' conditional
 			{
