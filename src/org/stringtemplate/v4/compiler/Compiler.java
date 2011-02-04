@@ -127,7 +127,7 @@ public class Compiler {
 			return impl;
 		}
 
-		System.out.println(((CommonTree)r.getTree()).toStringTree());
+		//System.out.println(((CommonTree)r.getTree()).toStringTree());
 		CommonTreeNodeStream nodes = new CommonTreeNodeStream(r.getTree());
 		nodes.setTokenStream(tokens);
 		CodeGenerator gen = new CodeGenerator(nodes, group.errMgr, name, template, templateToken);
