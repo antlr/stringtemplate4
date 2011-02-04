@@ -1,0 +1,17 @@
+email(order,separator) ::= <<
+<! This is a comment
+!>Hello, <if(order.customer.firstName)><order.customer.firstName><else>dear customer<endif>!
+
+On <order.orderDate> we received the following order:
+
+Shipping address:
+<if(order.customer.firstName)><order.customer.firstName> <endif><order.customer.lastName>
+<order.customer.address>
+
+<order.items:{item|<item.amount>x <item.article.name> à <item.article.price; format="currency"> = <item.subTotal; format="currency">};separator="\n">
+<if(!order.freeShipping)>plus shipping = <order.shippingCost; format="currency"><endif>
+<separator>
+Total = <order.total; format="currency">
+
+Thank you for ordering!
+>>
