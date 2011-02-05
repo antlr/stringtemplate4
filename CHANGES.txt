@@ -9,6 +9,9 @@ CHANGES
 
 4.0b4 --
 
+BIG THANKS to Udo Borkowski for his help debugging these betas and his
+suggestions.
+
 * added write to file methods
 * had infinite loop for expr: "<t()$"
 * the default file encoding is now UTF-8
@@ -18,6 +21,8 @@ CHANGES
 * added two literals "true" and "false" to the template argument syntax; e.g.,
   stat(name,x=true,y=false) ::= "..."
 * it was treating "..." default arg as a template not string.
+* throws STException now upon not finding group file or group dir instead
+  of sending err to listener.
 
 4.0b3 -- January 28, 2011
 

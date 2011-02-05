@@ -27,7 +27,7 @@
  */
 package org.stringtemplate.v4;
 
-import org.stringtemplate.v4.compiler.CompiledST;
+import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.misc.Misc;
 
 import java.io.File;
@@ -70,7 +70,7 @@ public class STGroupFile extends STGroup {
             }
         }
         catch (Exception e) {
-            errMgr.internalError(null, "can't load group file "+fileName, e);
+			throw new STException("can't load group file "+fileName, e);
         }
         this.fileName = fileName;
     }
@@ -124,5 +124,5 @@ public class STGroupFile extends STGroup {
     }
 
     public String getName() { return Misc.getFileNameNoSuffix(fileName); }
-	public String getFileName() { return fileName; }	
+	public String getFileName() { return fileName; }
 }

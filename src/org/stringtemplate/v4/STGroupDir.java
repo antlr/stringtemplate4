@@ -30,9 +30,7 @@ package org.stringtemplate.v4;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.stringtemplate.v4.compiler.CompiledST;
-import org.stringtemplate.v4.compiler.GroupLexer;
-import org.stringtemplate.v4.compiler.GroupParser;
+import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
 
@@ -78,7 +76,7 @@ public class STGroupDir extends STGroup {
             }
         }
         catch (Exception e) {
-            errMgr.internalError(null, "can't load group dir "+dirName, e);
+			throw new STException("can't load group file "+dirName, e);
         }
     }
 
@@ -175,5 +173,5 @@ public class STGroupDir extends STGroup {
 	}
 
 	public String getName() { return groupDirName; }
-	public String getFileName() { return root.getFile(); }	
+	public String getFileName() { return root.getFile(); }
 }
