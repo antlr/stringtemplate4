@@ -105,7 +105,7 @@ region
 subtemplate
 	:	lc='{' (ids+= ID ( ',' ids+= ID )* '|' )? template INDENT? '}'
 		// ignore final INDENT before } as it's not part of outer indent
-		-> ^(SUBTEMPLATE[$lc,"SUBTEMPLATE"] ^(ARGS $ids)* template)
+		-> ^(SUBTEMPLATE[$lc,"SUBTEMPLATE"] ^(ARGS $ids)* template?)
 	;
 
 ifstat
