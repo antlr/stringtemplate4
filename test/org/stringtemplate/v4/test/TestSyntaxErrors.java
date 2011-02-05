@@ -212,6 +212,23 @@ public class TestSyntaxErrors extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testNonterminatedComment() throws Exception {
+		String templates =
+			"foo() ::= << <!foo> >>";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroupFile group = null;
+		STErrorListener errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		group.load(); // force load
+		String expected =
+			"t.stg 1:20: Nonterminated comment starting at 1:1: '!>' missing" +newline+
+			"t.stg 1:12: this doesn't look like a template: \" \""+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testMissingRPAREN() throws Exception {
 		String templates =
 			"foo() ::= \"hi <foo(>\"\n";

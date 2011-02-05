@@ -476,7 +476,19 @@ public class STLexer implements TokenSource {
 
     void COMMENT() {
         match('!');
-        while ( !(c=='!' && input.LA(2)==delimiterStopChar) ) consume();
+        while ( !(c=='!' && input.LA(2)==delimiterStopChar) ) {
+			if (c==EOF) {
+				RecognitionException re =
+					new MismatchedTokenException((int)'!', input);
+				re.line = input.getLine();
+				re.charPositionInLine = input.getCharPositionInLine();
+				errMgr.lexerError(input.getSourceName(), "Nonterminated comment starting at " +
+					startLine+":"+startCharPositionInLine+": '!"+
+					delimiterStopChar+"' missing", templateToken, re);
+				break;
+			}
+			consume();
+		}
         consume(); consume(); // kill !>
     }
 

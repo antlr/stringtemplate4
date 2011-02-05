@@ -14,6 +14,7 @@ CHANGES
 * the default file encoding is now UTF-8
 * early eval <(x)> using new STWriter derived from type of current STWriter.
   e.g., AutoIndentWriter.
+* didn't detect nonterminated comment. <!bad comment>
 
 4.0b3 -- January 28, 2011
 
