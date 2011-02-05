@@ -266,6 +266,22 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
+	@Test public void testBooleanDefaultArguments() throws Exception {
+		String templates =
+				"method(name) ::= <<"+newline+
+				"<stat(name)>" +newline+
+				">>"+newline+
+				"stat(name,x=true,y=false) ::= \"<name>; <x> <y>\""+newline
+				;
+		writeFile(tmpdir, "group.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/group.stg");
+		ST b = group.getInstanceOf("method");
+		b.add("name", "foo");
+		String expecting = "foo; true false";
+		String result = b.render();
+		assertEquals(expecting, result);
+	}
+
 	@Test public void testDefaultArgument2() throws Exception {
 		String templates =
 				"stat(name,value=\"99\") ::= \"x=<value>; // <name>\""+newline

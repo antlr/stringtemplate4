@@ -27,6 +27,8 @@
 */
 grammar Group;
 
+tokens { TRUE='true'; FALSE='false'; }
+
 @header {
 package org.stringtemplate.v4.compiler;
 import java.util.Map;
@@ -168,6 +170,8 @@ formalArgWithDefaultValue[List<FormalArgument> args]
 	:	ID
 		(	'=' a=STRING
 		|	'=' a=ANONYMOUS_TEMPLATE
+		|	'=' a='true'
+		|	'=' a='false'
 		)
 		{$args.add(new FormalArgument($ID.text, $a));}
     ;

@@ -15,6 +15,9 @@ CHANGES
 * early eval <(x)> using new STWriter derived from type of current STWriter.
   e.g., AutoIndentWriter.
 * didn't detect nonterminated comment. <!bad comment>
+* added two literals "true" and "false" to the template argument syntax; e.g.,
+  stat(name,x=true,y=false) ::= "..."
+* it was treating "..." default arg as a template not string.
 
 4.0b3 -- January 28, 2011
 

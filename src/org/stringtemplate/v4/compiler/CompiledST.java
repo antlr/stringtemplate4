@@ -121,14 +121,22 @@ public class CompiledST {
 		for (String a : formalArguments.keySet()) {
 			FormalArgument fa = formalArguments.get(a);
 			if ( fa.defaultValueToken!=null ) {
-				String argSTname = fa.name + "_default_value";
-				Compiler c2 = new Compiler(group);
-				String defArgTemplate =
-					Misc.strip(fa.defaultValueToken.getText(), 1);
-				fa.compiledDefaultValue =
-					c2.compile(nativeGroup.getFileName(), argSTname, null,
-							   defArgTemplate, fa.defaultValueToken);
-				fa.compiledDefaultValue.name = argSTname;
+				if ( fa.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
+					String argSTname = fa.name + "_default_value";
+					Compiler c2 = new Compiler(group);
+					String defArgTemplate =
+						Misc.strip(fa.defaultValueToken.getText(), 1);
+					fa.compiledDefaultValue =
+						c2.compile(nativeGroup.getFileName(), argSTname, null,
+								   defArgTemplate, fa.defaultValueToken);
+					fa.compiledDefaultValue.name = argSTname;
+				}
+				if ( fa.defaultValueToken.getType()==GroupParser.STRING ) {
+					fa.defaultValue = Misc.strip(fa.defaultValueToken.getText(), 1);
+				}
+				else { // true or false
+					fa.defaultValue = fa.defaultValueToken.getType()==GroupParser.TRUE;
+				}
 			}
 		}
 	}

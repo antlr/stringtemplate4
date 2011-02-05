@@ -1022,24 +1022,30 @@ public class Interpreter {
 		if ( invokedST.impl.formalArguments==null ) return;
 		for (FormalArgument arg : invokedST.impl.formalArguments.values()) {
 			// if no value for attribute and default arg, inject default arg into self
-			if ( invokedST.locals[arg.index]==ST.EMPTY_ATTR && arg.compiledDefaultValue!=null ) {
+			if ( invokedST.locals[arg.index]!=ST.EMPTY_ATTR || arg.defaultValueToken==null ) {
+				continue;
+			}
+			//System.out.println("setting def arg "+arg.name+" to "+defaultArgST);
+			if ( arg.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
 				ST defaultArgST = group.createStringTemplate();
 				defaultArgST.enclosingInstance = invokedST.enclosingInstance;
 				defaultArgST.groupThatCreatedThisInstance = group;
 				defaultArgST.impl = arg.compiledDefaultValue;
-				//System.out.println("setting def arg "+arg.name+" to "+defaultArgST);
 				// If default arg is template with single expression
 				// wrapped in parens, x={<(...)>}, then eval to string
 				// rather than setting x to the template for later
 				// eval.
 				String defArgTemplate = arg.defaultValueToken.getText();
 				if ( defArgTemplate.startsWith("{"+group.delimiterStartChar+"(") &&
-					 defArgTemplate.endsWith(")"+group.delimiterStopChar+"}") ) {
+					defArgTemplate.endsWith(")"+group.delimiterStopChar+"}") ) {
 					invokedST.rawSetAttribute(arg.name, toString(out, invokedST, defaultArgST));
 				}
 				else {
 					invokedST.rawSetAttribute(arg.name, defaultArgST);
 				}
+			}
+			else {
+				invokedST.rawSetAttribute(arg.name, arg.defaultValue);
 			}
 		}
 	}

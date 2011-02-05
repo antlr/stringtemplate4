@@ -31,7 +31,7 @@ import org.antlr.runtime.Token;
 
 /** Represents the name of a formal argument defined in a template:
  *
- *  test(a,b) ::= "<a> <n>"
+ *  test(a,b,x=defaultvalue) ::= "<a> <n> <x>"
  *
  *  Each template has a set of these formal arguments or uses
  *  a placeholder object: UNKNOWN (indicating that no arguments
@@ -62,21 +62,14 @@ public class FormalArgument {
     protected int cardinality = REQUIRED;
      */
 
-    /** When template arguments are not available, when the user
-     *  uses "new ST(...)", then the list of formal arguments
-     *  must be distinguished from the case where a template can specify
-     *  args and there just aren't any such as the t() template above.
-     */
-//    public static final LinkedHashMap<String, FormalArgument> UNKNOWN =
-//        new LinkedHashMap<String, FormalArgument>();
-
     public String name;
 
 	public int index; // which argument is it? from 0..n-1
 
-	/** If they specified name="value", store the template here */
+	/** If they specified default value x=y, store the token here */
 	public Token defaultValueToken;
-    public CompiledST compiledDefaultValue;
+	public Object defaultValue; // x="str", x=true, x=false
+	public CompiledST compiledDefaultValue; // x={...}
 
     public FormalArgument(String name) { this.name = name; }
 
