@@ -331,7 +331,7 @@ public class ST {
 	public int write(STWriter out) throws IOException {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
 											 impl.nativeGroup.errMgr);
-		interp.setDefaultArguments(this);
+		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
     }
 
@@ -339,14 +339,14 @@ public class ST {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
 											 locale,
 											 impl.nativeGroup.errMgr);
-		interp.setDefaultArguments(this);
+		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
 	}
 
 	public int write(STWriter out, STErrorListener listener) {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
 											 new ErrorManager(listener));
-		interp.setDefaultArguments(this);
+		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
 	}
 
@@ -354,7 +354,7 @@ public class ST {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
 											 locale,
 											 new ErrorManager(listener));
-		interp.setDefaultArguments(this);
+		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
 	}
 

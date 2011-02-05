@@ -27,6 +27,7 @@
  */
 package org.stringtemplate.v4;
 
+import org.antlr.stringtemplate.StringTemplateWriter;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.debug.DebugST;
@@ -35,8 +36,8 @@ import org.stringtemplate.v4.debug.EvalTemplateEvent;
 import org.stringtemplate.v4.debug.InterpEvent;
 import org.stringtemplate.v4.misc.*;
 
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 /** This class knows how to execute template bytecodes relative to a
@@ -169,12 +170,12 @@ public class Interpreter {
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					o = operands[sp--];
 					name = self.impl.strings[nameIndex];
-					operands[++sp] = getObjectProperty(self, o, name);
+					operands[++sp] = getObjectProperty(out, self, o, name);
 					break;
 				case Bytecode.INSTR_LOAD_PROP_IND :
 					Object propName = operands[sp--];
 					o = operands[sp];
-					operands[sp] = getObjectProperty(self, o, propName);
+					operands[sp] = getObjectProperty(out, self, o, propName);
 					break;
 				case Bytecode.INSTR_NEW :
 					nameIndex = getShort(code, ip);
@@ -303,7 +304,7 @@ public class Interpreter {
 					break;
 				case Bytecode.INSTR_TOSTR :
 					// replace with string value; early eval
-					operands[sp] = toString(self, operands[sp]);
+					operands[sp] = toString(out, self, operands[sp]);
 					break;
 				case Bytecode.INSTR_FIRST  :
 					operands[sp] = first(operands[sp]);
@@ -550,7 +551,7 @@ public class Interpreter {
 		if ( options!=null ) {
 			optionStrings = new String[options.length];
 			for (int i=0; i< org.stringtemplate.v4.compiler.Compiler.NUM_OPTIONS; i++) {
-				optionStrings[i] = toString(self, options[i]);
+				optionStrings[i] = toString(out, self, options[i]);
 			}
 		}
 		if ( options!=null && options[Option.ANCHOR.ordinal()]!=null ) {
@@ -587,7 +588,7 @@ public class Interpreter {
 		}
 		if ( o instanceof ST ) {
 			((ST)o).enclosingInstance = self;
-			setDefaultArguments((ST)o);
+			setDefaultArguments(out, (ST)o);
 			if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
 				// if we have a wrap string, then inform writer it
 				// might need to wrap
@@ -940,18 +941,25 @@ public class Interpreter {
 		return i;
 	}
 
-	protected String toString(ST self, Object value) {
+	protected String toString(STWriter out, ST self, Object value) {
 		if ( value!=null ) {
 			if ( value.getClass()==String.class ) return (String)value;
 			// if ST, make sure it evaluates with enclosing template as self
 			if ( value instanceof ST ) ((ST)value).enclosingInstance = self;
 			// if not string already, must evaluate it
 			StringWriter sw = new StringWriter();
-			/*
-						Interpreter interp = new Interpreter(group, new NoIndentWriter(sw), locale);
-						interp.writeObjectNoOptions(self, value, -1, -1);
-						*/
-			writeObjectNoOptions(new NoIndentWriter(sw), self, value);
+			STWriter stw = null;
+			try {
+				Class writerClass = out.getClass();
+				Constructor ctor =
+					writerClass.getConstructor(new Class[] {Writer.class});
+				stw = (STWriter)ctor.newInstance(sw);
+			}
+			catch (Exception e) {
+				stw = new AutoIndentWriter(sw);
+				errMgr.runTimeError(self, current_ip, ErrorType.WRITER_CTOR_ISSUE, out.getClass().getSimpleName());
+			}
+			writeObjectNoOptions(stw, self, value);
 
 			return sw.toString();
 		}
@@ -986,7 +994,7 @@ public class Interpreter {
 		return true; // any other non-null object, return true--it's present
 	}
 
-	protected Object getObjectProperty(ST self, Object o, Object property) {
+	protected Object getObjectProperty(STWriter out, ST self, Object o, Object property) {
 		if ( o==null ) {
 			errMgr.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
 									  "null attribute");
@@ -995,7 +1003,7 @@ public class Interpreter {
 
 		try {
 			ModelAdaptor adap = self.groupThatCreatedThisInstance.getModelAdaptor(o.getClass());
-			return adap.getProperty(self, o, property, toString(self,property));
+			return adap.getProperty(self, o, property, toString(out,self,property));
 		}
 		catch (STNoSuchPropertyException e) {
 			errMgr.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
@@ -1010,7 +1018,7 @@ public class Interpreter {
 	 *
 	 *  The evaluation context is the template enclosing invokedST.
 	 */
-	public void setDefaultArguments(ST invokedST) {
+	public void setDefaultArguments(STWriter out, ST invokedST) {
 		if ( invokedST.impl.formalArguments==null ) return;
 		for (FormalArgument arg : invokedST.impl.formalArguments.values()) {
 			// if no value for attribute and default arg, inject default arg into self
@@ -1027,7 +1035,7 @@ public class Interpreter {
 				String defArgTemplate = arg.defaultValueToken.getText();
 				if ( defArgTemplate.startsWith("{"+group.delimiterStartChar+"(") &&
 					 defArgTemplate.endsWith(")"+group.delimiterStopChar+"}") ) {
-					invokedST.rawSetAttribute(arg.name, toString(invokedST, defaultArgST));
+					invokedST.rawSetAttribute(arg.name, toString(out, invokedST, defaultArgST));
 				}
 				else {
 					invokedST.rawSetAttribute(arg.name, defaultArgST);

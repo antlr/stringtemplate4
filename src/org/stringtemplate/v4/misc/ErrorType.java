@@ -38,7 +38,8 @@ public enum ErrorType {
 	NO_SUCH_PROPERTY("no such property or can't access: %s"),
 	MAP_ARGUMENT_COUNT_MISMATCH("iterating through %s values in zip map but template has %s declared arguments"),
 	ARGUMENT_COUNT_MISMATCH("passed %s arg(s) to template %s with %s declared arg(s)"),
-    EXPECTING_STRING("function %s expects a string not %s"),
+	EXPECTING_STRING("function %s expects a string not %s"),
+	WRITER_CTOR_ISSUE("%s(Writer) constructor doesn't exist"),
 
     // COMPILE-TIME SYNTAX/SEMANTIC ERRORS
     SYNTAX_ERROR("%s"),

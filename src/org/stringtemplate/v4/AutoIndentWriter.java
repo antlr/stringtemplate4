@@ -54,31 +54,31 @@ public class AutoIndentWriter implements STWriter {
 	/** stack of indents; use List as it's much faster than Stack. Grows
 	 *  from 0..n-1.
 	 */
-	protected List<String> indents = new ArrayList<String>();
+	public List<String> indents = new ArrayList<String>();
 
 	/** Stack of integer anchors (char positions in line); avoid Integer
 	 *  creation overhead.
 	 */
-	protected int[] anchors = new int[10];
-	protected int anchors_sp = -1;
+	public int[] anchors = new int[10];
+	public int anchors_sp = -1;
 
 	/** \n or \r\n? */
-	protected String newline;
+	public String newline;
 
-	protected Writer out = null;
-    protected boolean atStartOfLine = true;
+	public Writer out = null;
+    public boolean atStartOfLine = true;
 
 	/** Track char position in the line (later we can think about tabs).
 	 *  Indexed from 0.  We want to keep charPosition <= lineWidth.
 	 *  This is the position we are *about* to write not the position
 	 *  last written to.
 	 */
-    protected int charPosition = 0;
+    public int charPosition = 0;
 
     /** The absolute char index into the output of the next char to be written. */
-    protected int charIndex = 0;
+    public int charIndex = 0;
 
-	protected int lineWidth = NO_WRAP;
+	public int lineWidth = NO_WRAP;
 
 	public AutoIndentWriter(Writer out, String newline) {
 		this.out = out;

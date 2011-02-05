@@ -28,10 +28,7 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.AutoIndentWriter;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.*;
 
 import java.io.StringWriter;
@@ -733,21 +730,18 @@ public class TestCoreBasics extends BaseTest {
 		STGroup group = new STGroup();
 		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
 		ST st = group.getInstanceOf("test");
-		st.add("names", new ArrayList<String>() {{add("Ter"); add("Tom");}});
+		st.add("names", new ArrayList<String>() {{
+			add("Ter");
+			add("Tom");
+		}});
 		String expected =
 			"case Ter, case Tom";
 		String result = st.render();
 		assertEquals(expected, result);
 	}
 
-	/** (...) forces early eval to string.
-	 * We need an STWriter so I must pick one.  toString(...) is used to
-	 * ensure b is property name in <a.b>.  It's used to eval default args
-	 * (usually strings). It's use to eval option values (usually strings).
-	 * So in general no-indent is fine.  Now, if I used indent-writer, it
-	 * would mostly work too.  What about <(t())> when t() is huge and indented
-	 * but you had called render() with a no-indent-writer?  now *part* your
-	 * input is indented!
+	/** (...) forces early eval to string. early eval <(x)> using new
+	 *  STWriter derived from type of current STWriter. e.g., AutoIndentWriter.
 	 */
 	@Test public void testEarlyEvalIndent() throws Exception {
 		String templates =
@@ -764,10 +758,35 @@ public class TestCoreBasics extends BaseTest {
 		ST st = group.getInstanceOf("main");
 		String result = st.render();
 		String expected =
-			"  abc" +newline+
-			"abc"+newline+
-			"    abc" +newline+
-			"  abc";
+			"  abc\n" +
+			"  abc\n" +
+			"    abc\n" +
+			"    abc";
+		assertEquals(expected, result);
+	}
+
+	@Test public void testEarlyEvalNoIndent() throws Exception {
+		String templates =
+			"t() ::= <<  abc>>\n" +
+			"main() ::= <<\n" +
+			"<t()>\n" +
+			"<(t())>\n" + // early eval ignores indents; mostly for simply strings
+			"  <t()>\n" +
+			"  <(t())>\n" +
+			">>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ST st = group.getInstanceOf("main");
+		StringWriter sw = new StringWriter();
+		NoIndentWriter w = new NoIndentWriter(sw);
+		st.write(w);
+		String result = sw.toString();
+		String expected =
+			"abc\n" +
+			"abc\n" +
+			"abc\n" +
+			"abc";
 		assertEquals(expected, result);
 	}
 

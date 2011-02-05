@@ -12,6 +12,8 @@ CHANGES
 * added write to file methods
 * had infinite loop for expr: "<t()$"
 * the default file encoding is now UTF-8
+* early eval <(x)> using new STWriter derived from type of current STWriter.
+  e.g., AutoIndentWriter.
 
 4.0b3 -- January 28, 2011
 
