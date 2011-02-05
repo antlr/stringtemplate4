@@ -7,7 +7,7 @@ University of San Francisco
 
 CHANGES
 
-4.0b4 --
+4.0b4 -- February 5, 2011
 
 BIG THANKS to Udo Borkowski for his help debugging these betas and his
 suggestions.
@@ -25,6 +25,8 @@ suggestions.
   of sending err to listener.
 * default args couldn't have subtemplates
   t(x,y={<x:{s|<s>}>}) ::= "..."
+* Added a new benchmark from Oliver Zeigermann. Discovered 60% of time is
+  spent using reflection invoke() for properties.
 
 4.0b3 -- January 28, 2011
 

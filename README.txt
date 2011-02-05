@@ -37,7 +37,7 @@ into your favorite lib directory such as /usr/local/lib on UNIX:
   * antlr-complete.jar; http://www.antlr.org/download/antlr-3.3-complete.jar
   * ST.jar; see http://www.stringtemplate.org/download/ST-4.0bX.jar
 
-where X is 2 at the moment.
+where X is 4 at the moment.
 
 Add to your CLASSPATH. On UNIX that looks like
 
@@ -53,7 +53,7 @@ antlr3 ant task set up so first take a look at:
 
 http://www.antlr.org/wiki/display/ANTLR3/How+to+use+ant+with+ANTLR3
 
-Then, once you're set up with the ant task, go for it:
+Then, once you're set up with the ant task, go for it. Looks like this:
 
 $ cd /usr/local/ST-4.0
 $ ant
