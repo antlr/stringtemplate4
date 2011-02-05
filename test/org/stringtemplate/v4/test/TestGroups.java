@@ -295,6 +295,24 @@ public class TestGroups extends BaseTest {
 		assertEquals(expecting, result);
 	}
 
+	@Test public void testSubtemplateAsDefaultArgSeesOtherArgs() throws Exception {
+		String templates =
+			"t(x,y={<x:{s|<s><z>}>},z=\"foo\") ::= <<\n" +
+			"x: <x>\n" +
+			"y: <y>\n" +
+			">>"+newline
+			;
+		writeFile(tmpdir, "group.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/group.stg");
+		ST b = group.getInstanceOf("t");
+		b.add("x", "a");
+		String expecting =
+			"x: a" +newline+
+			"y: afoo";
+		String result = b.render();
+		assertEquals(expecting, result);
+	}
+
 	@Test public void testDefaultArgumentAsSimpleTemplate() throws Exception {
 		String templates =
 				"stat(name,value={99}) ::= \"x=<value>; // <name>\""+newline

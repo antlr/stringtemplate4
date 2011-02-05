@@ -127,11 +127,12 @@ public class CompiledST {
 					String defArgTemplate =
 						Misc.strip(fa.defaultValueToken.getText(), 1);
 					fa.compiledDefaultValue =
-						c2.compile(nativeGroup.getFileName(), argSTname, null,
+						c2.compile(group.getFileName(), argSTname, null,
 								   defArgTemplate, fa.defaultValueToken);
 					fa.compiledDefaultValue.name = argSTname;
+					fa.compiledDefaultValue.defineImplicitlyDefinedTemplates(group);
 				}
-				if ( fa.defaultValueToken.getType()==GroupParser.STRING ) {
+				else if ( fa.defaultValueToken.getType()==GroupParser.STRING ) {
 					fa.defaultValue = Misc.strip(fa.defaultValueToken.getText(), 1);
 				}
 				else { // true or false

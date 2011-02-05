@@ -587,7 +587,7 @@ public class Interpreter {
 			else return 0;
 		}
 		if ( o instanceof ST ) {
-			((ST)o).enclosingInstance = self;
+			((ST)o).enclosingInstance = self; // TODO: correct?
 			setDefaultArguments(out, (ST)o);
 			if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
 				// if we have a wrap string, then inform writer it
@@ -1028,7 +1028,9 @@ public class Interpreter {
 			//System.out.println("setting def arg "+arg.name+" to "+defaultArgST);
 			if ( arg.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
 				ST defaultArgST = group.createStringTemplate();
-				defaultArgST.enclosingInstance = invokedST.enclosingInstance;
+				// default arg template must see other args so it's enclosing
+				// instance is the template we are invoking.
+				defaultArgST.enclosingInstance = invokedST;
 				defaultArgST.groupThatCreatedThisInstance = group;
 				defaultArgST.impl = arg.compiledDefaultValue;
 				// If default arg is template with single expression

@@ -23,6 +23,8 @@ suggestions.
 * it was treating "..." default arg as a template not string.
 * throws STException now upon not finding group file or group dir instead
   of sending err to listener.
+* default args couldn't have subtemplates
+  t(x,y={<x:{s|<s>}>}) ::= "..."
 
 4.0b3 -- January 28, 2011
 

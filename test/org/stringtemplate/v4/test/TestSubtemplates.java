@@ -27,10 +27,9 @@
 */
 package org.stringtemplate.v4.test;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.Intercepter;
 import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import java.util.ArrayList;
@@ -90,6 +89,24 @@ public class TestSubtemplates extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
     }
+
+	@Test public void testSubtemplateAsDefaultArg() throws Exception {
+		String templates =
+			"t(x,y={<x:{s|<s><s>}>}) ::= <<\n" +
+			"x: <x>\n" +
+			"y: <y>\n" +
+			">>"+newline
+			;
+		writeFile(tmpdir, "group.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/group.stg");
+		ST b = group.getInstanceOf("t");
+		b.add("x", "a");
+		String expecting =
+			"x: a" +newline+
+			"y: aa";
+		String result = b.render();
+		assertEquals(expecting, result);
+	}
 
     @Test public void testParallelAttributeIteration() throws Exception {
         ST e = new ST(
