@@ -226,6 +226,8 @@ keyValue returns [Object value]
 	:	BIGSTRING			{$value = group.createSingleton($BIGSTRING);}
 	|	ANONYMOUS_TEMPLATE	{$value = group.createSingleton($ANONYMOUS_TEMPLATE);}
 	|	STRING				{$value = Misc.replaceEscapes(Misc.strip($STRING.text, 1));}
+	|	TRUE				{$value = true;}
+	|	FALSE				{$value = false;}
 	|	{input.LT(1).getText().equals("key")}?=> ID
 							{$value = STGroup.DICT_KEY;}
 	;

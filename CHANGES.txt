@@ -10,7 +10,7 @@ CHANGES
 4.0b5 --
 
 * true/false were only allowed as default args; now allowed as template
-  arg expressions in templates.
+  arg expressions in templates. Works as dictionary value too.
 
 4.0b4 -- February 5, 2011
 
