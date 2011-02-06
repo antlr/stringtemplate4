@@ -335,7 +335,9 @@ includeExpr
 
 primary
 	:	ID				{refAttr($ID);}
-	|	STRING			{emit1($STRING,Bytecode.INSTR_LOAD_STR, Misc.strip($STRING.text,1));}	
+	|	STRING			{emit1($STRING,Bytecode.INSTR_LOAD_STR, Misc.strip($STRING.text,1));}
+	|	TRUE			{emit($TRUE, Bytecode.INSTR_TRUE);}
+	|	FALSE			{emit($FALSE, Bytecode.INSTR_FALSE);}
 	|	subtemplate		// push a subtemplate but ignore args since we can't pass any to it here
 		                {emit2($start,Bytecode.INSTR_NEW, $subtemplate.name, 0);}
 	|	list

@@ -9,6 +9,9 @@ CHANGES
 
 4.0b5 --
 
+* true/false were only allowed as default args; now allowed as template
+  arg expressions in templates.
+
 4.0b4 -- February 5, 2011
 
 BIG THANKS to Udo Borkowski for his help debugging these betas and his

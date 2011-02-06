@@ -217,6 +217,8 @@ options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
 primary
 	:	ID
 	|	STRING
+	|	TRUE
+	|	FALSE
 	|	subtemplate
 	|	list
 	|	lp='(' expr ')'

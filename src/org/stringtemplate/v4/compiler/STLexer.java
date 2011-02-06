@@ -108,6 +108,9 @@ public class STLexer implements TokenSource {
     public static final int NEWLINE=32;
     public static final int AT=33;
     public static final int REGION_END=34;
+	public static final int TRUE=35;
+	public static final int FALSE=36;
+
 
     /** What char starts an expression? */
     char delimiterStartChar = '<';
@@ -274,7 +277,9 @@ public class STLexer implements TokenSource {
 						else if ( name.equals("endif") ) return newToken(ENDIF);
 						else if ( name.equals("else") ) return newToken(ELSE);
 						else if ( name.equals("elseif") ) return newToken(ELSEIF);
-                        else if ( name.equals("super") ) return newToken(SUPER);
+						else if ( name.equals("super") ) return newToken(SUPER);
+						else if ( name.equals("true") ) return newToken(TRUE);
+						else if ( name.equals("false") ) return newToken(FALSE);
 						return id;
 					}
 					RecognitionException re =

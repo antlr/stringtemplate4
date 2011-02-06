@@ -102,6 +102,8 @@ public class Bytecode {
     public static final short INSTR_NOOP            = 40; // do nothing
 	public static final short INSTR_POP             = 41;
 	public static final short INSTR_NULL            = 42; // push null value
+	public static final short INSTR_TRUE            = 43; // push true value
+	public static final short INSTR_FALSE           = 44;
 
     /** Used for assembly/disassembly; describes instruction set */
     public static Instruction[] instructions = new Instruction[] {
@@ -147,6 +149,8 @@ public class Bytecode {
         new Instruction("newline"),
         new Instruction("noop"),
 		new Instruction("pop"),
-		new Instruction("null")
+		new Instruction("null"),
+		new Instruction("true"),
+		new Instruction("false")
     };
 }

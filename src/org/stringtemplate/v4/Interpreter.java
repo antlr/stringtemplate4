@@ -390,6 +390,12 @@ public class Interpreter {
 				case Bytecode.INSTR_NULL :
 					operands[++sp] = null;
 					break;
+				case Bytecode.INSTR_TRUE :
+					operands[++sp] = true;
+					break;
+				case Bytecode.INSTR_FALSE :
+					operands[++sp] = false;
+					break;
 				default :
 					errMgr.internalError(self, "invalid bytecode @ "+(ip-1)+": "+opcode, null);
 					self.impl.dump();

@@ -470,6 +470,19 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
+	@Test public void testTrueFalseArgs() throws Exception {
+		String dir = getRandomDir();
+		String groupFile =
+			"f(x,y) ::= \"<x><y>\"\n" +
+			"g() ::= \"<f(true,{a})>\"";
+		writeFile(dir, "group.stg", groupFile);
+		STGroupFile group = new STGroupFile(dir+"/group.stg");
+		ST st = group.getInstanceOf("g");
+		String expected = "truea";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testNamedArgsInOrder() throws Exception {
 		String dir = getRandomDir();
 		String groupFile =
