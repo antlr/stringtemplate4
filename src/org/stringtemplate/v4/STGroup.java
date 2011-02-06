@@ -322,6 +322,9 @@ public class STGroup {
         code.regionDefType = ST.RegionType.EXPLICIT;
 
         rawDefineTemplate(mangled, code, regionT);
+		code.defineArgDefaultValueTemplates(this);
+		code.defineImplicitlyDefinedTemplates(this);
+
         return code;
     }
 
