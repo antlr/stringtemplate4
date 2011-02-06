@@ -126,9 +126,6 @@ conditional
 scope {
 	boolean inside;
 }
-@init {
-	$conditional::inside = true;
-}
 	: andConditional ( '||'^ andConditional )*
 	;
 
