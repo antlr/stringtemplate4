@@ -29,7 +29,9 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Test;
 import org.stringtemplate.v4.*;
-import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.stringtemplate.v4.misc.STNoSuchPropertyException;
+import org.stringtemplate.v4.misc.STRuntimeMessage;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -569,13 +571,37 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNotFalseCond() throws Exception {
-        String template = "<if(!name)>works<endif>";
-        ST st = new ST(template);
-        String expected = "works";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testNotFalseCond() throws Exception {
+		String template = "<if(!name)>works<endif>";
+		ST st = new ST(template);
+		String expected = "works";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testParensInConditonal() throws Exception {
+		String template = "<if((a||b)&&(c||d))>works<endif>";
+		ST st = new ST(template);
+		st.add("a", true);
+		st.add("b", true);
+		st.add("c", true);
+		st.add("d", true);
+		String expected = "works";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testParensInConditonal2() throws Exception {
+		String template = "<if((!a||b)&&!(c||d))>broken<else>works<endif>";
+		ST st = new ST(template);
+		st.add("a", true);
+		st.add("b", true);
+		st.add("c", true);
+		st.add("d", true);
+		String expected = "works";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testTrueCondWithElse() throws Exception {
         String template = "<if(name)>works<else>fail<endif>";

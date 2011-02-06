@@ -122,11 +122,22 @@ ifstat
 		-> ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?)
 	;
 
-conditional : andConditional ( '||'^ andConditional )* ;
+conditional
+scope {
+	boolean inside;
+}
+@init {
+	$conditional::inside = true;
+}
+	: andConditional ( '||'^ andConditional )*
+	;
 
 andConditional : notConditional ( '&&'^ notConditional )* ;
 
-notConditional : ( '!'^ notConditionalExpr | '!'^ '('! conditional ')'! | memberExpr );
+notConditional
+	:	'!'^ notConditional
+	|	memberExpr
+	;
 
 notConditionalExpr
 	:	(ID->ID)
@@ -221,7 +232,8 @@ primary
 	|	FALSE
 	|	subtemplate
 	|	list
-	|	lp='(' expr ')'
+	|	{$conditional.size()>0}?=>  '('! conditional ')'!
+	|	{$conditional.size()==0}?=> lp='(' expr ')'
 		(	'(' argExprList? ')'				-> ^(INCLUDE_IND[$lp] expr argExprList?)
 		|										-> ^(TO_STR[$lp] expr)
 		)
