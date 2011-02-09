@@ -9,11 +9,15 @@ CHANGES
 
 4.0b5 --
 
+BIG THANKS to Sam Harwell and, again, to Udo Borkowski for debugging help and
+suggestions. Sam is doing the C# implementation.
+
 * true/false were only allowed as default args; now allowed as template
   arg expressions in templates. Works as dictionary value too.
 * couldn't have anonymous templates inside a region.
 * parentheses were a bit weird in conditions.  Now, conditions cannot
   use parentheses to mean "early evaluation" except as obj.(propName)
+* nativeGroup of all implicit templates was STGroup.defaultGroup.
 
 4.0b4 -- February 5, 2011
 

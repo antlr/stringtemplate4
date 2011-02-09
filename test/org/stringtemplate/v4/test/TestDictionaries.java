@@ -296,4 +296,42 @@ public class TestDictionaries extends BaseTest {
         String result = interm.render();
         assertEquals(expecting, result);
     }
+
+	@Test public void TestAccessDictionaryFromAnonymousTemplate() {
+		String dir = tmpdir;
+		String g =
+			"a() ::= <<[<[\"foo\",\"a\"]:{x|<if(values.(x))><x><endif>}>]>>\n" +
+			"values ::= [\n" +
+			"    \"a\":false,\n" +
+			"    default:true\n" +
+			"]\n";
+		writeFile(dir, "g.stg", g);
+
+		STGroup group = new STGroupFile(tmpdir+"/"+"g.stg");
+		ST st = group.getInstanceOf("a");
+		String expected = "[foo]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void TestAccessDictionaryFromAnonymousTemplateInRegion() {
+		String dir = tmpdir;
+		String g =
+			"a() ::= <<[<@r()>]>>\n" +
+			"@a.r() ::= <<\n" +
+			"<[\"foo\",\"a\"]:{x|<if(values.(x))><x><endif>}>\n" +
+			">>\n" +
+			"values ::= [\n" +
+			"    \"a\":false,\n" +
+			"    default:true\n" +
+			"]\n";
+		writeFile(dir, "g.stg", g);
+
+		STGroup group = new STGroupFile(tmpdir+"/"+"g.stg");
+		ST st = group.getInstanceOf("a");
+		String expected = "[foo]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 }

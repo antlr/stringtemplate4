@@ -372,6 +372,7 @@ public class STGroup {
 				return;
 			}
 		}
+		code.nativeGroup = this;
 		templates.put(name, code);
 	}
 
@@ -388,10 +389,7 @@ public class STGroup {
     {
 		//System.out.println("STGroup.compile: "+enclosingTemplateName);
 		Compiler c = new Compiler(this);
-		CompiledST code = c.compile(srcName, name, args, template, templateToken);
-		code.nativeGroup = this;
-		code.template = template;
-		return code;
+		return c.compile(srcName, name, args, template, templateToken);
 	}
 
     /** The "foo" of t() ::= "<@foo()>" is mangled to "region#t#foo" */

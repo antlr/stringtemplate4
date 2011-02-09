@@ -135,6 +135,8 @@ public class Compiler {
 		CompiledST impl=null;
 		try {
 			impl = gen.template(name,args);
+			impl.nativeGroup = group;
+			impl.template = template;
 			// only save tree/token stream when debugging
 			if ( STGroup.debug ) {
 				impl.ast = (CommonTree)r.getTree();
