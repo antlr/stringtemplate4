@@ -1030,7 +1030,7 @@ public class Interpreter {
 			if ( invokedST.locals[arg.index]!=ST.EMPTY_ATTR || arg.defaultValueToken==null ) {
 				continue;
 			}
-			//System.out.println("setting def arg "+arg.name+" to "+defaultArgST);
+			//System.out.println("setting def arg "+arg.name+" to "+arg.defaultValueToken);
 			if ( arg.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
 				ST defaultArgST = group.createStringTemplate();
 				// default arg template must see other args so it's enclosing
