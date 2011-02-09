@@ -17,7 +17,7 @@ import java.util.*;
  */
 public class Benchmark {
 	private static final int WARMUP_REPS = 10000; // HotSpot needs this to warm up
-	public static final int MIN_BENCHMARK_TIME_IN_MS = 200;
+	public static final int MIN_BENCHMARK_TIME_IN_MS = 350;
 	public static final double MAX_ERROR_IN_WORK_PER_MS = 0.05;
 
 	public static void main(String[] args) throws Exception {
