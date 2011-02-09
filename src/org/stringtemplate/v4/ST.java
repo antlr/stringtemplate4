@@ -69,7 +69,9 @@ public class ST {
 
     /** Enclosing instance if I'm embedded within another template.
      *  IF-subtemplates are considered embedded as well. We look up
-	 *  dynamically scoped attributes with this ptr.
+	 *  dynamically scoped attributes with this ptr.  Set only at
+	 *  ST creation time not evaluation.  Dictionary templates are
+	 *  cloned.
      */
     public ST enclosingInstance; // who's your daddy?
 

@@ -594,7 +594,7 @@ public class Interpreter {
 			else return 0;
 		}
 		if ( o instanceof ST ) {
-			((ST)o).enclosingInstance = self; // TODO: correct?
+			//((ST)o).enclosingInstance = self; // TODO: correct?
 			setDefaultArguments(out, (ST)o);
 			if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
 				// if we have a wrap string, then inform writer it
@@ -951,8 +951,6 @@ public class Interpreter {
 	protected String toString(STWriter out, ST self, Object value) {
 		if ( value!=null ) {
 			if ( value.getClass()==String.class ) return (String)value;
-			// if ST, make sure it evaluates with enclosing template as self
-			if ( value instanceof ST ) ((ST)value).enclosingInstance = self;
 			// if not string already, must evaluate it
 			StringWriter sw = new StringWriter();
 			STWriter stw = null;

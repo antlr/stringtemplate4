@@ -18,6 +18,8 @@ suggestions. Sam is doing the C# implementation.
 * parentheses were a bit weird in conditions.  Now, conditions cannot
   use parentheses to mean "early evaluation" except as obj.(propName)
 * nativeGroup of all implicit templates was STGroup.defaultGroup.
+* removed all writes of the enclosingInstance at evaluation time; fixed
+  issue for STViz.
 
 4.0b4 -- February 5, 2011
 
