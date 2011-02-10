@@ -97,6 +97,8 @@ public class STViz {
 		m.ast.addTreeSelectionListener(
 			new TreeSelectionListener() {
 				public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
+					TreePath path = treeSelectionEvent.getNewLeadSelectionPath();
+					if ( path==null ) return;
 					CommonTree node = (CommonTree)treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
 					System.out.println("select AST: "+node);
 					CommonToken a = (CommonToken)currentST.impl.tokens.get(node.getTokenStartIndex());
@@ -288,6 +290,11 @@ public class STViz {
 	}
 
     public static void main(String[] args) throws IOException { // test rig
+		if ( args.length>0 && args[0].equals("1") ) test1();
+		else test2();
+	}
+
+	public static void test1() throws IOException { // test rig
         String templates =
 			"method(type,name,locals,args,stats) ::= <<\n" +
 			"public <type> <ick()> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
@@ -325,6 +332,30 @@ public class STViz {
 
         ((DebugST)st).inspect();
 		st.render();
+    }
+
+	public static void test2() throws IOException { // test rig
+        String templates =
+			"t1(q1=\"Some\\nText\") ::= <<\n" +
+			"<q1>\n" +
+			">>\n" +
+			"\n" +
+			"t2(p1) ::= <<\n" +
+			"<p1>\n" +
+			">>\n" +
+			"\n" +
+			"main() ::= <<\n" +
+			"START-<t1()>-END\n" +
+			"\n" +
+			"START-<t2(p1=\"Some\\nText\")>-END\n" +
+			">>\n";
+
+        String tmpdir = System.getProperty("java.io.tmpdir");
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup.debug = true;
+        ST st = group.getInstanceOf("main");
+        ((DebugST)st).inspect();
     }
 
     public static void writeFile(String dir, String fileName, String content) {

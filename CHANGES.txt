@@ -21,6 +21,7 @@ suggestions. Sam is doing the C# implementation.
 * removed all writes of the enclosingInstance at evaluation time; fixed
   issue for STViz.
 * comments on line by themselves don't emit \n to output
+* STViz tried to highlight AST pane even when we switched ASTs
 
 4.0b4 -- February 5, 2011
 
