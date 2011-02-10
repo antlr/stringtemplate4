@@ -34,6 +34,7 @@ public class Benchmark {
 			String benchmarkClassName = args[i];
 			run(benchmarkClassName);
 		}
+		//Interpreter.dumpOpcodeFreq();
 	}
 
 	// keep run as one big method so it all gets compiled.

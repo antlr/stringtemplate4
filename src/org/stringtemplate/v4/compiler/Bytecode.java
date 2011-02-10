@@ -34,9 +34,9 @@ public class Bytecode {
     public enum OperandType { NONE, STRING, ADDR, INT }
 
     public static class Instruction {
-        String name; // E.g., "load_str", "new"
-        OperandType[] type = new OperandType[MAX_OPNDS];
-        int nopnds = 0;
+        public String name; // E.g., "load_str", "new"
+        public OperandType[] type = new OperandType[MAX_OPNDS];
+        public int nopnds = 0;
         public Instruction(String name) {
             this(name,OperandType.NONE,OperandType.NONE); nopnds =0;
         }
@@ -104,6 +104,8 @@ public class Bytecode {
 	public static final short INSTR_NULL            = 42; // push null value
 	public static final short INSTR_TRUE            = 43; // push true value
 	public static final short INSTR_FALSE           = 44;
+
+	public static final short MAX_BYTECODE          = 44;
 
     /** Used for assembly/disassembly; describes instruction set */
     public static Instruction[] instructions = new Instruction[] {

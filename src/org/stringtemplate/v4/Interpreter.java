@@ -61,6 +61,58 @@ import java.util.*;
 public class Interpreter {
 	public enum Option { ANCHOR, FORMAT, NULL, SEPARATOR, WRAP }
 
+	public interface OpcodeImpl {
+		public void exec();
+	}
+
+//	public static OpcodeImpl[] impls = new OpcodeImpl[] {
+//        null, // <INVALID>
+//        new Instruction("load_str",OperandType.STRING), // index is the opcode
+//        new Instruction("load_attr",OperandType.STRING),
+//        new Instruction("load_local",OperandType.INT),
+//        new Instruction("load_prop",OperandType.STRING),
+//        new Instruction("load_prop_ind"),
+//		new Instruction("store_option",OperandType.INT),
+//		new Instruction("store_arg",OperandType.STRING),
+//        new Instruction("new",OperandType.STRING,OperandType.INT),
+//		new Instruction("new_ind",OperandType.INT),
+//		new Instruction("new_box_args",OperandType.STRING),
+//        new Instruction("super_new",OperandType.STRING,OperandType.INT),
+//		new Instruction("super_new_box_args",OperandType.STRING),
+//        new Instruction("write"),
+//		new Instruction("write_opt"),
+//        new Instruction("map"),
+//        new Instruction("rot_map", OperandType.INT),
+//        new Instruction("zip_map", OperandType.INT),
+//        new Instruction("br", OperandType.ADDR),
+//        new Instruction("brf", OperandType.ADDR),
+//		new Instruction("options"),
+//		new Instruction("args"),
+//        new Instruction("list"),
+//        new Instruction("add"),
+//        new Instruction("tostr"),
+//        new Instruction("first"),
+//        new Instruction("last"),
+//        new Instruction("rest"),
+//        new Instruction("trunc"),
+//        new Instruction("strip"),
+//        new Instruction("trim"),
+//        new Instruction("length"),
+//        new Instruction("strlen"),
+//		new Instruction("reverse"),
+//		new Instruction("not"),
+//		new Instruction("or"),
+//		new Instruction("and"),
+//		new Instruction("indent", OperandType.STRING),
+//        new Instruction("dedent"),
+//        new Instruction("newline"),
+//        new Instruction("noop"),
+//		new Instruction("pop"),
+//		new Instruction("null"),
+//		new Instruction("true"),
+//		new Instruction("false")
+//	};
+
 	public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
 	public static final Set<String> predefinedAnonSubtemplateAttributes =
@@ -117,10 +169,22 @@ public class Interpreter {
 		}
 	}
 
+	public static int[] count = new int[Bytecode.MAX_BYTECODE+1];
+
+	public static void dumpOpcodeFreq() {
+		System.out.println("#### instr freq:");
+		for (int i=1; i<=Bytecode.MAX_BYTECODE; i++) {
+			System.out.println(count[i]+" "+Bytecode.instructions[i].name);
+		}
+	}
+	
 	/** Execute template self and return how many characters it wrote to out */
 	public int exec(STWriter out, ST self) {
 		int save = current_ip;
-		try {return _exec(out, self);}
+		try {
+			int n = _exec(out, self);
+			return n;
+		}
 		finally {current_ip = save;}
 	}
 
@@ -140,14 +204,21 @@ public class Interpreter {
 		while ( ip < self.impl.codeSize ) {
 			if ( trace || STGroup.debug ) trace(self, ip);
 			short opcode = code[ip];
+			//count[opcode]++;
 			current_ip = ip;
 			ip++; //jump to next instruction or first byte of operand
 			switch (opcode) {
 				case Bytecode.INSTR_LOAD_STR :
+					// just testing...
+					load_str(self,ip);
+					ip += Bytecode.OPND_SIZE_IN_BYTES;
+					break;
+/*				case Bytecode.INSTR_LOAD_STR :
 					int strIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					operands[++sp] = self.impl.strings[strIndex];
 					break;
+					*/
 				case Bytecode.INSTR_LOAD_ATTR :
 					nameIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
@@ -362,7 +433,7 @@ public class Interpreter {
 					operands[++sp] = testAttributeTrue(left) && testAttributeTrue(right);
 					break;
 				case Bytecode.INSTR_INDENT :
-					strIndex = getShort(code, ip);
+					int strIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					out.pushIndentation(self.impl.strings[strIndex]);
 					break;
@@ -414,6 +485,12 @@ public class Interpreter {
 			}
 		}
 		return n;
+	}
+
+	void load_str(ST self, int ip) {
+		int strIndex = getShort(self.impl.instrs, ip);
+		ip += Bytecode.OPND_SIZE_IN_BYTES;
+		operands[++sp] = self.impl.strings[strIndex];
 	}
 
 	// TODO: refactor to remove dup'd code
