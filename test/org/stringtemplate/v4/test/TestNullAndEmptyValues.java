@@ -30,6 +30,7 @@ package org.stringtemplate.v4.test;
 import org.junit.Test;
 import org.stringtemplate.v4.*;
 
+import java.io.*;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -52,7 +53,7 @@ public class TestNullAndEmptyValues extends BaseTest {
 		group.defineTemplate("test", "name", "<name:t()>");
 		group.defineTemplate("t", "x", "<x>");
 		ST st = group.getInstanceOf("test");
-		st.add("name", null); // null is added to list, but ignored in iteration
+		st.add("name", null);
 		String expected = "";
 		String result = st.render();
 		assertEquals(expected, result);
@@ -198,4 +199,31 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expecting, result);
     }
 
+	@Test public void TestSeparatorEmittedForEmptyIteratorValue()
+		throws IOException
+	{
+		ST st = new ST(
+			"<values:{v|<if(v)>x<endif>}; separator=\" \">"
+		);
+		st.add("values", new boolean[] {true, false, true});
+		StringWriter sw = new StringWriter();
+		st.write(new AutoIndentWriter(sw));
+		String result = sw.toString();
+		String expecting = "x  x";
+		assertEquals(expecting, result);
+	}
+
+	@Test public void TestSeparatorEmittedForEmptyIteratorValue2()
+		throws IOException
+	{
+		ST st = new ST(
+			"<values; separator=\" \">"
+		);
+		st.add("values", new String[] {"x", "", "y"});
+		StringWriter sw = new StringWriter();
+		st.write(new AutoIndentWriter(sw));
+		String result = sw.toString();
+		String expecting = "x  y";
+		assertEquals(expecting, result);
+	}
 }
