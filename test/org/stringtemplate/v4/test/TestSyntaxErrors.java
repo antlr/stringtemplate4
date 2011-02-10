@@ -223,8 +223,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		String expected =
-			"t.stg 1:20: Nonterminated comment starting at 1:1: '!>' missing" +newline+
-			"t.stg 1:12: this doesn't look like a template: \" \""+newline;
+			"t.stg 1:20: Nonterminated comment starting at 1:1: '!>' missing" +newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}

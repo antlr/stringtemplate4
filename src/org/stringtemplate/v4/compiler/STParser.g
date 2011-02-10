@@ -72,15 +72,17 @@ templateAndEOF : template EOF -> template? ;
 template : element* ;
 
 element
-	:	INDENT singleElement -> ^(INDENT singleElement)
+	:	{input.LT(1).getCharPositionInLine()==0}? INDENT? COMMENT NEWLINE -> // throw away
+	|	INDENT singleElement -> ^(INDENT singleElement?) // optional to handle error returning nil
 	|	singleElement
 	|	compoundElement
 	;
 
 singleElement
 	:	exprTag
-	|	text
+	|	TEXT
 	|	NEWLINE
+	|	COMMENT! // throw away
 	;
 	
 compoundElement
@@ -88,8 +90,6 @@ compoundElement
 	|	region
 	;
 	
-text : TEXT ;
-
 exprTag
 	:	LDELIM expr ( ';' exprOptions )? RDELIM
 		-> ^(EXPR[$LDELIM,"EXPR"] expr exprOptions?)

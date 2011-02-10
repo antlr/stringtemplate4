@@ -31,6 +31,7 @@ AT=33
 END=34
 TRUE=35
 FALSE=36
+COMMENT=37
 'super'=8
 '|'=28
 '!'=10

@@ -110,6 +110,7 @@ public class STLexer implements TokenSource {
     public static final int REGION_END=34;
 	public static final int TRUE=35;
 	public static final int FALSE=36;
+	public static final int COMMENT=37;
 
 
     /** What char starts an expression? */
@@ -214,7 +215,7 @@ public class STLexer implements TokenSource {
         }
         if ( c==delimiterStartChar ) {
             consume();
-            if ( c=='!' ) { COMMENT(); return SKIP; }
+            if ( c=='!' ) return COMMENT();
             if ( c=='\\' ) return ESCAPE(); // <\\> <\uFFFF> <\n> etc...
             scanningInsideExpr = true;
             return newToken(LDELIM);
@@ -479,7 +480,7 @@ public class STLexer implements TokenSource {
         while ( c==' ' || c=='\t' || c=='\n' || c=='\r' ) consume();
     }
 
-    void COMMENT() {
+    Token COMMENT() {
         match('!');
         while ( !(c=='!' && input.LA(2)==delimiterStopChar) ) {
 			if (c==EOF) {
@@ -494,7 +495,8 @@ public class STLexer implements TokenSource {
 			}
 			consume();
 		}
-        consume(); consume(); // kill !>
+        consume(); consume(); // grab !>
+		return newToken(COMMENT);
     }
 
     void LINEBREAK() {
@@ -527,6 +529,8 @@ public class STLexer implements TokenSource {
 
     public Token newToken(int ttype, String text, int pos) {
         STToken t = new STToken(ttype, text);
+		t.setStartIndex(startCharIndex);
+		t.setStopIndex(input.index()-1);
         t.setLine(input.getLine());
         t.setCharPositionInLine(pos);
         return t;

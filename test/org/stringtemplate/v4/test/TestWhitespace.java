@@ -40,7 +40,7 @@ public class TestWhitespace extends BaseTest {
     @Test public void testTrimmedSubtemplates() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n | <n>}>!");
-        org.stringtemplate.v4.ST st = group.getInstanceOf("test");
+        ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
         st.add("names", "Tom");
         st.add("names", "Sumana");
@@ -136,7 +136,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testEmptyLineWithIndent() throws Exception {
-        org.stringtemplate.v4.ST t = new ST(
+        ST t = new ST(
             "begin\n" +
             "    \n" +
             "end\n");
@@ -146,7 +146,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testEmptyLine() throws Exception {
-        org.stringtemplate.v4.ST t = new org.stringtemplate.v4.ST(
+        ST t = new ST(
             "begin\n" +
             "\n" +
             "end\n");
@@ -156,7 +156,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testSizeZeroOnLineByItselfGetsNoOutput() throws Exception {
-        org.stringtemplate.v4.ST t = new ST(
+        ST t = new ST(
             "begin\n"+
             "<name>\n"+
             "<users>\n"+
@@ -168,7 +168,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testSizeZeroOnLineWithIndentGetsNoOutput() throws Exception {
-        ST t = new org.stringtemplate.v4.ST(
+        ST t = new ST(
             "begin\n"+
             "  <name>\n"+
             "	<users>\n"+
@@ -180,7 +180,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testSizeZeroOnLineWithMultipleExpr() throws Exception {
-        org.stringtemplate.v4.ST t = new org.stringtemplate.v4.ST(
+        ST t = new ST(
             "begin\n"+
             "  <name>\n"+
             "	<users><users>\n"+
@@ -191,7 +191,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testIFExpr() throws Exception {
-        org.stringtemplate.v4.ST t = new org.stringtemplate.v4.ST(
+        ST t = new ST(
             "begin\n"+
             "<if(x)><endif>\n"+
             "end\n");
@@ -201,7 +201,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testIndentedIFExpr() throws Exception {
-        ST t = new org.stringtemplate.v4.ST(
+        ST t = new ST(
             "begin\n"+
             "    <if(x)><endif>\n"+
             "end\n");
@@ -211,7 +211,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testIFElseExpr() throws Exception {
-        ST t = new org.stringtemplate.v4.ST(
+        ST t = new ST(
             "begin\n"+
             "<if(users)><else><endif>\n"+
             "end\n");
@@ -235,7 +235,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testNestedIFOnMultipleLines() throws Exception {
-        org.stringtemplate.v4.ST t = new org.stringtemplate.v4.ST(
+        ST t = new ST(
             "begin\n"+
             "<if(x)>\n" +
             "<if(y)>\n" +
@@ -252,7 +252,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testLineBreak() throws Exception {
-        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(
+        ST st = new ST(
                 "Foo <\\\\>"+newline+
                 "  \t  bar" +newline
                 );
@@ -264,7 +264,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testLineBreak2() throws Exception {
-        org.stringtemplate.v4.ST st = new ST(
+        ST st = new ST(
                 "Foo <\\\\>       "+newline+
                 "  \t  bar" +newline
                 );
@@ -276,7 +276,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testLineBreakNoWhiteSpace() throws Exception {
-        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(
+        ST st = new ST(
                 "Foo <\\\\>"+newline+
                 "bar\n"
                 );
@@ -288,7 +288,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testNewlineNormalizationInTemplateString() throws Exception {
-        ST st = new org.stringtemplate.v4.ST(
+        ST st = new ST(
                 "Foo\r\n"+
                 "Bar\n"
                 );
@@ -300,7 +300,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testNewlineNormalizationInTemplateStringPC() throws Exception {
-        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(
+        ST st = new ST(
                 "Foo\r\n"+
                 "Bar\n"
                 );
@@ -312,7 +312,7 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Test public void testNewlineNormalizationInAttribute() throws Exception {
-        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(
+        ST st = new ST(
                 "Foo\r\n"+
                 "<name>\n"
                 );
@@ -323,4 +323,25 @@ public class TestWhitespace extends BaseTest {
         String expecting ="Foo\na\nb\nc\n";     // expect \n in output
         assertEquals(expecting, result);
     }
-}
+
+	@Test public void testCommentOnlyLineGivesNoOutput() throws Exception {
+		ST t = new org.stringtemplate.v4.ST(
+			"begin\n" +
+			"<! ignore !>\n" +
+			"end\n");
+		String expecting="begin"+newline+"end"+newline;
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testCommentOnlyLineGivesNoOutput2() throws Exception {
+		ST t = new org.stringtemplate.v4.ST(
+			"begin\n" +
+			"    <! ignore !>\n" +
+			"end\n");
+		String expecting="begin"+newline+"end"+newline;
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
+
+ }

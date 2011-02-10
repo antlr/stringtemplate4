@@ -20,6 +20,7 @@ suggestions. Sam is doing the C# implementation.
 * nativeGroup of all implicit templates was STGroup.defaultGroup.
 * removed all writes of the enclosingInstance at evaluation time; fixed
   issue for STViz.
+* comments on line by themselves don't emit \n to output
 
 4.0b4 -- February 5, 2011
 
