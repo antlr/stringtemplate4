@@ -121,16 +121,18 @@ public class AutoIndentWriter implements STWriter {
 	/** Write out a string literal or attribute expression or expression element.*/
 	public int write(String str) throws IOException {
 		int n = 0;
-		for (int i=0; i<str.length(); i++) {
+		int nll = newline.length();
+		int sl = str.length();
+		for (int i=0; i<sl; i++) {
 			char c = str.charAt(i);
 			// found \n or \r\n newline?
 			if ( c=='\r' ) continue;
             if ( c=='\n' ) {
 				atStartOfLine = true;
-				charPosition = -newline.length(); // set so the write below sets to 0
+				charPosition = -nll; // set so the write below sets to 0
 				out.write(newline);
-				n += newline.length();
-				charIndex += newline.length();
+				n += nll;
+				charIndex += nll;
 				charPosition += n; // wrote n more char
 				continue;
 			}
