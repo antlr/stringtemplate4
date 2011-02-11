@@ -112,6 +112,9 @@ public class STGroup {
 	protected Map<Class, ModelAdaptor> typeToAdaptorCache =
 		Collections.synchronizedMap(new LinkedHashMap<Class, ModelAdaptor>());
 
+	/** Cache exact attribute type to renderer object */
+	protected Map<Class, AttributeRenderer> typeToRendererCache;
+
     /** Used to indicate that the template doesn't exist.
      *  Prevents duplicate group file loads and unnecessary file checks.
      */
@@ -488,16 +491,6 @@ public class STGroup {
 	/** remove at least all types in cache that are subclasses or implement attributeType */
 	public void invalidateModelAdaptorCache(Class attributeType) {
 		typeToAdaptorCache.clear(); // be safe, not clever; wack all values
-		/*
-		List<Class> kill = new ArrayList<Class>();
-		for (Class t : typeToAdaptorCache.keySet()) {
-			if ( attributeType.isAssignableFrom(t) ) {
-				System.out.println(attributeType.getName() + " = " + t.getName());
-				kill.add(t);
-			}
-		}
-		for (Class t : kill) typeToAdaptorCache.remove(t);
-		*/
 	}
 
 	public ModelAdaptor getModelAdaptor(Class attributeType) {
@@ -526,7 +519,7 @@ public class STGroup {
 			throw new IllegalArgumentException("can't register renderer for primitive type "+
 											   attributeType.getSimpleName());
 		}
-		// TODO: invalidate cache
+		typeToAdaptorCache.clear(); // be safe, not clever; wack all values
         if ( renderers ==null ) {
             renderers =
 				Collections.synchronizedMap(new LinkedHashMap<Class, AttributeRenderer>());
@@ -536,10 +529,24 @@ public class STGroup {
 
 	public AttributeRenderer getAttributeRenderer(Class attributeType) {
 		if ( renderers==null ) return null;
-		// TODO: cache this lookup
+		AttributeRenderer r = null;
+		if ( typeToRendererCache!=null ) {
+			r = typeToRendererCache.get(attributeType);
+			if ( r!=null ) return r;
+		}
+
+		// Else look up, finding first first
 		for (Class t : renderers.keySet()) {
 			// t works for attributeType if attributeType subclasses t or implements
-			if ( t.isAssignableFrom(attributeType) ) return renderers.get(t);
+			if ( t.isAssignableFrom(attributeType) ) {
+				r = renderers.get(t);
+				if ( typeToRendererCache==null ) {
+					typeToRendererCache =
+						Collections.synchronizedMap(new LinkedHashMap<Class, AttributeRenderer>());
+				}
+				typeToRendererCache.put(attributeType, r);
+				return r;
+			}
 		}
 		return null;
 	}
