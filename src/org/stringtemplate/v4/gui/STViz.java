@@ -297,7 +297,7 @@ public class STViz {
 	public static void test1() throws IOException { // test rig
         String templates =
 			"method(type,name,locals,args,stats) ::= <<\n" +
-			"public <type> <ick()> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
+			"public <type> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
 			"    <if(locals)>int locals[<locals>];<endif>\n"+
 			"    <stats;separator=\"\\n\">\n" +
 			"}\n" +
@@ -331,7 +331,7 @@ public class STViz {
         st.add("stats", s3);
 
         ((DebugST)st).inspect();
-		st.render();
+		System.out.println(st.render());
     }
 
 	public static void test2() throws IOException { // test rig

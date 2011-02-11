@@ -129,8 +129,13 @@ singleElement
 	|	TEXT
 		{
 		if ( $TEXT.text.length()>0 ) {
-			emit1($TEXT,Bytecode.INSTR_LOAD_STR, $TEXT.text);
-			emit($TEXT,Bytecode.INSTR_WRITE);
+			if ( true ) {
+				emit1($TEXT,Bytecode.INSTR_WRITE_STR, $TEXT.text);
+			}
+			else {
+				emit1($TEXT,Bytecode.INSTR_LOAD_STR, $TEXT.text);
+				emit($TEXT,Bytecode.INSTR_WRITE);
+			}
 		}
 		}
 
@@ -149,7 +154,19 @@ compoundElement[String indent]
 exprElement
 @init { short op = Bytecode.INSTR_WRITE; }
 	:	^( EXPR expr (exprOptions {op=Bytecode.INSTR_WRITE_OPT;})? )
-		{emit($EXPR, op);}
+		{
+		/*
+		CompilationState state = $template::state;
+		CompiledST impl = state.impl;
+		if ( impl.instrs[state.ip-1] == Bytecode.INSTR_LOAD_LOCAL ) {
+			impl.instrs[state.ip-1] = Bytecode.INSTR_WRITE_LOCAL;
+		}
+		else {
+			emit($EXPR, op);
+		}
+		*/
+		emit($EXPR, op);		
+		}
 	;
 
 region[String indent] returns [String name]

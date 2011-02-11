@@ -105,7 +105,12 @@ public class Bytecode {
 	public static final short INSTR_TRUE            = 43; // push true value
 	public static final short INSTR_FALSE           = 44;
 
-	public static final short MAX_BYTECODE          = 44;
+	// combined instructions
+
+	public static final short INSTR_WRITE_STR       = 45; // load_str n, write
+	public static final short INSTR_WRITE_LOCAL     = 46; // load_local n, write
+
+	public static final short MAX_BYTECODE          = 46;
 
     /** Used for assembly/disassembly; describes instruction set */
     public static Instruction[] instructions = new Instruction[] {
@@ -153,6 +158,8 @@ public class Bytecode {
 		new Instruction("pop"),
 		new Instruction("null"),
 		new Instruction("true"),
-		new Instruction("false")
+		new Instruction("false"),
+		new Instruction("write_str", OperandType.STRING),
+		new Instruction("write_local",OperandType.INT),
     };
 }

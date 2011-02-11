@@ -63,6 +63,8 @@ public class CompiledST {
 
 	public boolean hasFormalArgs;
 
+	public int numberOfArgsWithDefaultValues;
+
     /** A list of all regions and subtemplates */
     public List<CompiledST> implicitlyDefinedTemplates;
 
@@ -107,20 +109,12 @@ public class CompiledST {
         implicitlyDefinedTemplates.add(sub);
     }
 
-	public int getNumberOfArgsWithDefaultValues() {
-		if ( formalArguments==null ) return 0;
-		int n = 0;
-		for (String arg : formalArguments.keySet()) {
-			if ( formalArguments.get(arg).defaultValueToken!=null ) n++;
-		}
-		return n;
-	}
-
 	public void defineArgDefaultValueTemplates(STGroup group) {
 		if ( formalArguments==null ) return;
 		for (String a : formalArguments.keySet()) {
 			FormalArgument fa = formalArguments.get(a);
 			if ( fa.defaultValueToken!=null ) {
+				numberOfArgsWithDefaultValues++;
 				if ( fa.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
 					String argSTname = fa.name + "_default_value";
 					Compiler c2 = new Compiler(group);

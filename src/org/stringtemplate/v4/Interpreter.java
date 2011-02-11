@@ -468,6 +468,23 @@ public class Interpreter {
 				case Bytecode.INSTR_FALSE :
 					operands[++sp] = false;
 					break;
+				case Bytecode.INSTR_WRITE_STR :
+					strIndex = getShort(code, ip);
+					ip += Bytecode.OPND_SIZE_IN_BYTES;
+					o = self.impl.strings[strIndex];
+					n1 = writeObjectNoOptions(out, self, o);
+					n += n1;
+					nwline += n1;
+					break;
+				case Bytecode.INSTR_WRITE_LOCAL:
+					valueIndex = getShort(code, ip);
+					ip += Bytecode.OPND_SIZE_IN_BYTES;
+					o = self.locals[valueIndex];
+					if ( o==ST.EMPTY_ATTR ) o = null;
+					n1 = writeObjectNoOptions(out, self, o);
+					n += n1;
+					nwline += n1;
+					break;
 				default :
 					errMgr.internalError(self, "invalid bytecode @ "+(ip-1)+": "+opcode, null);
 					self.impl.dump();
@@ -547,7 +564,7 @@ public class Interpreter {
 		int nargs = 0;
 		if ( attrs!=null ) nargs = attrs.size();
 
-		if ( nargs < (nformalArgs-st.impl.getNumberOfArgsWithDefaultValues()) ||
+		if ( nargs < (nformalArgs-st.impl.numberOfArgsWithDefaultValues) ||
 			 nargs > nformalArgs )
 		{
 			errMgr.runTimeError(self,
@@ -579,7 +596,7 @@ public class Interpreter {
 		int numToStore = Math.min(nargs, nformalArgs);
 		if ( st.impl.isAnonSubtemplate ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
 
-		if ( nargs < (nformalArgs-st.impl.getNumberOfArgsWithDefaultValues()) ||
+		if ( nargs < (nformalArgs-st.impl.numberOfArgsWithDefaultValues) ||
 			 nargs > nformalArgs )
 		{
 			errMgr.runTimeError(self,
@@ -749,27 +766,7 @@ public class Interpreter {
 		}
 		attr = convertAnythingIteratableToIterator(attr);
 		if ( attr instanceof Iterator ) {
-			List<ST> mapped = new ArrayList<ST>();
-			Iterator iter = (Iterator)attr;
-			int i0 = 0;
-			int i = 1;
-			int ti = 0;
-			while ( iter.hasNext() ) {
-				Object iterValue = iter.next();
-				if ( iterValue == null ) { mapped.add(null); continue; }
-				int templateIndex = ti % prototypes.size(); // rotate through
-				ti++;
-				ST proto = prototypes.get(templateIndex);
-				ST st = group.createStringTemplate(proto);
-				setFirstArgument(self, st, iterValue);
-				if ( st.impl.isAnonSubtemplate ) {
-					st.rawSetAttribute("i0", i0);
-					st.rawSetAttribute("i", i);
-				}
-				mapped.add(st);
-				i0++;
-				i++;
-			}
+			List<ST> mapped = rot_map_iterator(self, (Iterator) attr, prototypes);
 			operands[++sp] = mapped;
 		}
 		else { // if only single value, just apply first template to sole value
@@ -787,6 +784,31 @@ public class Interpreter {
 				operands[++sp] = null;
 			}
 		}
+	}
+
+	protected List<ST> rot_map_iterator(ST self, Iterator attr, List<ST> prototypes) {
+		List<ST> mapped = new ArrayList<ST>();
+		Iterator iter = (Iterator)attr;
+		int i0 = 0;
+		int i = 1;
+		int ti = 0;
+		while ( iter.hasNext() ) {
+			Object iterValue = iter.next();
+			if ( iterValue == null ) { mapped.add(null); continue; }
+			int templateIndex = ti % prototypes.size(); // rotate through
+			ti++;
+			ST proto = prototypes.get(templateIndex);
+			ST st = group.createStringTemplate(proto);
+			setFirstArgument(self, st, iterValue);
+			if ( st.impl.isAnonSubtemplate ) {
+				st.rawSetAttribute("i0", i0);
+				st.rawSetAttribute("i", i);
+			}
+			mapped.add(st);
+			i0++;
+			i++;
+		}
+		return mapped;
 	}
 
 	// <names,phones:{n,p | ...}> or <a,b:t()>
@@ -1051,9 +1073,9 @@ public class Interpreter {
 	public static Object convertAnythingIteratableToIterator(Object o) {
 		Iterator iter = null;
 		if ( o == null ) return null;
-		if ( o instanceof Collection)      iter = ((Collection)o).iterator();
+		if ( o instanceof Collection )      iter = ((Collection)o).iterator();
 		else if ( o.getClass().isArray() ) iter = new ArrayIterator(o);
-		else if ( o instanceof Map)        iter = ((Map)o).keySet().iterator();
+		else if ( o instanceof Map )        iter = ((Map)o).keySet().iterator();
 		else if ( o instanceof Iterator )  iter = (Iterator)o;
 		if ( iter==null ) return o;
 		return iter;
@@ -1101,7 +1123,10 @@ public class Interpreter {
 	 *  The evaluation context is the template enclosing invokedST.
 	 */
 	public void setDefaultArguments(STWriter out, ST invokedST) {
-		if ( invokedST.impl.formalArguments==null ) return;
+		if ( invokedST.impl.formalArguments==null ||
+			 invokedST.impl.numberOfArgsWithDefaultValues==0 ) {
+			return;
+		}
 		for (FormalArgument arg : invokedST.impl.formalArguments.values()) {
 			// if no value for attribute and default arg, inject default arg into self
 			if ( invokedST.locals[arg.index]!=ST.EMPTY_ATTR || arg.defaultValueToken==null ) {

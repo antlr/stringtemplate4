@@ -59,8 +59,9 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 		Member member = classAndPropertyToMemberCache.get(c, propertyName);
 		if ( member!=null ) {
 			try {
-				if ( member.getClass() == Method.class ) return ((Method)member).invoke(o);
-				if ( member.getClass() == Field.class ) return ((Field)member).get(o);
+				Class memberClass = member.getClass();
+				if ( memberClass == Method.class ) return ((Method)member).invoke(o);
+				if ( memberClass == Field.class ) return ((Field)member).get(o);
 			}
 			catch (Exception e) {
 				throwNoSuchProperty(c.getName() + "." + propertyName);
