@@ -22,8 +22,10 @@ suggestions. Sam is doing the C# implementation.
   issue for STViz.
 * comments on line by themselves don't emit \n to output
 * STViz tried to highlight AST pane even when we switched ASTs
+* combined load_str, write into write_str single op. minor optimizations too.
+  Seems a tiny bit faster per benchmarks.
 
-4.0b4 -- February 5, 2011
+ 4.0b4 -- February 5, 2011
 
 BIG THANKS to Udo Borkowski for his help debugging these betas and his
 suggestions.
