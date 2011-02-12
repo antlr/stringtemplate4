@@ -24,6 +24,7 @@ suggestions. Sam is doing the C# implementation.
 * STViz tried to highlight AST pane even when we switched ASTs
 * combined load_str, write into write_str single op. minor optimizations too.
   Seems a tiny bit faster per benchmarks.
+* Added ST.VERSION auto-updated by ANT.
 
  4.0b4 -- February 5, 2011
 

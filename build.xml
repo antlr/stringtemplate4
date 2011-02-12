@@ -44,6 +44,11 @@
 
     <target name="compile" depends="antlr" description="Compile for generic OS">
         <mkdir dir="${build.dir}/classes"/>
+        <mkdir dir="${build.dir}/src"/>
+	<copy todir="${build.dir}/src" >
+        	<fileset dir="${source}"/>
+	</copy>
+	<replace dir="${build.dir}/src" token="@version@" value="${version}"/>
         <javac
                 destdir="${build.dir}/classes"
                 source="1.5"
@@ -51,7 +56,7 @@
                 debug="true"
                 excludes="org/stringtemplate/v4/test/**">
 			<classpath refid="classpath"/>
-            <src path="${source}:${build.dir}/gen"/>
+            <src path="${build.dir}/src:${build.dir}/gen"/>
         </javac>
     </target>
 

@@ -46,6 +46,8 @@ import java.util.*;
  *  attributes using add(). To render its attacks, use render().
  */
 public class ST {
+	public final static String VERSION = "@version@";
+
 	/** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
     public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT }
 
