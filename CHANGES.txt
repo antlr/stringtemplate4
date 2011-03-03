@@ -25,8 +25,15 @@ suggestions. Sam is doing the C# implementation.
 * combined load_str, write into write_str single op. minor optimizations too.
   Seems a tiny bit faster per benchmarks.
 * Added ST.VERSION auto-updated by ANT.
+* added STGroupString
+* Added support for this in group.g:
+  oldStyleHeader // ignore but lets us use this parser in AW for both v3 and v4
+    :   'group' ID ( ':' ID )?
+	    ( 'implements' ID (',' ID)* )?
+	    ';'
+	;
 
- 4.0b4 -- February 5, 2011
+  4.0b4 -- February 5, 2011
 
 BIG THANKS to Udo Borkowski for his help debugging these betas and his
 suggestions.

@@ -96,7 +96,8 @@ group[STGroup group, String prefix]
 GroupLexer lexer = (GroupLexer)input.getTokenSource();
 this.group = lexer.group = $group;
 }
-	:	(	'import' STRING {group.importTemplates($STRING);}
+	:	oldStyleHeader?
+	    (	'import' STRING {group.importTemplates($STRING);}
 		|	'import' // common error: name not in string
 			{
 			MismatchedTokenException e = new MismatchedTokenException(STRING, input);
@@ -106,7 +107,13 @@ this.group = lexer.group = $group;
 		)*
         def[prefix]+
     ;
-    
+
+oldStyleHeader // ignore but lets us use this parser in AW for both v3 and v4
+    :   'group' ID ( ':' ID )?
+	    ( 'implements' ID (',' ID)* )?
+	    ';'
+	;
+
 groupName returns [String name]
 @init {StringBuilder buf = new StringBuilder();}
 	:	a=ID {buf.append($a.text);} ('.' a=ID {buf.append($a.text);})*

@@ -34,19 +34,30 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import static org.junit.Assert.assertEquals;
 
 public class TestGroups extends BaseTest {
-    @Test public void testSimpleGroup() throws Exception {
-        String dir = getRandomDir();
-        String a =
-            "a(x) ::= <<"+newline+
-            "foo"+newline+
-            ">>"+newline;
-        writeFile(dir, "a.st", a);
-        STGroup group = new STGroupDir(dir);
-        ST st = group.getInstanceOf("a");
-        String expected = "foo";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testSimpleGroup() throws Exception {
+		String dir = getRandomDir();
+		String a =
+			"a(x) ::= <<"+newline+
+			"foo"+newline+
+			">>"+newline;
+		writeFile(dir, "a.st", a);
+		STGroup group = new STGroupDir(dir);
+		ST st = group.getInstanceOf("a");
+		String expected = "foo";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testSimpleGroupFromString() throws Exception {
+		String g =
+			"a(x) ::= <<foo>>\n"+
+			"b() ::= <<bar>>\n";
+		STGroup group = new STGroupString(g);
+		ST st = group.getInstanceOf("a");
+		String expected = "foo";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testGroupWithTwoTemplates() throws Exception {
         String dir = getRandomDir();

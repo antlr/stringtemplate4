@@ -452,22 +452,22 @@ public class STGroup {
 	}
 
 	/** Load a group file with full path fileName; it's relative to root by prefix. */
-    public void loadGroupFile(String prefix, String fileName) {
-        //System.out.println("load group file prefix="+prefix+", fileName="+fileName);
-        GroupParser parser = null;
-        try {
-            URL f = new URL(fileName);
-            ANTLRInputStream fs = new ANTLRInputStream(f.openStream(), encoding);
-            GroupLexer lexer = new GroupLexer(fs);
-            fs.name = fileName;
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            parser = new GroupParser(tokens);
-            parser.group(this, prefix);
-        }
-        catch (Exception e) {
-            errMgr.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, fileName);
-        }
-    }
+	public void loadGroupFile(String prefix, String fileName) {
+		//System.out.println("load group file prefix="+prefix+", fileName="+fileName);
+		GroupParser parser = null;
+		try {
+			URL f = new URL(fileName);
+			ANTLRInputStream fs = new ANTLRInputStream(f.openStream(), encoding);
+			GroupLexer lexer = new GroupLexer(fs);
+			fs.name = fileName;
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			parser = new GroupParser(tokens);
+			parser.group(this, prefix);
+		}
+		catch (Exception e) {
+			errMgr.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, fileName);
+		}
+	}
 
 	/** Add an adaptor for a kind of object so ST knows how to pull properties
 	 *  from them. Add adaptors in increasing order of specificity.  ST adds Object,
