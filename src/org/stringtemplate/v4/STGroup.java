@@ -316,13 +316,14 @@ public class STGroup {
         String mangled = getMangledRegionName(enclosingTemplateName, name);
 
         if ( lookupTemplate(mangled)==null ) {
-            errMgr.compileTimeError(ErrorType.NO_SUCH_REGION, null, regionT,
+            errMgr.compileTimeError(ErrorType.NO_SUCH_REGION, templateToken, regionT,
                                           enclosingTemplateName, name);
             return new CompiledST();
         }
         code.name = mangled;
         code.isRegion = true;
         code.regionDefType = ST.RegionType.EXPLICIT;
+		code.templateDefStartToken = regionT;
 
         rawDefineTemplate(mangled, code, regionT);
 		code.defineArgDefaultValueTemplates(this);
@@ -360,22 +361,29 @@ public class STGroup {
 				errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, null, defT);
 				return;
 			}
-			if ( prev.isRegion && prev.regionDefType== ST.RegionType.EMBEDDED ) {
-				errMgr.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
-										null,
-										defT,
-										getUnMangledTemplateName(name));
-				return;
-			}
-			else if ( prev.isRegion && prev.regionDefType== ST.RegionType.EXPLICIT ) {
-				errMgr.compileTimeError(ErrorType.REGION_REDEFINITION,
-										null,
-										defT,
-										getUnMangledTemplateName(name));
-				return;
+			if ( prev.isRegion ) {
+				if ( code.regionDefType!=ST.RegionType.IMPLICIT &&
+					 prev.regionDefType==ST.RegionType.EMBEDDED )
+				{
+					errMgr.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
+											null,
+											defT,
+											getUnMangledTemplateName(name));
+					return;
+				}
+				else if ( code.regionDefType==ST.RegionType.IMPLICIT ||
+					      prev.regionDefType==ST.RegionType.EXPLICIT )
+				{
+					errMgr.compileTimeError(ErrorType.REGION_REDEFINITION,
+											null,
+											defT,
+											getUnMangledTemplateName(name));
+					return;
+				}
 			}
 		}
 		code.nativeGroup = this;
+		code.templateDefStartToken = defT;
 		templates.put(name, code);
 	}
 

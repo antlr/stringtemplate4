@@ -28,6 +28,7 @@
 package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.TokenStream;
+import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -51,6 +52,9 @@ public class CompiledST {
 	 *  subtemplates, this is entire overall template.
      */
     public String template;
+
+	/** The token that begins template definition; could be <@r> of region. */
+	public Token templateDefStartToken;
 
 	/** Overall token stream for template (debug only) */
 	public TokenStream tokens;
@@ -154,7 +158,7 @@ public class CompiledST {
 	public void defineImplicitlyDefinedTemplates(STGroup group) {
 		if ( implicitlyDefinedTemplates !=null ) {
             for (CompiledST sub : implicitlyDefinedTemplates) {
-                group.rawDefineTemplate(sub.name, sub, null);
+                group.rawDefineTemplate(sub.name, sub, sub.templateDefStartToken);
                 sub.defineImplicitlyDefinedTemplates(group);
             }
         }

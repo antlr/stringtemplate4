@@ -55,7 +55,7 @@ import org.stringtemplate.v4.*;
 
 	// convience funcs to hide offensive sending of emit messages to
 	// CompilationState temp data object.
-	
+
 	public void emit1(CommonTree opAST, short opcode, int arg) {
 		$template::state.emit1(opAST, opcode, arg);
 	}
@@ -116,7 +116,7 @@ scope {
 chunk
 	:	element*
 	;
-	
+
 element
 	:	^(INDENT compoundElement[$INDENT.text]) // ignore indent in front of IF and region blocks
 	|	compoundElement[null]
@@ -150,7 +150,7 @@ compoundElement[String indent]
 		emit($region.start, Bytecode.INSTR_WRITE);
 		}
 	;
-	
+
 exprElement
 @init { short op = Bytecode.INSTR_WRITE; }
 	:	^( EXPR expr (exprOptions {op=Bytecode.INSTR_WRITE_OPT;})? )
@@ -165,7 +165,7 @@ exprElement
 			emit($EXPR, op);
 		}
 		*/
-		emit($EXPR, op);		
+		emit($EXPR, op);
 		}
 	;
 
@@ -177,6 +177,7 @@ region[String indent] returns [String name]
 			CompiledST sub = $template.impl;
 	        sub.isRegion = true;
 	        sub.regionDefType = ST.RegionType.EMBEDDED;
+	        sub.templateDefStartToken = $ID.token;
 			//sub.dump();
 			outermostImpl.addImplicitlyDefinedTemplate(sub);
 			}
@@ -195,6 +196,7 @@ subtemplate returns [String name, int nargs]
 			{
 			CompiledST sub = $template.impl;
 			sub.isAnonSubtemplate = true;
+	        sub.templateDefStartToken = $SUBTEMPLATE.token;
 			if ( STGroup.debug ) {
 				sub.ast = $SUBTEMPLATE;
 				sub.ast.setUnknownTokenBoundaries();
@@ -291,7 +293,7 @@ expr
 prop:	^(PROP expr ID)						{emit1($PROP, Bytecode.INSTR_LOAD_PROP, $ID.text);}
 	|	^(PROP_IND expr expr)				{emit($PROP_IND, Bytecode.INSTR_LOAD_PROP_IND);}
 	;
-	
+
 mapTemplateRef[int num_exprs]
 	:	^(	INCLUDE ID
 			{for (int i=1; i<=$num_exprs; i++) emit($INCLUDE,Bytecode.INSTR_NULL);}
@@ -337,13 +339,13 @@ includeExpr
 		}
 	|	^(INCLUDE_REGION ID)		{
 									CompiledST impl =
-										Compiler.defineBlankRegion(outermostImpl, $ID.text);
+										Compiler.defineBlankRegion(outermostImpl, $ID.token);
 									//impl.dump();
 									emit2($INCLUDE_REGION,Bytecode.INSTR_NEW,impl.name,0);
 									}
 	|	^(INCLUDE_SUPER_REGION ID)	{
 									CompiledST impl =
-										Compiler.defineBlankRegion(outermostImpl, $ID.text);
+										Compiler.defineBlankRegion(outermostImpl, $ID.token);
 									//impl.dump();
 									emit2($INCLUDE_SUPER_REGION,Bytecode.INSTR_SUPER_NEW,impl.name,0);
 									}
@@ -358,7 +360,7 @@ primary
 	|	subtemplate		// push a subtemplate but ignore args since we can't pass any to it here
 		                {emit2($start,Bytecode.INSTR_NEW, $subtemplate.name, 0);}
 	|	list
-	|	^(	INCLUDE_IND	
+	|	^(	INCLUDE_IND
 			expr 		{emit($INCLUDE_IND, Bytecode.INSTR_TOSTR);}
 			args		{emit1($INCLUDE_IND, Bytecode.INSTR_NEW_IND, $args.n);}
 		 )
@@ -377,7 +379,7 @@ args returns [int n=0, boolean namedArgs=false]
  	;
 
 list:	{emit(Bytecode.INSTR_LIST);}
-		^(LIST (listElement {emit($listElement.start, Bytecode.INSTR_ADD);})* ) 
+		^(LIST (listElement {emit($listElement.start, Bytecode.INSTR_ADD);})* )
 	;
 
 listElement : expr | NULL {emit($NULL,Bytecode.INSTR_NULL);} ;

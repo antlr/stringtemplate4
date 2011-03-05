@@ -156,6 +156,40 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
+	@Test public void testCantDefineEmbeddedRegionAgainInTemplate() throws Exception {
+		String dir = getRandomDir();
+		String g =
+			"a() ::= <<\n" +
+			"[\n" +
+			"<@r>foo<@end>\n" +
+			"<@r()>" +
+			"]\n" +
+			">>\n"; // error; dup
+		writeFile(dir, "g.stg", g);
+
+		STGroupFile group = new STGroupFile(dir+"/g.stg");
+		ErrorBuffer errors = new ErrorBuffer();
+		group.setListener(errors);
+		group.load();
+		String expected = "g.stg 3:2: redefinition of region a.r"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testMissingRegionName() throws Exception {
+		String dir = getRandomDir();
+		String g = "@t.() ::= \"\"\n";
+		writeFile(dir, "g.stg", g);
+
+		STGroupFile group = new STGroupFile(dir+"/g.stg");
+		ErrorBuffer errors = new ErrorBuffer();
+		group.setListener(errors);
+		group.load();
+		String expected = "g.stg 1:3: missing ID at '('"+newline;
+		String result = errors.toString();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testIndentBeforeRegionIsIgnored() throws Exception {
 		String dir = getRandomDir();
 		String g = "a() ::= <<[\n" +

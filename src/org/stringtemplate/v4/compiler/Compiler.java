@@ -151,11 +151,12 @@ public class Compiler {
 		return impl;
 	}
 
-	public static CompiledST defineBlankRegion(CompiledST outermostImpl, String name) {
+	public static CompiledST defineBlankRegion(CompiledST outermostImpl, Token nameToken) {
 		String outermostTemplateName = outermostImpl.name;
-		String mangled = STGroup.getMangledRegionName(outermostTemplateName, name);
+		String mangled = STGroup.getMangledRegionName(outermostTemplateName, nameToken.getText());
 		CompiledST blank = new CompiledST();
 		blank.isRegion = true;
+		blank.templateDefStartToken = nameToken;
 		blank.regionDefType = ST.RegionType.IMPLICIT;
 		blank.name = mangled;
 		outermostImpl.addImplicitlyDefinedTemplate(blank);

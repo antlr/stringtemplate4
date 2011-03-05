@@ -150,11 +150,13 @@ templateDef[String prefix]
     	    }
 	    )
 	    {
-        template = Misc.strip(template, n);
-        String templateName = $name.text;
-        if ( prefix.length()>0 ) templateName = prefix+"/"+$name.text;
-	    group.defineTemplateOrRegion(templateName, $enclosing.text, templateToken,
-	    							 template, $name, $formalArgs.args);
+	    if ( $name.index >= 0 ) { // if ID missing
+			template = Misc.strip(template, n);
+			String templateName = $name.text;
+			if ( prefix.length()>0 ) templateName = prefix+"/"+$name.text;
+			group.defineTemplateOrRegion(templateName, $enclosing.text, templateToken,
+										 template, $name, $formalArgs.args);
+		}
 	    }
 	|   alias=ID '::=' target=ID  {group.defineTemplateAlias($alias, $target);}
 	;
