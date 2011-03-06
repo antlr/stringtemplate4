@@ -40,6 +40,7 @@ public enum ErrorType {
 	ARGUMENT_COUNT_MISMATCH("passed %s arg(s) to template %s with %s declared arg(s)"),
 	EXPECTING_STRING("function %s expects a string not %s"),
 	WRITER_CTOR_ISSUE("%s(Writer) constructor doesn't exist"),
+	CANT_IMPORT("can't find template(s) in import from %s"),
 
     // COMPILE-TIME SYNTAX/SEMANTIC ERRORS
     SYNTAX_ERROR("%s"),

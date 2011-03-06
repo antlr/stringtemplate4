@@ -28,14 +28,15 @@
 package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.*;
-import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.misc.*;
 
 import java.io.File;
-import java.net.URL;
+import java.net.*;
 
 /** The internal representation of a single group file (which must end in
  *  ".stg").  If we fail to find a group file, look for it via the
- *  CLASSPATH as a resource.
+ *  CLASSPATH as a resource.  Templates are only looked up in this file
+ *  or an import.
  */
 public class STGroupFile extends STGroup {
     public String fileName;
@@ -44,36 +45,37 @@ public class STGroupFile extends STGroup {
     protected boolean alreadyLoaded = false;
 
     /** Load a file relative to current dir or from root or via CLASSPATH. */
-    public STGroupFile(String fileName) { this(fileName, '<', '>'); }
+	public STGroupFile(String fileName) { this(fileName, '<', '>'); }
 
-    public STGroupFile(String fileName, char delimiterStartChar, char delimiterStopChar) {
-        super(delimiterStartChar, delimiterStopChar);
-        if ( !fileName.endsWith(".stg") ) {
-            throw new IllegalArgumentException("Group file names must end in .stg: "+fileName);
-        }
-        try {
-            File f = new File(fileName);
-            if ( f.exists() ) {
-                url = f.toURI().toURL();
-            }
-            else { // try in classpath
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                url = cl.getResource(fileName);
-                if ( url==null ) {
-                    cl = this.getClass().getClassLoader();
-                    url = cl.getResource(fileName);
-                }
-                if ( url==null ) {
-                    throw new IllegalArgumentException("No such group file: "+
-                                                       fileName);
-                }
-            }
-        }
-        catch (Exception e) {
-			throw new STException("can't load group file "+fileName, e);
-        }
-        this.fileName = fileName;
-    }
+	public STGroupFile(String fileName, char delimiterStartChar, char delimiterStopChar) {
+		super(delimiterStartChar, delimiterStopChar);
+		if ( !fileName.endsWith(".stg") ) {
+			throw new IllegalArgumentException("Group file names must end in .stg: "+fileName);
+		}
+		//try {
+		File f = new File(fileName);
+		if ( f.exists() ) {
+			try {
+				url = f.toURI().toURL();
+			}
+			catch (MalformedURLException e) {
+				throw new STException("can't load group file "+fileName, e);
+			}
+		}
+		else { // try in classpath
+			ClassLoader cl = Thread.currentThread().getContextClassLoader();
+			url = cl.getResource(fileName);
+			if ( url==null ) {
+				cl = this.getClass().getClassLoader();
+				url = cl.getResource(fileName);
+			}
+			if ( url==null ) {
+				throw new IllegalArgumentException("No such group file: "+
+													   fileName);
+			}
+		}
+		this.fileName = fileName;
+	}
 
     public STGroupFile(String fullyQualifiedFileName, String encoding) {
         this(fullyQualifiedFileName, encoding, '<', '>');
@@ -125,4 +127,18 @@ public class STGroupFile extends STGroup {
 
     public String getName() { return Misc.getFileNameNoSuffix(fileName); }
 	public String getFileName() { return fileName; }
+
+	@Override
+	public URL getRootDir() {
+		String path = url.getPath();
+		File f = new File(path);
+		try {
+			return f.getParentFile().toURI().toURL();
+		}
+		catch (MalformedURLException me) {
+			errMgr.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
+								me, f.getParentFile());
+		}
+		return null;
+	}
 }

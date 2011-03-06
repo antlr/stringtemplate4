@@ -27,16 +27,15 @@
 */
 package org.stringtemplate.v4;
 
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CommonToken;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.Token;
+import org.antlr.runtime.*;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.debug.DebugST;
 import org.stringtemplate.v4.misc.*;
 
-import java.net.URL;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.MalformedInputException;
 import java.util.*;
 
 /** A directory or directory tree of .st template files and/or group files.
@@ -227,7 +226,7 @@ public class STGroup {
     public void load() { ; }
 
     protected CompiledST lookupImportedTemplate(String name) {
-        //System.out.println("look for "+name+" in "+imports);
+//        System.out.println("look for "+name+" in "+imports);
         if ( imports==null ) return null;
         for (STGroup g : imports) {
             CompiledST code = g.lookupTemplate(name);
@@ -443,20 +442,105 @@ public class STGroup {
 	 *  Can use "/a/b/c/myfile.stg" also or "/a/b/c/mydir".
 	 *
 	 *  Pass token so you can give good error if you want.
+	 *
+	 *  root			import			Descr
+	 *  -------			----------		-------------------------------
+	 *  g.stg 			t.st			add t to g; path: working dir, g.stg's dir, CLASSPATH
+	 *  g.stg			h.stg			add STGroupFile to g imports; path: working dir, g.stg's dir, CLASSPATH
+	 *  g.stg			d dir			add STGroupDir to g imports; path: working dir, g.stg's dir, CLASSPATH
+	 *  d dir 			t.st			add t to g; path: working dir, g.stg's dir, CLASSPATH
+	 *  d dir			g.stg			add STGroupFile to g imports; path: working dir, g.stg's dir, CLASSPATH
+	 *  d dir			e dir			add STGroupDir to g imports; path: working dir, g.stg's dir, CLASSPATH
+	 *
 	 */
 	public void importTemplates(Token fileNameToken) {
 		String fileName = fileNameToken.getText();
 		// do nothing upon syntax error
 		if ( fileName==null || fileName.equals("<missing STRING>") ) return;
 		fileName = Misc.strip(fileName, 1);
+
+//		System.out.println("import "+fileName);
+		boolean isGroupFile = fileName.endsWith(".stg");
+		boolean isTemplateFile = fileName.endsWith(".st");
+		boolean isGroupDir = !(isGroupFile || isTemplateFile);
+
 		STGroup g = null;
-		if ( fileName.endsWith(".stg") ) {
-			g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
+
+		File f = new File(fileName);
+		if ( f.isAbsolute() ) { // load directly if absolute
+			if ( isTemplateFile ) {
+				g = new STGroup();
+				g.loadAbsoluteTemplateFile(fileName);
+			}
+			else if ( isGroupFile ) {
+				g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
+			}
+			else if ( isGroupDir ) {
+				g = new STGroupDir(fileName, delimiterStartChar, delimiterStopChar);
+			}
+			importTemplates(g);
+			return;
+		}
+
+		// it's a relative name; search path is working dir, g.stg's dir, CLASSPATH
+		URL thisRoot = getRootDir();
+		URL fileUnderRoot = null;
+		try {
+			fileUnderRoot = new URL(thisRoot+"/"+fileName);
+		}
+		catch (MalformedURLException mfe) {
+			errMgr.internalError(null, "can't build URL for "+thisRoot+"/"+fileName, mfe);
+		}
+		if ( isTemplateFile ) {
+			g = new STGroup();
+			InputStream s = null;
+			try {
+				s = fileUnderRoot.openStream();
+				CompiledST code = g.loadTemplateFile("", fileName, new ANTLRInputStream(s));
+				if ( code==null ) g = null;
+			}
+			catch (IOException ioe) {
+				// not found
+				g = null;
+			}
+		}
+		else if ( isGroupFile ) {
+			try {
+//				System.out.println("look for fileUnderRoot: "+fileUnderRoot);
+				g = new STGroupFile(fileUnderRoot.getPath(), encoding, delimiterStartChar, delimiterStopChar);
+			}
+			catch (IllegalArgumentException iae) { // not relative to this group
+//				System.out.println("look in path: "+fileName);
+				// try in CLASSPATH
+				try {
+					g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
+				}
+				catch (IllegalArgumentException iae2) {
+					g = null;
+				}
+			}
+		}
+		else if ( isGroupDir ) {
+			try {
+				g = new STGroupDir(fileUnderRoot.getPath(), encoding, delimiterStartChar, delimiterStopChar);
+			}
+			catch (IllegalArgumentException iae) { // not relative to this group
+				// try in CLASSPATH
+				try {
+					g = new STGroupDir(fileName, delimiterStartChar, delimiterStopChar);
+				}
+				catch (IllegalArgumentException iae2) {
+					g = null;
+				}
+			}
+		}
+
+		if ( g==null ) {
+			errMgr.IOError(null, ErrorType.CANT_IMPORT, null, fileName);
 		}
 		else {
-			g = new STGroupDir(fileName, delimiterStartChar, delimiterStopChar);
+			importTemplates(g);
 		}
-		importTemplates(g);
 	}
 
 	/** Load a group file with full path fileName; it's relative to root by prefix. */
@@ -475,6 +559,40 @@ public class STGroup {
 		catch (Exception e) {
 			errMgr.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, fileName);
 		}
+	}
+
+	/** Load template file into this group using absolute filename */
+	public CompiledST loadAbsoluteTemplateFile(String fileName) {
+		ANTLRFileStream fs;
+		try {
+			fs = new ANTLRFileStream(fileName, encoding);
+		}
+		catch (IOException ioe) {
+			// doesn't exist
+			//errMgr.IOError(null, ErrorType.NO_SUCH_TEMPLATE, ioe, fileName);
+			return null;
+		}
+		return loadTemplateFile("", fileName, fs);
+	}
+
+	/** Load template stream into this group */
+	public CompiledST loadTemplateFile(String prefix, String fileName, CharStream templateStream) {
+		GroupLexer lexer = new GroupLexer(templateStream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		GroupParser parser = new GroupParser(tokens);
+		parser.group = this;
+		lexer.group = this;
+		try {
+			parser.templateDef(prefix);
+		}
+		catch (RecognitionException re) {
+			errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR,
+									fileName,
+									re, re.getMessage());
+		}
+		String templateName = Misc.getFileNameNoSuffix(fileName);
+		if ( prefix!=null && prefix.length()>0 ) templateName = prefix+"/"+templateName;
+		return rawGetTemplate(templateName);
 	}
 
 	/** Add an adaptor for a kind of object so ST knows how to pull properties
@@ -577,6 +695,11 @@ public class STGroup {
 
     public String getName() { return "<no name>;"; }
 	public String getFileName() { return null; }
+
+	/** Return root dir if this is group dir; return dir containing group file
+	 *  if this is group file.
+	 */
+	public URL getRootDir() { return null; }
 
     public String toString() { return getName(); }
 

@@ -37,6 +37,11 @@ the Python port.
 * @t.() ::= "" caused NPE
 * Region redefinition caused NPE. "<@r>a<@end><@r()>"
 * STViz couldn't see first subtemplate when computing template range in output.
+* Was incorrectly computing filename to load template .st files from group dir.
+* Listener was not notified upon "no such template" in group dir.
+* Redid how ST found imported files, dir, etc.. Can now import a template
+  file even.  Can be absolute path or relative path.  If relative, it
+  looks in dir of .stg file with import then CLASSPATH.
 
 4.0b4 -- February 5, 2011
 

@@ -27,9 +27,7 @@
 */
 package org.stringtemplate.v4;
 
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.*;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
@@ -44,8 +42,9 @@ import java.net.URL;
 // TODO: caching?
 
 /** A directory or directory tree full of templates and/or group files.
- *  We load files on-demand. If we fail to find a file, we look for it via
- *  the CLASSPATH as a resource.  I track everything with URLs not file names.
+ *  We load files on-demand. Dir search path: current working dir then
+ *  CLASSPATH (as a resource).  Do not look for templates outside of this dir
+ *  subtree (except via imports).
  */
 public class STGroupDir extends STGroup {
     public String groupDirName;
@@ -56,31 +55,33 @@ public class STGroupDir extends STGroup {
     public STGroupDir(String dirName, char delimiterStartChar, char delimiterStopChar) {
         super(delimiterStartChar, delimiterStopChar);
         this.groupDirName = dirName;
-        try {
-            File dir = new File(dirName);
-            if ( dir.exists() && dir.isDirectory() ) {
-                // we found the directory and it'll be file based
-                root = dir.toURI().toURL();
-            }
-            else {
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                root = cl.getResource(dirName);
-                if ( root==null ) {
-                    cl = this.getClass().getClassLoader();
-                    root = cl.getResource(dirName);
-                }
-                if ( root==null ) {
-                    throw new IllegalArgumentException("No such directory: "+
-                                                       dirName);
-                }
-            }
-        }
-        catch (Exception e) {
-			throw new STException("can't load group file "+dirName, e);
-        }
-    }
+		File dir = new File(dirName);
+		if ( dir.exists() && dir.isDirectory() ) {
+			// we found the directory and it'll be file based
+			try {
+				root = dir.toURI().toURL();
+			}
+			catch (MalformedURLException e) {
+				throw new STException("can't load dir "+dirName, e);
+			}
+//			System.out.println("found "+dirName+" at "+root);
+		}
+		else {
+			ClassLoader cl = Thread.currentThread().getContextClassLoader();
+			root = cl.getResource(dirName);
+			if ( root==null ) {
+				cl = this.getClass().getClassLoader();
+				root = cl.getResource(dirName);
+			}
+//			System.out.println("found "+dirName+" via CLASSPATH at "+root);
+			if ( root==null ) {
+				throw new IllegalArgumentException("No such directory: "+
+													   dirName);
+			}
+		}
+	}
 
-    public STGroupDir(String dirName, String encoding) {
+	public STGroupDir(String dirName, String encoding) {
         this(dirName, encoding, '<', '>');
     }
 
@@ -102,7 +103,9 @@ public class STGroupDir extends STGroup {
     /** Load a template from dir or group file.  Group file is given
      *  precedence over dir with same name.
      */
+	@Override
     protected CompiledST load(String name) {
+//		System.out.println("load in groupdir: "+name);
         String parent = Misc.getPrefix(name);
 
         URL groupFileURL = null;
@@ -134,17 +137,16 @@ public class STGroupDir extends STGroup {
         return rawGetTemplate(name);
     }
 
-	/** Load full path name .st file relative to root by prefix */
+	/** Load .st as relative file name relative to root by prefix */
 	public CompiledST loadTemplateFile(String prefix, String fileName) {
-		//System.out.println("load "+fileName+" from "+root+" prefix="+prefix);
-		String templateName = Misc.getFileNameNoSuffix(fileName);
+//		System.out.println("load in groupdir "+fileName+" from "+root+" prefix="+prefix);
 		URL f = null;
 		try {
-			f = new URL(root+fileName);
+			f = new URL(root+"/"+fileName);
 		}
 		catch (MalformedURLException me) {
 			errMgr.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
-									  me, root+fileName);
+								me, root + fileName);
 			return null;
 		}
 		ANTLRInputStream fs;
@@ -152,26 +154,15 @@ public class STGroupDir extends STGroup {
 			fs = new ANTLRInputStream(f.openStream(), encoding);
 		}
 		catch (IOException ioe) {
-			// doesn't exist; just return null to say not found
+			// doesn't exist
+			//errMgr.IOError(null, ErrorType.NO_SUCH_TEMPLATE, ioe, fileName);
 			return null;
 		}
-		GroupLexer lexer = new GroupLexer(fs);
-		fs.name = fileName;
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		GroupParser parser = new GroupParser(tokens);
-		parser.group = this;
-		lexer.group = this;
-		try {
-			parser.templateDef(prefix);
-		}
-		catch (RecognitionException re) {
-			errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR,
-									 Misc.getFileName(f.getFile()),
-									 re, re.getMessage());
-		}
-		return rawGetTemplate(templateName);
+		return loadTemplateFile(prefix, fileName, fs);
 	}
 
 	public String getName() { return groupDirName; }
 	public String getFileName() { return root.getFile(); }
+	@Override
+	public URL getRootDir() { return root; }
 }

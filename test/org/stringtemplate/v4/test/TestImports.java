@@ -36,7 +36,165 @@ import org.stringtemplate.v4.STGroupFile;
 import static org.junit.Assert.assertEquals;
 
 public class TestImports extends BaseTest {
-	@Test public void testImportTemplate() throws Exception {
+	@Test public void testImportDir() throws Exception {
+		/*
+		dir1
+			g.stg has a() that imports dir2 with absolute path
+		dir2
+			a.st
+			b.st
+		 */
+		String dir1 = getRandomDir()+"/dir1";
+		String dir2 = getRandomDir()+"/dir2";
+		String gstr =
+			"import \""+dir2+"\"\n" +
+			"a() ::= <<dir1 a>>\n";
+		writeFile(dir1, "g.stg", gstr);
+
+		String a = "a() ::= <<dir2 a>>\n";
+		String b = "b() ::= <<dir2 b>>\n";
+		writeFile(dir2, "a.st", a);
+		writeFile(dir2, "b.st", b);
+
+		STGroup group = new STGroupFile(dir1+"/g.stg");
+		ST st = group.getInstanceOf("b"); // visible only if import worked
+		String expected = "dir2 b";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportRelativeDir() throws Exception {
+		/*
+		dir
+			g.stg has a() that imports subdir with relative path
+			subdir
+				a.st
+				b.st
+		 */
+		String dir = getRandomDir();
+		String gstr =
+			"import \"subdir\"\n" + // finds subdir in dir
+			"a() ::= <<dir1 a>>\n";
+		writeFile(dir, "g.stg", gstr);
+
+		String a = "a() ::= <<dir2 a>>\n";
+		String b = "b() ::= <<dir2 b>>\n";
+		writeFile(dir, "subdir/a.st", a);
+		writeFile(dir, "subdir/b.st", b);
+
+		STGroup group = new STGroupFile(dir +"/g.stg");
+		ST st = group.getInstanceOf("b"); // visible only if import worked
+		String expected = "dir2 b";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportGroupFileSameDir() throws Exception {
+		/*
+		dir
+			group1.stg		that imports group2.stg in same dir with just filename
+			group2.stg		has c()
+		 */
+		String dir = getRandomDir();
+		String groupFile =
+			"import \"group2.stg\"\n" +
+			"a() ::= \"g1 a\"\n"+
+			"b() ::= \"<c()>\"\n";
+		writeFile(dir, "group1.stg", groupFile);
+
+		groupFile =
+			"c() ::= \"g2 c\"\n";
+		writeFile(dir, "group2.stg", groupFile);
+
+		STGroup group1 = new STGroupFile(dir+"/group1.stg");
+		ST st = group1.getInstanceOf("c"); // should see c()
+		String expected = "g2 c";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportRelativeGroupFile() throws Exception {
+		/*
+		dir
+			group1.stg		that imports group2.stg in same dir with just filename
+			subdir
+				group2.stg	has c()
+		 */
+		String dir = getRandomDir();
+		String groupFile =
+			"import \"subdir/group2.stg\"\n" +
+			"a() ::= \"g1 a\"\n"+
+			"b() ::= \"<c()>\"\n";
+		writeFile(dir, "group1.stg", groupFile);
+
+		groupFile =
+			"c() ::= \"g2 c\"\n";
+		writeFile(dir, "subdir/group2.stg", groupFile);
+
+		STGroup group1 = new STGroupFile(dir+"/group1.stg");
+		ST st = group1.getInstanceOf("c"); // should see c()
+		String expected = "g2 c";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportTemplateFileSameDir() throws Exception {
+		/*
+		dir
+			group1.stg		that imports c.st
+			c.st
+		 */
+		String dir = getRandomDir();
+		String groupFile =
+			"import \"c.st\"\n" +
+			"a() ::= \"g1 a\"\n"+
+			"b() ::= \"<c()>\"\n";
+		writeFile(dir, "group1.stg", groupFile);
+
+		groupFile =
+			"c() ::= \"c\"\n";
+		writeFile(dir, "c.st", groupFile);
+
+		STGroup group1 = new STGroupFile(dir+"/group1.stg");
+		ST st = group1.getInstanceOf("c"); // should see c()
+		String expected = "c";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportRelativeTemplateFile() throws Exception {
+		/*
+		dir
+			group1.stg		that imports c.st
+			subdir
+				c.st
+		 */
+		String dir = getRandomDir();
+		String groupFile =
+			"import \"subdir/c.st\"\n" +
+			"a() ::= \"g1 a\"\n"+
+			"b() ::= \"<c()>\"\n";
+		writeFile(dir, "group1.stg", groupFile);
+
+		String stFile =
+			"c() ::= \"c\"\n";
+		writeFile(dir, "subdir/c.st", stFile);
+
+		STGroup group1 = new STGroupFile(dir+"/group1.stg");
+		ST st = group1.getInstanceOf("c"); // should see c()
+		String expected = "c";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportTemplateFromAnotherGroupObject() throws Exception {
+		/*
+		dir1
+			a.st
+			b.st
+		dir2
+			a.st
+		 */
 		String dir1 = getRandomDir();
 		String a = "a() ::= <<dir1 a>>\n";
 		String b = "b() ::= <<dir1 b>>\n";
@@ -61,46 +219,14 @@ public class TestImports extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	@Test public void testImportStatementWithDir() throws Exception {
-		String dir1 = getRandomDir()+"/dir1";
-		String dir2 = getRandomDir()+"/dir2";
-		String a =
-			"import \""+dir2+"\"\n" +
-			"a() ::= <<dir1 a>>\n";
-		writeFile(dir1, "a.stg", a);
-
-		a = "a() ::= <<dir2 a>>\n";
-		String b = "b() ::= <<dir2 b>>\n";
-		writeFile(dir2, "a.st", a);
-		writeFile(dir2, "b.st", b);
-
-		STGroup group = new STGroupFile(dir1+"/a.stg");
-		ST st = group.getInstanceOf("b"); // visible only if import worked
-		String expected = "dir2 b";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
-	@Test public void testImportStatementWithFile() throws Exception {
-		String dir = getRandomDir();
-		String groupFile =
-			"import \""+dir+"/group2.stg\"\n" +
-			"a() ::= \"g1 a\"\n"+
-			"b() ::= \"<c()>\"\n";
-		writeFile(dir, "group1.stg", groupFile);
-
-		groupFile =
-			"c() ::= \"g2 c\"\n";
-		writeFile(dir, "group2.stg", groupFile);
-
-		STGroup group1 = new STGroupFile(dir+"/group1.stg");
-		ST st = group1.getInstanceOf("c"); // should see c()
-		String expected = "g2 c";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
     @Test public void testImportTemplateInGroupFileFromDir() throws Exception {
+		/*
+		dir
+			x
+				a.st
+			y
+				group.stg		has b, c
+		 */
         String dir = getRandomDir();
         String a = "a() ::= << <b()> >>\n";
         writeFile(dir, "x/a.st", a);
@@ -114,7 +240,6 @@ public class TestImports extends BaseTest {
         STGroup group2 = new STGroupFile(dir+"/y/group.stg");
         group1.importTemplates(group2);
         ST st = group1.getInstanceOf("a");
-        st.impl.dump();
         String expected = " group file b ";
         String result = st.render();
         assertEquals(expected, result);

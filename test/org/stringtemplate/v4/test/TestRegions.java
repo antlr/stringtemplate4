@@ -325,7 +325,7 @@ public class TestRegions extends BaseTest {
         ST st = group.getInstanceOf("a");
         st.render();
         String result = errors.toString();
-        String expecting = "g.stg 3:3: template a doesn't have a region called q"+newline;
+        String expecting = "g.stg 4:3: template a doesn't have a region called q"+newline;
         assertEquals(expecting, result);
     }
 

@@ -80,10 +80,13 @@ public class Misc {
     }
 
     public static String getFileNameNoSuffix(String f) {
+		if (f==null) return null;
+		f = getFileName(f);
         return f.substring(0,f.lastIndexOf('.'));
     }
 
     public static String getFileName(String fullFileName) {
+		if (fullFileName==null) return null;
         File f = new File(fullFileName); // strip to simple name
         return f.getName();
     }

@@ -543,14 +543,14 @@ public class TestGroups extends BaseTest {
 		String groupFile =
 			"f(x,y) ::= \"<x><y>\"\n" +
 			"g() ::= \"<f(x={a},{b})>\"";
-		   //012345678901234567
+		   //01234567890123456789
 
 		writeFile(dir, "group.stg", groupFile);
 		STGroupFile group = new STGroupFile(dir+"/group.stg");
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		group.load();
-		String expected = "group.stg 2:28: mismatched input '{' expecting ID"+newline;
+		String expected = "group.stg 2:29: mismatched input '{' expecting ID"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
