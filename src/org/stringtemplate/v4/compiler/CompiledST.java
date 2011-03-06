@@ -173,7 +173,7 @@ public class CompiledST {
 		if ( isAnonSubtemplate ) {
 			Interval start = sourceMap[0];
 			Interval stop = null;
-			for (int i = sourceMap.length-1; i>0; i--) {
+			for (int i = sourceMap.length-1; i>=0; i--) {
 				Interval I = sourceMap[i];
 				if ( I!=null ) {
 					stop = I;

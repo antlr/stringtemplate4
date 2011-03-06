@@ -36,6 +36,7 @@ the Python port.
 * IndexOutOfBounds Exception when using "cap" format on empty string
 * @t.() ::= "" caused NPE
 * Region redefinition caused NPE. "<@r>a<@end><@r()>"
+* STViz couldn't see first subtemplate when computing template range in output.
 
 4.0b4 -- February 5, 2011
 

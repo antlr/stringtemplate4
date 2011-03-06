@@ -291,7 +291,8 @@ public class STViz {
 
     public static void main(String[] args) throws IOException { // test rig
 		if ( args.length>0 && args[0].equals("1") ) test1();
-		else test2();
+		else if ( args.length>0 && args[0].equals("2") ) test2();
+		else test3();
 	}
 
 	public static void test1() throws IOException { // test rig
@@ -357,6 +358,22 @@ public class STViz {
         ST st = group.getInstanceOf("main");
         ((DebugST)st).inspect();
     }
+
+	public static void test3() throws IOException {
+        String templates =
+			"main() ::= <<\n" +
+			"Foo: <{bar};format=\"lower\">\n" +
+			">>\n";
+
+        String tmpdir = System.getProperty("java.io.tmpdir");
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        STGroup.debug = true;
+        ST st = group.getInstanceOf("main");
+        ((DebugST)st).inspect();
+    }
+
+
 
     public static void writeFile(String dir, String fileName, String content) {
         try {
