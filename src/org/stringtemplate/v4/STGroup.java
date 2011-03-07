@@ -432,26 +432,23 @@ public class STGroup {
         imports.add(g);
     }
 
-	/** Load group dir or file (if .stg suffix) and then import templates. Don't hold
-	 *  an independent ref to the "supergroup".
+	/** Import template files, directories, and group files.
+	 *  Priority is given to templates defined in the current group;
+	 *  this, in effect, provides inheritance. Polymorphism is in effect so
+	 *  that if an inherited template references template t() then we
+	 *  search for t() in the subgroup first.
 	 *
-	 *  Override this if you want to look for groups elsewhere (database maybe?)
+	 *  If you specify an absolute file name or directory name, the
+	 *  import statement uses that directly. If it is not an absolute path,
+	 *  we look that entity up in the directory holding the group that
+	 *  initiates the import. If file or directory is not in that directory,
+	 *  then we load using the classpath.
 	 *
-	 *  importTemplates("org.foo.proj.G.stg") will try to find file org/foo/proj/G.stg
-	 *  relative to current dir or in CLASSPATH. The name is not relative to this group.
-	 *  Can use "/a/b/c/myfile.stg" also or "/a/b/c/mydir".
+	 *  Templates are loaded on-demand from import dirs.  Imported groups are
+	 *  loaded on-demand when searching for a template.
 	 *
-	 *  Pass token so you can give good error if you want.
-	 *
-	 *  root			import			Descr
-	 *  -------			----------		-------------------------------
-	 *  g.stg 			t.st			add t to g; path: working dir, g.stg's dir, CLASSPATH
-	 *  g.stg			h.stg			add STGroupFile to g imports; path: working dir, g.stg's dir, CLASSPATH
-	 *  g.stg			d dir			add STGroupDir to g imports; path: working dir, g.stg's dir, CLASSPATH
-	 *  d dir 			t.st			add t to g; path: working dir, g.stg's dir, CLASSPATH
-	 *  d dir			g.stg			add STGroupFile to g imports; path: working dir, g.stg's dir, CLASSPATH
-	 *  d dir			e dir			add STGroupDir to g imports; path: working dir, g.stg's dir, CLASSPATH
-	 *
+	 *  The listener of this group is passed to the import group so errors
+	 *  found while loading imported element are sent to listener of this group.
 	 */
 	public void importTemplates(Token fileNameToken) {
 		String fileName = fileNameToken.getText();
@@ -470,13 +467,16 @@ public class STGroup {
 		if ( f.isAbsolute() ) { // load directly if absolute
 			if ( isTemplateFile ) {
 				g = new STGroup();
+				g.setListener(this.getListener());
 				g.loadAbsoluteTemplateFile(fileName);
 			}
 			else if ( isGroupFile ) {
 				g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
+				g.setListener(this.getListener());
 			}
 			else if ( isGroupDir ) {
 				g = new STGroupDir(fileName, delimiterStartChar, delimiterStopChar);
+				g.setListener(this.getListener());
 			}
 			importTemplates(g);
 			return;
@@ -493,10 +493,13 @@ public class STGroup {
 		}
 		if ( isTemplateFile ) {
 			g = new STGroup();
+			g.setListener(this.getListener());
 			InputStream s = null;
 			try {
 				s = fileUnderRoot.openStream();
-				CompiledST code = g.loadTemplateFile("", fileName, new ANTLRInputStream(s));
+				ANTLRInputStream templateStream = new ANTLRInputStream(s);
+				templateStream.name = fileName;
+				CompiledST code = g.loadTemplateFile("", fileName, templateStream);
 				if ( code==null ) g = null;
 			}
 			catch (IOException ioe) {
@@ -508,12 +511,14 @@ public class STGroup {
 			try {
 //				System.out.println("look for fileUnderRoot: "+fileUnderRoot);
 				g = new STGroupFile(fileUnderRoot.getPath(), encoding, delimiterStartChar, delimiterStopChar);
+				g.setListener(this.getListener());
 			}
 			catch (IllegalArgumentException iae) { // not relative to this group
 //				System.out.println("look in path: "+fileName);
 				// try in CLASSPATH
 				try {
 					g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
+					g.setListener(this.getListener());
 				}
 				catch (IllegalArgumentException iae2) {
 					g = null;
@@ -523,11 +528,13 @@ public class STGroup {
 		else if ( isGroupDir ) {
 			try {
 				g = new STGroupDir(fileUnderRoot.getPath(), encoding, delimiterStartChar, delimiterStopChar);
+				g.setListener(this.getListener());
 			}
 			catch (IllegalArgumentException iae) { // not relative to this group
 				// try in CLASSPATH
 				try {
 					g = new STGroupDir(fileName, delimiterStartChar, delimiterStopChar);
+					g.setListener(this.getListener());
 				}
 				catch (IllegalArgumentException iae2) {
 					g = null;
@@ -566,6 +573,7 @@ public class STGroup {
 		ANTLRFileStream fs;
 		try {
 			fs = new ANTLRFileStream(fileName, encoding);
+			fs.name = fileName;
 		}
 		catch (IOException ioe) {
 			// doesn't exist

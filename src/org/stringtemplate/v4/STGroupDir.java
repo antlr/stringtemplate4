@@ -152,6 +152,7 @@ public class STGroupDir extends STGroup {
 		ANTLRInputStream fs;
 		try {
 			fs = new ANTLRInputStream(f.openStream(), encoding);
+			fs.name = fileName;
 		}
 		catch (IOException ioe) {
 			// doesn't exist
