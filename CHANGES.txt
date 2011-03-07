@@ -11,7 +11,7 @@ CHANGES
 
 BIG THANKS to Sam Harwell and, again, to Udo Borkowski for debugging help and
 suggestions. Sam is doing the C# implementation.  Benjamin Niemann is doing
-the Python port.
+the Python port. Alan Condit is doing Objective-C.
 
 * true/false were only allowed as default args; now allowed as template
   arg expressions in templates. Works as dictionary value too.
