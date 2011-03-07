@@ -21,7 +21,7 @@ model-view separation, unlike other engines. See:
 
 The documentation is in the wiki:
 
-  http://www.antlr.org/wiki/display/ST/StringTemplate+4+Documentation
+  http://www.antlr.org/wiki/display/ST4/StringTemplate+4+Documentation
 
 Per the BSD license in LICENSE.txt, this software is not guaranteed to
 work and might even destroy all life on this planet.
@@ -37,7 +37,7 @@ into your favorite lib directory such as /usr/local/lib on UNIX:
   * antlr-complete.jar; http://www.antlr.org/download/antlr-3.3-complete.jar
   * ST.jar; see http://www.stringtemplate.org/download/ST-4.0bX.jar
 
-where X is 4 at the moment.
+where X is 5 at the moment.
 
 Add to your CLASSPATH. On UNIX that looks like
 
@@ -67,7 +67,7 @@ zip-source:
     [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/dist/src
      [copy] Copying 2 files to /usr/local/website/st/depot/ST4/java/main/dist/src
      [copy] Copying 88 files to /usr/local/website/st/depot/ST4/java/main/dist/src/src
-      [zip] Building zip: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0b2-src.zip
+      [zip] Building zip: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0b5-src.zip
 
 init:
     [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/build/gen/org/stringtemplate/v4/compiler
@@ -83,7 +83,7 @@ compile:
     [javac] Note: Recompile with -Xlint:unchecked for details.
 
 build:
-      [jar] Building jar: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0b2.jar
+      [jar] Building jar: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0b5.jar
 
 distribute:
 
