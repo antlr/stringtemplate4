@@ -276,6 +276,21 @@ public class TestWhitespace extends BaseTest {
 		assertEquals(expecting, result);
 	}
 
+	@Test public void testElseIFOnMultipleLines3() throws Exception {
+		ST t = new ST(
+			"begin\n"+
+			"  <if(a)>\n" +
+			"  foo\n" +
+			"  <elseif(b)>\n" +
+			"  bar\n" +
+			"  <endif>\n"+
+			"end\n");
+		t.add("a", true);
+		String expecting="begin"+newline+"  foo"+newline+"end"+newline;
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
+
     @Test public void testNestedIFOnMultipleLines() throws Exception {
         ST t = new ST(
             "begin\n"+
