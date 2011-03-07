@@ -210,7 +210,7 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIFElseExpr() throws Exception {
+    @Test public void testIFElseExprOnSingleLine() throws Exception {
         ST t = new ST(
             "begin\n"+
             "<if(users)><else><endif>\n"+
@@ -220,19 +220,48 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIFOnMultipleLines() throws Exception {
-        ST t = new ST(
-            "begin\n"+
-            "<if(users)>\n" +
-            "foo\n" +
-            "<else>\n" +
-            "bar\n" +
-            "<endif>\n"+
-            "end\n");
-        String expecting="begin"+newline+"bar"+newline+"end"+newline;
-        String result = t.render();
-        assertEquals(expecting, result);
-    }
+	@Test public void testIFOnMultipleLines() throws Exception {
+		ST t = new ST(
+			"begin\n"+
+			"<if(users)>\n" +
+			"foo\n" +
+			"<else>\n" +
+			"bar\n" +
+			"<endif>\n"+
+			"end\n");
+		String expecting="begin"+newline+"bar"+newline+"end"+newline;
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testElseIFOnMultipleLines() throws Exception {
+		ST t = new ST(
+			"begin\n"+
+			"<if(a)>\n" +
+			"foo\n" +
+			"<elseif(b)>\n" +
+			"bar\n" +
+			"<endif>\n"+
+			"end\n");
+		String expecting="begin"+newline+"end"+newline;
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
+
+	@Test public void testElseIFOnMultipleLines2() throws Exception {
+		ST t = new ST(
+			"begin\n"+
+			"<if(a)>\n" +
+			"foo\n" +
+			"<elseif(b)>\n" +
+			"bar\n" +
+			"<endif>\n"+
+			"end\n");
+		t.add("b", true);
+		String expecting="begin"+newline+"bar"+newline+"end"+newline;
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
 
     @Test public void testNestedIFOnMultipleLines() throws Exception {
         ST t = new ST(
