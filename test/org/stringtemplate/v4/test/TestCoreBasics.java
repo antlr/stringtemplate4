@@ -52,14 +52,23 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAttr() throws Exception {
-        String template = "hi <name>!";
-        ST st = new ST(template);
-        st.add("name", "Ter");
-        String expected = "hi Ter!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testAttr() throws Exception {
+		String template = "hi <name>!";
+		ST st = new ST(template);
+		st.add("name", "Ter");
+		String expected = "hi Ter!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testChainAttr() throws Exception {
+		String template = "<x>:<names>!";
+		ST st = new ST(template);
+		st.add("names", "Ter").add("names", "Tom").add("x", 1);
+		String expected = "1:TerTom!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testSetUnknownAttr() throws Exception {
         String templates =

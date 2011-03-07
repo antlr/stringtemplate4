@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+4.0 --
+
+* ST.add() returns self now so we can chain.  t.add("x", 1).add("y", "hi");
+
 4.0b5 -- March 6, 2011
 
 BIG THANKS to Sam Harwell and, again, to Udo Borkowski for debugging help and

@@ -147,9 +147,11 @@ public class ST {
      *  This method will never alter a List that you inject.  If you send
      *  in a List and then inject a single value element, add() copies
      *  original list and adds the new value.
+	 *
+	 *  Return self so we can chain.  t.add("x", 1).add("y", "hi");
      */
-    public synchronized void add(String name, Object value) {
-        if ( name==null ) return; // allow null value
+    public synchronized ST add(String name, Object value) {
+        if ( name==null ) return this; // allow null value
         if ( name.indexOf('.')>=0 ) {
             throw new IllegalArgumentException("cannot have '.' in attribute names");
         }
@@ -180,7 +182,7 @@ public class ST {
 		Object curvalue = locals[arg.index];
         if ( curvalue==EMPTY_ATTR ) { // new attribute
 			locals[arg.index] = value;
-            return;
+            return this;
         }
 
         // attribute will be multi-valued for sure now
@@ -200,6 +202,7 @@ public class ST {
         else {
             multi.add(value);
         }
+		return this;
     }
 
 	/** Remove an attribute value entirely (can't remove attribute definitions). */

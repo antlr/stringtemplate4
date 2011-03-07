@@ -60,11 +60,11 @@ public class DebugST extends ST {
 	public DebugST(ST proto) { super(proto); }
 
 	@Override
-	public void add(String name, Object value) {
+	public ST add(String name, Object value) {
 		if ( STGroup.debug ) {
 			addAttrEvents.map(name, new AddAttributeEvent(name, value));
 		}
-		super.add(name, value);
+		return super.add(name, value);
 	}
 
 // LAUNCH A WINDOW TO INSPECT TEMPLATE HIERARCHY
