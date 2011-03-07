@@ -44,6 +44,9 @@ the Python port.
   looks in dir of .stg file with import then CLASSPATH.
 * The listener of import groups is now set to that of group that imports
   them.
+* Regions behave like <if> tags now. Indent respected if <@r>...<@end> on
+  indented single line.  Indent/newlines ignored after those tags if
+  on separate lines.
 
 4.0b4 -- February 5, 2011
 

@@ -84,22 +84,27 @@ singleElement
 	|	NEWLINE
 	|	COMMENT! // throw away
 	;
-	
+
 compoundElement
 	:	ifstat
 	|	region
 	;
-	
+
 exprTag
 	:	LDELIM expr ( ';' exprOptions )? RDELIM
 		-> ^(EXPR[$LDELIM,"EXPR"] expr exprOptions?)
 	;
 
 region
-	:	INDENT? LDELIM '@' ID RDELIM NEWLINE?
+@init {Token indent=null;}
+	:	i=INDENT? x=LDELIM '@' ID RDELIM {if (input.LA(1)!=NEWLINE) indent=$i;}
 		template
-		INDENT? LDELIM '@end' RDELIM NEWLINE?
-		-> ^(REGION ID template?)
+		INDENT? LDELIM '@end' RDELIM
+		// kill \n for <@end> on line by itself if multi-line embedded region
+		({$region.start.getLine()!=input.LT(1).getLine()}?=> NEWLINE)?
+		-> {indent!=null}?
+		   ^({indent} ^(REGION[$x] ID template?))
+		->            ^(REGION[$x] ID template?)
 	;
 
 subtemplate
@@ -118,8 +123,9 @@ ifstat
 		RDELIM
 		// kill \n for <endif> on line by itself if multi-line IF
 		({$ifstat.start.getLine()!=input.LT(1).getLine()}?=> NEWLINE)?
-		-> {indent!=null}? ^({indent} ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?))
-		-> ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?)
+		-> {indent!=null}?
+		   ^({indent} ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?))
+		->            ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?)
 	;
 
 conditional

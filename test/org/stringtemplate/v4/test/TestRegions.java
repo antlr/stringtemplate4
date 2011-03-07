@@ -350,4 +350,39 @@ public class TestRegions extends BaseTest {
         String expecting = "XABY";
         assertEquals(expecting, result);
     }
+
+	@Test public void testEmbeddedRegionOnOneLine() throws Exception {
+		String dir = getRandomDir();
+		String groupFile =
+			"a() ::= <<\n" +
+			"[\n" +
+			"  <@r>bar<@end>\n" +
+			"]\n" +
+			">>\n";
+		writeFile(dir, "group.stg", groupFile);
+		STGroup group = new STGroupFile(dir+"/group.stg");
+		ST st = group.getInstanceOf("a");
+		st.impl.dump();
+		String expected = "["+newline+"  bar"+newline+"]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testEmbeddedRegionTagsOnSeparateLines() throws Exception {
+		String dir = getRandomDir();
+		String groupFile =
+			"a() ::= <<\n" +
+			"[\n" +
+			"  <@r>\n" +
+			"  bar\n" +
+			"  <@end>\n" +
+			"]\n" +
+			">>\n";
+		writeFile(dir, "group.stg", groupFile);
+		STGroup group = new STGroupFile(dir+"/group.stg");
+		ST st = group.getInstanceOf("a");
+		String expected = "["+newline+"  bar"+newline+"]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 }

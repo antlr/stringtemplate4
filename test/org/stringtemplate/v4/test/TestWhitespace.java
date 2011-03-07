@@ -234,6 +234,19 @@ public class TestWhitespace extends BaseTest {
 		assertEquals(expecting, result);
 	}
 
+	@Test public void testEndifNotOnLineAlone() throws Exception {
+		ST t = new ST(
+			"begin\n"+
+			"  <if(users)>\n" +
+			"  foo\n" +
+			"  <else>\n" +
+			"  bar\n" +
+			"  <endif>end\n");
+		String expecting="begin"+newline+"  bar"+newline+"end"+newline;
+		String result = t.render();
+		assertEquals(expecting, result);
+	}
+
 	@Test public void testElseIFOnMultipleLines() throws Exception {
 		ST t = new ST(
 			"begin\n"+

@@ -145,10 +145,6 @@ singleElement
 compoundElement[String indent]
 	:	ifstat[indent]
 	|	region[indent]
-		{
-		emit2($region.start, Bytecode.INSTR_NEW, $region.name, 0);
-		emit($region.start, Bytecode.INSTR_WRITE);
-		}
 	;
 
 exprElement
@@ -170,6 +166,12 @@ exprElement
 	;
 
 region[String indent] returns [String name]
+@init {
+	if ( indent!=null ) $template::state.indent(indent);
+}
+@after {
+	if ( indent!=null ) $template::state.emit(Bytecode.INSTR_DEDENT);
+}
 	:	^(	REGION ID
 			{$name = STGroup.getMangledRegionName(outermostTemplateName, $ID.text);}
 			template[$name,null]
@@ -180,6 +182,8 @@ region[String indent] returns [String name]
 	        sub.templateDefStartToken = $ID.token;
 			//sub.dump();
 			outermostImpl.addImplicitlyDefinedTemplate(sub);
+			emit2($start, Bytecode.INSTR_NEW, $region.name, 0);
+			emit($start, Bytecode.INSTR_WRITE);
 			}
 		 )
 	;
