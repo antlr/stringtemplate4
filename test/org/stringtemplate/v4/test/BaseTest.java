@@ -31,21 +31,69 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
 import org.junit.Before;
+import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.compiler.STLexer;
 import org.stringtemplate.v4.misc.Misc;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 public class BaseTest {
+	public static final String pathSep = System.getProperty("path.separator");
     public static final String tmpdir = System.getProperty("java.io.tmpdir");
     public static final String newline = Misc.newline;
+
+	/**
+	 * When runnning from Maven, the junit tests are run via the surefire plugin. It sets the
+	 * classpath for the test environment into the following property. We need to pick this up
+	 * for the junit tests that are going to generate and try to run code.
+	 */
+	public static final String SUREFIRE_CLASSPATH =
+		System.getProperty("surefire.test.class.path", "");
+
+	public static final String CLASSPATH = System.getProperty("java.class.path") +
+										   (SUREFIRE_CLASSPATH.equals("") ?
+											   "" :
+											   pathSep + SUREFIRE_CLASSPATH);
+
+	public static class StreamVacuum implements Runnable {
+		StringBuffer buf = new StringBuffer();
+		BufferedReader in;
+		Thread sucker;
+		public StreamVacuum(InputStream in) {
+			this.in = new BufferedReader( new InputStreamReader(in) );
+		}
+		public void start() {
+			sucker = new Thread(this);
+			sucker.start();
+		}
+		public void run() {
+			try {
+				String line = in.readLine();
+				while (line!=null) {
+					buf.append(line);
+					buf.append('\n');
+					line = in.readLine();
+				}
+			}
+			catch (IOException ioe) {
+				System.err.println("can't read output from process");
+			}
+		}
+		/** wait for the thread to finish */
+		public void join() throws InterruptedException {
+			sucker.join();
+		}
+		public String toString() {
+			return buf.toString();
+		}
+	}
 
     @Before
     public void setUp() {
@@ -54,7 +102,93 @@ public class BaseTest {
 		STGroup.debug = false;
     }
 
-    public static void writeFile(String dir, String fileName, String content) {
+	public void writeTestFile(String main, String dirName) {
+		ST outputFileST = new ST(
+			"import org.antlr.runtime.*;\n" +
+			"import org.stringtemplate.v4.*;\n" +
+			"import org.antlr.runtime.tree.*;\n" +
+			"\n" +
+			"public class Test {\n" +
+			"    public static void main(String[] args) throws Exception {\n" +
+			"        <code>\n"+
+			"        System.out.println(result);\n"+
+			"    }\n" +
+			"}"
+			);
+		outputFileST.add("code", main);
+		writeFile(dirName, "Test.java", outputFileST.render());
+	}
+
+	public String java(String mainClassName, String extraCLASSPATH, String workingDirName) {
+		String classpathOption = "-classpath";
+
+		String path = "."+pathSep+CLASSPATH;
+		if ( extraCLASSPATH!=null ) path = "."+pathSep+extraCLASSPATH+pathSep+CLASSPATH;
+
+		String[] args = new String[] {
+					"java",
+					classpathOption, path,
+					mainClassName
+		};
+		System.out.println("executing: "+Arrays.toString(args));
+		return exec(args, null, workingDirName);
+	}
+
+	public void jar(String fileName, String[] files, String workingDirName) {
+		String[] cmd = {
+			"jar", "cf", fileName, "Test.class"
+		};
+		// SO SAD FOR YOU JAVA!!!!
+		List<String> list = new ArrayList<String>();
+		list.addAll(Arrays.asList(cmd));
+		list.addAll(Arrays.asList(files));
+		String[] a = new String[list.size()];
+		list.toArray(a);
+		exec(a, null, workingDirName); // create jar
+	}
+
+	public void compile(String fileName, String workingDirName) {
+		String classpathOption = "-classpath";
+
+		String[] args = new String[] {
+					"javac",
+					classpathOption, "."+pathSep+CLASSPATH,
+					fileName
+		};
+		exec(args, null, workingDirName);
+	}
+
+	public String exec(String[] args, String[] envp, String workingDirName) {
+		String cmdLine = Arrays.toString(args);
+		File workingDir = new File(workingDirName);
+		try {
+			Process process =
+				Runtime.getRuntime().exec(args, envp, workingDir);
+			StreamVacuum stdout = new StreamVacuum(process.getInputStream());
+			StreamVacuum stderr = new StreamVacuum(process.getErrorStream());
+			stdout.start();
+			stderr.start();
+			process.waitFor();
+            stdout.join();
+            stderr.join();
+			if ( stdout.toString().length()>0 ) {
+				return stdout.toString();
+			}
+			if ( stderr.toString().length()>0 ) {
+				System.err.println("compile stderr from: "+cmdLine);
+				System.err.println(stderr);
+			}
+			int ret = process.exitValue();
+			if ( ret!=0 ) System.err.println("failed");
+		}
+		catch (Exception e) {
+			System.err.println("can't exec compilation");
+			e.printStackTrace(System.err);
+		}
+		return null;
+	}
+
+	public static void writeFile(String dir, String fileName, String content) {
 		try {
 			File f = new File(dir, fileName);
             if ( !f.getParentFile().exists() ) f.getParentFile().mkdirs();
