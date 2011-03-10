@@ -117,7 +117,7 @@ public class TestImports extends BaseTest {
 
 		writeTestFile(
 			"STGroup group = new STGroupFile(\"org/foo/templates/main.stg\");\n" +
-			"ST st = group.getInstanceOf(\"a\");\n"+ // visible only if import worked
+			"ST st = group.getInstanceOf(\"a\");\n"+
 			"String result = st.render();\n",
 			root);
 		compile("Test.java", root);
