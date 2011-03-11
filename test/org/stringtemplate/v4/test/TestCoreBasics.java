@@ -34,10 +34,7 @@ import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 import org.stringtemplate.v4.misc.STRuntimeMessage;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -140,6 +137,15 @@ public class TestCoreBasics extends BaseTest {
 		ST st = new ST(template);
 		st.add("foo", new HashMap() {{put("a","b");}});
 		String expected = "b: ";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testMapAcrossDictionaryUsesKeys() throws Exception {
+		String template = "<foo:{f | <f>}>"; // checks field and method getter
+		ST st = new ST(template);
+		st.add("foo", new LinkedHashMap() {{put("a","b"); put("c","d");}});
+		String expected = "ac";
 		String result = st.render();
 		assertEquals(expected, result);
 	}
