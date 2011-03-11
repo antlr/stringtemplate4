@@ -63,47 +63,50 @@ public class TestImports extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	@Test public void testImportDirInJar() throws Exception {
+	@Test public void testImportDirInJarViaCLASSPATH() throws Exception {
 		/*
-		dir1
-			g.stg has a() that imports dir2 with absolute path
-		dir2
+		sub
+			g.stg has a() that imports dir2 via classpath
+		base
 			a.st
 			b.st
 		 */
 		String root = getRandomDir();
-		String dir1 = root +"/dir1";
-		String dir2 = root +"/dir2";
+		String sub = root +"/sub";
+		String base = root +"/base";
 		String gstr =
-			"import \""+dir2+"\"\n" +
-			"a() ::= <<dir1 a>>\n";
-		writeFile(dir1, "g.stg", gstr);
+			"import \"base\"\n" +
+			"a() ::= <<sub a>>\n";
+		writeFile(sub, "g.stg", gstr);
 
-		String a = "a() ::= <<dir2 a>>\n";
-		String b = "b() ::= <<dir2 b>>\n";
-		writeFile(dir2, "a.st", a);
-		writeFile(dir2, "b.st", b);
+		String a = "a() ::= <<base a>>\n";
+		String b = "b() ::= <<base b>>\n";
+		writeFile(base, "a.st", a);
+		writeFile(base, "b.st", b);
 
 		writeTestFile(
-			"STGroup group = new STGroupFile(\"dir1/g.stg\");\n" +
+			"STGroup group = new STGroupFile(\"sub/g.stg\");\n" +
 			"ST st = group.getInstanceOf(\"b\");\n"+ // visible only if import worked
 			"String result = st.render();\n",
 			root);
 		compile("Test.java", root);
-		jar("test.jar", new String[] {"dir1","dir2"}, root);
+		// jar has sub, base as dirs in CLASSPATH
+		jar("test.jar", new String[]{"sub", "base"}, root);
+		Runtime.getRuntime().exec("rm -rf "+root+"/sub "+root+"/base");
 		String result = java("Test", "test.jar", root);
 		
-		String expected = "dir2 b"+newline;
+		String expected = "base b"+newline;
 		assertEquals(expected, result);
 	}
 
 	@Test public void testImportGroupAtSameLevelInJar() throws Exception {
 		/*
-		dir
+		org/foo/templates
 			main.stg imports lib.stg
 			lib.stg
 		 */
 		String root = getRandomDir();
+		System.out.println(root);
 		String dir = root+"/org/foo/templates";
 		String main =
 			"import \"lib.stg\"\n" + // should see in same dir as main.stg
@@ -122,12 +125,47 @@ public class TestImports extends BaseTest {
 			root);
 		compile("Test.java", root);
 		jar("test.jar", new String[] {"org"}, root);
+		Runtime.getRuntime().exec("rm -rf "+root+"/org");
 		String result = java("Test", "test.jar", root);
 
 		String expected = "main a calls lib bold!"+newline;
 		assertEquals(expected, result);
 	}
 
+	@Test public void testImportGroupInJarViaCLASSPATH() throws Exception {
+		/*
+		org/foo/templates
+			main.stg imports org/foo/lib/lib.stg
+		org/foo/lib
+			lib.stg
+		 */
+		String root = getRandomDir();
+		System.out.println(root);
+		String dir = root+"/org/foo/templates";
+		String main =
+			"import \"org/foo/lib/lib.stg\"\n" + // should see in same dir as main.stg
+			"a() ::= <<main a calls <bold()>!>>\n"+
+			"b() ::= <<main b>>\n";
+		writeFile(dir, "main.stg", main);
+
+		String lib =
+			"bold() ::= <<lib bold>>\n";
+		dir = root+"/org/foo/lib";
+		writeFile(dir, "lib.stg", lib);
+
+		writeTestFile(
+			"STGroup group = new STGroupFile(\"org/foo/templates/main.stg\");\n" +
+			"ST st = group.getInstanceOf(\"a\");\n"+
+			"String result = st.render();\n",
+			root);
+		compile("Test.java", root);
+		jar("test.jar", new String[] {"org"}, root);
+		Runtime.getRuntime().exec("rm -rf "+root+"/org");
+		String result = java("Test", "test.jar", root);
+
+		String expected = "main a calls lib bold!"+newline;
+		assertEquals(expected, result);
+	}
 
 	@Test public void testImportRelativeDir() throws Exception {
 		/*

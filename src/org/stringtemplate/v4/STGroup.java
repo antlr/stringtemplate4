@@ -33,9 +33,11 @@ import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.debug.DebugST;
 import org.stringtemplate.v4.misc.*;
 
-import java.io.*;
-import java.net.*;
-import java.nio.charset.MalformedInputException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 /** A directory or directory tree of .st template files and/or group files.
@@ -456,7 +458,7 @@ public class STGroup {
 		if ( fileName==null || fileName.equals("<missing STRING>") ) return;
 		fileName = Misc.strip(fileName, 1);
 
-//		System.out.println("import "+fileName);
+		//System.out.println("import "+fileName);
 		boolean isGroupFile = fileName.endsWith(".stg");
 		boolean isTemplateFile = fileName.endsWith(".st");
 		boolean isGroupDir = !(isGroupFile || isTemplateFile);
@@ -483,24 +485,24 @@ public class STGroup {
 		}
 
 		// it's a relative name; search path is working dir, g.stg's dir, CLASSPATH
-		URL thisRoot = getRootDir();
-		URL fileUnderRoot = null;
-		try {
-			fileUnderRoot = new URL(thisRoot+"/"+fileName);
-		}
-		catch (MalformedURLException mfe) {
-			errMgr.internalError(null, "can't build URL for "+thisRoot+"/"+fileName, mfe);
-		}
+		String thisRoot = getRootDir();
+		String fileUnderRoot = null;
+		//System.out.println("thisRoot="+thisRoot);
+		fileUnderRoot = thisRoot+"/"+fileName;
 		if ( isTemplateFile ) {
 			g = new STGroup();
 			g.setListener(this.getListener());
 			InputStream s = null;
 			try {
-				s = fileUnderRoot.openStream();
+				URL url = new File(fileUnderRoot).toURI().toURL();
+				s = url.openStream();
 				ANTLRInputStream templateStream = new ANTLRInputStream(s);
 				templateStream.name = fileName;
 				CompiledST code = g.loadTemplateFile("", fileName, templateStream);
 				if ( code==null ) g = null;
+			}
+			catch (MalformedURLException mfe) {
+				errMgr.internalError(null, "can't build URL for "+fileUnderRoot, mfe);
 			}
 			catch (IOException ioe) {
 				// not found
@@ -509,12 +511,12 @@ public class STGroup {
 		}
 		else if ( isGroupFile ) {
 			try {
-//				System.out.println("look for fileUnderRoot: "+fileUnderRoot);
-				g = new STGroupFile(fileUnderRoot.getPath(), encoding, delimiterStartChar, delimiterStopChar);
+				//System.out.println("look for fileUnderRoot: "+fileUnderRoot);
+				g = new STGroupFile(fileUnderRoot, encoding, delimiterStartChar, delimiterStopChar);
 				g.setListener(this.getListener());
 			}
 			catch (IllegalArgumentException iae) { // not relative to this group
-//				System.out.println("look in path: "+fileName);
+				//System.out.println("look in path: "+fileName);
 				// try in CLASSPATH
 				try {
 					g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
@@ -527,7 +529,7 @@ public class STGroup {
 		}
 		else if ( isGroupDir ) {
 			try {
-				g = new STGroupDir(fileUnderRoot.getPath(), encoding, delimiterStartChar, delimiterStopChar);
+				g = new STGroupDir(fileUnderRoot, encoding, delimiterStartChar, delimiterStopChar);
 				g.setListener(this.getListener());
 			}
 			catch (IllegalArgumentException iae) { // not relative to this group
@@ -543,7 +545,8 @@ public class STGroup {
 		}
 
 		if ( g==null ) {
-			errMgr.IOError(null, ErrorType.CANT_IMPORT, null, fileName);
+			errMgr.compileTimeError(ErrorType.CANT_IMPORT, null,
+									fileNameToken, fileName);
 		}
 		else {
 			importTemplates(g);
@@ -705,9 +708,13 @@ public class STGroup {
 	public String getFileName() { return null; }
 
 	/** Return root dir if this is group dir; return dir containing group file
-	 *  if this is group file.
+	 *  if this is group file.  This is derived from original incoming
+	 *  dir or filename.  If it was absolute, this should come back
+	 *  as full absolute path.  If it was org/foo/templates then this should
+	 *  be org/foo/templates.  org/foo/templates/main.stg ->
+	 *  org/foo/templates.
 	 */
-	public URL getRootDir() { return null; }
+	public String getRootDir() { return null; }
 
     public String toString() { return getName(); }
 

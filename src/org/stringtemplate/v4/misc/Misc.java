@@ -79,6 +79,14 @@ public class Misc {
         return s;
     }
 
+	/** Given, say, file:/tmp/test.jar!/org/foo/templates/main.stg
+	 *  convert to file:/tmp/test.jar!/org/foo/templates
+	 */
+	public static String stripLastPathElement(String f) {
+		int slash = f.lastIndexOf('/');
+		return f.substring(0, slash);
+	}
+
     public static String getFileNameNoSuffix(String f) {
 		if (f==null) return null;
 		f = getFileName(f);

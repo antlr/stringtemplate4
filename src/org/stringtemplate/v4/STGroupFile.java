@@ -27,11 +27,13 @@
  */
 package org.stringtemplate.v4;
 
-import org.stringtemplate.v4.compiler.*;
-import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.compiler.CompiledST;
+import org.stringtemplate.v4.compiler.STException;
+import org.stringtemplate.v4.misc.Misc;
 
 import java.io.File;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /** The internal representation of a single group file (which must end in
  *  ".stg").  If we fail to find a group file, look for it via the
@@ -49,6 +51,7 @@ public class STGroupFile extends STGroup {
 
 	public STGroupFile(String fileName, char delimiterStartChar, char delimiterStopChar) {
 		super(delimiterStartChar, delimiterStopChar);
+		//System.out.println("STGroupFile(" + fileName + ")");
 		if ( !fileName.endsWith(".stg") ) {
 			throw new IllegalArgumentException("Group file names must end in .stg: "+fileName);
 		}
@@ -129,16 +132,29 @@ public class STGroupFile extends STGroup {
 	public String getFileName() { return fileName; }
 
 	@Override
-	public URL getRootDir() {
-		String path = url.getPath();
-		File f = new File(path);
-		try {
-			return f.getParentFile().toURI().toURL();
-		}
-		catch (MalformedURLException me) {
-			errMgr.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
-								me, f.getParentFile());
-		}
-		return null;
+	public String getRootDir() {
+		String parent = Misc.stripLastPathElement(fileName);
+		return parent;
+//		try {
+//			return new File(parent).toURI().toURL();
+//		}
+//		catch (MalformedURLException me) {
+//			errMgr.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
+//								me, parent);
+//		}
+//		return null;
+//		File f = new File(path);
+//		System.out.println("getRootDir: path="+path);
+//		System.out.println("parent file="+f.getParentFile());
+//		System.out.println("parent="+f.getParent());
+//		System.out.println("filename="+fileName);
+//		try {
+//			return f.getParentFile().toURI().toURL();
+//		}
+//		catch (MalformedURLException me) {
+//			errMgr.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
+//								me, f.getParentFile());
+//		}
+//		return null;
 	}
 }

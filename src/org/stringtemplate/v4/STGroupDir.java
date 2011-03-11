@@ -27,8 +27,9 @@
 */
 package org.stringtemplate.v4;
 
-import org.antlr.runtime.*;
-import org.stringtemplate.v4.compiler.*;
+import org.antlr.runtime.ANTLRInputStream;
+import org.stringtemplate.v4.compiler.CompiledST;
+import org.stringtemplate.v4.compiler.STException;
 import org.stringtemplate.v4.misc.ErrorType;
 import org.stringtemplate.v4.misc.Misc;
 
@@ -165,5 +166,5 @@ public class STGroupDir extends STGroup {
 	public String getName() { return groupDirName; }
 	public String getFileName() { return root.getFile(); }
 	@Override
-	public URL getRootDir() { return root; }
+	public String getRootDir() { return groupDirName; }
 }
