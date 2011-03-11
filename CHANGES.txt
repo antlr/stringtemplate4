@@ -10,6 +10,7 @@ CHANGES
 4.0 --
 
 * ST.add() returns self now so we can chain.  t.add("x", 1).add("y", "hi");
+* import from files in jar didn't work.
 
 4.0b5 -- March 6, 2011
 
