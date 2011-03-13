@@ -51,7 +51,6 @@ public class STGroupFile extends STGroup {
 
 	public STGroupFile(String fileName, char delimiterStartChar, char delimiterStopChar) {
 		super(delimiterStartChar, delimiterStopChar);
-		//System.out.println("STGroupFile(" + fileName + ")");
 		if ( !fileName.endsWith(".stg") ) {
 			throw new IllegalArgumentException("Group file names must end in .stg: "+fileName);
 		}
@@ -64,6 +63,7 @@ public class STGroupFile extends STGroup {
 			catch (MalformedURLException e) {
 				throw new STException("can't load group file "+fileName, e);
 			}
+			if ( verbose ) System.out.println("STGroupFile(" + fileName + ") == "+f.getAbsolutePath());
 		}
 		else { // try in classpath
 			ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -76,6 +76,7 @@ public class STGroupFile extends STGroup {
 				throw new IllegalArgumentException("No such group file: "+
 													   fileName);
 			}
+			if ( verbose ) System.out.println("STGroupFile(" + fileName + ") == "+url);
 		}
 		this.fileName = fileName;
 	}
@@ -120,7 +121,9 @@ public class STGroupFile extends STGroup {
         alreadyLoaded = true; // do before actual load to say we're doing it
 		// no prefix since this group file is the entire group, nothing lives
 		// beneath it.
+		if ( verbose ) System.out.println("loading "+url.toString());
         loadGroupFile("", url.toString());
+		if ( verbose ) System.out.println("found "+templates.size()+" templates in "+url.toString()+" = "+templates.keySet());
     }
 
     public String show() {

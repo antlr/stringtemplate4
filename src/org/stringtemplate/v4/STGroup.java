@@ -123,7 +123,11 @@ public class STGroup {
 
 	public static final ErrorManager DEFAULT_ERR_MGR = new ErrorManager();
 
+	/** Build debugging objects and  track events */
 	public static boolean debug = false;
+
+	/** Watch loading of groups and templates */
+	public static boolean verbose = false;
 
 	public static STGroup defaultGroup = new STGroup();
 
@@ -132,7 +136,7 @@ public class STGroup {
 	 */
 	public ErrorManager errMgr = STGroup.DEFAULT_ERR_MGR;
 
-    public STGroup() { ; }
+    public STGroup() { }
 
     public STGroup(char delimiterStartChar, char delimiterStopChar) {
         this.delimiterStartChar = delimiterStartChar;
@@ -143,8 +147,8 @@ public class STGroup {
      *  group. Names must be absolute, fully-qualified names like a/b
      */
     public ST getInstanceOf(String name) {
+		if ( verbose ) System.out.println("getInstanceOf("+name+") in group "+getName());
 		if ( name==null ) return null;
-        //System.out.println("getInstanceOf("+name+")");
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
             ST instanceST = createStringTemplate();
@@ -200,13 +204,18 @@ public class STGroup {
 	/** Look up a fully-qualified name */
     public CompiledST lookupTemplate(String name) {
         CompiledST code = rawGetTemplate(name);
-        if ( code==NOT_FOUND_ST ) return null;
+        if ( code==NOT_FOUND_ST ) {
+			if ( verbose ) System.out.println(name+" not found");
+			return null;
+		}
         // try to load from disk and look up again
         if ( code==null ) code = load(name);
         if ( code==null ) code = lookupImportedTemplate(name);
         if ( code==null ) {
+			if ( verbose ) System.out.println(name+" not found");
             templates.put(name, NOT_FOUND_ST);
         }
+		if ( verbose ) if ( code!=null ) System.out.println("found "+name+" in "+getName());
         return code;
     }
 
@@ -228,12 +237,15 @@ public class STGroup {
     public void load() { ; }
 
     protected CompiledST lookupImportedTemplate(String name) {
-//        System.out.println("look for "+name+" in "+imports);
         if ( imports==null ) return null;
         for (STGroup g : imports) {
             CompiledST code = g.lookupTemplate(name);
-            if ( code!=null ) return code;
+			if ( code!=null ) {
+				if ( verbose ) System.out.println("found "+name+" in "+g.getName());
+				return code;
+			}
         }
+		if ( verbose ) System.out.println(name+"not found in imports");
         return null;
     }
 
