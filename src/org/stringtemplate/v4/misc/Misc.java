@@ -84,6 +84,7 @@ public class Misc {
 	 */
 	public static String stripLastPathElement(String f) {
 		int slash = f.lastIndexOf('/');
+		if ( slash<0 ) return f;
 		return f.substring(0, slash);
 	}
 
