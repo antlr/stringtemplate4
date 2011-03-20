@@ -30,20 +30,16 @@ package org.stringtemplate.v4;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.Token;
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.GroupLexer;
 import org.stringtemplate.v4.compiler.GroupParser;
 import org.stringtemplate.v4.misc.ErrorType;
-
-import java.util.List;
 
 /** A group derived from a string not a file or dir. */
 public class STGroupString extends STGroup {
 	public String sourceName;
 	public String text;
 	protected boolean alreadyLoaded = false;
-	protected CommonTokenStream tokens; // keep around for tools that display ST files
 
 	public STGroupString(String text) { this("<string>", text, '<', '>'); }
 
@@ -81,10 +77,6 @@ public class STGroupString extends STGroup {
 		catch (Exception e) {
 			errMgr.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, "<string>");
 		}
-	}
-
-	public List<Token> getTokens() {
-		return tokens.getTokens();
 	}
 
 	public String getFileName() { return "<string>"; }
