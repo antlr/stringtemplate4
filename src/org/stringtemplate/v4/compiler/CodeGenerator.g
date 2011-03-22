@@ -129,13 +129,7 @@ singleElement
 	|	TEXT
 		{
 		if ( $TEXT.text.length()>0 ) {
-			if ( true ) {
-				emit1($TEXT,Bytecode.INSTR_WRITE_STR, $TEXT.text);
-			}
-			else {
-				emit1($TEXT,Bytecode.INSTR_LOAD_STR, $TEXT.text);
-				emit($TEXT,Bytecode.INSTR_WRITE);
-			}
+			emit1($TEXT,Bytecode.INSTR_WRITE_STR, $TEXT.text);
 		}
 		}
 
