@@ -132,6 +132,40 @@ public class TestImports extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testImportGroupAtSameLevelInJar2() throws Exception {
+		/*
+		org/foo/templates
+			main.stg imports lib.stg
+			lib.stg
+		 */
+		String root = getRandomDir();
+		System.out.println(root);
+		String dir = root+"/org/foo/templates";
+		String main =
+			"import \"lib.stg\"\n" + // should see in same dir as main.stg
+			"a() ::= <<main a calls <bold()>!>>\n"+
+			"b() ::= <<main b>>\n";
+		writeFile(dir, "main.stg", main);
+
+		String lib =
+			"bold() ::= <<lib bold>>\n";
+		writeFile(dir, "lib.stg", lib);
+
+		writeTestFile(
+			"URL url = new STGroup().getURL(\"org/foo/templates/main.stg\");\n" +
+			"STGroup group = new STGroupFile(url,\"UTF-8\",'<','>');\n" +
+			"ST st = group.getInstanceOf(\"a\");\n"+
+			"String result = st.render();\n",
+			root);
+		compile("Test.java", root);
+		jar("test.jar", new String[] {"org"}, root);
+		Runtime.getRuntime().exec("rm -rf "+root+"/org");
+		String result = java("Test", "test.jar", root);
+
+		String expected = "main a calls lib bold!"+newline;
+		assertEquals(expected, result);
+	}
+
 	@Test public void testImportGroupInJarViaCLASSPATH() throws Exception {
 		/*
 		org/foo/templates

@@ -107,6 +107,8 @@ public class BaseTest {
 			"import org.antlr.runtime.*;\n" +
 			"import org.stringtemplate.v4.*;\n" +
 			"import org.antlr.runtime.tree.*;\n" +
+			"import java.io.*;\n" +
+			"import java.net.*;\n" +
 			"\n" +
 			"public class Test {\n" +
 			"    public static void main(String[] args) throws Exception {\n" +
