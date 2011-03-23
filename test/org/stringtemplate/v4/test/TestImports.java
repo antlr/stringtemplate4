@@ -94,7 +94,7 @@ public class TestImports extends BaseTest {
 		jar("test.jar", new String[]{"sub", "base"}, root);
 		Runtime.getRuntime().exec("rm -rf "+root+"/sub "+root+"/base");
 		String result = java("Test", "test.jar", root);
-		
+
 		String expected = "base b"+newline;
 		assertEquals(expected, result);
 	}
@@ -143,7 +143,7 @@ public class TestImports extends BaseTest {
 		System.out.println(root);
 		String dir = root+"/org/foo/templates";
 		String main =
-			"import \"org/foo/lib/lib.stg\"\n" + // should see in same dir as main.stg
+			"import \"org/foo/lib/lib.stg\"\n" +
 			"a() ::= <<main a calls <bold()>!>>\n"+
 			"b() ::= <<main b>>\n";
 		writeFile(dir, "main.stg", main);
@@ -164,6 +164,39 @@ public class TestImports extends BaseTest {
 		String result = java("Test", "test.jar", root);
 
 		String expected = "main a calls lib bold!"+newline;
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportTemplateFileInJarViaCLASSPATH() throws Exception {
+		/*
+		org/foo/templates
+			main.stg imports foo.st
+		foo.st
+		 */
+		String root = getRandomDir();
+		System.out.println(root);
+		String dir = root+"/org/foo/templates";
+		String main =
+			"import \"foo.st\"\n" + // should see in same dir as main.stg
+			"a() ::= <<main a calls <foo()>!>>\n"+
+			"b() ::= <<main b>>\n";
+		writeFile(dir, "main.stg", main);
+
+		String foo =
+			"foo() ::= <<foo>>\n";
+		writeFile(root, "foo.st", foo);
+
+		writeTestFile(
+			"STGroup group = new STGroupFile(\"org/foo/templates/main.stg\");\n" +
+			"ST st = group.getInstanceOf(\"a\");\n"+
+			"String result = st.render();\n",
+			root);
+		compile("Test.java", root);
+		jar("test.jar", new String[] {"org"}, root);
+		Runtime.getRuntime().exec("rm -rf "+root+"/org");
+		String result = java("Test", "test.jar", root);
+
+		String expected = "main a calls foo!"+newline;
 		assertEquals(expected, result);
 	}
 
@@ -290,6 +323,8 @@ public class TestImports extends BaseTest {
 		String result = st.render();
 		assertEquals(expected, result);
 	}
+
+
 
 	@Test public void testImportTemplateFromAnotherGroupObject() throws Exception {
 		/*

@@ -166,5 +166,5 @@ public class STGroupDir extends STGroup {
 	public String getName() { return groupDirName; }
 	public String getFileName() { return root.getFile(); }
 	@Override
-	public String getRootDir() { return groupDirName; }
+	public URL getRootDirURL() { return root; }
 }

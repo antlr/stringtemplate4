@@ -36,8 +36,7 @@ import org.stringtemplate.v4.misc.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 import java.util.*;
 
 /** A directory or directory tree of .st template files and/or group files.
@@ -497,62 +496,61 @@ public class STGroup {
 		}
 
 		// it's a relative name; search path is working dir, g.stg's dir, CLASSPATH
-		String thisRoot = getRootDir();
-		String fileUnderRoot = null;
-		//System.out.println("thisRoot="+thisRoot);
-		fileUnderRoot = thisRoot+"/"+fileName;
+		URL thisRoot = getRootDirURL();
+		URL fileUnderRoot = null;
+//		System.out.println("thisRoot="+thisRoot);
+		try {
+			fileUnderRoot = new URL(thisRoot+"/"+fileName);
+		}
+		catch (MalformedURLException mfe) {
+			errMgr.internalError(null, "can't build URL for "+thisRoot+"/"+fileName, mfe);
+			return;
+		}
 		if ( isTemplateFile ) {
 			g = new STGroup();
 			g.setListener(this.getListener());
-			InputStream s = null;
-			try {
-				URL url = new File(fileUnderRoot).toURI().toURL();
-				s = url.openStream();
-				ANTLRInputStream templateStream = new ANTLRInputStream(s);
-				templateStream.name = fileName;
-				CompiledST code = g.loadTemplateFile("", fileName, templateStream);
-				if ( code==null ) g = null;
+			URL fileURL;
+			if ( Misc.urlExists(fileUnderRoot) ) fileURL = fileUnderRoot;
+			else fileURL = getURL(fileName); // try CLASSPATH
+			if ( fileURL!=null ) {
+				try {
+					InputStream s = fileURL.openStream();
+					ANTLRInputStream templateStream = new ANTLRInputStream(s);
+					templateStream.name = fileName;
+					CompiledST code = g.loadTemplateFile("", fileName, templateStream);
+					if ( code==null ) g = null;
+				}
+				catch (IOException ioe) {
+					errMgr.internalError(null, "can't read from "+fileURL, ioe);
+					g = null;
+				}
 			}
-			catch (MalformedURLException mfe) {
-				errMgr.internalError(null, "can't build URL for "+fileUnderRoot, mfe);
-			}
-			catch (IOException ioe) {
-				// not found
+			else {
 				g = null;
 			}
 		}
 		else if ( isGroupFile ) {
-			try {
-				//System.out.println("look for fileUnderRoot: "+fileUnderRoot);
+			//System.out.println("look for fileUnderRoot: "+fileUnderRoot);
+			if ( Misc.urlExists(fileUnderRoot) ) {
 				g = new STGroupFile(fileUnderRoot, encoding, delimiterStartChar, delimiterStopChar);
 				g.setListener(this.getListener());
 			}
-			catch (IllegalArgumentException iae) { // not relative to this group
-				//System.out.println("look in path: "+fileName);
-				// try in CLASSPATH
-				try {
-					g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
-					g.setListener(this.getListener());
-				}
-				catch (IllegalArgumentException iae2) {
-					g = null;
-				}
+			else {
+				g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
+				g.setListener(this.getListener());
 			}
 		}
 		else if ( isGroupDir ) {
-			try {
+//			System.out.println("try dir "+fileUnderRoot);
+			if ( Misc.urlExists(fileUnderRoot) ) {
 				g = new STGroupDir(fileUnderRoot, encoding, delimiterStartChar, delimiterStopChar);
 				g.setListener(this.getListener());
 			}
-			catch (IllegalArgumentException iae) { // not relative to this group
+			else {
 				// try in CLASSPATH
-				try {
-					g = new STGroupDir(fileName, delimiterStartChar, delimiterStopChar);
-					g.setListener(this.getListener());
-				}
-				catch (IllegalArgumentException iae2) {
-					g = null;
-				}
+//				System.out.println("try dir in CLASSPATH "+fileName);
+				g = new STGroupDir(fileName, delimiterStartChar, delimiterStopChar);
+				g.setListener(this.getListener());
 			}
 		}
 
@@ -722,11 +720,21 @@ public class STGroup {
 	/** Return root dir if this is group dir; return dir containing group file
 	 *  if this is group file.  This is derived from original incoming
 	 *  dir or filename.  If it was absolute, this should come back
-	 *  as full absolute path.  If it was org/foo/templates then this should
-	 *  be org/foo/templates.  org/foo/templates/main.stg ->
-	 *  org/foo/templates.
+	 *  as full absolute path.  If only a URL is available, return URL of
+	 *  one dir up.
 	 */
-	public String getRootDir() { return null; }
+	public URL getRootDirURL() { return null; }
+
+	public URL getURL(String fileName) {
+		URL url = null;
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		url = cl.getResource(fileName);
+		if ( url==null ) {
+			cl = this.getClass().getClassLoader();
+			url = cl.getResource(fileName);
+		}
+		return url;
+	}
 
     public String toString() { return getName(); }
 

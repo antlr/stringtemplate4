@@ -27,10 +27,11 @@
  */
 package org.stringtemplate.v4.misc;
 
-import java.io.File;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.*;
 import java.util.Iterator;
 
 public class Misc {
@@ -116,8 +117,20 @@ public class Misc {
         return s;
     }
 
-    /** Given index into string, compute the line and char position in line */
-    public static Coordinate getLineCharPosition(String s, int index) {
+	public static boolean urlExists(URL url) {
+		try {
+			URLConnection con = url.openConnection();
+			InputStream is = con.getInputStream();
+			is.close();
+			return true;
+		}
+		catch (IOException ioe) {
+			return false;
+		}
+	}
+
+	/** Given index into string, compute the line and char position in line */
+	public static Coordinate getLineCharPosition(String s, int index) {
         int line = 1;
         int charPos = 0;
         int p = 0;

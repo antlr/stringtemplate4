@@ -29,7 +29,7 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.STException;
-import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.misc.*;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -66,12 +66,7 @@ public class STGroupFile extends STGroup {
 			if ( verbose ) System.out.println("STGroupFile(" + fileName + ") == "+f.getAbsolutePath());
 		}
 		else { // try in classpath
-			ClassLoader cl = Thread.currentThread().getContextClassLoader();
-			url = cl.getResource(fileName);
-			if ( url==null ) {
-				cl = this.getClass().getClassLoader();
-				url = cl.getResource(fileName);
-			}
+			url = getURL(fileName);
 			if ( url==null ) {
 				throw new IllegalArgumentException("No such group file: "+
 													   fileName);
@@ -81,7 +76,7 @@ public class STGroupFile extends STGroup {
 		this.fileName = fileName;
 	}
 
-    public STGroupFile(String fullyQualifiedFileName, String encoding) {
+	public STGroupFile(String fullyQualifiedFileName, String encoding) {
         this(fullyQualifiedFileName, encoding, '<', '>');
     }
 
@@ -135,9 +130,19 @@ public class STGroupFile extends STGroup {
 	public String getFileName() { return fileName; }
 
 	@Override
-	public String getRootDir() {
-		String parent = Misc.stripLastPathElement(fileName);
-		return parent;
+	public URL getRootDirURL() {
+		//System.out.println("url of "+fileName+" is "+url.toString());
+		String parent = Misc.stripLastPathElement(url.toString());
+		try {
+			return new URL(parent);
+		}
+		catch (MalformedURLException mue) {
+			errMgr.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
+								mue, parent);
+		}
+		return null;
+//		String parent = Misc.stripLastPathElement(fileName);
+//		return parent;
 //		try {
 //			return new File(parent).toURI().toURL();
 //		}
