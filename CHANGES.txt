@@ -13,6 +13,7 @@ CHANGES
 * import from files in jar didn't work.
 * removed field tokens from STGroupString
 * improved imports lookup
+* made fields of events public final.
 
 4.0b5 -- March 6, 2011
 

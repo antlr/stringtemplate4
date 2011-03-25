@@ -28,8 +28,8 @@
 package org.stringtemplate.v4.debug;
 
 public class InterpEvent {
-    public DebugST self;
-    public int start, stop; // output location
+    public final DebugST self;
+    public final int start, stop; // output location
     public InterpEvent(DebugST self, int start, int stop) {
         this.self = self;
         this.start = start;

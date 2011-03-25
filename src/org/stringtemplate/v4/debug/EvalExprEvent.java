@@ -28,8 +28,8 @@
 package org.stringtemplate.v4.debug;
 
 public class EvalExprEvent extends InterpEvent {
-    int exprStart, exprStop; // template pattern location
-    String expr;
+    public final int exprStart, exprStop; // template pattern location
+    public final String expr;
     public EvalExprEvent(DebugST self, int start, int stop,
                          int exprStart, int exprStop)
     {
@@ -38,6 +38,9 @@ public class EvalExprEvent extends InterpEvent {
         this.exprStop = exprStop;
 		if ( exprStart>=0 && exprStop>=0 ) {
         	expr = self.impl.template.substring(exprStart, exprStop+1);
+		}
+		else {
+			expr = null;
 		}
     }
 
