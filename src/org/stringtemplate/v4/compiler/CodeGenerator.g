@@ -118,9 +118,9 @@ chunk
 	;
 
 element
-	:	^(INDENT compoundElement[$INDENT.text]) // ignore indent in front of IF and region blocks
+	:	^(INDENTED_EXPR INDENT compoundElement[$INDENT]) // ignore indent in front of IF and region blocks
 	|	compoundElement[null]
-	|	^(INDENT {$template::state.indent($INDENT.text);} singleElement {$template::state.emit(Bytecode.INSTR_DEDENT);})
+	|	^(INDENTED_EXPR INDENT {$template::state.indent($INDENT);} singleElement {$template::state.emit(Bytecode.INSTR_DEDENT);})
 	|	singleElement
 	;
 
@@ -136,7 +136,7 @@ singleElement
 	|	NEWLINE {emit(Bytecode.INSTR_NEWLINE);}
 	;
 
-compoundElement[String indent]
+compoundElement[CommonTree indent]
 	:	ifstat[indent]
 	|	region[indent]
 	;
@@ -159,7 +159,7 @@ exprElement
 		}
 	;
 
-region[String indent] returns [String name]
+region[CommonTree indent] returns [String name]
 @init {
 	if ( indent!=null ) $template::state.indent(indent);
 }
@@ -206,7 +206,7 @@ subtemplate returns [String name, int nargs]
 		 )
 	;
 
-ifstat[String indent]
+ifstat[CommonTree indent]
 @init {
     /** Tracks address of branch operand (in code block).  It's how
      *  we backpatch forward references when generating code for IFs.

@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupString;
 
 import java.io.StringWriter;
 
@@ -48,6 +49,28 @@ public class TestWhitespace extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
     }
+
+	@Test public void testTrimmedNewlinesBeforeAfterInTemplate() throws Exception {
+		String templates =
+			"a(x) ::= <<"+newline+
+			"foo"+newline+
+			">>"+newline;
+		STGroupString group = new STGroupString(templates);
+		ST st = group.getInstanceOf("a");
+		String expected = "foo";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testDontTrimJustSpaceBeforeAfterInTemplate() throws Exception {
+		String templates =
+			"a(x) ::= << foo >>\n";
+		STGroupString group = new STGroupString(templates);
+		ST st = group.getInstanceOf("a");
+		String expected = " foo ";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
 	@Test public void testTrimmedSubtemplatesNoArgs() throws Exception {
 		STGroup group = new STGroup();

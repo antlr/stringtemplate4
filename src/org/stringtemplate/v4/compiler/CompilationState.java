@@ -151,7 +151,9 @@ public class CompilationState {
 		}
 	}
 
-	public void indent(String indent) {	emit1(null,Bytecode.INSTR_INDENT, indent); }
+	public void indent(CommonTree indent) {
+		emit1(indent,Bytecode.INSTR_INDENT, indent.getText());
+	}
 
 	/** Write value at index into a byte array highest to lowest byte,
 	 *  left to right.

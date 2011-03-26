@@ -29,10 +29,7 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
-import org.stringtemplate.v4.debug.DebugST;
-import org.stringtemplate.v4.debug.EvalExprEvent;
-import org.stringtemplate.v4.debug.EvalTemplateEvent;
-import org.stringtemplate.v4.debug.InterpEvent;
+import org.stringtemplate.v4.debug.*;
 import org.stringtemplate.v4.misc.*;
 
 import java.io.IOException;
@@ -435,7 +432,7 @@ public class Interpreter {
 				case Bytecode.INSTR_INDENT :
 					int strIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
-					out.pushIndentation(self.impl.strings[strIndex]);
+					indent(out, self, strIndex);
 					break;
 				case Bytecode.INSTR_DEDENT :
 					out.popIndentation();
@@ -494,7 +491,7 @@ public class Interpreter {
 		if ( STGroup.debug ) {
 			int stop = out.index() - 1;
 			EvalTemplateEvent e = new EvalTemplateEvent((DebugST)self, start, stop);
-			//System.out.println("eval template "+self+": "+e);
+			System.out.println(e);
 			events.add(e);
 			if ( self.enclosingInstance!=null ) {
 				DebugST parent = (DebugST)self.enclosingInstance;
@@ -617,23 +614,31 @@ public class Interpreter {
 		}
 	}
 
+	protected void indent(STWriter out, ST self, int strIndex) {
+		String indent = self.impl.strings[strIndex];
+		if ( STGroup.debug ) {
+			int start = out.index(); // track char we're about to write
+			EvalExprEvent e = new IndentEvent((DebugST) self,
+											  start, start + indent.length() - 1,
+											  getExprStartChar(self),
+											  getExprStopChar(self));
+			System.out.println(e);
+			events.add(e);
+		}
+		out.pushIndentation(indent);
+	}
+
 	/** Write out an expression result that doesn't use expression options.
 	 *  E.g., <name>
 	 */
 	protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
-        int start = out.index(); // track char we're about to write
+		int start = out.index(); // track char we're about to write
 		int n = writeObject(out, self, o, null);
         if ( STGroup.debug ) {
-            Interval templateLocation = self.impl.sourceMap[current_ip];
-			int exprStart=-1;
-			int exprStop=-1;
-			if ( templateLocation!=null ) {
-            	exprStart=templateLocation.a;
-				exprStop=templateLocation.b;
-			}
 			EvalExprEvent e = new EvalExprEvent((DebugST) self,
 												start, out.index() - 1,
-												exprStart, exprStop);
+												getExprStartChar(self),
+												getExprStopChar(self));
 			System.out.println(e);
 			events.add(e);
         }
@@ -646,12 +651,12 @@ public class Interpreter {
 	protected int writeObjectWithOptions(STWriter out, ST self, Object o,
 										 Object[] options)
 	{
-        int start = out.index(); // track char we're about to write
+		int start = out.index(); // track char we're about to write
 		// precompute all option values (render all the way to strings)
 		String[] optionStrings = null;
 		if ( options!=null ) {
 			optionStrings = new String[options.length];
-			for (int i=0; i< org.stringtemplate.v4.compiler.Compiler.NUM_OPTIONS; i++) {
+			for (int i=0; i<Compiler.NUM_OPTIONS; i++) {
 				optionStrings[i] = toString(out, self, options[i]);
 			}
 		}
@@ -752,6 +757,18 @@ public class Interpreter {
 			n = out.write(v);
 		}
 		return n;
+	}
+	
+	protected int getExprStartChar(ST self) {
+		Interval templateLocation = self.impl.sourceMap[current_ip];
+		if ( templateLocation!=null ) return templateLocation.a;
+		return -1;
+	}
+
+	protected int getExprStopChar(ST self) {
+		Interval templateLocation = self.impl.sourceMap[current_ip];
+		if ( templateLocation!=null ) return templateLocation.b;
+		return -1;
 	}
 
 	protected void map(ST self, Object attr, final ST st) {

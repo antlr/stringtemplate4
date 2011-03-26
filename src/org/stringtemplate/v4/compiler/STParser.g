@@ -39,7 +39,7 @@ options {
 tokens {
 	EXPR; OPTIONS; PROP; PROP_IND; INCLUDE; INCLUDE_IND; EXEC_FUNC; INCLUDE_SUPER;
 	INCLUDE_SUPER_REGION; INCLUDE_REGION; TO_STR; LIST; MAP; ZIP; SUBTEMPLATE; ARGS;
-	ELEMENTS; REGION; NULL;
+	ELEMENTS; REGION; NULL; INDENTED_EXPR;
 	}
 
 @header {
@@ -73,7 +73,7 @@ template : element* ;
 
 element
 	:	{input.LT(1).getCharPositionInLine()==0}? INDENT? COMMENT NEWLINE -> // throw away
-	|	INDENT singleElement -> ^(INDENT singleElement?) // optional to handle error returning nil
+	|	INDENT singleElement -> ^(INDENTED_EXPR INDENT singleElement?) // singleElement is optional to handle error returning nil
 	|	singleElement
 	|	compoundElement
 	;
@@ -103,8 +103,8 @@ region
 		// kill \n for <@end> on line by itself if multi-line embedded region
 		({$region.start.getLine()!=input.LT(1).getLine()}?=> NEWLINE)?
 		-> {indent!=null}?
-		   ^({indent} ^(REGION[$x] ID template?))
-		->            ^(REGION[$x] ID template?)
+		   ^(INDENTED_EXPR $i ^(REGION[$x] ID template?))
+		->                    ^(REGION[$x] ID template?)
 	;
 
 subtemplate
@@ -124,8 +124,8 @@ ifstat
 		// kill \n for <endif> on line by itself if multi-line IF
 		({$ifstat.start.getLine()!=input.LT(1).getLine()}?=> NEWLINE)?
 		-> {indent!=null}?
-		   ^({indent} ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?))
-		->            ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?)
+		   ^(INDENTED_EXPR $i ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?))
+		->                    ^('if' $c1 $t1? ^('elseif' $c2 $t2)* ^('else' $t3?)?)
 	;
 
 conditional

@@ -340,26 +340,25 @@ public class STLexer implements TokenSource {
     }
 
     Token ESCAPE() {
-        consume(); // kill \\
-        Token t = null;
+		startCharIndex = input.index();
+		startCharPositionInLine = input.getCharPositionInLine();
+		consume(); // kill \\
+		if ( c=='u') return UNICODE();
+		String text = null;
         switch ( c ) {
             case '\\' : LINEBREAK(); return SKIP;
-            case 'n'  :
-                t = newToken(TEXT, "\n", input.getCharPositionInLine()-2);
-                break;
-            case 't'  :
-                t = newToken(TEXT, "\t", input.getCharPositionInLine()-2);
-                break;
-            case ' '  :
-                t = newToken(TEXT, " ", input.getCharPositionInLine()-2);
-                break;
-            case 'u' : t = UNICODE(); break;
+			case 'n'  : text = "\n"; break;
+			case 't'  : text = "\t"; break;
+			case ' '  : text = " "; break;
             default :
-				t = SKIP;
                 NoViableAltException e = new NoViableAltException("",0,0,input);
                 errMgr.lexerError(input.getSourceName(), "invalid escaped char: '"+str(c)+"'", templateToken, e);
+				consume();
+				match(delimiterStopChar);
+				return SKIP;
         }
         consume();
+		Token t = newToken(TEXT, text, input.getCharPositionInLine()-2);
         match(delimiterStopChar);
         return t;
     }
@@ -390,9 +389,12 @@ public class STLexer implements TokenSource {
 			errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(c)+"'", templateToken, e);
         }
         chars[3] = c;
-        // ESCAPE kills final char and >
+        // ESCAPE kills >
         char uc = (char)Integer.parseInt(new String(chars), 16);
-        return newToken(TEXT, String.valueOf(uc), input.getCharPositionInLine()-6);
+        Token t = newToken(TEXT, String.valueOf(uc), input.getCharPositionInLine()-6);
+		consume();
+		match(delimiterStopChar);
+		return t;
     }
 
     Token mTEXT() {

@@ -29,20 +29,19 @@ package org.stringtemplate.v4.debug;
 
 public class InterpEvent {
     public final DebugST self;
-    public final int start, stop; // output location
-    public InterpEvent(DebugST self, int start, int stop) {
+    public final int outputStartChar, outputStopChar; // output location
+    public InterpEvent(DebugST self, int outputStartChar, int outputStopChar) {
         this.self = self;
-        this.start = start;
-        this.stop = stop;
+        this.outputStartChar = outputStartChar;
+        this.outputStopChar = outputStopChar;
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName()+"{" +
                "self=" + self +
-               //", attr=" + self.attributes +
-               ", start=" + start +
-               ", stop=" + stop +
+               ", start=" + outputStartChar +
+               ", stop=" + outputStopChar +
                '}';
     }
 }

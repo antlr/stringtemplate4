@@ -14,6 +14,14 @@ CHANGES
 * removed field tokens from STGroupString
 * improved imports lookup
 * made fields of events public final.
+* augmented debug event toString and fixed start/stop issue with eval
+  events.  renamed fields to be more clear.
+* Added IndentEvent for dbg
+* ^(INDENT expr-sub-tree) is now ^(INDENTED_EXPR INDENT expr-sub-tree)
+  with changes to grammars.  More consistent with subtree root being operator.
+  STViz now highlights indentation properly in template pane.
+* Altered CodeGenerator.g to pass AST node for indentation not just string.
+  This way we get INDENT operations into the sourceMap for indent debug events.
 
 4.0b5 -- March 6, 2011
 

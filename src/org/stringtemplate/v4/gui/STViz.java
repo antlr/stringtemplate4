@@ -215,7 +215,7 @@ public class STViz {
 				if ( currentST.isAnonSubtemplate() ) {
 					highlight(m.template, r.a, r.b);
 				}
-				highlight(m.output, e.start, e.stop);
+				highlight(m.output, e.outputStartChar, e.outputStopChar);
 			}
 		}
 		else {
@@ -284,7 +284,7 @@ public class STViz {
                                                  int charIndex)
     {
         for (InterpEvent e : events) {
-            if ( charIndex>=e.start && charIndex<=e.stop ) return e;
+            if ( charIndex>=e.outputStartChar && charIndex<=e.outputStopChar) return e;
         }
         return null;
 	}

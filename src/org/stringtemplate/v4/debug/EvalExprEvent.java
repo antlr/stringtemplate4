@@ -28,30 +28,32 @@
 package org.stringtemplate.v4.debug;
 
 public class EvalExprEvent extends InterpEvent {
-    public final int exprStart, exprStop; // template pattern location
+    public final int exprStartChar, exprStopChar; // template pattern location
     public final String expr;
     public EvalExprEvent(DebugST self, int start, int stop,
-                         int exprStart, int exprStop)
+                         int exprStartChar, int exprStopChar)
     {
         super(self, start, stop);
-        this.exprStart = exprStart;
-        this.exprStop = exprStop;
-		if ( exprStart>=0 && exprStop>=0 ) {
-        	expr = self.impl.template.substring(exprStart, exprStop+1);
+        this.exprStartChar = exprStartChar;
+        this.exprStopChar = exprStopChar;
+		if ( exprStartChar >=0 && exprStopChar >=0 ) {
+        	expr = self.impl.template.substring(exprStartChar, exprStopChar +1);
 		}
 		else {
-			expr = null;
+			expr = "";
 		}
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName()+"{" +
-               "self=" + self +
-               //", attr=" + self.attributes +
-               ", start=" + start +
-               ", stop=" + stop +
-               ", expr=" + expr +
-               '}';
-    }
+	@Override
+	public String toString() {
+		return getClass().getSimpleName()+"{" +
+			   "self=" + self +
+			   ", expr='" + expr + '\'' +
+			   ", exprStartChar=" + exprStartChar +
+			   ", exprStopChar=" + exprStopChar +
+			   ", start=" + outputStartChar +
+			   ", stop=" + outputStopChar +
+			   '}';
+	}
+
 }
