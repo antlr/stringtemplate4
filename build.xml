@@ -91,7 +91,7 @@
         </copy>
 
         <zip destfile="${dist.dir}/ST-${version}-src.zip"
-             basedir="${install.root.dir}">
+             dir="${install.root.dir}">
         </zip>
     </target>
 
