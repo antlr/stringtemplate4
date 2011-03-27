@@ -5,7 +5,7 @@
     <property name="dist.dir" value="${basedir}/dist" />
     <property name="build.dir" value="${basedir}/build" />
     <property name="lib.dir" value="${basedir}/lib" />
-    <property name="src.dist.dir" value="${dist.dir}/src" />
+    <property name="dist.root.dir" value="${dist.dir}/ST-${version}" />
 
     <property name="jar.file" value="${dist.dir}/ST-${version}.jar" />
 
@@ -73,25 +73,25 @@
     </target>
 
     <target name="zip-source">
-        <mkdir dir="${src.dist.dir}"/>
+        <mkdir dir="${dist.root.dir}"/>
 
-        <copy todir="${src.dist.dir}">
+        <mkdir dir="${dist.root.dir}/src"/>
+        <copy todir="${dist.root.dir}/src">
+            <fileset dir="${source}"/>
+        </copy>
+
+        <copy todir="${dist.root.dir}">
             <fileset dir=".">
                 <include name="build.properties"/>
                 <include name="build.xml"/>
             </fileset>
         </copy>
 
-        <copy todir="${src.dist.dir}/src">
-            <fileset dir="${source}"/>
-        </copy>
-
-        <copy todir="${src.dist.dir}/lib" file="${antlr3.jar}">
+        <copy todir="${dist.root.dir}/lib" file="${antlr3.jar}">
         </copy>
 
         <zip destfile="${dist.dir}/ST-${version}-src.zip"
-             basedir="${src.dist.dir}"
-                >
+             basedir="${dist.root.dir}">
         </zip>
     </target>
 
