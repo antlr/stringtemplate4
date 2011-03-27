@@ -1,16 +1,16 @@
 StringTemplate 4.0
-<date>
+March 27, 2011
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
 University of San Francisco
 
-ST (StringTemplate) is a java template engine (with ports for C# and
-Python) for generating source code, web pages, emails, or any other
-formatted text output. ST is particularly good at multi-targeted code
-generators, multiple site skins, and internationalization /
-localization. It evolved over years of effort developing jGuru.com and
-then ANTLR v3. The main website is:
+ST (StringTemplate) is a java template engine (with ports for C#,
+Python, and Objective-C coming) for generating source code, web pages,
+emails, or any other formatted text output. ST is particularly good at
+multi-targeted code generators, multiple site skins, and
+internationalization / localization. It evolved over years of effort
+developing jGuru.com and then ANTLR v3. The main website is:
 
   http://www.stringtemplate.org
 
@@ -35,13 +35,11 @@ as well as its dependent ANTLR jar. Download the following and put
 into your favorite lib directory such as /usr/local/lib on UNIX:
 
   * antlr-complete.jar; http://www.antlr.org/download/antlr-3.3-complete.jar
-  * ST.jar; see http://www.stringtemplate.org/download/ST-4.0bX.jar
-
-where X is 5 at the moment.
+  * ST.jar; see http://www.stringtemplate.org/download/ST-4.0.jar
 
 Add to your CLASSPATH. On UNIX that looks like
 
-$ export CLASSPATH="/usr/local/lib/antlr-3.3-complete.jar:/usr/local/lib/ST-4.X.jar:$CLASSPATH"
+$ export CLASSPATH="/usr/local/lib/antlr-3.3-complete.jar:/usr/local/lib/ST-4.0.jar:$CLASSPATH"
 
 Java will now see all the libraries necessary to execute ST stuff.
 
@@ -63,12 +61,6 @@ clean:
    [delete] Deleting directory /usr/local/website/st/depot/ST4/java/main/build
    [delete] Deleting directory /usr/local/website/st/depot/ST4/java/main/dist
 
-zip-source:
-    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/dist/src
-     [copy] Copying 2 files to /usr/local/website/st/depot/ST4/java/main/dist/src
-     [copy] Copying 88 files to /usr/local/website/st/depot/ST4/java/main/dist/src/src
-      [zip] Building zip: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0b5-src.zip
-
 init:
     [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/build/gen/org/stringtemplate/v4/compiler
 
@@ -76,19 +68,29 @@ antlr:
 
 compile:
     [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/build/classes
-    [javac] Compiling 56 source files to /usr/local/website/st/depot/ST4/java/main/build/classes
-    [javac] Note: /usr/local/website/st/depot/ST4/java/main/src/org/stringtemplate/v4/StringRenderer.java uses or overrides a deprecated API.
+    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/build/src
+     [copy] Copying 89 files to /usr/local/website/st/depot/ST4/java/main/build/src
+    [javac] Compiling 57 source files to /usr/local/website/st/depot/ST4/java/main/build/classes
+    [javac] Note: /usr/local/website/st/depot/ST4/java/main/build/src/org/stringtemplate/v4/StringRenderer.java uses or overrides a deprecated API.
     [javac] Note: Recompile with -Xlint:deprecation for details.
     [javac] Note: Some input files use unchecked or unsafe operations.
     [javac] Note: Recompile with -Xlint:unchecked for details.
 
-build:
-      [jar] Building jar: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0b5.jar
+zip-source:
+    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0
+    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0/src
+     [copy] Copying 53 files to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0/src
+     [copy] Copying 4 files to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0
+     [copy] Copying 1 file to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0/lib
+      [zip] Building zip: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0-src.zip
+
+build-jar:
+      [jar] Building jar: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.jar
 
 distribute:
 
 BUILD SUCCESSFUL
-Total time: 13 seconds
+Total time: 14 seconds
 
 DAILY BUILDS
 
