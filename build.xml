@@ -5,7 +5,7 @@
     <property name="dist.dir" value="${basedir}/dist" />
     <property name="build.dir" value="${basedir}/build" />
     <property name="lib.dir" value="${basedir}/lib" />
-    <property name="dist.root.dir" value="${dist.dir}/ST-${version}" />
+    <property name="install.root.dir" value="${dist.dir}/ST-${version}" />
 
     <property name="jar.file" value="${dist.dir}/ST-${version}.jar" />
 
@@ -18,6 +18,11 @@
 		<!-- Create the build directory structure used by compile -->
 		<mkdir dir="${build.dir}/gen/org/stringtemplate/v4/compiler" />
 	</target>
+
+    <target name="clean" depends="init">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
 
 	<target name="antlr" depends="init">
 		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
@@ -37,11 +42,6 @@
 		</antlr:ant-antlr3>
 	</target>
 
-    <target name="clean">
-        <delete dir="${build.dir}"/>
-        <delete dir="${dist.dir}"/>
-    </target>
-
     <target name="compile" depends="antlr" description="Compile for generic OS">
         <mkdir dir="${build.dir}/classes"/>
         <mkdir dir="${build.dir}/src"/>
@@ -60,7 +60,7 @@
         </javac>
     </target>
 
-    <target name="build" depends="compile" description="Build ST4.jar">
+    <target name="build-jar" depends="compile" description="Build ST4.jar">
         <mkdir dir="${dist.dir}"/>
 
         <jar jarfile="${jar.file}">
@@ -72,30 +72,30 @@
         </jar>
     </target>
 
-    <target name="zip-source">
-        <mkdir dir="${dist.root.dir}"/>
+    <target name="zip-source" depends="compile">
+        <mkdir dir="${install.root.dir}"/>
 
-        <mkdir dir="${dist.root.dir}/src"/>
-        <copy todir="${dist.root.dir}/src">
+        <mkdir dir="${install.root.dir}/src"/>
+        <copy todir="${install.root.dir}/src">
             <fileset dir="${source}"/>
         </copy>
 
-        <copy todir="${dist.root.dir}">
+        <copy todir="${install.root.dir}">
             <fileset dir=".">
                 <include name="build.properties"/>
                 <include name="build.xml"/>
             </fileset>
         </copy>
 
-        <copy todir="${dist.root.dir}/lib" file="${antlr3.jar}">
+        <copy todir="${install.root.dir}/lib" file="${antlr3.jar}">
         </copy>
 
         <zip destfile="${dist.dir}/ST-${version}-src.zip"
-             basedir="${dist.root.dir}">
+             basedir="${install.root.dir}">
         </zip>
     </target>
 
-    <target name="distribute" depends="clean, zip-source, build">
+    <target name="distribute" depends="clean, zip-source, build-jar">
     </target>
 
 </project>
