@@ -91,7 +91,9 @@
         </copy>
 
         <zip destfile="${dist.dir}/ST-${version}-src.zip">
-            <fileset dir="${install.root.dir}"/>
+            <fileset dir="${dist.dir}">
+                <include name="ST-${version}"/>
+            </fileset>
         </zip>
     </target>
 
