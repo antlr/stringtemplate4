@@ -95,9 +95,11 @@
         </copy>
 
         <zip destfile="${dist.dir}/ST-${version}-src.zip">
-            <zipfileset dir="${install.root.dir}" includes="*.*" prefix="ST-${version}"/>
+            <zipfileset dir="${install.root.dir}" prefix="ST-${version}"/>
+<!--
             <zipfileset dir="${install.root.dir}/lib" includes="*.*" prefix="ST-${version}/lib"/>
             <zipfileset dir="${install.root.dir}/src" includes="*.*" prefix="ST-${version}/src"/>
+            -->
         </zip>
     </target>
 
