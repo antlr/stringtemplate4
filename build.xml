@@ -90,8 +90,8 @@
         <copy todir="${install.root.dir}/lib" file="${antlr3.jar}">
         </copy>
 
-        <zip destfile="${dist.dir}/ST-${version}-src.zip"
-             dir="${install.root.dir}">
+        <zip destfile="${dist.dir}/ST-${version}-src.zip">
+            <fileset dir="${install.root.dir}"/>
         </zip>
     </target>
 
