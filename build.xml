@@ -14,14 +14,14 @@
 		<pathelement location="${ant-antlr3.jar}"/>
 	</path>
 
-	<target name="init">
-		<!-- Create the build directory structure used by compile -->
-		<mkdir dir="${build.dir}/gen/org/stringtemplate/v4/compiler" />
-	</target>
-
-    <target name="clean" depends="init">
+    <target name="clean">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>
+    </target>
+
+    <target name="init">
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build.dir}/gen/org/stringtemplate/v4/compiler" />
     </target>
 
 	<target name="antlr" depends="init">
