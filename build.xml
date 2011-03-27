@@ -77,7 +77,9 @@
 
         <mkdir dir="${install.root.dir}/src"/>
         <copy todir="${install.root.dir}/src">
-            <fileset dir="${source}"/>
+            <fileset dir="${source}">
+                <include name="**/*.java"/>
+            </fileset>
         </copy>
 
         <copy todir="${install.root.dir}">
@@ -91,9 +93,7 @@
         </copy>
 
         <zip destfile="${dist.dir}/ST-${version}-src.zip">
-            <fileset dir="${dist.dir}">
-                <include name="ST-${version}"/>
-            </fileset>
+            <fileset dir="${dist.dir}/ST-${version}"/>
         </zip>
     </target>
 
