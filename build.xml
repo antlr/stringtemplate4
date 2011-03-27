@@ -93,7 +93,7 @@
         </copy>
 
         <zip destfile="${dist.dir}/ST-${version}-src.zip">
-            <fileset dir="${dist.dir}/ST-${version}"/>
+            <zipfileset dir="${install.root.dir}" includes="*.*" prefix="ST-${version}"/>
         </zip>
     </target>
 
