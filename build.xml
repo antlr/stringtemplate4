@@ -86,8 +86,7 @@
             <fileset dir="${source}"/>
         </copy>
 
-        <copy todir="${src.dist.dir}/lib">
-            <include name="${antlr3.jar}"/>
+        <copy todir="${src.dist.dir}/lib" file="${antlr3.jar}">
         </copy>
 
         <zip destfile="${dist.dir}/ST-${version}-src.zip"
