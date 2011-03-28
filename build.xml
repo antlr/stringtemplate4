@@ -79,6 +79,9 @@
         <copy todir="${install.root.dir}/src">
             <fileset dir="${source}">
                 <include name="**/*.java"/>
+                <include name="**/*.g"/>
+                <include name="**/*.st"/>
+                <include name="**/*.stg"/>
             </fileset>
         </copy>
 
