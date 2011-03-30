@@ -87,19 +87,33 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefaultValues() throws Exception {
-        String templates =
-            "t(a={def1},b=\"def2\") ::= \"[<a>]\"" + Misc.newline;
+	@Test public void testDefaultValues() throws Exception {
+		String templates =
+			"t(a={def1},b=\"def2\") ::= \"[<a>]\"" + Misc.newline;
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        String expected =
-            "t(a={def1},b=\"def2\") ::= <<" + Misc.newline+
-            "[<a>]" + Misc.newline+
-            ">>"+ Misc.newline;
-        String result = group.show();
-        assertEquals(expected, result);
-    }
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		String expected =
+			"t(a={def1},b=\"def2\") ::= <<" + Misc.newline+
+			"[<a>]" + Misc.newline+
+			">>"+ Misc.newline;
+		String result = group.show();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testDefaultValues2() throws Exception {
+		String templates =
+			"t(x, y, a={def1}, b=\"def2\") ::= \"[<a>]\"" + Misc.newline;
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		String expected =
+			"t(x,y,a={def1},b=\"def2\") ::= <<" + Misc.newline+
+			"[<a>]" + Misc.newline+
+			">>"+ Misc.newline;
+		String result = group.show();
+		assertEquals(expected, result);
+	}
 
     @Test public void testDefaultValueTemplateWithArg() throws Exception {
         String templates =
