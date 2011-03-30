@@ -62,54 +62,6 @@ public class Interpreter {
 		public void exec();
 	}
 
-//	public static OpcodeImpl[] impls = new OpcodeImpl[] {
-//        null, // <INVALID>
-//        new Instruction("load_str",OperandType.STRING), // index is the opcode
-//        new Instruction("load_attr",OperandType.STRING),
-//        new Instruction("load_local",OperandType.INT),
-//        new Instruction("load_prop",OperandType.STRING),
-//        new Instruction("load_prop_ind"),
-//		new Instruction("store_option",OperandType.INT),
-//		new Instruction("store_arg",OperandType.STRING),
-//        new Instruction("new",OperandType.STRING,OperandType.INT),
-//		new Instruction("new_ind",OperandType.INT),
-//		new Instruction("new_box_args",OperandType.STRING),
-//        new Instruction("super_new",OperandType.STRING,OperandType.INT),
-//		new Instruction("super_new_box_args",OperandType.STRING),
-//        new Instruction("write"),
-//		new Instruction("write_opt"),
-//        new Instruction("map"),
-//        new Instruction("rot_map", OperandType.INT),
-//        new Instruction("zip_map", OperandType.INT),
-//        new Instruction("br", OperandType.ADDR),
-//        new Instruction("brf", OperandType.ADDR),
-//		new Instruction("options"),
-//		new Instruction("args"),
-//        new Instruction("list"),
-//        new Instruction("add"),
-//        new Instruction("tostr"),
-//        new Instruction("first"),
-//        new Instruction("last"),
-//        new Instruction("rest"),
-//        new Instruction("trunc"),
-//        new Instruction("strip"),
-//        new Instruction("trim"),
-//        new Instruction("length"),
-//        new Instruction("strlen"),
-//		new Instruction("reverse"),
-//		new Instruction("not"),
-//		new Instruction("or"),
-//		new Instruction("and"),
-//		new Instruction("indent", OperandType.STRING),
-//        new Instruction("dedent"),
-//        new Instruction("newline"),
-//        new Instruction("noop"),
-//		new Instruction("pop"),
-//		new Instruction("null"),
-//		new Instruction("true"),
-//		new Instruction("false")
-//	};
-
 	public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
 	public static final Set<String> predefinedAnonSubtemplateAttributes =
