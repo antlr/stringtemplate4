@@ -314,6 +314,10 @@ STRING
 		|	~('\\'|'"'|'\n')
 		)*
 		'"'
+        {
+        String txt = getText().replaceAll("\\\\\"","\"");
+		setText(txt);
+		}
 	;
 
 BIGSTRING

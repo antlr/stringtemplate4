@@ -51,6 +51,22 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
+	@Test public void testEscapedQuote() throws Exception {
+		// setTest(ranges) ::= "<ranges; separator=\"||\">"
+		// has to unescape the strings.
+		String templates =
+			"setTest(ranges) ::= \"<ranges; separator=\\\"||\\\">\"" + Misc.newline;
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		String expected =
+			"setTest(ranges) ::= <<"+Misc.newline+
+			"<ranges; separator=\"||\">" +Misc.newline+
+			">>"+ Misc.newline;
+		String result = group.show();
+		assertEquals(expected, result);
+	}
+
     @Test public void testMultiTemplates() throws Exception {
         String templates =
             "ta(x) ::= \"[<x>]\"" + Misc.newline +
