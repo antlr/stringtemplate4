@@ -831,6 +831,50 @@ public class TestCoreBasics extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testArrayOfTemplates() throws Exception {
+		String template = "<foo>!";
+		ST st = new ST(template);
+		ST[] t = new ST[] {new ST("hi"), new ST("mom")};
+		st.add("foo", t);
+		String expected = "himom!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testArrayOfTemplatesInTemplate() throws Exception {
+		String template = "<foo>!";
+		ST st = new ST(template);
+		ST[] t = new ST[] {new ST("hi"), new ST("mom")};
+		st.add("foo", t);
+		ST wrapper = new ST("<x>");
+		wrapper.add("x", st);
+		String expected = "himom!";
+		String result = wrapper.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testListOfTemplates() throws Exception {
+		String template = "<foo>!";
+		ST st = new ST(template);
+		List<ST> t = new ArrayList<ST>() {{add(new ST("hi")); add(new ST("mom"));}};
+		st.add("foo", t);
+		String expected = "himom!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testListOfTemplatesInTemplate() throws Exception {
+		String template = "<foo>!";
+		ST st = new ST(template);
+		List<ST> t = new ArrayList<ST>() {{add(new ST("hi")); add(new ST("mom"));}};
+		st.add("foo", t);
+		ST wrapper = new ST("<x>");
+		wrapper.add("x", st);
+		String expected = "himom!";
+		String result = wrapper.render();
+		assertEquals(expected, result);
+	}
+
 	@Test public void playing() throws Exception {
 		String template = "<a:t(x,y),u()>";
 		ST st = new ST(template);
