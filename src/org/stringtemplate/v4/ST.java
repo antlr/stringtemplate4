@@ -29,6 +29,7 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.FormalArgument;
+import org.stringtemplate.v4.misc.Aggregate;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 
@@ -204,6 +205,41 @@ public class ST {
         }
 		return this;
     }
+
+	/** Split "aggrName.{propName1,propName2}" into list [propName1,propName2]
+	 *  and the aggrName. Spaces are allowed around ','.
+	 */
+	public synchronized ST add(String aggrSpec, Object... values) {
+		if ( values==null || values.length==0 ) {
+			throw new IllegalArgumentException("missing values for aggregate attribute format: "+
+											   aggrSpec);
+		}
+		int dot = aggrSpec.indexOf(".{");
+		int finalCurly = aggrSpec.indexOf('}');
+		if ( dot<0 || finalCurly>=aggrSpec.length() ) {
+			throw new IllegalArgumentException("invalid aggregate attribute format: "+
+											   aggrSpec);
+		}
+		String aggrName = aggrSpec.substring(0, dot);
+		String propString = aggrSpec.substring(dot+2, aggrSpec.length()-1);
+		propString = propString.trim();
+		String[] propNames = propString.split("\\ *,\\ *");
+		if ( propNames==null || propNames.length==0 ) {
+			throw new IllegalArgumentException("invalid aggregate attribute format: "+
+											   aggrSpec);
+		}
+		if ( values.length != propNames.length ) {
+			throw new IllegalArgumentException(
+				"number of properties and values mismatch for aggregate attribute format: "+
+				aggrSpec);
+		}
+		int i=0;
+		Aggregate aggr = new Aggregate();
+		for (String p : propNames) aggr.properties.put(p, values[i++]);
+
+		add(aggrName, aggr); // now add as usual
+		return this;
+	}
 
 	/** Remove an attribute value entirely (can't remove attribute definitions). */
 	public void remove(String name) {

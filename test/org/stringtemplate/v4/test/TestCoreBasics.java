@@ -133,7 +133,7 @@ public class TestCoreBasics extends BaseTest {
 	}
 
 	@Test public void testPropWithNoAttr() throws Exception {
-		String template = "<foo.a>: <ick>"; // checks field and method getter
+		String template = "<foo.a>: <ick>";
 		ST st = new ST(template);
 		st.add("foo", new HashMap() {{put("a","b");}});
 		String expected = "b: ";

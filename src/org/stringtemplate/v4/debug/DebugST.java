@@ -69,32 +69,33 @@ public class DebugST extends ST {
 
 // LAUNCH A WINDOW TO INSPECT TEMPLATE HIERARCHY
 
-    public List<InterpEvent> inspect() { return inspect(Locale.getDefault()); }
+    public STViz inspect() { return inspect(Locale.getDefault()); }
 
-    public List<InterpEvent> inspect(int lineWidth) {
+    public STViz inspect(int lineWidth) {
 		return inspect(impl.nativeGroup.errMgr, Locale.getDefault(), lineWidth);
 	}
 
-    public List<InterpEvent> inspect(Locale locale) {
+    public STViz inspect(Locale locale) {
 		return inspect(impl.nativeGroup.errMgr, locale, STWriter.NO_WRAP);
 	}
 
-    public List<InterpEvent> inspect(ErrorManager errMgr, Locale locale, int lineWidth) {
-        ErrorBuffer errors = new ErrorBuffer();
-        impl.nativeGroup.setListener(errors);
-        StringWriter out = new StringWriter();
-        STWriter wr = new AutoIndentWriter(out);
-        wr.setLineWidth(lineWidth);
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
-        interp.exec(wr, this); // render and track events
-        new STViz(errMgr, this, out.toString(), interp,
-                  interp.getExecutionTrace(), errors.errors);
-        return interp.getEvents();
-    }
+	public STViz inspect(ErrorManager errMgr, Locale locale, int lineWidth) {
+		ErrorBuffer errors = new ErrorBuffer();
+		impl.nativeGroup.setListener(errors);
+		StringWriter out = new StringWriter();
+		STWriter wr = new AutoIndentWriter(out);
+		wr.setLineWidth(lineWidth);
+		Interpreter interp = new Interpreter(groupThatCreatedThisInstance, locale);
+		interp.exec(wr, this); // render and track events
+		STViz viz = new STViz(errMgr, this, out.toString(), interp,
+							  interp.getExecutionTrace(), errors.errors);
+		viz.open();
+		return viz;
+	}
 
-    // TESTING SUPPORT
+	// TESTING SUPPORT
 
-    public List<InterpEvent> getEvents() { return getEvents(Locale.getDefault()); }
+	public List<InterpEvent> getEvents() { return getEvents(Locale.getDefault()); }
 
     public List<InterpEvent> getEvents(int lineWidth) { return getEvents(Locale.getDefault(), lineWidth); }
 

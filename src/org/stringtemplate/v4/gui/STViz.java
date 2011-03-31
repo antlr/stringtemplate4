@@ -59,42 +59,49 @@ public class STViz {
 	public DebugST currentST; // current ST selected in template tree
 	public List<InterpEvent> allEvents;
 	public JTreeSTModel tmodel;
-    public List<STMessage> errors;
 	public ErrorManager errMgr;
 	public Interpreter interp;
+	public String output;
+	public List<String> trace;
+	public List<STMessage> errors;
+
+	public STViewFrame viewFrame;
 
     public STViz(ErrorManager errMgr,
-				 DebugST root, String output,
+				 DebugST root,
+				 String output,
 				 Interpreter interp,
                  List<String> trace,
                  List<STMessage> errors)
     {
 		this.errMgr = errMgr;
-        // TODO move all this to JFrame so i can return (rerun?) it.
-        currentST = root;
+        this.currentST = root;
+		this.output = output;
 		this.interp = interp;
-
         this.allEvents = interp.getEvents();
+		this.trace = trace;
         this.errors = errors;
+	}
 
-        final STViewFrame m = new STViewFrame();
-        updateStack(currentST, m);
-        updateAttributes(currentST, m);
+	public void open() {
+        viewFrame = new STViewFrame();
+        updateStack(currentST, viewFrame);
+        updateAttributes(currentST, viewFrame);
 
         tmodel = new JTreeSTModel(interp, currentST);
-        m.tree.setModel(tmodel);
-        m.tree.addTreeSelectionListener(
+        viewFrame.tree.setModel(tmodel);
+        viewFrame.tree.addTreeSelectionListener(
             new TreeSelectionListener() {
                 public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
-                    currentST = ((JTreeSTModel.Wrapper) m.tree.getLastSelectedPathComponent()).st;
-                    updateCurrentST(m);
+                    currentST = ((JTreeSTModel.Wrapper) viewFrame.tree.getLastSelectedPathComponent()).st;
+                    updateCurrentST(viewFrame);
                 }
             }
         );
 
 		JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentST.impl.ast);
-		m.ast.setModel(astModel);
-		m.ast.addTreeSelectionListener(
+		viewFrame.ast.setModel(astModel);
+		viewFrame.ast.addTreeSelectionListener(
 			new TreeSelectionListener() {
 				public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
 					TreePath path = treeSelectionEvent.getNewLeadSelectionPath();
@@ -103,19 +110,19 @@ public class STViz {
 					System.out.println("select AST: "+node);
 					CommonToken a = (CommonToken)currentST.impl.tokens.get(node.getTokenStartIndex());
 					CommonToken b = (CommonToken)currentST.impl.tokens.get(node.getTokenStopIndex());
-					highlight(m.template, a.getStartIndex(), b.getStopIndex());
+					highlight(viewFrame.template, a.getStartIndex(), b.getStopIndex());
 				}
 			}
 		);
 
 		// Track selection of attr but do nothing for now
-        m.attributes.addListSelectionListener(
+        viewFrame.attributes.addListSelectionListener(
             new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent e) {
-                    int minIndex = m.attributes.getMinSelectionIndex();
-                    int maxIndex = m.attributes.getMaxSelectionIndex();
+                    int minIndex = viewFrame.attributes.getMinSelectionIndex();
+                    int maxIndex = viewFrame.attributes.getMaxSelectionIndex();
                     for (int i = minIndex; i <= maxIndex; i++) {
-                        if (m.attributes.isSelectedIndex(i)) {
+                        if (viewFrame.attributes.isSelectedIndex(i)) {
                             //System.out.println("index="+i);
                         }
                     }
@@ -123,11 +130,11 @@ public class STViz {
             }
         );
 
-        m.output.setText(output);
+        viewFrame.output.setText(output);
 
-        m.template.setText(currentST.impl.template);
-        m.bytecode.setText(currentST.impl.disasm());
-        m.trace.setText(Misc.join(trace.iterator(), "\n"));
+        viewFrame.template.setText(currentST.impl.template);
+        viewFrame.bytecode.setText(currentST.impl.disasm());
+        viewFrame.trace.setText(Misc.join(trace.iterator(), "\n"));
 
         CaretListener caretListenerLabel = new CaretListener() {
             public void caretUpdate(CaretEvent e) {
@@ -135,49 +142,49 @@ public class STViz {
                 InterpEvent de = findEventAtOutputLocation(allEvents, dot);
                 if ( de==null ) currentST = tmodel.root.st;
                 else currentST = de.self;
-                updateCurrentST(m);
+                updateCurrentST(viewFrame);
             }
         };
 
-        m.output.addCaretListener(caretListenerLabel);
+        viewFrame.output.addCaretListener(caretListenerLabel);
 
-        m.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        m.pack();
-        m.setSize(800,600);
-        m.topSplitPane.setBorder(null);
-        m.overallSplitPane.setBorder(null);
+        viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        viewFrame.pack();
+        viewFrame.setSize(800,600);
+        viewFrame.topSplitPane.setBorder(null);
+        viewFrame.overallSplitPane.setBorder(null);
 
         // ADD ERRORS
         if ( errors==null || errors.size()==0 ) {
-            m.errorScrollPane.setVisible(false); // don't show unless errors
+            viewFrame.errorScrollPane.setVisible(false); // don't show unless errors
         }
         else {
             final DefaultListModel errorListModel = new DefaultListModel();
             for (STMessage msg : errors) {
                 errorListModel.addElement(msg);
             }
-            m.errorList.setModel(errorListModel);
+            viewFrame.errorList.setModel(errorListModel);
         }
 
-        m.errorList.addListSelectionListener(
+        viewFrame.errorList.addListSelectionListener(
             new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent e) {
-                    int minIndex = m.errorList.getMinSelectionIndex();
-                    int maxIndex = m.errorList.getMaxSelectionIndex();
+                    int minIndex = viewFrame.errorList.getMinSelectionIndex();
+                    int maxIndex = viewFrame.errorList.getMaxSelectionIndex();
                     int i = minIndex;
                     while ( i <= maxIndex ) {
-                        if (m.errorList.isSelectedIndex(i)) break;
+                        if (viewFrame.errorList.isSelectedIndex(i)) break;
                         i++;
                     }
-                    ListModel model = m.errorList.getModel();
+                    ListModel model = viewFrame.errorList.getModel();
                     STMessage msg = (STMessage)model.getElementAt(i);
                     if ( msg instanceof STRuntimeMessage ) {
                         STRuntimeMessage rmsg = (STRuntimeMessage)msg;
                         Interval I = rmsg.self.impl.sourceMap[rmsg.ip];
                         currentST = (DebugST)msg.self;
-                        updateCurrentST(m);
+                        updateCurrentST(viewFrame);
                         if ( I!=null ) { // highlight template
-                            highlight(m.template, I.a, I.b);
+                            highlight(viewFrame.template, I.a, I.b);
                         }
                     }
                 }
@@ -185,11 +192,11 @@ public class STViz {
         );
 
         //m.topSplitPane.setResizeWeight(0.15);
-        m.bottomSplitPane.setBorder(null);
+        viewFrame.bottomSplitPane.setBorder(null);
         //m.bottomSplitPane.setResizeWeight(0.15);
-        m.treeScrollPane.setPreferredSize(new Dimension(120,400));
-        m.bottomSplitPane.setPreferredSize(new Dimension(120,200));
-        m.setVisible(true);
+        viewFrame.treeScrollPane.setPreferredSize(new Dimension(120,400));
+        viewFrame.bottomSplitPane.setPreferredSize(new Dimension(120,200));
+        viewFrame.setVisible(true);
     }
 
 	private void updateCurrentST(STViewFrame m) {
@@ -331,7 +338,7 @@ public class STViz {
         st.add("stats", s2);
         st.add("stats", s3);
 
-        ((DebugST)st).inspect();
+		STViz viz = ((DebugST)st).inspect();
 		System.out.println(st.render());
     }
 
@@ -356,7 +363,7 @@ public class STViz {
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         STGroup.debug = true;
         ST st = group.getInstanceOf("main");
-        ((DebugST)st).inspect();
+        STViz viz = ((DebugST)st).inspect();
     }
 
 	public static void test3() throws IOException {

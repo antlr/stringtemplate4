@@ -99,6 +99,9 @@ public class STGroup {
 	 *
 	 *  ST initializes with model adaptors that know how to pull
 	 *  properties out of Objects, Maps, and STs.
+	 *
+	 *  The last one you register gets priority; do least to most
+	 *  specific.
 	 */
 	protected Map<Class, ModelAdaptor> adaptors =
 		Collections.synchronizedMap(
@@ -106,6 +109,7 @@ public class STGroup {
 				put(Object.class, new ObjectModelAdaptor());
 				put(ST.class, new STModelAdaptor());
 				put(Map.class, new MapModelAdaptor());
+				put(Aggregate.class, new AggregateModelAdaptor());
 			}}
 		);
 
@@ -645,15 +649,18 @@ public class STGroup {
 		ModelAdaptor a = typeToAdaptorCache.get(attributeType);
 		if ( a!=null ) return a;
 
+		//System.out.println("looking for adaptor for "+attributeType);
 		// Else, we must find adaptor that fits;
 		// find last fit (most specific)
 		for (Class t : adaptors.keySet()) {
 			// t works for attributeType if attributeType subclasses t or implements
+			//System.out.println("checking "+t.getSimpleName()+" against "+attributeType);
 			if ( t.isAssignableFrom(attributeType) ) {
 				//System.out.println(t.getName()+" = "+attributeType.getName());
 				a = adaptors.get(t);
 			}
 		}
+		//System.out.println("adaptor for "+attributeType+" is "+a);
 		typeToAdaptorCache.put(attributeType, a); // cache it for next time
 		return a;
 	}

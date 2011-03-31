@@ -440,12 +440,12 @@ public class Interpreter {
 			}
 			prevOpcode = opcode;
 		}
-		if ( STGroup.debug ) {
+		if ( STGroup.debug  && self instanceof DebugST ) {
 			int stop = out.index() - 1;
 			EvalTemplateEvent e = new EvalTemplateEvent((DebugST)self, start, stop);
 			System.out.println(e);
 			events.add(e);
-			if ( self.enclosingInstance!=null ) {
+			if ( self.enclosingInstance instanceof DebugST ) {
 				DebugST parent = (DebugST)self.enclosingInstance;
 				getEvents(parent).add(e);
 			}
@@ -568,7 +568,7 @@ public class Interpreter {
 
 	protected void indent(STWriter out, ST self, int strIndex) {
 		String indent = self.impl.strings[strIndex];
-		if ( STGroup.debug ) {
+		if ( STGroup.debug && self instanceof DebugST ) {
 			int start = out.index(); // track char we're about to write
 			EvalExprEvent e = new IndentEvent((DebugST) self,
 											  start, start + indent.length() - 1,
@@ -586,7 +586,7 @@ public class Interpreter {
 	protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
 		int start = out.index(); // track char we're about to write
 		int n = writeObject(out, self, o, null);
-        if ( STGroup.debug ) {
+        if ( STGroup.debug && self instanceof DebugST ) {
 			EvalExprEvent e = new EvalExprEvent((DebugST) self,
 												start, out.index() - 1,
 												getExprStartChar(self),
@@ -621,7 +621,7 @@ public class Interpreter {
 		if ( options!=null && options[Option.ANCHOR.ordinal()]!=null ) {
 			out.popAnchorPoint();
 		}
-        if ( STGroup.debug ) {
+        if ( STGroup.debug && self instanceof DebugST ) {
             Interval templateLocation = self.impl.sourceMap[current_ip];
             int exprStart=templateLocation.a, exprStop=templateLocation.b;
 			EvalExprEvent e = new EvalExprEvent((DebugST) self,
