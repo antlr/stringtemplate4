@@ -266,7 +266,7 @@ public class ST {
 											   aggrSpec);
 		}
 		int finalCurly = aggrSpec.indexOf('}');
-		if ( dot<0 || finalCurly>=aggrSpec.length() ) {
+		if ( dot<0 || finalCurly < 0 ) {
 			throw new IllegalArgumentException("invalid aggregate attribute format: "+
 											   aggrSpec);
 		}
