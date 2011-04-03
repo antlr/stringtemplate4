@@ -29,7 +29,10 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
-import org.stringtemplate.v4.debug.*;
+import org.stringtemplate.v4.debug.EvalExprEvent;
+import org.stringtemplate.v4.debug.EvalTemplateEvent;
+import org.stringtemplate.v4.debug.IndentEvent;
+import org.stringtemplate.v4.debug.InterpEvent;
 import org.stringtemplate.v4.misc.*;
 
 import java.io.IOException;
@@ -58,10 +61,6 @@ import java.util.*;
 public class Interpreter {
 	public enum Option { ANCHOR, FORMAT, NULL, SEPARATOR, WRAP }
 
-	public interface OpcodeImpl {
-		public void exec();
-	}
-
 	public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
 	public static final Set<String> predefinedAnonSubtemplateAttributes =
@@ -83,49 +82,57 @@ public class Interpreter {
 
 	ErrorManager errMgr;
 
-	/** Dump bytecode instructions as we execute them? */
+	/** Dump bytecode instructions as we execute them? mainly for parrt */
 	public static boolean trace = false;
 
-	/** Track everything happening in interp if debug across all templates */
-	protected List<InterpEvent> events;
-
-	/** If debug mode, track trace here */
+	/** If trace mode, track trace here */
 	// TODO: track the pieces not a string and track what it contributes to output
 	protected List<String> executeTrace;
 
-	Map<ST, List<InterpEvent>> debugInfo;
+	/** Track events inside templates and in this.events */
+	public boolean debug = false;
 
-	public Interpreter(STGroup group) {
-		this(group,Locale.getDefault(),group.errMgr);
+	/** Track everything happening in interp if debug across all templates.
+	 *  The last event in this field is the EvalTemplateEvent for the root
+	 *  template.
+	 */
+	protected List<InterpEvent> events;
+
+	/** Track interp events for every ST we exec */
+	protected Map<ST, ST.InterpDebugState> debugStateMap;
+
+	public Interpreter(STGroup group, boolean debug) {
+		this(group,Locale.getDefault(),group.errMgr, debug);
 	}
 
-	public Interpreter(STGroup group, Locale locale) {
-		this(group, locale, group.errMgr);
+	public Interpreter(STGroup group, Locale locale, boolean debug) {
+		this(group, locale, group.errMgr, debug);
 	}
 
-	public Interpreter(STGroup group, ErrorManager errMgr) {
-		this(group,Locale.getDefault(),errMgr);
+	public Interpreter(STGroup group, ErrorManager errMgr, boolean debug) {
+		this(group,Locale.getDefault(),errMgr, debug);
 	}
 
-	public Interpreter(STGroup group, Locale locale, ErrorManager errMgr) {
+	public Interpreter(STGroup group, Locale locale, ErrorManager errMgr, boolean debug) {
 		this.group = group;
 		this.locale = locale;
 		this.errMgr = errMgr;
-		if ( STGroup.debug ) {
+		this.debug = debug;
+		if ( debug ) {
 			events = new ArrayList<InterpEvent>();
+			debugStateMap = new HashMap<ST, ST.InterpDebugState>();
 			executeTrace = new ArrayList<String>();
-			debugInfo = new HashMap<ST, List<InterpEvent>>();
 		}
 	}
 
 	public static int[] count = new int[Bytecode.MAX_BYTECODE+1];
 
-	public static void dumpOpcodeFreq() {
-		System.out.println("#### instr freq:");
-		for (int i=1; i<=Bytecode.MAX_BYTECODE; i++) {
-			System.out.println(count[i]+" "+Bytecode.instructions[i].name);
-		}
-	}
+//	public static void dumpOpcodeFreq() {
+//		System.out.println("#### instr freq:");
+//		for (int i=1; i<=Bytecode.MAX_BYTECODE; i++) {
+//			System.out.println(count[i]+" "+Bytecode.instructions[i].name);
+//		}
+//	}
 	
 	/** Execute template self and return how many characters it wrote to out */
 	public int exec(STWriter out, ST self) {
@@ -151,7 +158,7 @@ public class Interpreter {
 		byte[] code = self.impl.instrs;        // which code block are we executing
 		int ip = 0;
 		while ( ip < self.impl.codeSize ) {
-			if ( trace || STGroup.debug ) trace(self, ip);
+			if ( trace || debug ) trace(self, ip);
 			short opcode = code[ip];
 			//count[opcode]++;
 			current_ip = ip;
@@ -440,15 +447,10 @@ public class Interpreter {
 			}
 			prevOpcode = opcode;
 		}
-		if ( STGroup.debug  && self instanceof DebugST ) {
+		if ( debug ) {
 			int stop = out.index() - 1;
-			EvalTemplateEvent e = new EvalTemplateEvent((DebugST)self, start, stop);
-			System.out.println(e);
-			events.add(e);
-			if ( self.enclosingInstance instanceof DebugST ) {
-				DebugST parent = (DebugST)self.enclosingInstance;
-				getEvents(parent).add(e);
-			}
+			EvalTemplateEvent e = new EvalTemplateEvent(self, start, stop);
+			trackDebugEvent(self, e);
 		}
 		return n;
 	}
@@ -467,15 +469,16 @@ public class Interpreter {
 		if ( imported==null ) {
 			errMgr.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
 								name);
-			st = self.groupThatCreatedThisInstance.createStringTemplate();
+			st = self.groupThatCreatedThisInstance.createStringTemplateInternally();
+			//st.enclosingInstance = self;
 			st.impl = new CompiledST();
 			sp -= nargs;
 			operands[++sp] = st;
 			return;
 		}
 
-		st = imported.nativeGroup.createStringTemplate();
-		st.enclosingInstance = self; // self invoked super.name()
+		st = imported.nativeGroup.createStringTemplateInternally();
+		//st.enclosingInstance = self; // self invoked super.name()
 		st.groupThatCreatedThisInstance = group;
 		st.impl = imported;
 
@@ -491,14 +494,15 @@ public class Interpreter {
 		if ( imported==null ) {
 			errMgr.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
 								name);
-			st = self.groupThatCreatedThisInstance.createStringTemplate();
+			st = self.groupThatCreatedThisInstance.createStringTemplateInternally();
+			//st.enclosingInstance = self;
 			st.impl = new CompiledST();
 			operands[++sp] = st;
 			return;
 		}
 
-		st = imported.nativeGroup.createStringTemplate();
-		st.enclosingInstance = self; // self invoked super.name()
+		st = imported.nativeGroup.createStringTemplateInternally();
+		//st.enclosingInstance = self; // self invoked super.name()
 		st.groupThatCreatedThisInstance = group;
 		st.impl = imported;
 
@@ -568,14 +572,13 @@ public class Interpreter {
 
 	protected void indent(STWriter out, ST self, int strIndex) {
 		String indent = self.impl.strings[strIndex];
-		if ( STGroup.debug && self instanceof DebugST ) {
+		if ( debug ) {
 			int start = out.index(); // track char we're about to write
-			EvalExprEvent e = new IndentEvent((DebugST) self,
+			EvalExprEvent e = new IndentEvent(self,
 											  start, start + indent.length() - 1,
 											  getExprStartChar(self),
 											  getExprStopChar(self));
-			System.out.println(e);
-			events.add(e);
+			trackDebugEvent(self, e);
 		}
 		out.pushIndentation(indent);
 	}
@@ -586,13 +589,12 @@ public class Interpreter {
 	protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
 		int start = out.index(); // track char we're about to write
 		int n = writeObject(out, self, o, null);
-        if ( STGroup.debug && self instanceof DebugST ) {
-			EvalExprEvent e = new EvalExprEvent((DebugST) self,
+        if ( debug ) {
+			EvalExprEvent e = new EvalExprEvent(self,
 												start, out.index() - 1,
 												getExprStartChar(self),
 												getExprStopChar(self));
-			System.out.println(e);
-			events.add(e);
+			trackDebugEvent(self, e);
         }
 		return n;
 	}
@@ -621,14 +623,13 @@ public class Interpreter {
 		if ( options!=null && options[Option.ANCHOR.ordinal()]!=null ) {
 			out.popAnchorPoint();
 		}
-        if ( STGroup.debug && self instanceof DebugST ) {
+        if ( debug ) {
             Interval templateLocation = self.impl.sourceMap[current_ip];
             int exprStart=templateLocation.a, exprStop=templateLocation.b;
-			EvalExprEvent e = new EvalExprEvent((DebugST) self,
+			EvalExprEvent e = new EvalExprEvent( self,
 												start, out.index() - 1,
 												exprStart, exprStop);
-			System.out.println(e);
-			events.add(e);
+			trackDebugEvent(self, e);
         }
 		return n;
 	}
@@ -645,8 +646,8 @@ public class Interpreter {
 			else return 0;
 		}
 		if ( o instanceof ST ) {
-			//((ST)o).enclosingInstance = self; // TODO: correct?
-			setDefaultArguments(out, (ST)o);
+			ST st = (ST)o;
+			setDefaultArguments(out, st);
 			if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
 				// if we have a wrap string, then inform writer it
 				// might need to wrap
@@ -657,7 +658,12 @@ public class Interpreter {
 					errMgr.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
 				}
 			}
-			n = exec(out, (ST)o);
+			// when we eval a template embedded in another, we have to track
+			// the enclosing instance. This resets when one ST is
+			// embedded in multiple templates.  When it's evaluated 2nd time,
+			// o.enclosingInstance resets to that 2nd enclosing instance.
+			st.enclosingInstance = self;
+			n = exec(out, st);
 		}
 		else {
 			o = convertAnythingIteratableToIterator(o); // normalize
@@ -740,7 +746,8 @@ public class Interpreter {
 		}
 		else { // if only single value, just apply first template to sole value
 			ST proto = prototypes.get(0);
-			ST st = group.createStringTemplate(proto);
+			ST st = group.createStringTemplateInternally(proto);
+			//st.enclosingInstance = self;
 			if ( st!=null ) {
 				setFirstArgument(self, st, attr);
 				if ( st.impl.isAnonSubtemplate ) {
@@ -767,7 +774,8 @@ public class Interpreter {
 			int templateIndex = ti % prototypes.size(); // rotate through
 			ti++;
 			ST proto = prototypes.get(templateIndex);
-			ST st = group.createStringTemplate(proto);
+			ST st = group.createStringTemplateInternally(proto);
+			//st.enclosingInstance = self;
 			setFirstArgument(self, st, iterValue);
 			if ( st.impl.isAnonSubtemplate ) {
 				st.rawSetAttribute("i0", i0);
@@ -829,7 +837,8 @@ public class Interpreter {
 		while ( true ) {
 			// get a value for each attribute in list; put into ST instance
 			int numEmpty = 0;
-			ST embedded = group.createStringTemplate(prototype);
+			ST embedded = group.createStringTemplateInternally(prototype);
+			//embedded.enclosingInstance = self;
 			embedded.rawSetAttribute("i0", i);
 			embedded.rawSetAttribute("i", i+1);
 			for (int a = 0; a < numExprs; a++) {
@@ -1103,10 +1112,10 @@ public class Interpreter {
 			}
 			//System.out.println("setting def arg "+arg.name+" to "+arg.defaultValueToken);
 			if ( arg.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
-				ST defaultArgST = group.createStringTemplate();
+				ST defaultArgST = group.createStringTemplateInternally();
 				// default arg template must see other args so it's enclosing
 				// instance is the template we are invoking.
-				defaultArgST.enclosingInstance = invokedST;
+				//defaultArgST.enclosingInstance = invokedST;
 				defaultArgST.groupThatCreatedThisInstance = group;
 				defaultArgST.impl = arg.compiledDefaultValue;
 				// If default arg is template with single expression
@@ -1145,7 +1154,7 @@ public class Interpreter {
 		tr.append(self.getEnclosingInstanceStackString());
 		tr.append(", sp="+sp+", nw="+ nwline);
 		String s = tr.toString();
-		if ( STGroup.debug ) executeTrace.add(s);
+		if ( debug ) executeTrace.add(s);
 		if ( trace ) System.out.println(s);
 	}
 
@@ -1171,12 +1180,35 @@ public class Interpreter {
 	}
 
 	public List<InterpEvent> getEvents() { return events; }
-	public List<InterpEvent> getEvents(ST st) {
-		if ( debugInfo.get(st)==null ) {
-			debugInfo.put(st, new ArrayList<InterpEvent>());
+
+	/** For every event, we track in overall list and in self's
+	 *  event list so that each template has a list of events used to
+	 *  create it.  If EvalTemplateEvent, store in parent's
+	 *  childEvalTemplateEvents list for STViz tree view.
+	 */
+	protected void trackDebugEvent(ST self, InterpEvent e) {
+//		System.out.println(e);
+		this.events.add(e);
+//		if ( self.debugState==null ) self.debugState = new ST.DebugState();
+//		self.debugState.events.add(e);
+		getDebugState(self).events.add(e);
+		if ( e instanceof EvalTemplateEvent ) {
+			//ST parent = getDebugState(self).interpEnclosingInstance;
+			ST parent = self.enclosingInstance;
+			if ( parent!=null ) {
+				// System.out.println("add eval "+e.self.getName()+" to children of "+parent.getName());
+//				if ( parent.debugState==null ) parent.debugState = new ST.DebugState();
+//				parent.debugState.childEvalTemplateEvents.add((EvalTemplateEvent)e);
+				getDebugState(parent).childEvalTemplateEvents.add((EvalTemplateEvent)e);
+			}
 		}
-		return debugInfo.get(st);
 	}
+
+	public ST.InterpDebugState getDebugState(ST st) {
+		if ( debugStateMap.get(st) == null ) debugStateMap.put(st, new ST.InterpDebugState());
+		return debugStateMap.get(st);
+	}
+
 	public List<String> getExecutionTrace() { return executeTrace; }
 
 	public static int getShort(byte[] memory, int index) {

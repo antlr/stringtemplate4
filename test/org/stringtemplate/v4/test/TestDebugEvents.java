@@ -28,10 +28,10 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
+import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.STGroupString;
-import org.stringtemplate.v4.debug.DebugST;
 import org.stringtemplate.v4.debug.InterpEvent;
 import org.stringtemplate.v4.misc.Misc;
 
@@ -46,8 +46,7 @@ public class TestDebugEvents extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        STGroup.debug = true;
-        DebugST st = (DebugST)group.getInstanceOf("t");
+        ST st = group.getInstanceOf("t");
         List<InterpEvent> events = st.getEvents();
         String expected =
             "[EvalExprEvent{self=t(), expr='foo', exprStartChar=0, exprStopChar=2, start=0, stop=2}," +
@@ -62,8 +61,7 @@ public class TestDebugEvents extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        STGroup.debug = true;
-        DebugST st = (DebugST)group.getInstanceOf("t");
+        ST st = group.getInstanceOf("t");
         List<InterpEvent> events = st.getEvents();
         String expected =
             "[IndentEvent{self=t(), expr=' ', exprStartChar=0, exprStopChar=0, start=0, stop=0}," +
@@ -81,8 +79,7 @@ public class TestDebugEvents extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        STGroup.debug = true;
-        DebugST st = (DebugST)group.getInstanceOf("t");
+        ST st = group.getInstanceOf("t");
 		group.getInstanceOf("u").impl.dump();
         List<InterpEvent> events = st.getEvents();
         String expected =
@@ -102,12 +99,10 @@ public class TestDebugEvents extends BaseTest {
 
 	@Test
 	public void testEvalExprEventForSpecialCharacter() throws Exception {
-		STGroup.debug = true;
 		String templates = "t() ::= <<[<\\n>]>>\n";
 		//                            012 345
 		STGroupString g = new STGroupString(templates);
-		STGroup.debug = true;
-		DebugST st = (DebugST)g.getInstanceOf("t");
+		ST st = g.getInstanceOf("t");
 		st.impl.dump();
 		List<InterpEvent> events = st.getEvents();
 		String expected =

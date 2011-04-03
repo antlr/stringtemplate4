@@ -49,7 +49,6 @@ public class TestOptions extends BaseTest {
 
 	@Test public void testSeparatorWithSpaces() throws Exception {
 		STGroup group = new STGroup();
-		STGroup.debug = true;
 		group.defineTemplate("test", "name", "hi <name; separator= \", \">!");
 		ST st = group.getInstanceOf("test");
 		System.out.println(st.impl.ast.toStringTree());

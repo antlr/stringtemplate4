@@ -7,13 +7,25 @@ University of San Francisco
 
 CHANGES
 
-March 30, 2011
+March 30 - April 2, 2011
 
 * ST.inspect() now returns an STViz, which has all the goodies and gives
   you access to the GUI stuff.
-* added aggr.{prop1, prop2} for ST.add(). Too useful. (Was in v3)
+* added aggr.{prop1, prop2} for ST.add(). Too useful. (Was in v3).
+  Use ST.addAggr("aggr.{p1,p2}", a1, a2);
+* refactored to fold DebugST into ST; adds one object ptr to every ST
+  instance but worth reduction in complexity. "new ST(...)" calls didn't
+  work (not DebugST objects) in inspector.  ST.inspect() for any ST now.
+* Fixed bug in STViz. Didn't highlight entire output when you click
+  topmost template.
+* STGroup.debug no longer there nor static.  It's an instance var of
+  Interpreter.  ST.inspect() tells interp to debug. STGroup.trackCreationEvents
+  says to record where in code an ST was created and where code added attributes.
+* Gutted tree model for STViz, refactored debugging/event tracking code.
+* creation events had wrong location (launch of interp location); only tracks
+  now for externally/injected created templates.
 
-  March 29, 2011
+March 29, 2011
 
 * Fixed bug where escaped quotes in template defs were not unescaped for use
   by compiler.

@@ -30,7 +30,6 @@ package org.stringtemplate.v4;
 import org.antlr.runtime.*;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
-import org.stringtemplate.v4.debug.DebugST;
 import org.stringtemplate.v4.misc.*;
 
 import java.io.File;
@@ -127,11 +126,13 @@ public class STGroup {
 
 	public static final ErrorManager DEFAULT_ERR_MGR = new ErrorManager();
 
-	/** Build debugging objects and  track events */
-	public static boolean debug = false;
-
 	/** Watch loading of groups and templates */
 	public static boolean verbose = false;
+
+	/** For debugging with STViz. Records where in code an ST was created
+	 *  and where code added attributes.
+	 */
+	public static boolean trackCreationEvents = false;
 
 	public static STGroup defaultGroup = new STGroup();
 
@@ -168,6 +169,10 @@ public class STGroup {
     }
 
     protected ST getEmbeddedInstanceOf(ST enclosingInstance, int ip, String name) {
+		if ( verbose ) System.out.println("getEmbeddedInstanceOf("+name+")");
+//		if ( name.equals("genericParser") || name.equals("parser") ) {
+//			System.out.println("found parser");
+//		}
         ST st = getInstanceOf(name);
         if ( st==null ) {
             errMgr.runTimeError(enclosingInstance, ip, ErrorType.NO_SUCH_TEMPLATE,
@@ -176,7 +181,11 @@ public class STGroup {
 			st.impl = new CompiledST();
 			return st;
         }
-        st.enclosingInstance = enclosingInstance;
+		// this is only called internally. wack any debug ST create events
+		if ( trackCreationEvents ) {
+			st.debugState.newSTEvent = null; // toss it out
+		}
+        //st.enclosingInstance = enclosingInstance;
         return st;
     }
 
@@ -189,7 +198,7 @@ public class STGroup {
 		else {
 			template = Misc.strip(templateToken.getText(),1);
 		}
-		ST st = createStringTemplate();
+		ST st = createStringTemplateInternally();
 		st.groupThatCreatedThisInstance = this;
 		st.impl = compile(getFileName(), null, null, template, templateToken);
 		st.impl.hasFormalArgs = false;
@@ -706,21 +715,29 @@ public class STGroup {
 		return null;
 	}
 
-    /** StringTemplate object factory; each group can have its own. */
-	public ST createStringTemplate() {
 		// TODO: try making a mem pool?
-		if ( debug ) {
-			return new DebugST();
+    /** StringTemplate object factory; each group can have its own. */
+	public ST createStringTemplate() { return new ST(); }
+
+	/** differentiate so we can avoid having creation events for regions,
+	 *  map operations, and other "new ST" events used during interp.
+	 */
+	public ST createStringTemplateInternally() {
+		ST st = createStringTemplate();
+		if ( trackCreationEvents && st.debugState!=null ) {
+			st.debugState.newSTEvent = null; // toss it out
 		}
-		return new ST();
+		return st;
 	}
 
-	public ST createStringTemplate(ST proto) {
-		if ( debug ) {
-			return new DebugST(proto);
+	public ST createStringTemplateInternally(ST proto) {
+		ST st = new ST(proto);
+		if ( trackCreationEvents && st.debugState!=null ) {
+			st.debugState.newSTEvent = null; // toss it out
 		}
-		return new ST(proto);
+		return st;
 	}
+
 
     public String getName() { return "<no name>;"; }
 	public String getFileName() { return null; }

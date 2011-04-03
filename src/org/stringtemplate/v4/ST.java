@@ -29,9 +29,12 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.FormalArgument;
-import org.stringtemplate.v4.misc.Aggregate;
-import org.stringtemplate.v4.misc.ErrorManager;
-import org.stringtemplate.v4.misc.STNoSuchPropertyException;
+import org.stringtemplate.v4.debug.AddAttributeEvent;
+import org.stringtemplate.v4.debug.ConstructionEvent;
+import org.stringtemplate.v4.debug.EvalTemplateEvent;
+import org.stringtemplate.v4.debug.InterpEvent;
+import org.stringtemplate.v4.gui.STViz;
+import org.stringtemplate.v4.misc.*;
 
 import java.io.*;
 import java.util.*;
@@ -51,6 +54,38 @@ public class ST {
 
 	/** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
     public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT }
+
+	/** Events during template hierarchy construction (not evaluation) */
+	public static class DebugState {
+		/** Record who made us? ConstructionEvent creates Exception to grab stack */
+		public ConstructionEvent newSTEvent;
+
+		/** Track construction-time add attribute "events"; used for ST user-level debugging */
+		public MultiMap<String, AddAttributeEvent> addAttrEvents = new MultiMap<String, AddAttributeEvent>();
+	}
+
+	/** Track all events that happen while evaluating this template */
+	public static class InterpDebugState {
+		/* Includes the EvalTemplateEvent for this template.  This
+		*  is a subset of Interpreter.events field. The final
+		*  EvalTemplateEvent is stored in 3 places:
+		*
+		*  	1. In enclosingInstance's childTemplateEvents
+		*  	2. In this event list
+		*  	3. In the overall event list
+		*
+		*  The root ST has the final EvalTemplateEvent in its list.
+		*
+		*  All events get added to the enclosingInstance's event list.
+		*/
+		public List<InterpEvent> events = new ArrayList<InterpEvent>();
+
+		/** All templates evaluated and embedded in this ST. Used
+		 *  for tree view in STViz.
+		 */
+		public List<EvalTemplateEvent> childEvalTemplateEvents =
+			new ArrayList<EvalTemplateEvent>();
+	}
 
     public static final String UNKNOWN_NAME = "anonymous";
 	public static final Object EMPTY_ATTR = new Object();
@@ -73,8 +108,7 @@ public class ST {
     /** Enclosing instance if I'm embedded within another template.
      *  IF-subtemplates are considered embedded as well. We look up
 	 *  dynamically scoped attributes with this ptr.  Set only at
-	 *  ST creation time not evaluation.  Dictionary templates are
-	 *  cloned.
+	 *  evaluation time.
      */
     public ST enclosingInstance; // who's your daddy?
 
@@ -96,6 +130,11 @@ public class ST {
      */
     public STGroup groupThatCreatedThisInstance;
 
+	/** If Interpreter.trackCreationEvents, track creation, add-attr events
+	 *  for each object. Create this object on first use.
+	 */
+	public DebugState debugState;
+
 	/** Just an alias for ArrayList, but this way I can track whether a
      *  list is something ST created or it's an incoming list.
      */
@@ -106,6 +145,10 @@ public class ST {
 
 	/** Used by group creation routine, not by users */
     public ST() {
+		if ( STGroup.trackCreationEvents ) {
+			if ( debugState==null ) debugState = new ST.DebugState();
+			debugState.newSTEvent = new ConstructionEvent();
+		}
 	}
 
 	/** Used to make templates inline in code for simple things like SQL or log records.
@@ -124,21 +167,25 @@ public class ST {
     }
 
     public ST(STGroup group, String template) {
-        groupThatCreatedThisInstance = group;
-        impl = groupThatCreatedThisInstance.compile(group.getFileName(), null,
+		this();
+		groupThatCreatedThisInstance = group;
+		impl = groupThatCreatedThisInstance.compile(group.getFileName(), null,
 													null, template, null);
 		impl.hasFormalArgs = false;
-        impl.name = UNKNOWN_NAME;
-        impl.defineImplicitlyDefinedTemplates(groupThatCreatedThisInstance);
+		impl.name = UNKNOWN_NAME;
+		impl.defineImplicitlyDefinedTemplates(groupThatCreatedThisInstance);
     }
 
-	/** Clone a prototype template for application in MAP operations; copy all fields */
+	/** Clone a prototype template for application in MAP operations;
+	 *  copy all fields minus debugState; don't call this(), which creates
+	 *  ctor event
+	 */
 	public ST(ST proto) {
 		this.impl = proto.impl;
 		if ( proto.locals!=null ) {
 			this.locals = Arrays.copyOf(proto.locals, proto.locals.length);
 		}
-		this.enclosingInstance = proto.enclosingInstance;
+		//this.enclosingInstance = proto.enclosingInstance;
 		this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
 	}
 
@@ -152,10 +199,15 @@ public class ST {
 	 *  Return self so we can chain.  t.add("x", 1).add("y", "hi");
      */
     public synchronized ST add(String name, Object value) {
-        if ( name==null ) return this; // allow null value
+        if ( name==null ) return this; // allow null value but not name
         if ( name.indexOf('.')>=0 ) {
             throw new IllegalArgumentException("cannot have '.' in attribute names");
         }
+
+		if ( STGroup.trackCreationEvents ) {
+			if ( debugState==null ) debugState = new ST.DebugState();
+			debugState.addAttrEvents.map(name, new AddAttributeEvent(name, value));
+		}
 
 		FormalArgument arg = null;
 		if ( impl.hasFormalArgs ) {
@@ -177,8 +229,6 @@ public class ST {
 				locals[arg.index] = EMPTY_ATTR;
 			}
 		}
-
-		if ( value instanceof ST ) ((ST)value).enclosingInstance = this;
 
 		Object curvalue = locals[arg.index];
         if ( curvalue==EMPTY_ATTR ) { // new attribute
@@ -209,12 +259,12 @@ public class ST {
 	/** Split "aggrName.{propName1,propName2}" into list [propName1,propName2]
 	 *  and the aggrName. Spaces are allowed around ','.
 	 */
-	public synchronized ST add(String aggrSpec, Object... values) {
+	public synchronized ST addAggr(String aggrSpec, Object... values) {
+		int dot = aggrSpec.indexOf(".{");
 		if ( values==null || values.length==0 ) {
 			throw new IllegalArgumentException("missing values for aggregate attribute format: "+
 											   aggrSpec);
 		}
-		int dot = aggrSpec.indexOf(".{");
 		int finalCurly = aggrSpec.indexOf('}');
 		if ( dot<0 || finalCurly>=aggrSpec.length() ) {
 			throw new IllegalArgumentException("invalid aggregate attribute format: "+
@@ -235,7 +285,10 @@ public class ST {
 		}
 		int i=0;
 		Aggregate aggr = new Aggregate();
-		for (String p : propNames) aggr.properties.put(p, values[i++]);
+		for (String p : propNames) {
+			Object v = values[i++];
+			aggr.properties.put(p, v);
+		}
 
 		add(aggrName, aggr); // now add as usual
 		return this;
@@ -373,7 +426,8 @@ public class ST {
 
 	public int write(STWriter out) throws IOException {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
-											 impl.nativeGroup.errMgr);
+											 impl.nativeGroup.errMgr,
+											 false);
 		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
     }
@@ -381,14 +435,16 @@ public class ST {
 	public int write(STWriter out, Locale locale) {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
 											 locale,
-											 impl.nativeGroup.errMgr);
+											 impl.nativeGroup.errMgr,
+											 false);
 		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
 	}
 
 	public int write(STWriter out, STErrorListener listener) {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
-											 new ErrorManager(listener));
+											 new ErrorManager(listener),
+											 false);
 		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
 	}
@@ -396,7 +452,8 @@ public class ST {
 	public int write(STWriter out, Locale locale, STErrorListener listener) {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
 											 locale,
-											 new ErrorManager(listener));
+											 new ErrorManager(listener),
+											 false);
 		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
 	}
@@ -453,6 +510,51 @@ public class ST {
         wr.setLineWidth(lineWidth);
         write(wr, locale);
         return out.toString();
+    }
+
+	// LAUNCH A WINDOW TO INSPECT TEMPLATE HIERARCHY
+
+    public STViz inspect() { return inspect(Locale.getDefault()); }
+
+    public STViz inspect(int lineWidth) {
+		return inspect(impl.nativeGroup.errMgr, Locale.getDefault(), lineWidth);
+	}
+
+    public STViz inspect(Locale locale) {
+		return inspect(impl.nativeGroup.errMgr, locale, STWriter.NO_WRAP);
+	}
+
+	public STViz inspect(ErrorManager errMgr, Locale locale, int lineWidth) {
+		ErrorBuffer errors = new ErrorBuffer();
+		impl.nativeGroup.setListener(errors);
+		StringWriter out = new StringWriter();
+		STWriter wr = new AutoIndentWriter(out);
+		wr.setLineWidth(lineWidth);
+		Interpreter interp =
+			new Interpreter(groupThatCreatedThisInstance, locale, true);
+		interp.exec(wr, this); // render and track events
+		STViz viz = new STViz(errMgr, this, out.toString(), interp,
+							  interp.getExecutionTrace(), errors.errors);
+		viz.open();
+		return viz;
+	}
+
+	// TESTING SUPPORT
+
+	public List<InterpEvent> getEvents() { return getEvents(Locale.getDefault()); }
+
+    public List<InterpEvent> getEvents(int lineWidth) { return getEvents(Locale.getDefault(), lineWidth); }
+
+    public List<InterpEvent> getEvents(Locale locale) { return getEvents(locale, STWriter.NO_WRAP); }
+
+    public List<InterpEvent> getEvents(Locale locale, int lineWidth) {
+        StringWriter out = new StringWriter();
+        STWriter wr = new AutoIndentWriter(out);
+        wr.setLineWidth(lineWidth);
+        Interpreter interp =
+			new Interpreter(groupThatCreatedThisInstance, locale, true);
+        interp.exec(wr, this); // render and track events
+        return interp.getEvents();
     }
 
     public String toString() {

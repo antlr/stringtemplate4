@@ -27,10 +27,12 @@
  */
 package org.stringtemplate.v4.debug;
 
+import org.stringtemplate.v4.ST;
+
 public class EvalExprEvent extends InterpEvent {
     public final int exprStartChar, exprStopChar; // template pattern location
     public final String expr;
-    public EvalExprEvent(DebugST self, int start, int stop,
+    public EvalExprEvent(ST self, int start, int stop,
                          int exprStartChar, int exprStopChar)
     {
         super(self, start, stop);

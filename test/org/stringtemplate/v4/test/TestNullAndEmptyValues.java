@@ -28,10 +28,14 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.AutoIndentWriter;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
@@ -219,7 +223,7 @@ public class TestNullAndEmptyValues extends BaseTest {
 		ST st = new ST(
 			"<values; separator=\" \">"
 		);
-		st.add("values", new String[] {"x", "", "y"});
+		st.add("values", new String[]{"x", "", "y"});
 		StringWriter sw = new StringWriter();
 		st.write(new AutoIndentWriter(sw));
 		String result = sw.toString();

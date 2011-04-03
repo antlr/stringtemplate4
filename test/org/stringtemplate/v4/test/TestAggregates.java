@@ -41,8 +41,8 @@ public class TestAggregates extends BaseTest {
 		ST st =
 			new ST("<items:{it|<it.id>: <it.lastName>, <it.firstName>\n}>");
 		// also testing wacky spaces in aggregate spec
-		st.add("items.{ firstName ,lastName, id }", "Ter", "Parr", 99);
-		st.add("items.{firstName, lastName ,id}", "Tom", "Burns", 34);
+		st.addAggr("items.{ firstName ,lastName, id }", "Ter", "Parr", 99);
+		st.addAggr("items.{firstName, lastName ,id}", "Tom", "Burns", 34);
 		String expecting =
 			"99: Parr, Ter"+newline +
 			"34: Burns, Tom"+newline;
@@ -69,8 +69,8 @@ public class TestAggregates extends BaseTest {
 			;
 		STGroup group = new STGroupString(templates);
 		ST f = group.getInstanceOf("file");
-		f.add("variables.{ decl,format }", new Decl("i","int"), "intdecl");
-		f.add("variables.{decl ,  format}", new Decl("a","int-array"), "intarray");
+		f.addAggr("variables.{ decl,format }", new Decl("i", "int"), "intdecl");
+		f.addAggr("variables.{decl ,  format}", new Decl("a", "int-array"), "intarray");
 		//System.out.println("f='"+f+"'");
 		String expecting = "int i = 0;" +newline+
 						   "int[] a = null;";

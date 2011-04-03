@@ -112,7 +112,7 @@ public class TestLineWrap extends BaseTest {
 
 		org.stringtemplate.v4.ST a = group.getInstanceOf("func");
 		a.add("args",
-					   new String[] {"a","b","c","d","e","f"});
+				  new String[]{"a", "b", "c", "d", "e", "f"});
 		String expecting =
 			"       FUNCTION line( a,b,c,d,\n" +
 			"      ce,f )";
@@ -145,7 +145,7 @@ public class TestLineWrap extends BaseTest {
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
 		org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
-		a.add("chars", new String[] {"a","b","c","d","e"});
+		a.add("chars", new String[]{"a", "b", "c", "d", "e"});
 		// lineWidth==3 implies that we can have 3 characters at most
 		String expecting =
 			"abc\n"+
@@ -160,7 +160,7 @@ public class TestLineWrap extends BaseTest {
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
 		org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
-		a.add("chars", new String[] {"a","b","\n","d","e"});
+		a.add("chars", new String[]{"a", "b", "\n", "d", "e"});
 		// don't do \n if it's last element anyway
 		String expecting =
 			"ab\n"+
@@ -175,7 +175,7 @@ public class TestLineWrap extends BaseTest {
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
 		org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
-		a.add("chars", new String[] {"a","b","c","\n","d","e"});
+		a.add("chars", new String[]{"a", "b", "c", "\n", "d", "e"});
 		// Once we wrap, we must dump chars as we see them.  A newline right
 		// after a wrap is just an "unfortunate" event.  People will expect
 		// a newline if it's in the data.
@@ -258,7 +258,7 @@ public class TestLineWrap extends BaseTest {
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
 		org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
-		a.add("chars", new String[] {"a","b","c","d","e"});
+		a.add("chars", new String[]{"a", "b", "c", "d", "e"});
 		//
 		String expecting =
 			"    a\n" +
@@ -276,7 +276,7 @@ public class TestLineWrap extends BaseTest {
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
 		org.stringtemplate.v4.ST a = group.getInstanceOf("duh");
-		a.add("chars", new String[] {"a","b","c","d","e"});
+		a.add("chars", new String[]{"a", "b", "c", "d", "e"});
 		//
 		String expecting =
 			"    ab\n" +
@@ -295,7 +295,7 @@ public class TestLineWrap extends BaseTest {
 
 		org.stringtemplate.v4.ST top = group.getInstanceOf("top");
 		org.stringtemplate.v4.ST duh = group.getInstanceOf("duh");
-		duh.add("chars", new String[] {"a","b","c","d","e"});
+		duh.add("chars", new String[]{"a", "b", "c", "d", "e"});
 		top.add("d", duh);
 		String expecting =
 			"    ab\n" +
@@ -314,7 +314,7 @@ public class TestLineWrap extends BaseTest {
 
 		org.stringtemplate.v4.ST top = group.getInstanceOf("top");
 		org.stringtemplate.v4.ST duh = group.getInstanceOf("duh");
-		duh.add("chars", new String[] {"a","b","c","d","e"});
+		duh.add("chars", new String[]{"a", "b", "c", "d", "e"});
 		top.add("d", duh);
 		//
 		String expecting =
@@ -332,7 +332,7 @@ public class TestLineWrap extends BaseTest {
 
 		org.stringtemplate.v4.ST a = group.getInstanceOf("m");
 		a.add("args",
-					   new String[] {"a", "b", "c"});
+				  new String[]{"a", "b", "c"});
 		a.add("body", "i=3;");
 		// make it wrap because of ") throws Ick { " literal
 		int n = "@Test public voidfoo(a, b, c".length();

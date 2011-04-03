@@ -184,7 +184,6 @@ public class TestInterptimeErrors extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
-        STGroup.debug = true;
         ST st = group.getInstanceOf("t");
         st.render();
         String expected = "context [t u] 1:1 attribute x isn't defined"+newline;

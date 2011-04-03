@@ -137,12 +137,9 @@ public class Compiler {
 			impl = gen.template(name,args);
 			impl.nativeGroup = group;
 			impl.template = template;
-			// only save tree/token stream when debugging
-			if ( STGroup.debug ) {
-				impl.ast = (CommonTree)r.getTree();
-				impl.ast.setUnknownTokenBoundaries();
-				impl.tokens = tokens;
-			}
+			impl.ast = (CommonTree)r.getTree();
+			impl.ast.setUnknownTokenBoundaries();
+			impl.tokens = tokens;
 		}
 		catch (RecognitionException re) {
 			group.errMgr.internalError(null, "bad tree structure", re);

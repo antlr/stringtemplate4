@@ -27,10 +27,12 @@
  */
 package org.stringtemplate.v4.debug;
 
+import org.stringtemplate.v4.ST;
+
 public class InterpEvent {
-    public final DebugST self;
+    public final ST self;
     public final int outputStartChar, outputStopChar; // output location
-    public InterpEvent(DebugST self, int outputStartChar, int outputStopChar) {
+    public InterpEvent(ST self, int outputStartChar, int outputStopChar) {
         this.self = self;
         this.outputStartChar = outputStartChar;
         this.outputStopChar = outputStopChar;

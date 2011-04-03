@@ -30,12 +30,8 @@ package org.stringtemplate.v4.gui;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeAdaptor;
-import org.stringtemplate.v4.Interpreter;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.debug.AddAttributeEvent;
-import org.stringtemplate.v4.debug.DebugST;
 import org.stringtemplate.v4.debug.EvalTemplateEvent;
 import org.stringtemplate.v4.debug.InterpEvent;
 import org.stringtemplate.v4.misc.*;
@@ -56,7 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 public class STViz {
-	public DebugST currentST; // current ST selected in template tree
+	public ST currentST; // current ST selected in template tree
 	public List<InterpEvent> allEvents;
 	public JTreeSTModel tmodel;
 	public ErrorManager errMgr;
@@ -68,7 +64,7 @@ public class STViz {
 	public STViewFrame viewFrame;
 
     public STViz(ErrorManager errMgr,
-				 DebugST root,
+				 ST root,
 				 String output,
 				 Interpreter interp,
                  List<String> trace,
@@ -88,12 +84,13 @@ public class STViz {
         updateStack(currentST, viewFrame);
         updateAttributes(currentST, viewFrame);
 
-        tmodel = new JTreeSTModel(interp, currentST);
+		List<InterpEvent> events = interp.getDebugState(currentST).events;
+		tmodel = new JTreeSTModel(interp, (EvalTemplateEvent)events.get(events.size()-1));
         viewFrame.tree.setModel(tmodel);
         viewFrame.tree.addTreeSelectionListener(
             new TreeSelectionListener() {
                 public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
-                    currentST = ((JTreeSTModel.Wrapper) viewFrame.tree.getLastSelectedPathComponent()).st;
+                    currentST = ((JTreeSTModel.Wrapper)viewFrame.tree.getLastSelectedPathComponent()).event.self;
                     updateCurrentST(viewFrame);
                 }
             }
@@ -107,7 +104,7 @@ public class STViz {
 					TreePath path = treeSelectionEvent.getNewLeadSelectionPath();
 					if ( path==null ) return;
 					CommonTree node = (CommonTree)treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
-					System.out.println("select AST: "+node);
+//					System.out.println("select AST: "+node);
 					CommonToken a = (CommonToken)currentST.impl.tokens.get(node.getTokenStartIndex());
 					CommonToken b = (CommonToken)currentST.impl.tokens.get(node.getTokenStopIndex());
 					highlight(viewFrame.template, a.getStartIndex(), b.getStopIndex());
@@ -140,7 +137,7 @@ public class STViz {
             public void caretUpdate(CaretEvent e) {
                 int dot = e.getDot();
                 InterpEvent de = findEventAtOutputLocation(allEvents, dot);
-                if ( de==null ) currentST = tmodel.root.st;
+                if ( de==null ) currentST = tmodel.root.event.self;
                 else currentST = de.self;
                 updateCurrentST(viewFrame);
             }
@@ -150,7 +147,7 @@ public class STViz {
 
         viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         viewFrame.pack();
-        viewFrame.setSize(800,600);
+        viewFrame.setSize(900,700);
         viewFrame.topSplitPane.setBorder(null);
         viewFrame.overallSplitPane.setBorder(null);
 
@@ -181,7 +178,7 @@ public class STViz {
                     if ( msg instanceof STRuntimeMessage ) {
                         STRuntimeMessage rmsg = (STRuntimeMessage)msg;
                         Interval I = rmsg.self.impl.sourceMap[rmsg.ip];
-                        currentST = (DebugST)msg.self;
+                        currentST = (ST)msg.self;
                         updateCurrentST(viewFrame);
                         if ( I!=null ) { // highlight template
                             highlight(viewFrame.template, I.a, I.b);
@@ -200,33 +197,36 @@ public class STViz {
     }
 
 	private void updateCurrentST(STViewFrame m) {
-		updateStack(currentST, m);
-		updateAttributes(currentST, m);
-        m.bytecode.setText(currentST.impl.disasm());
-		JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentST.impl.ast);
-		m.ast.setModel(astModel);
+//		System.out.println("updateCurrentST(): currentST="+currentST);
+		// update all views according to currentST
+		updateStack(currentST, m); 					 // STACK
+		updateAttributes(currentST, m); 			 // ATTRIBUTES
+		m.bytecode.moveCaretPosition(0);
+        m.bytecode.setText(currentST.impl.disasm()); // BYTECODE DIS.
+		m.template.moveCaretPosition(0);
+		m.template.setText(currentST.impl.template); // TEMPLATE SRC
 
-		List<ST> pathST = currentST.getEnclosingInstanceStack(true);
-		Object[] path = new Object[pathST.size()];
-		int j = 0;
-		for (ST s : pathST) path[j++] = new JTreeSTModel.Wrapper((DebugST)s);
+		// update tree view of template hierarchy and select assoc. text substring
 
-		m.tree.setSelectionPath(new TreePath(path));
+		// compute path from root to currentST, create TreePath for tree widget
+//		List<ST> pathST = currentST.getEnclosingInstanceStack(true);
+////		System.out.println("path="+pathST);
+//		Object[] path = new Object[pathST.size()];
+//		int j = 0;
+//		for (ST s : pathST) path[j++] = new JTreeSTModel.Node(s, interp.getDebugState(s));
+//		m.tree.setSelectionPath(new TreePath(path));
 
-		m.template.setText(currentST.impl.template);
-		Interval r = currentST.impl.getTemplateRange();
-		if ( currentST.enclosingInstance!=null ) {
-			int i = tmodel.getIndexOfChild((DebugST)currentST.enclosingInstance, currentST);
-			InterpEvent e = interp.getEvents(currentST.enclosingInstance).get(i);
-			if ( e instanceof EvalTemplateEvent) {
-				if ( currentST.isAnonSubtemplate() ) {
-					highlight(m.template, r.a, r.b);
-				}
-				highlight(m.output, e.outputStartChar, e.outputStopChar);
-			}
-		}
-		else {
-			highlight(m.output, r.a, r.b);
+		// highlight output text and, if {...} subtemplate, region in ST src
+		// get last event for currentST; it's the event that captures ST eval
+		List<InterpEvent> events = interp.getDebugState(currentST).events;
+		EvalTemplateEvent e = (EvalTemplateEvent)events.get(events.size() - 1);
+		m.output.moveCaretPosition(e.outputStartChar);
+		highlight(m.output, e.outputStartChar, e.outputStopChar);
+		if ( currentST.isAnonSubtemplate() ) {
+			Interval r = currentST.impl.getTemplateRange();
+//				System.out.println("currentST src range="+r);
+			m.template.moveCaretPosition(r.a);
+			highlight(m.template, r.a, r.b);
 		}
 	}
 
@@ -238,11 +238,11 @@ public class STViz {
 			highlighter.addHighlight(i, j+1, DefaultHighlighter.DefaultPainter);
 		}
 		catch (BadLocationException ble) {
-			errMgr.internalError(tmodel.root.st, "bad highlight location", ble);
+			errMgr.internalError(tmodel.root.event.self, "bad highlight location", ble);
 		}
 	}
 
-	protected void updateAttributes(final DebugST st, final STViewFrame m) {
+	protected void updateAttributes(final ST st, final STViewFrame m) {
 		//System.out.println("add events="+ st.addAttrEvents);
 		final DefaultListModel attrModel = new DefaultListModel();
 		final Map<String,Object> attrs = st.getAttributes();
@@ -254,29 +254,34 @@ public class STViz {
 		}
 		 */
 		if ( attrs!=null ) {
-            for (String a : attrs.keySet()) {
-            if (st.addAttrEvents !=null ) {
-                List<AddAttributeEvent> events = st.addAttrEvents.get(a);
-                StringBuilder locations = new StringBuilder();
-                int i = 0;
-                if ( events!=null ) {
-                    for (AddAttributeEvent ae : events) {
-                        if ( i>0 ) locations.append(", ");
-                        locations.append(ae.getFileName()+":"+ae.getLine());
-                        i++;
-                    }
-                }
-                attrModel.addElement(a+" = "+attrs.get(a)+" @ "+locations.toString());
-            }
-            else {
-                attrModel.addElement(a+" = "+attrs.get(a));
-            }
-        }
-        }
-        m.attributes.setModel(attrModel);
+			for (String a : attrs.keySet()) {
+				if ( st.debugState!=null && st.debugState.addAttrEvents!=null ) {
+					List<AddAttributeEvent> events = st.debugState.addAttrEvents.get(a);
+					StringBuilder locations = new StringBuilder();
+					int i = 0;
+					if ( events!=null ) {
+						for (AddAttributeEvent ae : events) {
+							if ( i>0 ) locations.append(", ");
+							locations.append(ae.getFileName()+":"+ae.getLine());
+							i++;
+						}
+					}
+					if ( locations.length()>0 ) {
+						attrModel.addElement(a+" = "+attrs.get(a)+" @ "+locations.toString());
+					}
+					else {
+						attrModel.addElement(a+" = "+attrs.get(a));
+					}
+				}
+				else {
+					attrModel.addElement(a+" = "+attrs.get(a));
+				}
+			}
+		}
+		m.attributes.setModel(attrModel);
 	}
 
-	protected void updateStack(DebugST st, STViewFrame m) {
+	protected void updateStack(ST st, STViewFrame m) {
 		List<ST> stack = st.getEnclosingInstanceStack(true);
 		m.setTitle("STViz - ["+ Misc.join(stack.iterator()," ")+"]");
 //        // also do source stack
@@ -299,7 +304,8 @@ public class STViz {
     public static void main(String[] args) throws IOException { // test rig
 		if ( args.length>0 && args[0].equals("1") ) test1();
 		else if ( args.length>0 && args[0].equals("2") ) test2();
-		else test3();
+		else if ( args.length>0 && args[0].equals("3") ) test3();
+		else if ( args.length>0 && args[0].equals("4") ) test4();
 	}
 
 	public static void test1() throws IOException { // test rig
@@ -317,13 +323,12 @@ public class STViz {
         String tmpdir = System.getProperty("java.io.tmpdir");
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        STGroup.debug = true;
         ST st = group.getInstanceOf("method");
         st.impl.dump();
         st.add("type", "float");
         st.add("name", "foo");
         st.add("locals", 3);
-        st.add("args", new String[] {"x", "y", "z"});
+        st.add("args", (Object)new String[] {"x", "y", "z"});
         ST s1 = group.getInstanceOf("assign");
         ST paren = group.getInstanceOf("paren");
         paren.add("x", "x");
@@ -338,8 +343,8 @@ public class STViz {
         st.add("stats", s2);
         st.add("stats", s3);
 
-		STViz viz = ((DebugST)st).inspect();
-		System.out.println(st.render());
+		STViz viz = st.inspect();
+		System.out.println(st.render()); // should not mess up ST event lists
     }
 
 	public static void test2() throws IOException { // test rig
@@ -361,9 +366,8 @@ public class STViz {
         String tmpdir = System.getProperty("java.io.tmpdir");
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        STGroup.debug = true;
         ST st = group.getInstanceOf("main");
-        STViz viz = ((DebugST)st).inspect();
+        STViz viz = st.inspect();
     }
 
 	public static void test3() throws IOException {
@@ -375,12 +379,28 @@ public class STViz {
         String tmpdir = System.getProperty("java.io.tmpdir");
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        STGroup.debug = true;
         ST st = group.getInstanceOf("main");
-        ((DebugST)st).inspect();
+        st.inspect();
     }
 
+	public static void test4() throws IOException {
+        String templates =
+			"main(t) ::= <<\n" +
+			"hi: <t>\n" +
+			">>\n" +
+			"foo(x,y={hi}) ::= \"<bar(x,y)>\"\n" +
+			"bar(x,y) ::= << <y> >>\n" +
+			"ignore(m) ::= \"<m>\"\n";
 
+        STGroup group = new STGroupString(templates);
+        ST st = group.getInstanceOf("main");
+		ST foo = group.getInstanceOf("foo");
+		st.add("t", foo);
+		ST ignore = group.getInstanceOf("ignore");
+		ignore.add("m", foo); // embed foo twice!
+        st.inspect();
+		st.render();
+    }
 
     public static void writeFile(String dir, String fileName, String content) {
         try {

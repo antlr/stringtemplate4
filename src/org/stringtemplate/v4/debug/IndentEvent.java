@@ -28,8 +28,10 @@
 
 package org.stringtemplate.v4.debug;
 
+import org.stringtemplate.v4.ST;
+
 public class IndentEvent extends EvalExprEvent {
-	public IndentEvent(DebugST self, int start, int stop, int exprStartChar, int exprStopChar) {
+	public IndentEvent(ST self, int start, int stop, int exprStartChar, int exprStopChar) {
 		super(self, start, stop, exprStartChar, exprStopChar);
 	}
 }

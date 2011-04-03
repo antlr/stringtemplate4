@@ -222,11 +222,9 @@ subtemplate returns [String name, int nargs]
 			CompiledST sub = $template.impl;
 			sub.isAnonSubtemplate = true;
 	        sub.templateDefStartToken = $SUBTEMPLATE.token;
-			if ( STGroup.debug ) {
-				sub.ast = $SUBTEMPLATE;
-				sub.ast.setUnknownTokenBoundaries();
-				sub.tokens = input.getTokenStream();
-			}
+            sub.ast = $SUBTEMPLATE;
+            sub.ast.setUnknownTokenBoundaries();
+            sub.tokens = input.getTokenStream();
 			//sub.dump();
 			outermostImpl.addImplicitlyDefinedTemplate(sub);
 			}

@@ -99,7 +99,6 @@ public class BaseTest {
     public void setUp() {
         STGroup.defaultGroup = new STGroup();
         Compiler.subtemplateCount = 0;
-		STGroup.debug = false;
     }
 
 	public void writeTestFile(String main, String dirName) {

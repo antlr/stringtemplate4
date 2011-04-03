@@ -27,8 +27,10 @@
  */
 package org.stringtemplate.v4.debug;
 
+import org.stringtemplate.v4.ST;
+
 public class EvalTemplateEvent extends InterpEvent {
-    public EvalTemplateEvent(DebugST self, int exprStartChar, int exprStopChar) {
+    public EvalTemplateEvent(ST self, int exprStartChar, int exprStopChar) {
         super(self, exprStartChar, exprStopChar);
     }
 }
