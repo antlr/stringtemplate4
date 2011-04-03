@@ -34,6 +34,7 @@ import java.util.Map;
 
 /** Deal with structs created via ST.add("structname.{prop1, prop2}", ...); */
 public class AggregateModelAdaptor extends MapModelAdaptor {
+	@Override
 	public Object getProperty(ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{

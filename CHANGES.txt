@@ -7,6 +7,17 @@ University of San Francisco
 
 CHANGES
 
+April 3, 2011
+
+* ST.getAttribute() only looks in that template now. Can't look up
+  since it doesn't know what interp is executing. It's just to get
+  an attr out of a template now.  Moved dynamically scope getAttribute()
+  to Interpreter.
+* STRuntimeMessage takes an Interpreter interp arg now.
+* ST dropped some weight.  No need for enclosingInstance ptr now. That is
+  properly done in interpreter as a stack of scopes.  Now, there is no
+  side-effect whatsoever in ST instances for execution. THREAD SAFE eval now.
+
 March 30 - April 2, 2011
 
 * ST.inspect() now returns an STViz, which has all the goodies and gives

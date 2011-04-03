@@ -70,7 +70,7 @@ public class ST {
 		*  is a subset of Interpreter.events field. The final
 		*  EvalTemplateEvent is stored in 3 places:
 		*
-		*  	1. In enclosingInstance's childTemplateEvents
+		*  	1. In enclosing instance's childTemplateEvents
 		*  	2. In this event list
 		*  	3. In the overall event list
 		*
@@ -104,13 +104,6 @@ public class ST {
 	 *  to distinguish null from empty.
 	 */
 	protected Object[] locals;
-
-    /** Enclosing instance if I'm embedded within another template.
-     *  IF-subtemplates are considered embedded as well. We look up
-	 *  dynamically scoped attributes with this ptr.  Set only at
-	 *  evaluation time.
-     */
-    public ST enclosingInstance; // who's your daddy?
 
     /** Created as instance of which group? We need this to init interpreter
      *  via render.  So, we create st and then it needs to know which
@@ -324,33 +317,17 @@ public class ST {
 		locals[arg.index] = value;
 	}
 
-    /** Find an attr via dynamic scoping up enclosing ST chain.
-     *  If not found, look for a map.  So attributes sent in to a template
-     *  override dictionary names.
-     */
-    public Object getAttribute(String name) {
-        ST p = this;
-        while ( p!=null ) {
-			FormalArgument localArg = null;
-			if ( p.impl.formalArguments!=null ) localArg = p.impl.formalArguments.get(name);
-            if ( localArg!=null ) {
-				Object o = p.locals[localArg.index];
-				if ( o==ST.EMPTY_ATTR ) o = null;
-				return o;
-			}
-            p = p.enclosingInstance;
-        }
-		// got to root template and no definition, try dictionaries in group
-        if ( impl.nativeGroup.isDictionary(name) ) {
-			return impl.nativeGroup.rawGetDictionary(name);
+	/** Find an attr in this template only. */
+	public Object getAttribute(String name) {
+		FormalArgument localArg = null;
+		if ( impl.formalArguments!=null ) localArg = impl.formalArguments.get(name);
+		if ( localArg!=null ) {
+			Object o = locals[localArg.index];
+			if ( o==ST.EMPTY_ATTR ) o = null;
+			return o;
 		}
-		// not found, report unknown attr unless formal args unknown
-		if ( cachedNoSuchPropException ==null ) {
-			cachedNoSuchPropException = new STNoSuchPropertyException();
-		}
-		cachedNoSuchPropException.propertyName = name;
-		throw cachedNoSuchPropException;
-    }
+		return null;
+	}
 
     public Map<String, Object> getAttributes() {
 		if ( impl.formalArguments==null ) return null;
@@ -391,33 +368,6 @@ public class ST {
             multi.add(curvalue);                 // add previous single-valued attribute
         }
         return multi;
-    }
-
-    /** If an instance of x is enclosed in a y which is in a z, return
-     *  a String of these instance names in order from topmost to lowest;
-     *  here that would be "[z y x]".
-     */
-    public String getEnclosingInstanceStackString() {
-        List<ST> templates = getEnclosingInstanceStack(true);
-        StringBuilder buf = new StringBuilder();
-        int i = 0;
-        for (ST st : templates) {
-            if ( i>0 ) buf.append(" ");
-            buf.append(st.getName());
-            i++;
-        }
-        return buf.toString();
-    }
-
-    public List<ST> getEnclosingInstanceStack(boolean topdown) {
-        List<ST> stack = new LinkedList<ST>();
-        ST p = this;
-        while ( p!=null ) {
-            if ( topdown ) stack.add(0,p);
-            else stack.add(p);
-            p = p.enclosingInstance;
-        }
-        return stack;
     }
 
     public String getName() { return impl.name; }

@@ -282,7 +282,7 @@ public class STViz {
 	}
 
 	protected void updateStack(ST st, STViewFrame m) {
-		List<ST> stack = st.getEnclosingInstanceStack(true);
+		List<ST> stack = interp.getEnclosingInstanceStack(true);
 		m.setTitle("STViz - ["+ Misc.join(stack.iterator()," ")+"]");
 //        // also do source stack
 //        StackTraceElement[] trace = st.newSTEvent.stack.getStackTrace();

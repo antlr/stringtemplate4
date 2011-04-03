@@ -61,6 +61,15 @@ import java.util.*;
 public class Interpreter {
 	public enum Option { ANCHOR, FORMAT, NULL, SEPARATOR, WRAP }
 
+	public static class InstanceScope {
+		InstanceScope parent;
+		public ST st;
+		public InstanceScope(InstanceScope parent, ST st) {
+			this.parent = parent;
+			this.st = st;
+		}
+	}
+	
 	public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
 	public static final Set<String> predefinedAnonSubtemplateAttributes =
@@ -71,6 +80,11 @@ public class Interpreter {
 	int sp = -1;        // stack pointer register
 	int current_ip = 0; // mirrors ip in exec(), but visible to all methods
 	int nwline = 0;     // how many char written on this template LINE so far?
+
+	/** Stack of enclosing instances (scopes).  Used for dynamic scoping
+	 *  of attributes.
+	 */
+	InstanceScope currentScope = null;
 
 	/** Exec st with respect to this group. Once set in ST.toString(),
 	 *  it should be fixed. ST has group also.
@@ -137,11 +151,15 @@ public class Interpreter {
 	/** Execute template self and return how many characters it wrote to out */
 	public int exec(STWriter out, ST self) {
 		int save = current_ip;
+		currentScope = new InstanceScope(currentScope, self); // push scope
 		try {
 			int n = _exec(out, self);
 			return n;
 		}
-		finally {current_ip = save;}
+		finally {
+			currentScope = currentScope.parent; // pop scope
+			current_ip = save;
+		}
 	}
 
 	protected int _exec(STWriter out, ST self) {
@@ -179,9 +197,9 @@ public class Interpreter {
 					nameIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = self.impl.strings[nameIndex];
-					try {o = self.getAttribute(name);}
+					try {o = getAttribute(self, name);}
 					catch (STNoSuchPropertyException nspe) {
-						errMgr.runTimeError(self, current_ip, ErrorType.NO_SUCH_ATTRIBUTE, name);
+						errMgr.runTimeError(this, self, current_ip, ErrorType.NO_SUCH_ATTRIBUTE, name);
 						o = null;
 					}
 					operands[++sp] = o;
@@ -213,7 +231,7 @@ public class Interpreter {
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					// look up in original hierarchy not enclosing template (variable group)
 					// see TestSubtemplates.testEvalSTFromAnotherGroup()
-					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, ip, name);
+					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, self, ip, name);
 					// get n args and store into st's attr list
 					storeArgs(self, nargs, st);
 					sp -= nargs;
@@ -223,7 +241,7 @@ public class Interpreter {
 					nargs = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = (String)operands[sp-nargs];
-					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, ip, name);
+					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, self, ip, name);
 					storeArgs(self, nargs, st);
 					sp -= nargs;
 					sp--; // pop template name
@@ -236,7 +254,7 @@ public class Interpreter {
 					Map<String,Object> attrs = (Map<String,Object>)operands[sp--];
 					// look up in original hierarchy not enclosing template (variable group)
 					// see TestSubtemplates.testEvalSTFromAnotherGroup()
-					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(self, ip, name);
+					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, self, ip, name);
 					// get n args and store into st's attr list
 					storeArgs(self, attrs, st);
 					operands[++sp] = st;
@@ -355,7 +373,7 @@ public class Interpreter {
 						operands[++sp] = ((String)o).trim();
 					}
 					else {
-						errMgr.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "trim", o.getClass().getName());
+						errMgr.runTimeError(this, self, current_ip, ErrorType.EXPECTING_STRING, "trim", o.getClass().getName());
 						operands[++sp] = o;
 					}
 					break;
@@ -368,7 +386,7 @@ public class Interpreter {
 						operands[++sp] = ((String)o).length();
 					}
 					else {
-						errMgr.runTimeError(self, current_ip, ErrorType.EXPECTING_STRING, "strlen", o.getClass().getName());
+						errMgr.runTimeError(this, self, current_ip, ErrorType.EXPECTING_STRING, "strlen", o.getClass().getName());
 						operands[++sp] = 0;
 					}
 					break;
@@ -467,10 +485,9 @@ public class Interpreter {
 		ST st = null;
 		CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
 		if ( imported==null ) {
-			errMgr.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
+			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
 								name);
 			st = self.groupThatCreatedThisInstance.createStringTemplateInternally();
-			//st.enclosingInstance = self;
 			st.impl = new CompiledST();
 			sp -= nargs;
 			operands[++sp] = st;
@@ -478,7 +495,6 @@ public class Interpreter {
 		}
 
 		st = imported.nativeGroup.createStringTemplateInternally();
-		//st.enclosingInstance = self; // self invoked super.name()
 		st.groupThatCreatedThisInstance = group;
 		st.impl = imported;
 
@@ -492,17 +508,15 @@ public class Interpreter {
 		ST st = null;
 		CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
 		if ( imported==null ) {
-			errMgr.runTimeError(self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
+			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
 								name);
 			st = self.groupThatCreatedThisInstance.createStringTemplateInternally();
-			//st.enclosingInstance = self;
 			st.impl = new CompiledST();
 			operands[++sp] = st;
 			return;
 		}
 
 		st = imported.nativeGroup.createStringTemplateInternally();
-		//st.enclosingInstance = self; // self invoked super.name()
 		st.groupThatCreatedThisInstance = group;
 		st.impl = imported;
 
@@ -520,7 +534,7 @@ public class Interpreter {
 		if ( nargs < (nformalArgs-st.impl.numberOfArgsWithDefaultValues) ||
 			 nargs > nformalArgs )
 		{
-			errMgr.runTimeError(self,
+			errMgr.runTimeError(this, self,
 								current_ip,
 								ErrorType.ARGUMENT_COUNT_MISMATCH,
 								nargs,
@@ -531,7 +545,7 @@ public class Interpreter {
 		for (String argName : attrs.keySet()) {
 			// don't let it throw an exception in rawSetAttribute
 			if ( st.impl.formalArguments==null || !st.impl.formalArguments.containsKey(argName) ) {
-				errMgr.runTimeError(self,
+				errMgr.runTimeError(this, self,
 									current_ip,
 									ErrorType.NO_SUCH_ATTRIBUTE,
 									argName);
@@ -552,7 +566,7 @@ public class Interpreter {
 		if ( nargs < (nformalArgs-st.impl.numberOfArgsWithDefaultValues) ||
 			 nargs > nformalArgs )
 		{
-			errMgr.runTimeError(self,
+			errMgr.runTimeError(this, self,
 								current_ip,
 								ErrorType.ARGUMENT_COUNT_MISMATCH,
 								nargs,
@@ -658,11 +672,6 @@ public class Interpreter {
 					errMgr.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
 				}
 			}
-			// when we eval a template embedded in another, we have to track
-			// the enclosing instance. This resets when one ST is
-			// embedded in multiple templates.  When it's evaluated 2nd time,
-			// o.enclosingInstance resets to that 2nd enclosing instance.
-			st.enclosingInstance = self;
 			n = exec(out, st);
 		}
 		else {
@@ -747,7 +756,6 @@ public class Interpreter {
 		else { // if only single value, just apply first template to sole value
 			ST proto = prototypes.get(0);
 			ST st = group.createStringTemplateInternally(proto);
-			//st.enclosingInstance = self;
 			if ( st!=null ) {
 				setFirstArgument(self, st, attr);
 				if ( st.impl.isAnonSubtemplate ) {
@@ -775,7 +783,6 @@ public class Interpreter {
 			ti++;
 			ST proto = prototypes.get(templateIndex);
 			ST st = group.createStringTemplateInternally(proto);
-			//st.enclosingInstance = self;
 			setFirstArgument(self, st, iterValue);
 			if ( st.impl.isAnonSubtemplate ) {
 				st.rawSetAttribute("i0", i0);
@@ -805,7 +812,7 @@ public class Interpreter {
 		CompiledST code = prototype.impl;
 		Map formalArguments = code.formalArguments;
 		if ( !code.hasFormalArgs || formalArguments==null ) {
-			errMgr.runTimeError(self, current_ip, ErrorType.MISSING_FORMAL_ARGUMENTS);
+			errMgr.runTimeError(this, self, current_ip, ErrorType.MISSING_FORMAL_ARGUMENTS);
 			return null;
 		}
 
@@ -814,7 +821,7 @@ public class Interpreter {
 		int nformalArgs = formalArgumentNames.length;
 		if ( prototype.isAnonSubtemplate() ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
 		if ( nformalArgs != numExprs ) {
-			errMgr.runTimeError(self,
+			errMgr.runTimeError(this, self,
 									  current_ip,
 									  ErrorType.MAP_ARGUMENT_COUNT_MISMATCH,
 									  numExprs,
@@ -838,7 +845,6 @@ public class Interpreter {
 			// get a value for each attribute in list; put into ST instance
 			int numEmpty = 0;
 			ST embedded = group.createStringTemplateInternally(prototype);
-			//embedded.enclosingInstance = self;
 			embedded.rawSetAttribute("i0", i);
 			embedded.rawSetAttribute("i", i+1);
 			for (int a = 0; a < numExprs; a++) {
@@ -861,7 +867,7 @@ public class Interpreter {
 
 	protected void setFirstArgument(ST self, ST st, Object attr) {
 		if ( st.impl.formalArguments==null ) {
-			errMgr.runTimeError(self,
+			errMgr.runTimeError(this, self,
 									  current_ip,
 									  ErrorType.ARGUMENT_COUNT_MISMATCH,
 									  1,
@@ -1039,7 +1045,7 @@ public class Interpreter {
 			}
 			catch (Exception e) {
 				stw = new AutoIndentWriter(sw);
-				errMgr.runTimeError(self, current_ip, ErrorType.WRITER_CTOR_ISSUE, out.getClass().getSimpleName());
+				errMgr.runTimeError(this, self, current_ip, ErrorType.WRITER_CTOR_ISSUE, out.getClass().getSimpleName());
 			}
 			writeObjectNoOptions(stw, self, value);
 
@@ -1078,7 +1084,7 @@ public class Interpreter {
 
 	protected Object getObjectProperty(STWriter out, ST self, Object o, Object property) {
 		if ( o==null ) {
-			errMgr.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_SUCH_PROPERTY,
 									  "null attribute");
 			return null;
 		}
@@ -1088,10 +1094,39 @@ public class Interpreter {
 			return adap.getProperty(self, o, property, toString(out,self,property));
 		}
 		catch (STNoSuchPropertyException e) {
-			errMgr.runTimeError(self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_SUCH_PROPERTY,
 									  e, o.getClass().getName()+"."+property);
 		}
 		return null;
+	}
+
+	/** Find an attr via dynamic scoping up enclosing scope chain.
+	 *  If not found, look for a map.  So attributes sent in to a template
+	 *  override dictionary names.
+	 */
+	public Object getAttribute(ST self, String name) {
+		InstanceScope scope = currentScope;
+		while ( scope!=null ) {
+			ST p = scope.st;
+			FormalArgument localArg = null;
+			if ( p.impl.formalArguments!=null ) localArg = p.impl.formalArguments.get(name);
+			if ( localArg!=null ) {
+				Object o = p.locals[localArg.index];
+				if ( o==ST.EMPTY_ATTR ) o = null;
+				return o;
+			}
+			scope = scope.parent; // look up enclosing scope chain
+		}
+		// got to root scope and no definition, try dictionaries in group
+		if ( self.impl.nativeGroup.isDictionary(name) ) {
+			return self.impl.nativeGroup.rawGetDictionary(name);
+		}
+		// not found, report unknown attr
+		if ( ST.cachedNoSuchPropException ==null ) {
+			ST.cachedNoSuchPropException = new STNoSuchPropertyException();
+		}
+		ST.cachedNoSuchPropException.propertyName = name;
+		throw ST.cachedNoSuchPropException;
 	}
 
 	/** Set any default argument values that were not set by the
@@ -1113,9 +1148,6 @@ public class Interpreter {
 			//System.out.println("setting def arg "+arg.name+" to "+arg.defaultValueToken);
 			if ( arg.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
 				ST defaultArgST = group.createStringTemplateInternally();
-				// default arg template must see other args so it's enclosing
-				// instance is the template we are invoking.
-				//defaultArgST.enclosingInstance = invokedST;
 				defaultArgST.groupThatCreatedThisInstance = group;
 				defaultArgST.impl = arg.compiledDefaultValue;
 				// If default arg is template with single expression
@@ -1137,6 +1169,32 @@ public class Interpreter {
 		}
 	}
 
+	/** If an instance of x is enclosed in a y which is in a z, return
+	 *  a String of these instance names in order from topmost to lowest;
+	 *  here that would be "[z y x]".
+	 */
+	public String getEnclosingInstanceStackString(List<ST> templates) {
+		StringBuilder buf = new StringBuilder();
+		int i = 0;
+		for (ST st : templates) {
+			if ( i>0 ) buf.append(" ");
+			buf.append(st.getName());
+			i++;
+		}
+		return buf.toString();
+	}
+
+	public List<ST> getEnclosingInstanceStack(boolean topdown) {
+		List<ST> stack = new LinkedList<ST>();
+		InstanceScope p = currentScope;
+		while ( p!=null ) {
+			if ( topdown ) stack.add(0,p.st);
+			else stack.add(p.st);
+			p = p.parent;
+		}
+		return stack;
+	}
+
 	protected void trace(ST self, int ip) {
 		StringBuilder tr = new StringBuilder();
 		BytecodeDisassembler dis = new BytecodeDisassembler(self.impl);
@@ -1151,7 +1209,7 @@ public class Interpreter {
 			printForTrace(tr,o);
 		}
 		tr.append(" ], calls=");
-		tr.append(self.getEnclosingInstanceStackString());
+		tr.append(getEnclosingInstanceStackString(getEnclosingInstanceStack(true)));
 		tr.append(", sp="+sp+", nw="+ nwline);
 		String s = tr.toString();
 		if ( debug ) executeTrace.add(s);
@@ -1189,17 +1247,12 @@ public class Interpreter {
 	protected void trackDebugEvent(ST self, InterpEvent e) {
 //		System.out.println(e);
 		this.events.add(e);
-//		if ( self.debugState==null ) self.debugState = new ST.DebugState();
-//		self.debugState.events.add(e);
 		getDebugState(self).events.add(e);
 		if ( e instanceof EvalTemplateEvent ) {
-			//ST parent = getDebugState(self).interpEnclosingInstance;
-			ST parent = self.enclosingInstance;
+			InstanceScope parent = currentScope.parent;
 			if ( parent!=null ) {
 				// System.out.println("add eval "+e.self.getName()+" to children of "+parent.getName());
-//				if ( parent.debugState==null ) parent.debugState = new ST.DebugState();
-//				parent.debugState.childEvalTemplateEvents.add((EvalTemplateEvent)e);
-				getDebugState(parent).childEvalTemplateEvents.add((EvalTemplateEvent)e);
+				getDebugState(parent.st).childEvalTemplateEvents.add((EvalTemplateEvent)e);
 			}
 		}
 	}

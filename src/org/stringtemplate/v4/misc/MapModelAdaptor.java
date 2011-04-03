@@ -54,7 +54,6 @@ public class MapModelAdaptor implements ModelAdaptor {
 			// dup, don't alter existing template; it's a prototype
 			ST st = (ST) value;
 			st = st.groupThatCreatedThisInstance.createStringTemplateInternally(st);
-			//st.enclosingInstance = self;
 			value = st;
 		}
 		return value;

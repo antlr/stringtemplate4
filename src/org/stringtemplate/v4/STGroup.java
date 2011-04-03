@@ -168,24 +168,25 @@ public class STGroup {
         return null;
     }
 
-    protected ST getEmbeddedInstanceOf(ST enclosingInstance, int ip, String name) {
+    protected ST getEmbeddedInstanceOf(Interpreter interp,
+									   ST enclosingInstance,
+									   int ip,
+									   String name)
+	{
 		if ( verbose ) System.out.println("getEmbeddedInstanceOf("+name+")");
-//		if ( name.equals("genericParser") || name.equals("parser") ) {
-//			System.out.println("found parser");
-//		}
         ST st = getInstanceOf(name);
-        if ( st==null ) {
-            errMgr.runTimeError(enclosingInstance, ip, ErrorType.NO_SUCH_TEMPLATE,
-                                      name);
+		if ( st==null ) {
+			errMgr.runTimeError(interp, enclosingInstance, ip,
+								ErrorType.NO_SUCH_TEMPLATE,
+								name);
 			st = createStringTemplate();
 			st.impl = new CompiledST();
 			return st;
-        }
+		}
 		// this is only called internally. wack any debug ST create events
 		if ( trackCreationEvents ) {
 			st.debugState.newSTEvent = null; // toss it out
 		}
-        //st.enclosingInstance = enclosingInstance;
         return st;
     }
 
