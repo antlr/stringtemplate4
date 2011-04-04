@@ -27,7 +27,10 @@
  */
 grammar Group;
 
-tokens { TRUE='true'; FALSE='false'; }
+tokens {
+	TRUE='true'; FALSE='false';
+	BIGSTRING_NO_NL; // same as BIGSTRING but with <<<...>>> to mean ignore newlines later
+}
 
 @header {
 /*
@@ -196,6 +199,7 @@ templateDef[String prefix]
 	    {Token templateToken = input.LT(1);}
 	    (	STRING     {template=$STRING.text; n=1;}
 	    |	BIGSTRING  {template=$BIGSTRING.text; n=2;}
+	    |	BIGSTRING_NO_NL  {template=$BIGSTRING_NO_NL.text; n=3;}
 	    |	{
 	    	template = "";
 	    	String msg = "missing template at '"+input.LT(1).getText()+"'";
@@ -287,6 +291,7 @@ keyValuePair[Map<String,Object> mapping]
 
 keyValue returns [Object value]
 	:	BIGSTRING			{$value = group.createSingleton($BIGSTRING);}
+	|	BIGSTRING_NO_NL		{$value = group.createSingleton($BIGSTRING_NO_NL);}
 	|	ANONYMOUS_TEMPLATE	{$value = group.createSingleton($ANONYMOUS_TEMPLATE);}
 	|	STRING				{$value = Misc.replaceEscapes(Misc.strip($STRING.text, 1));}
 	|	TRUE				{$value = true;}
@@ -321,14 +326,16 @@ STRING
 	;
 
 BIGSTRING
-	:	'<<'
+@init {boolean nonl=false;}
+	:	'<<' (options {greedy=true;}:'<' {nonl=true;} )?
 		(	options {greedy=false;}
 		:	'\\' '>'  // \> escape
 		|	'\\' ~'>'
 		|	~'\\'
 		)*
-        '>>'
+        '>>' ({nonl=true}?=> '>')?
         {
+		if ( nonl ) $type = BIGSTRING_NO_NL;
         String txt = getText().replaceAll("\\\\>",">");;
 		setText(txt);
 		}

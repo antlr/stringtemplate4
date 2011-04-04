@@ -110,7 +110,30 @@ public class Compiler {
 	{
 		ANTLRStringStream is = new ANTLRStringStream(template);
 		is.name = srcName!=null ? srcName : name;
-		STLexer lexer = new STLexer(group.errMgr, is, templateToken, group.delimiterStartChar, group.delimiterStopChar);
+		STLexer lexer = null;
+		if ( templateToken.getType() == GroupParser.BIGSTRING_NO_NL ) {
+			lexer = new STLexer(group.errMgr, is, templateToken,
+						group.delimiterStartChar, group.delimiterStopChar) {
+				/** Throw out \n tokens inside BIGSTRING_NO_NL */
+				@Override
+				public Token nextToken() {
+					Token t = super.nextToken();
+					while ( t.getType() == STLexer.NEWLINE ) {
+						t = super.nextToken();
+					}
+					if ( t.getType()==STLexer.INDENT ) {
+						// flip to TEXT so it prints; indent only prints
+						// when we're at start of line
+						t.setType(TEXT);
+					}
+					return t;
+				}
+			};
+		}
+		else {
+			lexer = new STLexer(group.errMgr, is, templateToken,
+								group.delimiterStartChar, group.delimiterStopChar);
+		}
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		STParser p = new STParser(tokens, group.errMgr, templateToken);
 		STParser.templateAndEOF_return r = null;

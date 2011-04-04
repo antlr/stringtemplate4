@@ -17,6 +17,7 @@ April 3, 2011
 * ST dropped some weight.  No need for enclosingInstance ptr now. That is
   properly done in interpreter as a stack of scopes.  Now, there is no
   side-effect whatsoever in ST instances for execution. THREAD SAFE eval now.
+* Added <<<...>>> template that ignores all \n inside; use <\n> to get one.
 
 March 30 - April 2, 2011
 
