@@ -111,7 +111,9 @@ public class Compiler {
 		ANTLRStringStream is = new ANTLRStringStream(template);
 		is.name = srcName!=null ? srcName : name;
 		STLexer lexer = null;
-		if ( templateToken.getType() == GroupParser.BIGSTRING_NO_NL ) {
+		if ( templateToken!=null &&
+			 templateToken.getType() == GroupParser.BIGSTRING_NO_NL )
+		{
 			lexer = new STLexer(group.errMgr, is, templateToken,
 						group.delimiterStartChar, group.delimiterStopChar) {
 				/** Throw out \n tokens inside BIGSTRING_NO_NL */
