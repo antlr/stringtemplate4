@@ -121,7 +121,6 @@ public class Interpreter {
 		this.debug = debug;
 		if ( debug ) {
 			events = new ArrayList<InterpEvent>();
-			//debugStateMap = new HashMap<ST, ST.InterpDebugState>();
 			executeTrace = new ArrayList<String>();
 		}
 	}
@@ -134,10 +133,14 @@ public class Interpreter {
 //			System.out.println(count[i]+" "+Bytecode.instructions[i].name);
 //		}
 //	}
-	
+
 	/** Execute template self and return how many characters it wrote to out */
 	public int exec(STWriter out, ST self) {
 		currentScope = new InstanceScope(currentScope, self); // push scope
+		if ( debug ) {
+			currentScope.events = new ArrayList<InterpEvent>();
+			currentScope.childEvalTemplateEvents = new ArrayList<EvalTemplateEvent>();
+		}
 		currentScope.ret_ip = current_ip;
 		try {
 			int n = _exec(out, self);
@@ -712,7 +715,7 @@ public class Interpreter {
 		}
 		return n;
 	}
-	
+
 	protected int getExprStartChar(ST self) {
 		Interval templateLocation = self.impl.sourceMap[current_ip];
 		if ( templateLocation!=null ) return templateLocation.a;
