@@ -28,6 +28,7 @@
 
 package org.stringtemplate.v4.misc;
 
+import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ST;
 
 import java.util.Map;
@@ -35,10 +36,10 @@ import java.util.Map;
 /** Deal with structs created via ST.add("structname.{prop1, prop2}", ...); */
 public class AggregateModelAdaptor extends MapModelAdaptor {
 	@Override
-	public Object getProperty(ST self, Object o, Object property, String propertyName)
+	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{
 		Map map = ((Aggregate)o).properties;
-		return super.getProperty(self, map, property, propertyName);
+		return super.getProperty(interp, self, map, property, propertyName);
 	}
 }

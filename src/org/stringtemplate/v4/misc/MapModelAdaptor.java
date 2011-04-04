@@ -27,6 +27,7 @@
  */
 package org.stringtemplate.v4.misc;
 
+import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -34,7 +35,7 @@ import org.stringtemplate.v4.STGroup;
 import java.util.Map;
 
 public class MapModelAdaptor implements ModelAdaptor {
-	public Object getProperty(ST self, Object o, Object property, String propertyName)
+	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{
 		Object value;

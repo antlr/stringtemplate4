@@ -140,7 +140,7 @@ public class TestLineWrap extends BaseTest {
 
 	@Test public void testLineWrapEdgeCase() throws Exception {
 		String templates =
-				"duh(chars) ::= <<<chars; wrap=\"\\n\"\\>>>"+newline;
+				"duh(chars) ::= \"<chars; wrap={<\\n>}>\""+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 

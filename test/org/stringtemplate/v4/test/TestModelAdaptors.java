@@ -1,10 +1,7 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.ModelAdaptor;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 import org.stringtemplate.v4.misc.STRuntimeMessage;
 
@@ -12,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TestModelAdaptors extends BaseTest {
 	static class UserAdaptor implements ModelAdaptor {
-		public Object getProperty(ST self, Object o, Object property, String propertyName)
+		public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 			throws STNoSuchPropertyException
 		{
 			if ( propertyName.equals("id") ) return ((User)o).id;
@@ -22,7 +19,7 @@ public class TestModelAdaptors extends BaseTest {
 	}
 
 	static class UserAdaptorConst implements ModelAdaptor {
-		public Object getProperty(ST self, Object o, Object property, String propertyName)
+		public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 			throws STNoSuchPropertyException
 		{
 			if ( propertyName.equals("id") ) return "const id value";

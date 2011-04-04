@@ -49,6 +49,6 @@ public interface ModelAdaptor {
 	 *  if o is Map, property could be any key type.  If we need to convert
 	 *  to string, then it's done by ST and passed in here.
 	 */
-	public Object getProperty(ST self, Object o, Object property, String propertyName)
+	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException;
 }

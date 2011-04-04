@@ -18,6 +18,8 @@ April 3, 2011
   properly done in interpreter as a stack of scopes.  Now, there is no
   side-effect whatsoever in ST instances for execution. THREAD SAFE eval now.
 * Added <<<...>>> template that ignores all \n inside; use <\n> to get one.
+* Interpreter interp added to ModelAdaptor. BREAKING CHANGE IF YOU'VE BUILT
+  a model adaptor (rare)
 
 March 30 - April 2, 2011
 

@@ -1091,7 +1091,7 @@ public class Interpreter {
 
 		try {
 			ModelAdaptor adap = self.groupThatCreatedThisInstance.getModelAdaptor(o.getClass());
-			return adap.getProperty(self, o, property, toString(out,self,property));
+			return adap.getProperty(this, self, o, property, toString(out,self,property));
 		}
 		catch (STNoSuchPropertyException e) {
 			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_SUCH_PROPERTY,

@@ -28,6 +28,7 @@
 package org.stringtemplate.v4.misc;
 
 import org.antlr.runtime.misc.DoubleKeyMap;
+import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
 
@@ -45,7 +46,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 	 */
 	static STNoSuchPropertyException cachedException;
 
-	public Object getProperty(ST self, Object o, Object property, String propertyName)
+	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{
 		Object value = null;
