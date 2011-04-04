@@ -25,37 +25,43 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.stringtemplate.v4.debug;
 
-import org.stringtemplate.v4.InstanceScope;
+package org.stringtemplate.v4;
 
-public class EvalExprEvent extends InterpEvent {
-	public final int exprStartChar, exprStopChar; // template pattern location
-	public final String expr;
-	public EvalExprEvent(InstanceScope scope, int start, int stop,
-						 int exprStartChar, int exprStopChar)
-	{
-		super(scope, start, stop);
-		this.exprStartChar = exprStartChar;
-		this.exprStopChar = exprStopChar;
-		if ( exprStartChar >=0 && exprStopChar >=0 ) {
-			expr = scope.st.impl.template.substring(exprStartChar, exprStopChar +1);
-		}
-		else {
-			expr = "";
-		}
+import org.stringtemplate.v4.debug.EvalTemplateEvent;
+import org.stringtemplate.v4.debug.InterpEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** */
+public class InstanceScope {
+	public InstanceScope parent;	// template that invoked us
+	public ST st;      				// template we're executing
+	public int ret_ip; 				// return address
+
+	/* Includes the EvalTemplateEvent for this template.  This
+	*  is a subset of Interpreter.events field. The final
+	*  EvalTemplateEvent is stored in 3 places:
+	*
+	*  	1. In enclosing instance's childTemplateEvents
+	*  	2. In this event list
+	*  	3. In the overall event list
+	*
+	*  The root ST has the final EvalTemplateEvent in its list.
+	*
+	*  All events get added to the enclosingInstance's event list.
+	*/
+	public List<InterpEvent> events = new ArrayList<InterpEvent>();
+
+	/** All templates evaluated and embedded in this ST. Used
+	 *  for tree view in STViz.
+	 */
+	public List<EvalTemplateEvent> childEvalTemplateEvents =
+		new ArrayList<EvalTemplateEvent>();
+
+	public InstanceScope(InstanceScope parent, ST st) {
+		this.parent = parent;
+		this.st = st;
 	}
-
-	@Override
-	public String toString() {
-		return getClass().getSimpleName()+"{" +
-			   "self=" + scope.st +
-			   ", expr='" + expr + '\'' +
-			   ", exprStartChar=" + exprStartChar +
-			   ", exprStopChar=" + exprStopChar +
-			   ", start=" + outputStartChar +
-			   ", stop=" + outputStopChar +
-			   '}';
-	}
-
 }

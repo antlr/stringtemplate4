@@ -60,16 +60,6 @@ import java.util.*;
  */
 public class Interpreter {
 	public enum Option { ANCHOR, FORMAT, NULL, SEPARATOR, WRAP }
-
-	public static class InstanceScope {
-		InstanceScope parent;
-		public ST st;
-		public InstanceScope(InstanceScope parent, ST st) {
-			this.parent = parent;
-			this.st = st;
-		}
-	}
-	
 	public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
 	public static final Set<String> predefinedAnonSubtemplateAttributes =
@@ -84,7 +74,7 @@ public class Interpreter {
 	/** Stack of enclosing instances (scopes).  Used for dynamic scoping
 	 *  of attributes.
 	 */
-	InstanceScope currentScope = null;
+	public InstanceScope currentScope = null;
 
 	/** Exec st with respect to this group. Once set in ST.toString(),
 	 *  it should be fixed. ST has group also.
@@ -112,9 +102,6 @@ public class Interpreter {
 	 */
 	protected List<InterpEvent> events;
 
-	/** Track interp events for every ST we exec */
-	protected Map<ST, ST.InterpDebugState> debugStateMap;
-
 	public Interpreter(STGroup group, boolean debug) {
 		this(group,Locale.getDefault(),group.errMgr, debug);
 	}
@@ -134,12 +121,12 @@ public class Interpreter {
 		this.debug = debug;
 		if ( debug ) {
 			events = new ArrayList<InterpEvent>();
-			debugStateMap = new HashMap<ST, ST.InterpDebugState>();
+			//debugStateMap = new HashMap<ST, ST.InterpDebugState>();
 			executeTrace = new ArrayList<String>();
 		}
 	}
 
-	public static int[] count = new int[Bytecode.MAX_BYTECODE+1];
+//	public static int[] count = new int[Bytecode.MAX_BYTECODE+1];
 
 //	public static void dumpOpcodeFreq() {
 //		System.out.println("#### instr freq:");
@@ -150,15 +137,15 @@ public class Interpreter {
 	
 	/** Execute template self and return how many characters it wrote to out */
 	public int exec(STWriter out, ST self) {
-		int save = current_ip;
 		currentScope = new InstanceScope(currentScope, self); // push scope
+		currentScope.ret_ip = current_ip;
 		try {
 			int n = _exec(out, self);
 			return n;
 		}
 		finally {
+			current_ip = currentScope.ret_ip;
 			currentScope = currentScope.parent; // pop scope
-			current_ip = save;
 		}
 	}
 
@@ -467,7 +454,7 @@ public class Interpreter {
 		}
 		if ( debug ) {
 			int stop = out.index() - 1;
-			EvalTemplateEvent e = new EvalTemplateEvent(self, start, stop);
+			EvalTemplateEvent e = new EvalTemplateEvent(currentScope, start, stop);
 			trackDebugEvent(self, e);
 		}
 		return n;
@@ -588,7 +575,7 @@ public class Interpreter {
 		String indent = self.impl.strings[strIndex];
 		if ( debug ) {
 			int start = out.index(); // track char we're about to write
-			EvalExprEvent e = new IndentEvent(self,
+			EvalExprEvent e = new IndentEvent(currentScope,
 											  start, start + indent.length() - 1,
 											  getExprStartChar(self),
 											  getExprStopChar(self));
@@ -604,7 +591,7 @@ public class Interpreter {
 		int start = out.index(); // track char we're about to write
 		int n = writeObject(out, self, o, null);
         if ( debug ) {
-			EvalExprEvent e = new EvalExprEvent(self,
+			EvalExprEvent e = new EvalExprEvent(currentScope,
 												start, out.index() - 1,
 												getExprStartChar(self),
 												getExprStopChar(self));
@@ -640,7 +627,7 @@ public class Interpreter {
         if ( debug ) {
             Interval templateLocation = self.impl.sourceMap[current_ip];
             int exprStart=templateLocation.a, exprStop=templateLocation.b;
-			EvalExprEvent e = new EvalExprEvent( self,
+			EvalExprEvent e = new EvalExprEvent(currentScope,
 												start, out.index() - 1,
 												exprStart, exprStop);
 			trackDebugEvent(self, e);
@@ -1173,7 +1160,8 @@ public class Interpreter {
 	 *  a String of these instance names in order from topmost to lowest;
 	 *  here that would be "[z y x]".
 	 */
-	public String getEnclosingInstanceStackString(List<ST> templates) {
+	public static String getEnclosingInstanceStackString(InstanceScope scope) {
+		List<ST> templates = getEnclosingInstanceStack(scope, true);
 		StringBuilder buf = new StringBuilder();
 		int i = 0;
 		for (ST st : templates) {
@@ -1184,9 +1172,9 @@ public class Interpreter {
 		return buf.toString();
 	}
 
-	public List<ST> getEnclosingInstanceStack(boolean topdown) {
+	public static List<ST> getEnclosingInstanceStack(InstanceScope scope, boolean topdown) {
 		List<ST> stack = new LinkedList<ST>();
-		InstanceScope p = currentScope;
+		InstanceScope p = scope;
 		while ( p!=null ) {
 			if ( topdown ) stack.add(0,p.st);
 			else stack.add(p.st);
@@ -1209,7 +1197,7 @@ public class Interpreter {
 			printForTrace(tr,o);
 		}
 		tr.append(" ], calls=");
-		tr.append(getEnclosingInstanceStackString(getEnclosingInstanceStack(true)));
+		tr.append(getEnclosingInstanceStackString(currentScope));
 		tr.append(", sp="+sp+", nw="+ nwline);
 		String s = tr.toString();
 		if ( debug ) executeTrace.add(s);
@@ -1247,19 +1235,14 @@ public class Interpreter {
 	protected void trackDebugEvent(ST self, InterpEvent e) {
 //		System.out.println(e);
 		this.events.add(e);
-		getDebugState(self).events.add(e);
+		currentScope.events.add(e);
 		if ( e instanceof EvalTemplateEvent ) {
 			InstanceScope parent = currentScope.parent;
 			if ( parent!=null ) {
 				// System.out.println("add eval "+e.self.getName()+" to children of "+parent.getName());
-				getDebugState(parent.st).childEvalTemplateEvents.add((EvalTemplateEvent)e);
+				currentScope.parent.childEvalTemplateEvents.add((EvalTemplateEvent)e);
 			}
 		}
-	}
-
-	public ST.InterpDebugState getDebugState(ST st) {
-		if ( debugStateMap.get(st) == null ) debugStateMap.put(st, new ST.InterpDebugState());
-		return debugStateMap.get(st);
 	}
 
 	public List<String> getExecutionTrace() { return executeTrace; }

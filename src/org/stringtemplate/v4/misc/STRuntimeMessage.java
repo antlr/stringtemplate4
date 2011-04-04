@@ -27,10 +27,9 @@
  */
 package org.stringtemplate.v4.misc;
 
+import org.stringtemplate.v4.InstanceScope;
 import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ST;
-
-import java.util.List;
 
 /** Used to track errors that occur in the ST interpreter. */
 public class STRuntimeMessage extends STMessage {
@@ -40,7 +39,8 @@ public class STRuntimeMessage extends STMessage {
 	Interpreter interp;
     /** Where error occurred in bytecode memory */
     public int ip = -1;
-	List<ST> enclosingStack;
+	public InstanceScope scope;
+	//List<ST> enclosingStack;
 
     public STRuntimeMessage(Interpreter interp, ErrorType error, int ip) {
 		this(interp, error, ip, null);
@@ -61,7 +61,7 @@ public class STRuntimeMessage extends STMessage {
 		super(error, self, e, arg, arg2, arg3);
 		this.interp = interp;
 		this.ip = ip;
-		if ( interp!=null ) enclosingStack = interp.getEnclosingInstanceStack(true);
+		if ( interp!=null ) scope = interp.currentScope;
 	}
 
     /** Given an ip (code location), get it's range in source template then
@@ -84,7 +84,7 @@ public class STRuntimeMessage extends STMessage {
         if ( self!=null ) {
             buf.append("context [");
             if ( interp!=null ) {
-				buf.append( interp.getEnclosingInstanceStackString(enclosingStack) );
+				buf.append( Interpreter.getEnclosingInstanceStackString(scope) );
 			}
             buf.append("]");
         }

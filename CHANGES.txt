@@ -20,6 +20,10 @@ April 3, 2011
 * Added <<<...>>> template that ignores all \n inside; use <\n> to get one.
 * Interpreter interp added to ModelAdaptor. BREAKING CHANGE IF YOU'VE BUILT
   a model adaptor (rare)
+* Internal clean up so stack of template evaluation scopes has debug info.
+  Required changes across lots of files.  Started referring to scopes
+  so entire path to root is available and with debugging info if debug on
+  for that interpreter. Extracted InstanceScope from inner class.
 
 March 30 - April 2, 2011
 

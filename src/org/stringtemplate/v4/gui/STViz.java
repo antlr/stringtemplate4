@@ -52,7 +52,9 @@ import java.util.List;
 import java.util.Map;
 
 public class STViz {
-	public ST currentST; // current ST selected in template tree
+	//public ST currentST; // current ST selected in template tree
+	public EvalTemplateEvent root;
+	public InstanceScope currentScope;
 	public List<InterpEvent> allEvents;
 	public JTreeSTModel tmodel;
 	public ErrorManager errMgr;
@@ -64,14 +66,14 @@ public class STViz {
 	public STViewFrame viewFrame;
 
     public STViz(ErrorManager errMgr,
-				 ST root,
+				 EvalTemplateEvent root,
 				 String output,
 				 Interpreter interp,
                  List<String> trace,
                  List<STMessage> errors)
     {
 		this.errMgr = errMgr;
-        this.currentST = root;
+		this.currentScope = root.scope;
 		this.output = output;
 		this.interp = interp;
         this.allEvents = interp.getEvents();
@@ -81,22 +83,22 @@ public class STViz {
 
 	public void open() {
         viewFrame = new STViewFrame();
-        updateStack(currentST, viewFrame);
-        updateAttributes(currentST, viewFrame);
+        updateStack(currentScope, viewFrame);
+        updateAttributes(currentScope, viewFrame);
 
-		List<InterpEvent> events = interp.getDebugState(currentST).events;
+		List<InterpEvent> events = currentScope.events;
 		tmodel = new JTreeSTModel(interp, (EvalTemplateEvent)events.get(events.size()-1));
         viewFrame.tree.setModel(tmodel);
         viewFrame.tree.addTreeSelectionListener(
             new TreeSelectionListener() {
                 public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
-                    currentST = ((JTreeSTModel.Wrapper)viewFrame.tree.getLastSelectedPathComponent()).event.self;
+                    currentScope = ((JTreeSTModel.Wrapper)viewFrame.tree.getLastSelectedPathComponent()).event.scope;
                     updateCurrentST(viewFrame);
                 }
             }
         );
 
-		JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentST.impl.ast);
+		JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
 		viewFrame.ast.setModel(astModel);
 		viewFrame.ast.addTreeSelectionListener(
 			new TreeSelectionListener() {
@@ -105,8 +107,8 @@ public class STViz {
 					if ( path==null ) return;
 					CommonTree node = (CommonTree)treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
 //					System.out.println("select AST: "+node);
-					CommonToken a = (CommonToken)currentST.impl.tokens.get(node.getTokenStartIndex());
-					CommonToken b = (CommonToken)currentST.impl.tokens.get(node.getTokenStopIndex());
+					CommonToken a = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStartIndex());
+					CommonToken b = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStopIndex());
 					highlight(viewFrame.template, a.getStartIndex(), b.getStopIndex());
 				}
 			}
@@ -129,16 +131,16 @@ public class STViz {
 
         viewFrame.output.setText(output);
 
-        viewFrame.template.setText(currentST.impl.template);
-        viewFrame.bytecode.setText(currentST.impl.disasm());
+        viewFrame.template.setText(currentScope.st.impl.template);
+        viewFrame.bytecode.setText(currentScope.st.impl.disasm());
         viewFrame.trace.setText(Misc.join(trace.iterator(), "\n"));
 
         CaretListener caretListenerLabel = new CaretListener() {
             public void caretUpdate(CaretEvent e) {
                 int dot = e.getDot();
                 InterpEvent de = findEventAtOutputLocation(allEvents, dot);
-                if ( de==null ) currentST = tmodel.root.event.self;
-                else currentST = de.self;
+                if ( de==null ) currentScope = tmodel.root.event.scope;
+                else currentScope = de.scope;
                 updateCurrentST(viewFrame);
             }
         };
@@ -178,7 +180,7 @@ public class STViz {
                     if ( msg instanceof STRuntimeMessage ) {
                         STRuntimeMessage rmsg = (STRuntimeMessage)msg;
                         Interval I = rmsg.self.impl.sourceMap[rmsg.ip];
-                        currentST = (ST)msg.self;
+                        currentScope = ((STRuntimeMessage) msg).scope;
                         updateCurrentST(viewFrame);
                         if ( I!=null ) { // highlight template
                             highlight(viewFrame.template, I.a, I.b);
@@ -197,34 +199,26 @@ public class STViz {
     }
 
 	private void updateCurrentST(STViewFrame m) {
-//		System.out.println("updateCurrentST(): currentST="+currentST);
-		// update all views according to currentST
-		updateStack(currentST, m); 					 // STACK
-		updateAttributes(currentST, m); 			 // ATTRIBUTES
+//		System.out.println("updateCurrentST(): currentScope.st="+currentScope.st);
+		// update all views according to currentScope.st
+		updateStack(currentScope, m); 					 // STACK
+		updateAttributes(currentScope, m); 			 // ATTRIBUTES
 		m.bytecode.moveCaretPosition(0);
-        m.bytecode.setText(currentST.impl.disasm()); // BYTECODE DIS.
+        m.bytecode.setText(currentScope.st.impl.disasm()); // BYTECODE DIS.
 		m.template.moveCaretPosition(0);
-		m.template.setText(currentST.impl.template); // TEMPLATE SRC
+		m.template.setText(currentScope.st.impl.template); // TEMPLATE SRC
 
 		// update tree view of template hierarchy and select assoc. text substring
 
-		// compute path from root to currentST, create TreePath for tree widget
-//		List<ST> pathST = currentST.getEnclosingInstanceStack(true);
-////		System.out.println("path="+pathST);
-//		Object[] path = new Object[pathST.size()];
-//		int j = 0;
-//		for (ST s : pathST) path[j++] = new JTreeSTModel.Node(s, interp.getDebugState(s));
-//		m.tree.setSelectionPath(new TreePath(path));
-
 		// highlight output text and, if {...} subtemplate, region in ST src
-		// get last event for currentST; it's the event that captures ST eval
-		List<InterpEvent> events = interp.getDebugState(currentST).events;
+		// get last event for currentScope.st; it's the event that captures ST eval
+		List<InterpEvent> events = currentScope.events;
 		EvalTemplateEvent e = (EvalTemplateEvent)events.get(events.size() - 1);
 		m.output.moveCaretPosition(e.outputStartChar);
 		highlight(m.output, e.outputStartChar, e.outputStopChar);
-		if ( currentST.isAnonSubtemplate() ) {
-			Interval r = currentST.impl.getTemplateRange();
-//				System.out.println("currentST src range="+r);
+		if ( currentScope.st.isAnonSubtemplate() ) {
+			Interval r = currentScope.st.impl.getTemplateRange();
+//				System.out.println("currentScope.st src range="+r);
 			m.template.moveCaretPosition(r.a);
 			highlight(m.template, r.a, r.b);
 		}
@@ -238,12 +232,13 @@ public class STViz {
 			highlighter.addHighlight(i, j+1, DefaultHighlighter.DefaultPainter);
 		}
 		catch (BadLocationException ble) {
-			errMgr.internalError(tmodel.root.event.self, "bad highlight location", ble);
+			errMgr.internalError(tmodel.root.event.scope.st, "bad highlight location", ble);
 		}
 	}
 
-	protected void updateAttributes(final ST st, final STViewFrame m) {
+	protected void updateAttributes(final InstanceScope scope, final STViewFrame m) {
 		//System.out.println("add events="+ st.addAttrEvents);
+		ST st = scope.st;
 		final DefaultListModel attrModel = new DefaultListModel();
 		final Map<String,Object> attrs = st.getAttributes();
 		/*
@@ -281,8 +276,8 @@ public class STViz {
 		m.attributes.setModel(attrModel);
 	}
 
-	protected void updateStack(ST st, STViewFrame m) {
-		List<ST> stack = interp.getEnclosingInstanceStack(true);
+	protected void updateStack(InstanceScope scope, STViewFrame m) {
+		List<ST> stack = interp.getEnclosingInstanceStack(scope, true);
 		m.setTitle("STViz - ["+ Misc.join(stack.iterator()," ")+"]");
 //        // also do source stack
 //        StackTraceElement[] trace = st.newSTEvent.stack.getStackTrace();

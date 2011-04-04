@@ -27,13 +27,13 @@
  */
 package org.stringtemplate.v4.debug;
 
-import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.InstanceScope;
 
 public class InterpEvent {
-    public final ST self;
+	public InstanceScope scope;
     public final int outputStartChar, outputStopChar; // output location
-    public InterpEvent(ST self, int outputStartChar, int outputStopChar) {
-        this.self = self;
+    public InterpEvent(InstanceScope scope, int outputStartChar, int outputStopChar) {
+        this.scope = scope;
         this.outputStartChar = outputStartChar;
         this.outputStopChar = outputStopChar;
     }
@@ -41,7 +41,7 @@ public class InterpEvent {
     @Override
     public String toString() {
         return getClass().getSimpleName()+"{" +
-               "self=" + self +
+               "self=" + scope.st +
                ", start=" + outputStartChar +
                ", stop=" + outputStopChar +
                '}';

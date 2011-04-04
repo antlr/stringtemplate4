@@ -43,7 +43,7 @@ public class JTreeSTModel implements TreeModel {
 		EvalTemplateEvent event;
 		public Wrapper(EvalTemplateEvent event) { this.event = event; }
 		public String toString() {
-			ST st = event.self;
+			ST st = event.scope.st;
 			if ( st.isAnonSubtemplate() ) return "{...}";
 			if ( st.debugState!=null && st.debugState.newSTEvent!=null ) {
 				return st.toString()+" @ "+st.debugState.newSTEvent.getFileName()+":"+
@@ -62,20 +62,20 @@ public class JTreeSTModel implements TreeModel {
 
 	public Object getChild(Object parent, int index) {
 		EvalTemplateEvent e = ((Wrapper)parent).event;
-		return new Wrapper(interp.getDebugState(e.self).childEvalTemplateEvents.get(index));
+		return new Wrapper(e.scope.childEvalTemplateEvents.get(index));
 	}
 
 	public int getChildCount(Object parent) {
 		EvalTemplateEvent e = ((Wrapper)parent).event;
-		return interp.getDebugState(e.self).childEvalTemplateEvents.size();
+		return e.scope.childEvalTemplateEvents.size();
 	}
 
 	public int getIndexOfChild(Object parent, Object child) {
 		EvalTemplateEvent p = ((Wrapper)parent).event;
 		EvalTemplateEvent c = ((Wrapper)parent).event;
         int i = 0;
-        for (EvalTemplateEvent e : interp.getDebugState(p.self).childEvalTemplateEvents) {
-            if ( e.self == c.self ) {
+        for (EvalTemplateEvent e : p.scope.childEvalTemplateEvents) {
+            if ( e.scope.st == c.scope.st ) {
 //				System.out.println(i);
 //				System.out.println("found "+e.self+" as child of "+parentST);
 				return i;
