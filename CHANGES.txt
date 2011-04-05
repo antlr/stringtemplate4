@@ -12,6 +12,12 @@ April 4, 2011
 * in TestSubtemplates.java there was an extra (bad) import
 * fixed a couple of unit tests that failed.
 * removed .class files from depot
+* added t() ::= <% ... %> template that ignores all newlines inside template.
+  This allows arbitrary formatting within a template that does not result
+  in new lines in the output. This is useful when you have a really complicated
+  template with IFs and such that needs to generate output all on the same line.
+  Currently, this can be quite challenging. There's no way to read a huge
+  template on one line.
 
 April 3, 2011
 

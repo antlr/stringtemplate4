@@ -683,7 +683,7 @@ public class TestGroups extends BaseTest {
 
 	@Test public void testNoNewlineTemplate() throws Exception {
 		String template =
-			"t(x) ::= <<<\n" +
+			"t(x) ::= <%\n" +
 			"[  <if(!x)>" +
 			"<else>" +
 			"<x>\n" +
@@ -692,7 +692,7 @@ public class TestGroups extends BaseTest {
 			"\n" +
 			"  ]\n" +
 			"\n" +
-			">>>\n";
+			"%>\n";
 		STGroup g = new STGroupString(template);
 		ST st = g.getInstanceOf("t");
 		st.add("x", 99);
@@ -703,9 +703,9 @@ public class TestGroups extends BaseTest {
 
 	@Test public void testWSNoNewlineTemplate() throws Exception {
 		String template =
-			"t(x) ::= <<<\n" +
+			"t(x) ::= <%\n" +
 			"\n" +
-			">>>\n";
+			"%>\n";
 		STGroup g = new STGroupString(template);
 		ST st = g.getInstanceOf("t");
 		st.add("x", 99);
@@ -716,7 +716,7 @@ public class TestGroups extends BaseTest {
 
 	@Test public void testEmptyNoNewlineTemplate() throws Exception {
 		String template =
-			"t(x) ::= <<<>>>\n";
+			"t(x) ::= <%%>\n";
 		STGroup g = new STGroupString(template);
 		ST st = g.getInstanceOf("t");
 		st.add("x", 99);
