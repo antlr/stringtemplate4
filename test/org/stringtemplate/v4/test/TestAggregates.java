@@ -61,7 +61,7 @@ public class TestAggregates extends BaseTest {
 		String templates =
 			"group Java;"+newline +
 			""+newline +
-			"file(variables) ::= <<" +
+		    "file(variables) ::= <<\n" +
 			"<variables:{ v | <v.decl:(v.format)()>}; separator=\"\\n\">"+newline +
 			">>"+newline+
 			"intdecl(decl) ::= \"int <decl.name> = 0;\""+newline +

@@ -27,9 +27,10 @@
 */
 package org.stringtemplate.v4.test;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.Intercepter;
 import org.junit.Test;
-import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import java.util.ArrayList;

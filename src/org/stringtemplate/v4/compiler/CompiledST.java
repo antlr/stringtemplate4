@@ -180,7 +180,7 @@ public class CompiledST {
 					break;
 				}
 			}
-			if ( template!=null ) return new Interval(start.a, stop.b);
+			return new Interval(start.a, stop.b);
 		}
 		return new Interval(0, template.length()-1);
 	}

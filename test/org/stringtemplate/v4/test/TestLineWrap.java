@@ -155,7 +155,9 @@ public class TestLineWrap extends BaseTest {
 
 	@Test public void testLineWrapLastCharIsNewline() throws Exception {
 		String templates =
-				"duh(chars) ::= <<<chars; wrap=\"\\n\"\\>>>"+newline;
+				"duh(chars) ::= <<\n" +
+                "<chars; wrap=\"\\n\"\\>\n" +
+                ">>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
@@ -170,7 +172,9 @@ public class TestLineWrap extends BaseTest {
 
 	@Test public void testLineWrapCharAfterWrapIsNewline() throws Exception {
 		String templates =
-				"duh(chars) ::= <<<chars; wrap=\"\\n\"\\>>>"+newline;
+				"duh(chars) ::= <<\n" +
+                "<chars; wrap=\"\\n\"\\>\n" +
+                ">>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 

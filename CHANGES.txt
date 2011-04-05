@@ -7,6 +7,12 @@ University of San Francisco
 
 CHANGES
 
+April 4, 2011
+
+* in TestSubtemplates.java there was an extra (bad) import
+* fixed a couple of unit tests that failed.
+* removed .class files from depot
+
 April 3, 2011
 
 * ST.getAttribute() only looks in that template now. Can't look up

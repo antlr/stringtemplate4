@@ -156,7 +156,7 @@ public class TestIndentation extends BaseTest {
 				"  <stats; separator=\"\\n\">"+newline +
 				"}" +
 				">>"+newline +
-				"assign(lhs,expr) ::= <<<lhs>=<expr>;>>"+newline
+				"assign(lhs,expr) ::= \"<lhs>=<expr>;\""+newline
 				;
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");

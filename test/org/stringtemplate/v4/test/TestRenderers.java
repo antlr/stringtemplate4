@@ -165,7 +165,9 @@ public class TestRenderers extends BaseTest {
 
     @Test public void testLocaleWithNumberRenderer() throws Exception {
         String templates =
-                "foo(x,y) ::= << <x; format=\"%,d\"> <y; format=\"%,2.3f\"> >>\n";
+                "foo(x,y) ::= <<\n" +
+                "<x; format=\"%,d\"> <y; format=\"%,2.3f\">\n" +
+                ">>\n";
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
@@ -174,8 +176,8 @@ public class TestRenderers extends BaseTest {
         ST st = group.getInstanceOf("foo");
         st.add("x", -2100);
         st.add("y", 3.14159);
-        // Polish uses ' ' for ',' and ',' for '.'
-        String expecting = " -2Ê100 3,142 ";
+        // Polish uses ' ' (ASCII 160) for ',' and ',' for '.'
+        String expecting = "-2Â 100 3,142";
         String result = st.render(new Locale("pl"));
         assertEquals(expecting, result);
     }
