@@ -177,7 +177,7 @@ public class TestRenderers extends BaseTest {
         st.add("x", -2100);
         st.add("y", 3.14159);
         // Polish uses ' ' (ASCII 160) for ',' and ',' for '.'
-        String expecting = "-2 100 3,142";
+        String expecting = "-2\u00A0100 3,142";
         String result = st.render(new Locale("pl"));
         assertEquals(expecting, result);
     }
