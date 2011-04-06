@@ -116,17 +116,14 @@ public class Compiler {
 		{
 			lexer = new STLexer(group.errMgr, is, templateToken,
 						group.delimiterStartChar, group.delimiterStopChar) {
-				/** Throw out \n tokens inside BIGSTRING_NO_NL */
+				/** Throw out \n and indentation tokens inside BIGSTRING_NO_NL */
 				@Override
 				public Token nextToken() {
 					Token t = super.nextToken();
-					while ( t.getType() == STLexer.NEWLINE ) {
+					while ( t.getType() == STLexer.NEWLINE ||
+						    t.getType()==STLexer.INDENT )
+					{
 						t = super.nextToken();
-					}
-					if ( t.getType()==STLexer.INDENT ) {
-						// flip to TEXT so it prints; indent only prints
-						// when we're at start of line
-						t.setType(TEXT);
 					}
 					return t;
 				}

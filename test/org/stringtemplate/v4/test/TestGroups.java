@@ -680,48 +680,4 @@ public class TestGroups extends BaseTest {
 		result = st.render();
 		assertEquals(expected, result);
 	}
-
-	@Test public void testNoNewlineTemplate() throws Exception {
-		String template =
-			"t(x) ::= <%\n" +
-			"[  <if(!x)>" +
-			"<else>" +
-			"<x>\n" +
-			"<endif>" +
-			"\n" +
-			"\n" +
-			"  ]\n" +
-			"\n" +
-			"%>\n";
-		STGroup g = new STGroupString(template);
-		ST st = g.getInstanceOf("t");
-		st.add("x", 99);
-		String expected = "[  99  ]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
-	@Test public void testWSNoNewlineTemplate() throws Exception {
-		String template =
-			"t(x) ::= <%\n" +
-			"\n" +
-			"%>\n";
-		STGroup g = new STGroupString(template);
-		ST st = g.getInstanceOf("t");
-		st.add("x", 99);
-		String expected = "";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
-	@Test public void testEmptyNoNewlineTemplate() throws Exception {
-		String template =
-			"t(x) ::= <%%>\n";
-		STGroup g = new STGroupString(template);
-		ST st = g.getInstanceOf("t");
-		st.add("x", 99);
-		String expected = "";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
 }

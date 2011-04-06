@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+April 6, 2011
+
+* Ignore indentation in <% .. %> templates but keep white space between elements
+
 April 4, 2011
 
 * in TestSubtemplates.java there was an extra (bad) import
