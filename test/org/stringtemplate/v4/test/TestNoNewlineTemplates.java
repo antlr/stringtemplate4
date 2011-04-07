@@ -35,13 +35,6 @@ import org.stringtemplate.v4.STGroupString;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by IntelliJ IDEA.
- * User: parrt
- * Date: 4/6/11
- * Time: 3:58 PM
- * To change this template use File | Settings | File Templates.
- */
 public class TestNoNewlineTemplates extends BaseTest {
 		@Test
 		public void testNoNewlineTemplate() throws Exception {
