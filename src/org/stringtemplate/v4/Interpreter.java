@@ -36,6 +36,7 @@ import org.stringtemplate.v4.debug.InterpEvent;
 import org.stringtemplate.v4.misc.*;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
@@ -146,6 +147,14 @@ public class Interpreter {
 			int n = _exec(out, self);
 			return n;
 		}
+		catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			errMgr.runTimeError(this, self, current_ip, ErrorType.INTERNAL_ERROR,
+								"internal error caused by: "+sw.toString());
+			return 0;
+		}
 		finally {
 			current_ip = currentScope.ret_ip;
 			currentScope = currentScope.parent; // pop scope
@@ -177,12 +186,6 @@ public class Interpreter {
 					load_str(self,ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					break;
-/*				case Bytecode.INSTR_LOAD_STR :
-					int strIndex = getShort(code, ip);
-					ip += Bytecode.OPND_SIZE_IN_BYTES;
-					operands[++sp] = self.impl.strings[strIndex];
-					break;
-					*/
 				case Bytecode.INSTR_LOAD_ATTR :
 					nameIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;

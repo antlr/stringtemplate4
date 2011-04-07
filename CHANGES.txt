@@ -10,6 +10,13 @@ CHANGES
 April 6, 2011
 
 * Ignore indentation in <% .. %> templates but keep white space between elements
+* Added better error msg for internal errors during template evaluation.
+  context [outputFile parser genericParser rule ruleBlockSingleAlt alt element
+   ruleRefAndListLabel ruleRef] 1:1 internal error caused by: java.lang.NullPointerException
+	at org.stringtemplate.v4.ST.rawSetAttribute(ST.java:294)
+	at org.stringtemplate.v4.Interpreter.storeArgs(Interpreter.java:576)
+	at org.stringtemplate.v4.Interpreter.super_new(Interpreter.java:495)
+    ...
 
 April 4, 2011
 
