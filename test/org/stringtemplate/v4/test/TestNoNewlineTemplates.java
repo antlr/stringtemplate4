@@ -46,13 +46,13 @@ public class TestNoNewlineTemplates extends BaseTest {
 			"<endif>" +
 			"\n" +
 			"\n" +
-			"  ]\n" +
+			"]\n" +
 			"\n" +
 			"%>\n";
 		STGroup g = new STGroupString(template);
 		ST st = g.getInstanceOf("t");
 		st.add("x", 99);
-		String expected = "[  99  ]";
+		String expected = "[  99]";
 		String result = st.render();
 		assertEquals(expected, result);
 	}
