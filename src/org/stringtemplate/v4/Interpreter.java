@@ -443,15 +443,16 @@ public class Interpreter {
 					n += n1;
 					nwline += n1;
 					break;
-				case Bytecode.INSTR_WRITE_LOCAL:
-					valueIndex = getShort(code, ip);
-					ip += Bytecode.OPND_SIZE_IN_BYTES;
-					o = self.locals[valueIndex];
-					if ( o==ST.EMPTY_ATTR ) o = null;
-					n1 = writeObjectNoOptions(out, self, o);
-					n += n1;
-					nwline += n1;
-					break;
+				// TODO: generate this optimization
+//				case Bytecode.INSTR_WRITE_LOCAL:
+//					valueIndex = getShort(code, ip);
+//					ip += Bytecode.OPND_SIZE_IN_BYTES;
+//					o = self.locals[valueIndex];
+//					if ( o==ST.EMPTY_ATTR ) o = null;
+//					n1 = writeObjectNoOptions(out, self, o);
+//					n += n1;
+//					nwline += n1;
+//					break;
 				default :
 					errMgr.internalError(self, "invalid bytecode @ "+(ip-1)+": "+opcode, null);
 					self.impl.dump();
