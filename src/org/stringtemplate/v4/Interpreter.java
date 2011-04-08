@@ -631,11 +631,10 @@ public class Interpreter {
 			out.popAnchorPoint();
 		}
         if ( debug ) {
-            Interval templateLocation = self.impl.sourceMap[current_ip];
-            int exprStart=templateLocation.a, exprStop=templateLocation.b;
 			EvalExprEvent e = new EvalExprEvent(currentScope,
 												start, out.index() - 1,
-												exprStart, exprStop);
+												getExprStartChar(self),
+												getExprStopChar(self));
 			trackDebugEvent(self, e);
         }
 		return n;
