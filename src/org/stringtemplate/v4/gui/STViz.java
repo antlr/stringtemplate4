@@ -149,6 +149,7 @@ public class STViz {
 				for (EvalTemplateEvent s : stack) path[j++] = new JTreeSTModel.Wrapper(s);
 				TreePath p = new TreePath(path);
 				viewFrame.tree.setSelectionPath(p);
+				viewFrame.tree.scrollPathToVisible(p);
 				updateCurrentST(viewFrame);
 			}
 		};
