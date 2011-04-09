@@ -1114,6 +1114,7 @@ public class Interpreter {
 		if ( self.impl.nativeGroup.isDictionary(name) ) {
 			return self.impl.nativeGroup.rawGetDictionary(name);
 		}
+
 		// not found, report unknown attr
 		if ( ST.cachedNoSuchPropException ==null ) {
 			ST.cachedNoSuchPropException = new STNoSuchPropertyException();
@@ -1184,6 +1185,29 @@ public class Interpreter {
 		while ( p!=null ) {
 			if ( topdown ) stack.add(0,p.st);
 			else stack.add(p.st);
+			p = p.parent;
+		}
+		return stack;
+	}
+
+	public static List<InstanceScope> getScopeStack(InstanceScope scope, boolean topdown) {
+		List<InstanceScope> stack = new LinkedList<InstanceScope>();
+		InstanceScope p = scope;
+		while ( p!=null ) {
+			if ( topdown ) stack.add(0,p);
+			else stack.add(p);
+			p = p.parent;
+		}
+		return stack;
+	}
+
+	public static List<EvalTemplateEvent> getEvalTemplateEventStack(InstanceScope scope, boolean topdown) {
+		List<EvalTemplateEvent> stack = new LinkedList<EvalTemplateEvent>();
+		InstanceScope p = scope;
+		while ( p!=null ) {
+			EvalTemplateEvent eval = (EvalTemplateEvent)p.events.get(p.events.size()-1);
+			if ( topdown ) stack.add(0,eval);
+			else stack.add(eval);
 			p = p.parent;
 		}
 		return stack;

@@ -31,25 +31,23 @@ import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeAdaptor;
 import org.stringtemplate.v4.*;
-import org.stringtemplate.v4.debug.AddAttributeEvent;
 import org.stringtemplate.v4.debug.EvalTemplateEvent;
 import org.stringtemplate.v4.debug.InterpEvent;
 import org.stringtemplate.v4.misc.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public class STViz {
 	//public ST currentST; // current ST selected in template tree
@@ -115,19 +113,19 @@ public class STViz {
 		);
 
 		// Track selection of attr but do nothing for now
-        viewFrame.attributes.addListSelectionListener(
-            new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent e) {
-                    int minIndex = viewFrame.attributes.getMinSelectionIndex();
-                    int maxIndex = viewFrame.attributes.getMaxSelectionIndex();
-                    for (int i = minIndex; i <= maxIndex; i++) {
-                        if (viewFrame.attributes.isSelectedIndex(i)) {
-                            //System.out.println("index="+i);
-                        }
-                    }
-                }
-            }
-        );
+//        viewFrame.attributes.addListSelectionListener(
+//            new ListSelectionListener() {
+//                public void valueChanged(ListSelectionEvent e) {
+//                    int minIndex = viewFrame.attributes.getMinSelectionIndex();
+//                    int maxIndex = viewFrame.attributes.getMaxSelectionIndex();
+//                    for (int i = minIndex; i <= maxIndex; i++) {
+//                        if (viewFrame.attributes.isSelectedIndex(i)) {
+//                            //System.out.println("index="+i);
+//                        }
+//                    }
+//                }
+//            }
+//        );
 
         viewFrame.output.setText(output);
 
@@ -140,18 +138,22 @@ public class STViz {
                 int dot = e.getDot();
                 InterpEvent de = findEventAtOutputLocation(allEvents, dot);
                 if ( de==null ) currentScope = tmodel.root.event.scope;
-                else currentScope = de.scope;
-                updateCurrentST(viewFrame);
-            }
-        };
+				else currentScope = de.scope;
 
-        viewFrame.output.addCaretListener(caretListenerLabel);
+				// update tree view of template hierarchy
+				// compute path from root to currentST, create TreePath for tree widget
+				List<EvalTemplateEvent> stack = Interpreter.getEvalTemplateEventStack(currentScope, true);
+//				System.out.println("\nselect path="+stack);
+				Object[] path = new Object[stack.size()];
+				int j = 0;
+				for (EvalTemplateEvent s : stack) path[j++] = new JTreeSTModel.Wrapper(s);
+				TreePath p = new TreePath(path);
+				viewFrame.tree.setSelectionPath(p);
+				updateCurrentST(viewFrame);
+			}
+		};
 
-        viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        viewFrame.pack();
-        viewFrame.setSize(900,700);
-        viewFrame.topSplitPane.setBorder(null);
-        viewFrame.overallSplitPane.setBorder(null);
+		viewFrame.output.addCaretListener(caretListenerLabel);
 
         // ADD ERRORS
         if ( errors==null || errors.size()==0 ) {
@@ -190,36 +192,48 @@ public class STViz {
             }
         );
 
-        //m.topSplitPane.setResizeWeight(0.15);
-        viewFrame.bottomSplitPane.setBorder(null);
-        //m.bottomSplitPane.setResizeWeight(0.15);
-        viewFrame.treeScrollPane.setPreferredSize(new Dimension(120,400));
-        viewFrame.bottomSplitPane.setPreferredSize(new Dimension(120,200));
+		Border empty = BorderFactory.createEmptyBorder();
+		viewFrame.treeContentSplitPane.setBorder(empty);
+		viewFrame.outputTemplateSplitPane.setBorder(empty);
+		viewFrame.templateBytecodeTraceTabPanel.setBorder(empty);
+		viewFrame.treeAttributesSplitPane.setBorder(empty);
+
+
+		viewFrame.treeContentSplitPane.setOneTouchExpandable(true);
+		viewFrame.outputTemplateSplitPane.setOneTouchExpandable(true);
+		viewFrame.treeContentSplitPane.setDividerSize(10);
+		viewFrame.outputTemplateSplitPane.setDividerSize(8);
+		viewFrame.treeContentSplitPane.setContinuousLayout(true);
+		viewFrame.treeAttributesSplitPane.setContinuousLayout(true);
+		viewFrame.outputTemplateSplitPane.setContinuousLayout(true);
+
+		viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		viewFrame.pack();
+		viewFrame.setSize(900, 700);
+
         viewFrame.setVisible(true);
     }
 
 	private void updateCurrentST(STViewFrame m) {
 //		System.out.println("updateCurrentST(): currentScope.st="+currentScope.st);
 		// update all views according to currentScope.st
-		updateStack(currentScope, m); 					 // STACK
-		updateAttributes(currentScope, m); 			 // ATTRIBUTES
+		updateStack(currentScope, m); 					   // STACK
+		updateAttributes(currentScope, m); 			 	   // ATTRIBUTES
 		m.bytecode.moveCaretPosition(0);
         m.bytecode.setText(currentScope.st.impl.disasm()); // BYTECODE DIS.
 		m.template.moveCaretPosition(0);
 		m.template.setText(currentScope.st.impl.template); // TEMPLATE SRC
 
-		// update tree view of template hierarchy and select assoc. text substring
-
 		// highlight output text and, if {...} subtemplate, region in ST src
 		// get last event for currentScope.st; it's the event that captures ST eval
 		List<InterpEvent> events = currentScope.events;
 		EvalTemplateEvent e = (EvalTemplateEvent)events.get(events.size() - 1);
-		m.output.moveCaretPosition(e.outputStartChar);
+		//m.output.moveCaretPosition(e.outputStartChar);
 		highlight(m.output, e.outputStartChar, e.outputStopChar);
 		if ( currentScope.st.isAnonSubtemplate() ) {
 			Interval r = currentScope.st.impl.getTemplateRange();
 //				System.out.println("currentScope.st src range="+r);
-			m.template.moveCaretPosition(r.a);
+			//m.template.moveCaretPosition(r.a);
 			highlight(m.template, r.a, r.b);
 		}
 	}
@@ -237,43 +251,40 @@ public class STViz {
 	}
 
 	protected void updateAttributes(final InstanceScope scope, final STViewFrame m) {
+		//System.out.println("updateAttributes: "+Interpreter.getEnclosingInstanceStackString(scope) );
+		m.attributes.setModel( new JTreeScopeStackModel(scope) );
+		m.attributes.setRootVisible(false);
+		m.attributes.setShowsRootHandles(true);
 		//System.out.println("add events="+ st.addAttrEvents);
-		ST st = scope.st;
-		final DefaultListModel attrModel = new DefaultListModel();
-		final Map<String,Object> attrs = st.getAttributes();
-		/*
-		class Pair {
-			public Object a, b;
-			public Pair(Object a, Object b) {this.a=a; this.b=b;}
-			public String toString() { return a.toString()+" = "+b; }
-		}
-		 */
-		if ( attrs!=null ) {
-			for (String a : attrs.keySet()) {
-				if ( st.debugState!=null && st.debugState.addAttrEvents!=null ) {
-					List<AddAttributeEvent> events = st.debugState.addAttrEvents.get(a);
-					StringBuilder locations = new StringBuilder();
-					int i = 0;
-					if ( events!=null ) {
-						for (AddAttributeEvent ae : events) {
-							if ( i>0 ) locations.append(", ");
-							locations.append(ae.getFileName()+":"+ae.getLine());
-							i++;
-						}
-					}
-					if ( locations.length()>0 ) {
-						attrModel.addElement(a+" = "+attrs.get(a)+" @ "+locations.toString());
-					}
-					else {
-						attrModel.addElement(a+" = "+attrs.get(a));
-					}
-				}
-				else {
-					attrModel.addElement(a+" = "+attrs.get(a));
-				}
-			}
-		}
-		m.attributes.setModel(attrModel);
+//		ST st = scope.st;
+//		final DefaultListModel attrModel = new DefaultListModel();
+//		final Map<String,Object> attrs = st.getAttributes();
+//		if ( attrs!=null ) {
+//			for (String a : attrs.keySet()) {
+//				if ( st.debugState!=null && st.debugState.addAttrEvents!=null ) {
+//					List<AddAttributeEvent> events = st.debugState.addAttrEvents.get(a);
+//					StringBuilder locations = new StringBuilder();
+//					int i = 0;
+//					if ( events!=null ) {
+//						for (AddAttributeEvent ae : events) {
+//							if ( i>0 ) locations.append(", ");
+//							locations.append(ae.getFileName()+":"+ae.getLine());
+//							i++;
+//						}
+//					}
+//					if ( locations.length()>0 ) {
+//						attrModel.addElement(a+" = "+attrs.get(a)+" @ "+locations.toString());
+//					}
+//					else {
+//						attrModel.addElement(a+" = "+attrs.get(a));
+//					}
+//				}
+//				else {
+//					attrModel.addElement(a+" = "+attrs.get(a));
+//				}
+//			}
+//		}
+//		m.attributes.setModel(attrModel);
 	}
 
 	protected void updateStack(InstanceScope scope, STViewFrame m) {

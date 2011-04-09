@@ -42,6 +42,18 @@ public class JTreeSTModel implements TreeModel {
 	public static class Wrapper {
 		EvalTemplateEvent event;
 		public Wrapper(EvalTemplateEvent event) { this.event = event; }
+
+		@Override
+		public int hashCode() {
+			return event.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			//System.out.println(event+"=="+((Wrapper)o).event+" is "+(this.event == ((Wrapper)o).event));
+			return this.event == ((Wrapper)o).event;
+		}
+
 		public String toString() {
 			ST st = event.scope.st;
 			if ( st.isAnonSubtemplate() ) return "{...}";

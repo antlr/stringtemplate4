@@ -45,17 +45,17 @@ public class STViewFrame extends JFrame {
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
 		// Generated using JFormDesigner non-commercial license
-		overallSplitPane = new JSplitPane();
-		mainSplitPane = new JSplitPane();
-		topSplitPane = new JSplitPane();
+		toolBar1 = new JToolBar();
+		treeContentSplitPane = new JSplitPane();
+		treeAttributesSplitPane = new JSplitPane();
 		treeScrollPane = new JScrollPane();
 		tree = new JTree();
+		attributeScrollPane = new JScrollPane();
+		attributes = new JTree();
+		outputTemplateSplitPane = new JSplitPane();
 		scrollPane7 = new JScrollPane();
 		output = new JTextPane();
-		bottomSplitPane = new JSplitPane();
-		attributeScrollPane = new JScrollPane();
-		attributes = new JList();
-		tabbedPane1 = new JTabbedPane();
+		templateBytecodeTraceTabPanel = new JTabbedPane();
 		panel1 = new JPanel();
 		scrollPane3 = new JScrollPane();
 		template = new JTextPane();
@@ -70,121 +70,118 @@ public class STViewFrame extends JFrame {
 
 		//======== this ========
 		Container contentPane = getContentPane();
-		contentPane.setLayout(new GridLayout(1, 0, 0, 10));
+		contentPane.setLayout(new GridBagLayout());
+		((GridBagLayout)contentPane.getLayout()).columnWidths = new int[] {0, 0};
+		((GridBagLayout)contentPane.getLayout()).rowHeights = new int[] {0, 0, 0, 0};
+		((GridBagLayout)contentPane.getLayout()).columnWeights = new double[] {1.0, 1.0E-4};
+		((GridBagLayout)contentPane.getLayout()).rowWeights = new double[] {0.0, 1.0, 0.0, 1.0E-4};
+		contentPane.add(toolBar1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+			new Insets(0, 0, 0, 0), 0, 0));
 
-		//======== overallSplitPane ========
+		//======== treeContentSplitPane ========
 		{
-			overallSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-			overallSplitPane.setContinuousLayout(true);
-			overallSplitPane.setOneTouchExpandable(true);
-			overallSplitPane.setResizeWeight(0.9);
+			treeContentSplitPane.setResizeWeight(0.25);
 
-			//======== mainSplitPane ========
+			//======== treeAttributesSplitPane ========
 			{
-				mainSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-				mainSplitPane.setResizeWeight(0.8);
-				mainSplitPane.setOneTouchExpandable(true);
-				mainSplitPane.setContinuousLayout(true);
+				treeAttributesSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+				treeAttributesSplitPane.setResizeWeight(0.7);
 
-				//======== topSplitPane ========
+				//======== treeScrollPane ========
 				{
-					topSplitPane.setContinuousLayout(true);
-					topSplitPane.setResizeWeight(0.15);
-					topSplitPane.setOneTouchExpandable(true);
-
-					//======== treeScrollPane ========
-					{
-						treeScrollPane.setViewportView(tree);
-					}
-					topSplitPane.setLeftComponent(treeScrollPane);
-
-					//======== scrollPane7 ========
-					{
-						scrollPane7.setViewportView(output);
-					}
-					topSplitPane.setRightComponent(scrollPane7);
+					treeScrollPane.setViewportView(tree);
 				}
-				mainSplitPane.setTopComponent(topSplitPane);
+				treeAttributesSplitPane.setTopComponent(treeScrollPane);
 
-				//======== bottomSplitPane ========
+				//======== attributeScrollPane ========
 				{
-					bottomSplitPane.setResizeWeight(0.15);
-					bottomSplitPane.setOneTouchExpandable(true);
-					bottomSplitPane.setContinuousLayout(true);
-
-					//======== attributeScrollPane ========
-					{
-						attributeScrollPane.setViewportView(attributes);
-					}
-					bottomSplitPane.setLeftComponent(attributeScrollPane);
-
-					//======== tabbedPane1 ========
-					{
-
-						//======== panel1 ========
-						{
-							panel1.setLayout(new BoxLayout(panel1, BoxLayout.X_AXIS));
-
-							//======== scrollPane3 ========
-							{
-								scrollPane3.setViewportView(template);
-							}
-							panel1.add(scrollPane3);
-
-							//======== scrollPane2 ========
-							{
-								scrollPane2.setViewportView(ast);
-							}
-							panel1.add(scrollPane2);
-						}
-						tabbedPane1.addTab("template", panel1);
-
-
-						//======== scrollPane15 ========
-						{
-							scrollPane15.setViewportView(bytecode);
-						}
-						tabbedPane1.addTab("bytecode", scrollPane15);
-
-
-						//======== scrollPane1 ========
-						{
-							scrollPane1.setViewportView(trace);
-						}
-						tabbedPane1.addTab("trace", scrollPane1);
-
-					}
-					bottomSplitPane.setRightComponent(tabbedPane1);
+					attributeScrollPane.setViewportView(attributes);
 				}
-				mainSplitPane.setBottomComponent(bottomSplitPane);
+				treeAttributesSplitPane.setBottomComponent(attributeScrollPane);
 			}
-			overallSplitPane.setTopComponent(mainSplitPane);
+			treeContentSplitPane.setLeftComponent(treeAttributesSplitPane);
 
-			//======== errorScrollPane ========
+			//======== outputTemplateSplitPane ========
 			{
-				errorScrollPane.setViewportView(errorList);
+				outputTemplateSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+				outputTemplateSplitPane.setResizeWeight(0.7);
+
+				//======== scrollPane7 ========
+				{
+					scrollPane7.setViewportView(output);
+				}
+				outputTemplateSplitPane.setTopComponent(scrollPane7);
+
+				//======== templateBytecodeTraceTabPanel ========
+				{
+
+					//======== panel1 ========
+					{
+						panel1.setLayout(new BoxLayout(panel1, BoxLayout.X_AXIS));
+
+						//======== scrollPane3 ========
+						{
+							scrollPane3.setViewportView(template);
+						}
+						panel1.add(scrollPane3);
+
+						//======== scrollPane2 ========
+						{
+							scrollPane2.setViewportView(ast);
+						}
+						panel1.add(scrollPane2);
+					}
+					templateBytecodeTraceTabPanel.addTab("template", panel1);
+
+
+					//======== scrollPane15 ========
+					{
+						scrollPane15.setViewportView(bytecode);
+					}
+					templateBytecodeTraceTabPanel.addTab("bytecode", scrollPane15);
+
+
+					//======== scrollPane1 ========
+					{
+						scrollPane1.setViewportView(trace);
+					}
+					templateBytecodeTraceTabPanel.addTab("trace", scrollPane1);
+
+				}
+				outputTemplateSplitPane.setBottomComponent(templateBytecodeTraceTabPanel);
 			}
-			overallSplitPane.setBottomComponent(errorScrollPane);
+			treeContentSplitPane.setRightComponent(outputTemplateSplitPane);
 		}
-		contentPane.add(overallSplitPane);
+		contentPane.add(treeContentSplitPane, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+			new Insets(0, 0, 0, 0), 0, 0));
+
+		//======== errorScrollPane ========
+		{
+			errorScrollPane.setViewportView(errorList);
+		}
+		contentPane.add(errorScrollPane, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
+			GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+			new Insets(0, 0, 0, 0), 0, 0));
 		pack();
 		setLocationRelativeTo(getOwner());
-        // JFormDesigner - End of component initialization  //GEN-END:initComponents
+		// JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
 	// Generated using JFormDesigner non-commercial license
-	protected JSplitPane overallSplitPane;
-	private JSplitPane mainSplitPane;
-	protected JSplitPane topSplitPane;
-	protected JScrollPane treeScrollPane;
+	private JToolBar toolBar1;
+	public JSplitPane treeContentSplitPane;
+	public JSplitPane treeAttributesSplitPane;
+	public JScrollPane treeScrollPane;
 	protected JTree tree;
+	protected JScrollPane attributeScrollPane;
+	protected JTree attributes;
+	public JSplitPane outputTemplateSplitPane;
 	protected JScrollPane scrollPane7;
 	public JTextPane output;
-	protected JSplitPane bottomSplitPane;
-	protected JScrollPane attributeScrollPane;
-	protected JList attributes;
-	protected JTabbedPane tabbedPane1;
+	public JTabbedPane templateBytecodeTraceTabPanel;
 	private JPanel panel1;
 	private JScrollPane scrollPane3;
 	public JTextPane template;
@@ -194,7 +191,7 @@ public class STViewFrame extends JFrame {
 	protected JTextPane bytecode;
 	private JScrollPane scrollPane1;
 	public JTextPane trace;
-	protected JScrollPane errorScrollPane;
+	public JScrollPane errorScrollPane;
 	protected JList errorList;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

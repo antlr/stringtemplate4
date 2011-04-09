@@ -7,7 +7,22 @@ University of San Francisco
 
 CHANGES
 
-April 6, 2011
+April 9, 2011
+
+* Sam pointed out that regions didn't work with <% %>
+* Cleaned up STViz.
+* STViz expands template attribute view when you click in output
+* STViz template and attribute tree views now grouped.
+
+April 8, 2011
+
+* Added scope tree showing all inherited attributes (dynamic scoping) in lower
+  left "attributes" pane.
+* Undid some bugs I introduced concerning selecting templates.  Tried to
+  move the cursor in output window which triggered multiple / wrong update
+  events.
+
+ April 6, 2011
 
 * Ignore indentation in <% .. %> templates but keep white space between elements
 * Added better error msg for internal errors during template evaluation.
