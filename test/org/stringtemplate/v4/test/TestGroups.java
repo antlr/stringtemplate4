@@ -324,6 +324,17 @@ public class TestGroups extends BaseTest {
 		assertEquals(expecting, result);
 	}
 
+	@Test public void testEarlyEvalOfDefaultArgs() throws Exception {
+		String templates =
+			"s(x,y={<(x)>}) ::= \"<x><y>\"\n"; // should see x in def arg
+		STGroup group = new STGroupString(templates);
+		ST b = group.getInstanceOf("s");
+		b.add("x", "a");
+		String expecting = "aa";
+		String result = b.render();
+		assertEquals(expecting, result);
+	}
+
 	@Test public void testDefaultArgumentAsSimpleTemplate() throws Exception {
 		String templates =
 				"stat(name,value={99}) ::= \"x=<value>; // <name>\""+newline

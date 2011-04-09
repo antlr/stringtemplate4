@@ -355,7 +355,6 @@ public class ST {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
 											 impl.nativeGroup.errMgr,
 											 false);
-		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
     }
 
@@ -364,7 +363,6 @@ public class ST {
 											 locale,
 											 impl.nativeGroup.errMgr,
 											 false);
-		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
 	}
 
@@ -372,7 +370,6 @@ public class ST {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
 											 new ErrorManager(listener),
 											 false);
-		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
 	}
 
@@ -381,7 +378,6 @@ public class ST {
 											 locale,
 											 new ErrorManager(listener),
 											 false);
-		interp.setDefaultArguments(out, this);
 		return interp.exec(out, this);
 	}
 

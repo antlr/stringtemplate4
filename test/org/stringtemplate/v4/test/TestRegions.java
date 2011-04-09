@@ -385,4 +385,23 @@ public class TestRegions extends BaseTest {
 		String result = st.render();
 		assertEquals(expected, result);
 	}
+
+	@Test public void testEmbeddedSubtemplate() throws Exception {
+		// fix so we ignore inside {...}
+		String dir = getRandomDir();
+		String groupFile =
+			"a() ::= <<\n" +
+			"[\n" +
+			"  <{\n" +
+			"  bar\n" +
+			"  }>\n" +
+			"]\n" +
+			">>\n";
+		writeFile(dir, "group.stg", groupFile);
+		STGroup group = new STGroupFile(dir+"/group.stg");
+		ST st = group.getInstanceOf("a");
+		String expected = "["+newline+"  bar"+newline+"]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 }

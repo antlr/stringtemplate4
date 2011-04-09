@@ -137,15 +137,10 @@ public class Interpreter {
 
 	/** Execute template self and return how many characters it wrote to out */
 	public int exec(STWriter out, ST self) {
-		currentScope = new InstanceScope(currentScope, self); // push scope
-		if ( debug ) {
-			currentScope.events = new ArrayList<InterpEvent>();
-			currentScope.childEvalTemplateEvents = new ArrayList<EvalTemplateEvent>();
-		}
-		currentScope.ret_ip = current_ip;
+		pushScope(self);
 		try {
-			int n = _exec(out, self);
-			return n;
+			setDefaultArguments(out, self);
+			return _exec(out, self);
 		}
 		catch (Exception e) {
 			StringWriter sw = new StringWriter();
@@ -155,10 +150,7 @@ public class Interpreter {
 								"internal error caused by: "+sw.toString());
 			return 0;
 		}
-		finally {
-			current_ip = currentScope.ret_ip;
-			currentScope = currentScope.parent; // pop scope
-		}
+		finally { popScope(); }
 	}
 
 	protected int _exec(STWriter out, ST self) {
@@ -654,7 +646,6 @@ public class Interpreter {
 		}
 		if ( o instanceof ST ) {
 			ST st = (ST)o;
-			setDefaultArguments(out, st);
 			if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
 				// if we have a wrap string, then inform writer it
 				// might need to wrap
@@ -1127,7 +1118,8 @@ public class Interpreter {
 	 *  invoking template or by setAttribute directly.  Note
 	 *  that the default values may be templates.
 	 *
-	 *  The evaluation context is the template enclosing invokedST.
+	 *  The evaluation context is the invokedST template itself so
+	 *  template default args can see other args.
 	 */
 	public void setDefaultArguments(STWriter out, ST invokedST) {
 		if ( invokedST.impl.formalArguments==null ||
@@ -1151,6 +1143,7 @@ public class Interpreter {
 				String defArgTemplate = arg.defaultValueToken.getText();
 				if ( defArgTemplate.startsWith("{"+group.delimiterStartChar+"(") &&
 					defArgTemplate.endsWith(")"+group.delimiterStopChar+"}") ) {
+
 					invokedST.rawSetAttribute(arg.name, toString(out, invokedST, defaultArgST));
 				}
 				else {
@@ -1161,6 +1154,20 @@ public class Interpreter {
 				invokedST.rawSetAttribute(arg.name, arg.defaultValue);
 			}
 		}
+	}
+
+	private void popScope() {
+		current_ip = currentScope.ret_ip;
+		currentScope = currentScope.parent; // pop
+	}
+
+	private void pushScope(ST self) {
+		currentScope = new InstanceScope(currentScope, self); // push
+		if ( debug ) {
+			currentScope.events = new ArrayList<InterpEvent>();
+			currentScope.childEvalTemplateEvents = new ArrayList<EvalTemplateEvent>();
+		}
+		currentScope.ret_ip = current_ip;
 	}
 
 	/** If an instance of x is enclosed in a y which is in a z, return

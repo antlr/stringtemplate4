@@ -13,6 +13,8 @@ April 9, 2011
 * Cleaned up STViz.
 * STViz expands template attribute view when you click in output
 * STViz template and attribute tree views now grouped.
+* default arguments were not evaluated in context of invoked template;
+  couldn't see other args.
 
 April 8, 2011
 
