@@ -15,6 +15,9 @@ April 9, 2011
 * STViz template and attribute tree views now grouped.
 * default arguments were not evaluated in context of invoked template;
   couldn't see other args.
+* Added '...' pass through arg back in. Only allowed with named arg lists
+  or as sole arg. Not allowed in <(name)()> indirect includes.
+  Inserts new passthru bytecode to set any unset args.
 
 April 8, 2011
 

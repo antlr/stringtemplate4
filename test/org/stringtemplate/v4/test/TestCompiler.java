@@ -97,6 +97,30 @@ public class TestCompiler extends BaseTest {
 		assertEquals(stringsExpected, stringsResult);
 	}
 
+	@Test public void testIncludeWithPassThrough() throws Exception {
+		String template = "hi <foo(...)>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"write_str 0, args, passthru 1, new_box_args 1, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[hi , foo]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
+
+	@Test public void testIncludeWithPartialPassThrough() throws Exception {
+		String template = "hi <foo(x=y,...)>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"write_str 0, args, load_attr 1, store_arg 2, passthru 3, new_box_args 3, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[hi , y, x, foo]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
+
 	@Test public void testSuperInclude() throws Exception {
 		String template = "<super.foo()>";
 		CompiledST code = new Compiler().compile(template);

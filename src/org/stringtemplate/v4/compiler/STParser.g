@@ -207,7 +207,7 @@ expr:(e)(args)       convert e to a string template name and apply to expr
 mapTemplateRef
 	:	ID '(' args ')'							-> ^(INCLUDE ID args?)
 	|	subtemplate
-	|	lp='(' mapExpr rp=')' '(' argExprList? ')'-> ^(INCLUDE_IND mapExpr argExprList?)
+	|	lp='(' mapExpr rp=')' '(' argExprList? ')' -> ^(INCLUDE_IND mapExpr argExprList?)
 	;
 
 memberExpr
@@ -237,13 +237,14 @@ primary
 	|	list
 	|	{$conditional.size()>0}?=>  '('! conditional ')'!
 	|	{$conditional.size()==0}?=> lp='(' expr ')'
-		(	'(' argExprList? ')'				-> ^(INCLUDE_IND[$lp] expr argExprList?)
+		(	'(' argExprList? ')'		        -> ^(INCLUDE_IND[$lp] expr argExprList?)
 		|										-> ^(TO_STR[$lp] expr)
 		)
 	;
 
 args:	argExprList
-	|	namedArg ( ',' namedArg )* -> namedArg+
+	|	namedArg ( ',' namedArg )* (',' '...')? -> namedArg+ '...'?
+    |   '...'
 	|
 	;
 

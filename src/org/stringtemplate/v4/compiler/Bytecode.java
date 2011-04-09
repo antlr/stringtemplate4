@@ -76,41 +76,43 @@ public class Bytecode {
     public static final short INSTR_BRF             = 19;
 	public static final short INSTR_OPTIONS         = 20;  // push options map
 	public static final short INSTR_ARGS 			= 21;  // push args map
-    public static final short INSTR_LIST            = 22;
-    public static final short INSTR_ADD             = 23;
-    public static final short INSTR_TOSTR           = 24;
+	public static final short INSTR_PASSTHRU        = 22;
+	//public static final short INSTR_PASSTHRU_IND    = 23;
+    public static final short INSTR_LIST            = 24;
+    public static final short INSTR_ADD             = 25;
+    public static final short INSTR_TOSTR           = 26;
 
     // Predefined functions
-    public static final short INSTR_FIRST           = 25;
-    public static final short INSTR_LAST            = 26;
-    public static final short INSTR_REST            = 27;
-    public static final short INSTR_TRUNC           = 28;
-    public static final short INSTR_STRIP           = 29;
-    public static final short INSTR_TRIM            = 30;
-    public static final short INSTR_LENGTH          = 31;
-    public static final short INSTR_STRLEN          = 32;
-    public static final short INSTR_REVERSE         = 33;
+    public static final short INSTR_FIRST           = 27;
+    public static final short INSTR_LAST            = 28;
+    public static final short INSTR_REST            = 29;
+    public static final short INSTR_TRUNC           = 30;
+    public static final short INSTR_STRIP           = 31;
+    public static final short INSTR_TRIM            = 32;
+    public static final short INSTR_LENGTH          = 33;
+    public static final short INSTR_STRLEN          = 34;
+    public static final short INSTR_REVERSE         = 35;
 
-	public static final short INSTR_NOT             = 34;
-	public static final short INSTR_OR              = 35;
-	public static final short INSTR_AND             = 36;
+	public static final short INSTR_NOT             = 36;
+	public static final short INSTR_OR              = 37;
+	public static final short INSTR_AND             = 38;
 
-	public static final short INSTR_INDENT          = 37;
-    public static final short INSTR_DEDENT          = 38;
-    public static final short INSTR_NEWLINE         = 39;
+	public static final short INSTR_INDENT          = 39;
+    public static final short INSTR_DEDENT          = 40;
+    public static final short INSTR_NEWLINE         = 41;
 
-    public static final short INSTR_NOOP            = 40; // do nothing
-	public static final short INSTR_POP             = 41;
-	public static final short INSTR_NULL            = 42; // push null value
-	public static final short INSTR_TRUE            = 43; // push true value
-	public static final short INSTR_FALSE           = 44;
+    public static final short INSTR_NOOP            = 42; // do nothing
+	public static final short INSTR_POP             = 43;
+	public static final short INSTR_NULL            = 44; // push null value
+	public static final short INSTR_TRUE            = 45; // push true value
+	public static final short INSTR_FALSE           = 46;
 
 	// combined instructions
 
-	public static final short INSTR_WRITE_STR       = 45; // load_str n, write
-	public static final short INSTR_WRITE_LOCAL     = 46; // load_local n, write
+	public static final short INSTR_WRITE_STR       = 47; // load_str n, write
+	public static final short INSTR_WRITE_LOCAL     = 48; // TODO load_local n, write
 
-	public static final short MAX_BYTECODE          = 46;
+	public static final short MAX_BYTECODE          = 48;
 
     /** Used for assembly/disassembly; describes instruction set */
     public static Instruction[] instructions = new Instruction[] {
@@ -132,17 +134,19 @@ public class Bytecode {
         new Instruction("map"),
         new Instruction("rot_map", OperandType.INT),
         new Instruction("zip_map", OperandType.INT),
-        new Instruction("br", OperandType.ADDR),
-        new Instruction("brf", OperandType.ADDR),
+		new Instruction("br", OperandType.ADDR),
+		new Instruction("brf", OperandType.ADDR),
 		new Instruction("options"),
 		new Instruction("args"),
-        new Instruction("list"),
-        new Instruction("add"),
-        new Instruction("tostr"),
-        new Instruction("first"),
-        new Instruction("last"),
-        new Instruction("rest"),
-        new Instruction("trunc"),
+		new Instruction("passthru", OperandType.STRING),
+		null, //new Instruction("passthru_ind", OperandType.INT),
+		new Instruction("list"),
+		new Instruction("add"),
+		new Instruction("tostr"),
+		new Instruction("first"),
+		new Instruction("last"),
+		new Instruction("rest"),
+		new Instruction("trunc"),
         new Instruction("strip"),
         new Instruction("trim"),
         new Instruction("length"),

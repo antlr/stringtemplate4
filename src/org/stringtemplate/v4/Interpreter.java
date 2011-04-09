@@ -182,7 +182,10 @@ public class Interpreter {
 					nameIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = self.impl.strings[nameIndex];
-					try {o = getAttribute(self, name);}
+					try {
+						o = getAttribute(self, name);
+						if ( o==ST.EMPTY_ATTR ) o = null;
+					}
 					catch (STNoSuchPropertyException nspe) {
 						errMgr.runTimeError(this, self, current_ip, ErrorType.NO_SUCH_ATTRIBUTE, name);
 						o = null;
@@ -324,6 +327,13 @@ public class Interpreter {
 					break;
 				case Bytecode.INSTR_ARGS:
 					operands[++sp] = new HashMap<String,Object>();
+					break;
+				case Bytecode.INSTR_PASSTHRU :
+					nameIndex = getShort(code, ip);
+					ip += Bytecode.OPND_SIZE_IN_BYTES;
+					name = self.impl.strings[nameIndex];
+					attrs = (Map<String,Object>)operands[sp];
+					passthru(self, name, attrs);
 					break;
 				case Bytecode.INSTR_LIST :
 					operands[++sp] = new ArrayList<Object>();
@@ -509,6 +519,19 @@ public class Interpreter {
 		// get n args and store into st's attr list
 		storeArgs(self, attrs, st);
 		operands[++sp] = st;
+	}
+
+	void passthru(ST self, String templateName, Map<String,Object> attrs) {
+		CompiledST c = group.lookupTemplate(templateName);
+		if ( c==null ) return; // will get error later
+		for (FormalArgument arg : c.formalArguments.values()) {
+			if ( !attrs.containsKey(arg.name) ) {
+				//System.out.println("arg "+arg.name+" missing");
+				Object o = getAttribute(self, arg.name);
+				//System.out.println("setting to "+o);
+				attrs.put(arg.name, o);
+			}
+		}
 	}
 
 	void storeArgs(ST self, Map<String,Object> attrs, ST st) {
@@ -1087,6 +1110,8 @@ public class Interpreter {
 	/** Find an attr via dynamic scoping up enclosing scope chain.
 	 *  If not found, look for a map.  So attributes sent in to a template
 	 *  override dictionary names.
+	 *
+	 *  return EMPTY_ATTR if found def but no value
 	 */
 	public Object getAttribute(ST self, String name) {
 		InstanceScope scope = currentScope;
@@ -1096,7 +1121,6 @@ public class Interpreter {
 			if ( p.impl.formalArguments!=null ) localArg = p.impl.formalArguments.get(name);
 			if ( localArg!=null ) {
 				Object o = p.locals[localArg.index];
-				if ( o==ST.EMPTY_ATTR ) o = null;
 				return o;
 			}
 			scope = scope.parent; // look up enclosing scope chain

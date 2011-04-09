@@ -277,6 +277,45 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
+	@Test public void testPassThru() throws Exception {
+		String templates =
+			"a(x,y) ::= \"<b(...)>\"\n" +
+			"b(x,y) ::= \"<x><y>\"\n";
+		STGroup group = new STGroupString(templates);
+		ST a = group.getInstanceOf("a");
+		a.add("x", "x");
+		a.add("y", "y");
+		String expected = "xy";
+		String result = a.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testPassThruPartialArgs() throws Exception {
+		String templates =
+			"a(x,y) ::= \"<b(y={99},...)>\"\n" +
+			"b(x,y) ::= \"<x><y>\"\n";
+		STGroup group = new STGroupString(templates);
+		ST a = group.getInstanceOf("a");
+		a.add("x", "x");
+		a.add("y", "y");
+		String expected = "x99";
+		String result = a.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testPassThruNoMissingArgs() throws Exception {
+		String templates =
+			"a(x,y) ::= \"<b(y={99},x={1},...)>\"\n" +
+			"b(x,y) ::= \"<x><y>\"\n";
+		STGroup group = new STGroupString(templates);
+		ST a = group.getInstanceOf("a");
+		a.add("x", "x");
+		a.add("y", "y");
+		String expected = "199";
+		String result = a.render();
+		assertEquals(expected, result);
+	}
+
     @Test public void testDefineTemplate() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("inc", "x", "<x>+1");

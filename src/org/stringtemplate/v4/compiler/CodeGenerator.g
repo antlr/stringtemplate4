@@ -323,6 +323,7 @@ mapTemplateRef[int num_exprs]
 			args
 		)
 		{
+		if ( $args.passThru ) emit1($start, Bytecode.INSTR_PASSTHRU, $ID.text);
 		if ( $args.namedArgs ) emit1($INCLUDE, Bytecode.INSTR_NEW_BOX_ARGS, $ID.text);
 		else emit2($INCLUDE, Bytecode.INSTR_NEW, $ID.text, $args.n+$num_exprs);
 		}
@@ -344,7 +345,9 @@ mapTemplateRef[int num_exprs]
 			for (int i=1; i<=$num_exprs; i++) emit($INCLUDE_IND,Bytecode.INSTR_NULL);
 			}
 			args
-			{emit1($INCLUDE_IND, Bytecode.INSTR_NEW_IND, $args.n+$num_exprs);}
+			{
+			emit1($INCLUDE_IND, Bytecode.INSTR_NEW_IND, $args.n+$num_exprs);
+			}
 		 )
 	;
 
@@ -352,11 +355,13 @@ includeExpr
 	:	^(EXEC_FUNC ID expr?)		{func($ID);}
 	|	^(INCLUDE ID args)
 		{
+		if ( $args.passThru ) emit1($start, Bytecode.INSTR_PASSTHRU, $ID.text);
 		if ( $args.namedArgs ) emit1($INCLUDE, Bytecode.INSTR_NEW_BOX_ARGS, $ID.text);
 		else emit2($INCLUDE, Bytecode.INSTR_NEW, $ID.text, $args.n);
 		}
 	|	^(INCLUDE_SUPER ID args)
 		{
+		if ( $args.passThru ) emit1($start, Bytecode.INSTR_PASSTHRU, $ID.text);
 		if ( $args.namedArgs ) emit1($INCLUDE_SUPER, Bytecode.INSTR_SUPER_NEW_BOX_ARGS, $ID.text);
 		else emit2($INCLUDE_SUPER, Bytecode.INSTR_SUPER_NEW, $ID.text, $args.n);
 		}
@@ -385,19 +390,21 @@ primary
 	|	list
 	|	^(	INCLUDE_IND
 			expr 		{emit($INCLUDE_IND, Bytecode.INSTR_TOSTR);}
-			args		{emit1($INCLUDE_IND, Bytecode.INSTR_NEW_IND, $args.n);}
+			args        {emit1($INCLUDE_IND, Bytecode.INSTR_NEW_IND, $args.n);}
 		 )
 	|	^(TO_STR expr)	{emit($TO_STR, Bytecode.INSTR_TOSTR);}
 	;
 
 arg : expr ;
 
-args returns [int n=0, boolean namedArgs=false]
+args returns [int n=0, boolean namedArgs=false, boolean passThru]
 	:	( arg {$n++;} )+
 	|	{emit($args.start, Bytecode.INSTR_ARGS); $namedArgs=true;}
 		(	^(eq='=' ID expr)
 			{$n++; emit1($eq, Bytecode.INSTR_STORE_ARG, defineString($ID.text));}
 		)+
+		( '...' {$passThru=true;} )?
+    |   '...' {$passThru=true; emit($args.start, Bytecode.INSTR_ARGS); $namedArgs=true;}
 	|
  	;
 
