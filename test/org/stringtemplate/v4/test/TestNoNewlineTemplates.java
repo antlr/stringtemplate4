@@ -31,6 +31,7 @@ package org.stringtemplate.v4.test;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.STGroupString;
 
 import static org.junit.Assert.assertEquals;
@@ -120,6 +121,41 @@ public class TestNoNewlineTemplates extends BaseTest {
 		ST st = g.getInstanceOf("t");
 		st.add("x", 99);
 		String expected = "99 99 hi";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testRegion() throws Exception {
+		String template =
+			"t(x) ::= <%\n" +
+			"<@r>\n" +
+			"	Ignore\n" +
+			"	newlines and indents\n" +
+			"<x>\n\n\n" +
+			"<@end>\n" +
+			"%>\n";
+		STGroup g = new STGroupString(template);
+		ST st = g.getInstanceOf("t");
+		st.add("x", 99);
+		String expected = "Ignorenewlines and indents99";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testDefineRegionInSubgroup() throws Exception {
+		String dir = getRandomDir();
+		String g1 = "a() ::= <<[<@r()>]>>\n";
+		writeFile(dir, "g1.stg", g1);
+		String g2 = "@a.r() ::= <%\n" +
+		"	foo\n\n\n" +
+		"%>\n";
+		writeFile(dir, "g2.stg", g2);
+
+		STGroup group1 = new STGroupFile(dir+"/g1.stg");
+		STGroup group2 = new STGroupFile(dir+"/g2.stg");
+		group2.importTemplates(group1); // define r in g2
+		ST st = group2.getInstanceOf("a");
+		String expected = "[foo]";
 		String result = st.render();
 		assertEquals(expected, result);
 	}

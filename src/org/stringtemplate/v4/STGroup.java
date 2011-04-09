@@ -339,7 +339,7 @@ public class STGroup {
         String name = regionT.getText();
 		template = Misc.trimOneStartingNewline(template);
 		template = Misc.trimOneTrailingNewline(template);
-        CompiledST code = compile(getFileName(), enclosingTemplateName, null, template, regionT);
+        CompiledST code = compile(getFileName(), enclosingTemplateName, null, template, templateToken);
         String mangled = getMangledRegionName(enclosingTemplateName, name);
 
         if ( lookupTemplate(mangled)==null ) {
