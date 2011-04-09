@@ -62,7 +62,6 @@ public class CompiledST {
 	/** How do we interpret syntax of template? (debug only) */
 	public CommonTree ast;
 
-	/** Must be non null map if !noFormalArgs */
     public Map<String, FormalArgument> formalArguments;
 
 	public boolean hasFormalArgs;
