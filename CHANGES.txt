@@ -20,6 +20,9 @@ April 9, 2011
   Inserts new passthru bytecode to set any unset args.
 * AST pane not updated upon new ST selection
 * Scroll output pane when ST selected
+* Added STGroup.iterateAcrossValues static boolean for v3 compatibility
+  v3 iterates across values not keys like v4. But to convert ANTLR templates,
+  it's too hard to find without static typing in templates.
 
 April 8, 2011
 

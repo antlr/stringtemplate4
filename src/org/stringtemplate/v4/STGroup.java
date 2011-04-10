@@ -134,6 +134,12 @@ public class STGroup {
 	 */
 	public static boolean trackCreationEvents = false;
 
+	/** v3 compatibility; used to iterate across values not keys like v4.
+	 *  But to convert ANTLR templates, it's too hard to find without
+	 *  static typing in templates.
+	 */
+	public static boolean iterateAcrossValues = false;
+
 	public static STGroup defaultGroup = new STGroup();
 
 	/** The errMgr for entire group; all compilations and executions.
