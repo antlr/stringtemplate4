@@ -10,6 +10,11 @@ CHANGES
 April 10, 2011
 
 * Added STNoSuchAttributeException to distinguish from no such property.
+* Pass through didn't handle case properly of empty or nonexistent attributes.
+  We only pass through nonempty values. Further, it makes no sense to set
+  values for parameter x if x has no definition above. That is the same as
+  having no value.  This is required to get default attributes to work
+  with passthru in all cases.  Added unit tests.
 
 April 9, 2011
 

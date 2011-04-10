@@ -290,6 +290,30 @@ public class TestCoreBasics extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testPassThruWithDefaultValue() throws Exception {
+		String templates =
+			"a(x,y) ::= \"<b(...)>\"\n" + // should not set y when it sees "no value" from above
+			"b(x,y={99}) ::= \"<x><y>\"\n";
+		STGroup group = new STGroupString(templates);
+		ST a = group.getInstanceOf("a");
+		a.add("x", "x");
+		String expected = "x99";
+		String result = a.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testPassThruWithDefaultValueThatLacksDefinitionAbove() throws Exception {
+		String templates =
+			"a(x) ::= \"<b(...)>\"\n" + // should not set y when it sees "no definition" from above
+			"b(x,y={99}) ::= \"<x><y>\"\n";
+		STGroup group = new STGroupString(templates);
+		ST a = group.getInstanceOf("a");
+		a.add("x", "x");
+		String expected = "x99";
+		String result = a.render();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testPassThruPartialArgs() throws Exception {
 		String templates =
 			"a(x,y) ::= \"<b(y={99},...)>\"\n" +

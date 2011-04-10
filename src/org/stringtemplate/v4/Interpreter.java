@@ -518,11 +518,24 @@ public class Interpreter {
 		CompiledST c = group.lookupTemplate(templateName);
 		if ( c==null ) return; // will get error later
 		for (FormalArgument arg : c.formalArguments.values()) {
+			// if not already set by user, set to value from outer scope
 			if ( !attrs.containsKey(arg.name) ) {
 				//System.out.println("arg "+arg.name+" missing");
-				Object o = getAttribute(self, arg.name);
-				//System.out.println("setting to "+o);
-				attrs.put(arg.name, o);
+
+				// We only pass through nonempty values. Further, it makes no sense to set
+				// values for parameter x if x has no definition above. That is the same as
+				// having no value.  If we did set to null, we'd mess up
+				// any default argument (which is set later).
+				try {
+					Object o = getAttribute(self, arg.name);
+					if ( o!=ST.EMPTY_ATTR ) {
+						//System.out.println("setting to "+o);
+						attrs.put(arg.name, o);
+					}
+				}
+				catch (STNoSuchAttributeException nsae) {
+					// if no such attribute exists for arg.name, don't set parameter
+				}
 			}
 		}
 	}
