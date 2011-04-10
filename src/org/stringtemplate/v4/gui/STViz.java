@@ -233,6 +233,15 @@ public class STViz {
 		EvalTemplateEvent e = (EvalTemplateEvent)events.get(events.size() - 1);
 		//m.output.moveCaretPosition(e.outputStartChar);
 		highlight(m.output, e.outputStartChar, e.outputStopChar);
+		try {
+		m.output.scrollRectToVisible(m.output.modelToView(e.outputStartChar));
+		}
+		catch (BadLocationException ble) {
+			currentScope.st.groupThatCreatedThisInstance.errMgr.internalError(
+				currentScope.st, "bad location: char index "+e.outputStartChar, ble
+			);
+		}
+
 		if ( currentScope.st.isAnonSubtemplate() ) {
 			Interval r = currentScope.st.impl.getTemplateRange();
 //				System.out.println("currentScope.st src range="+r);
