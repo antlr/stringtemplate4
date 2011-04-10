@@ -146,8 +146,8 @@ public class ST {
 		impl.defineImplicitlyDefinedTemplates(groupThatCreatedThisInstance);
     }
 
-	/** Clone a prototype template for application in MAP operations;
-	 *  copy all fields minus debugState; don't call this(), which creates
+	/** Clone a prototype template.
+	 *  Copy all fields minus debugState; don't call this(), which creates
 	 *  ctor event
 	 */
 	public ST(ST proto) {
@@ -155,11 +155,10 @@ public class ST {
 		if ( proto.locals!=null ) {
 			this.locals = Arrays.copyOf(proto.locals, proto.locals.length);
 		}
-		//this.enclosingInstance = proto.enclosingInstance;
 		this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
 	}
 
-    /** Inject an attribute (name/value pair). If there is already an
+	/** Inject an attribute (name/value pair). If there is already an
      *  attribute with that name, this method turns the attribute into an
      *  AttributeList with both the previous and the new attribute as elements.
      *  This method will never alter a List that you inject.  If you send

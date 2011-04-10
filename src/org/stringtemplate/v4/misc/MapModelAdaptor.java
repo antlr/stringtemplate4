@@ -51,12 +51,6 @@ public class MapModelAdaptor implements ModelAdaptor {
 		if ( value == STGroup.DICT_KEY ) {
 			value = property;
 		}
-		if ( value instanceof ST ) {
-			// dup, don't alter existing template; it's a prototype
-			ST st = (ST) value;
-			st = st.groupThatCreatedThisInstance.createStringTemplateInternally(st);
-			value = st;
-		}
 		return value;
 	}
 }

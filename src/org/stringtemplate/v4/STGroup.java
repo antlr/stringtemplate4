@@ -162,14 +162,7 @@ public class STGroup {
 		if ( name==null ) return null;
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
-            ST instanceST = createStringTemplate();
-            instanceST.groupThatCreatedThisInstance = this;
-            instanceST.impl = c;
-			if ( instanceST.impl.formalArguments!=null ) {
-				instanceST.locals = new Object[instanceST.impl.formalArguments.size()];
-				Arrays.fill(instanceST.locals, ST.EMPTY_ATTR);
-			}
-            return instanceST;
+			return createStringTemplate(c);
         }
         return null;
     }
@@ -185,9 +178,7 @@ public class STGroup {
 			errMgr.runTimeError(interp, enclosingInstance, ip,
 								ErrorType.NO_SUCH_TEMPLATE,
 								name);
-			st = createStringTemplate();
-			st.impl = new CompiledST();
-			return st;
+			return createStringTemplateInternally(new CompiledST());
 		}
 		// this is only called internally. wack any debug ST create events
 		if ( trackCreationEvents ) {
@@ -205,9 +196,9 @@ public class STGroup {
 		else {
 			template = Misc.strip(templateToken.getText(),1);
 		}
-		ST st = createStringTemplateInternally();
+		CompiledST impl = compile(getFileName(), null, null, template, templateToken);
+		ST st = createStringTemplateInternally(impl);
 		st.groupThatCreatedThisInstance = this;
-		st.impl = compile(getFileName(), null, null, template, templateToken);
 		st.impl.hasFormalArgs = false;
 		st.impl.name = ST.UNKNOWN_NAME;
 		st.impl.defineImplicitlyDefinedTemplates(this);
@@ -722,15 +713,22 @@ public class STGroup {
 		return null;
 	}
 
-		// TODO: try making a mem pool?
-    /** StringTemplate object factory; each group can have its own. */
-	public ST createStringTemplate() { return new ST(); }
+	public ST createStringTemplate(CompiledST impl) {
+		ST st = new ST();
+		st.impl = impl;
+		st.groupThatCreatedThisInstance = this;
+		if ( impl.formalArguments!=null ) {
+			st.locals = new Object[impl.formalArguments.size()];
+			Arrays.fill(st.locals, ST.EMPTY_ATTR);
+		}
+		return st;
+	}
 
 	/** differentiate so we can avoid having creation events for regions,
 	 *  map operations, and other "new ST" events used during interp.
 	 */
-	public ST createStringTemplateInternally() {
-		ST st = createStringTemplate();
+	public ST createStringTemplateInternally(CompiledST impl) {
+		ST st = createStringTemplate(impl);
 		if ( trackCreationEvents && st.debugState!=null ) {
 			st.debugState.newSTEvent = null; // toss it out
 		}
@@ -738,13 +736,8 @@ public class STGroup {
 	}
 
 	public ST createStringTemplateInternally(ST proto) {
-		ST st = new ST(proto);
-		if ( trackCreationEvents && st.debugState!=null ) {
-			st.debugState.newSTEvent = null; // toss it out
-		}
-		return st;
+		return new ST(proto); // no need to wack debugState; not set in ST(proto).
 	}
-
 
     public String getName() { return "<no name>;"; }
 	public String getFileName() { return null; }

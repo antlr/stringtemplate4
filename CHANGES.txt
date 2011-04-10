@@ -23,6 +23,8 @@ April 9, 2011
 * Added STGroup.iterateAcrossValues static boolean for v3 compatibility
   v3 iterates across values not keys like v4. But to convert ANTLR templates,
   it's too hard to find without static typing in templates.
+* Cleaned up ST.locals[] creation; centralized in Interpreter.
+* MapModelAdaptor made copy of STs unnecessarily and w/o copying locals[]
 
 April 8, 2011
 

@@ -483,17 +483,12 @@ public class Interpreter {
 		if ( imported==null ) {
 			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
 								name);
-			st = self.groupThatCreatedThisInstance.createStringTemplateInternally();
-			st.impl = new CompiledST();
-			sp -= nargs;
-			operands[++sp] = st;
-			return;
+			st = self.groupThatCreatedThisInstance.createStringTemplateInternally(new CompiledST());
 		}
-
-		st = imported.nativeGroup.createStringTemplateInternally();
-		st.groupThatCreatedThisInstance = group;
-		st.impl = imported;
-
+		else {
+			st = imported.nativeGroup.getEmbeddedInstanceOf(this, self, current_ip, name);
+			st.groupThatCreatedThisInstance = group;
+		}
 		// get n args and store into st's attr list
 		storeArgs(self, nargs, st);
 		sp -= nargs;
@@ -506,15 +501,12 @@ public class Interpreter {
 		if ( imported==null ) {
 			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
 								name);
-			st = self.groupThatCreatedThisInstance.createStringTemplateInternally();
-			st.impl = new CompiledST();
-			operands[++sp] = st;
-			return;
+			st = self.groupThatCreatedThisInstance.createStringTemplateInternally(new CompiledST());
 		}
-
-		st = imported.nativeGroup.createStringTemplateInternally();
-		st.groupThatCreatedThisInstance = group;
-		st.impl = imported;
+		else {
+			st = imported.nativeGroup.createStringTemplateInternally(imported);
+			st.groupThatCreatedThisInstance = group;
+		}
 
 		// get n args and store into st's attr list
 		storeArgs(self, attrs, st);
@@ -749,7 +741,7 @@ public class Interpreter {
 		rot_map(self, attr, new ArrayList<ST>() {{add(st);}});
 	}
 
-	// <names:a> or <names:a,b>
+	// <names:a()> or <names:a(),b()>
 	protected void rot_map(ST self, Object attr, List<ST> prototypes) {
 		if ( attr==null ) {
 			operands[++sp] = null;
@@ -1158,9 +1150,8 @@ public class Interpreter {
 			}
 			//System.out.println("setting def arg "+arg.name+" to "+arg.defaultValueToken);
 			if ( arg.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
-				ST defaultArgST = group.createStringTemplateInternally();
+				ST defaultArgST = group.createStringTemplateInternally(arg.compiledDefaultValue);
 				defaultArgST.groupThatCreatedThisInstance = group;
-				defaultArgST.impl = arg.compiledDefaultValue;
 				// If default arg is template with single expression
 				// wrapped in parens, x={<(...)>}, then eval to string
 				// rather than setting x to the template for later
