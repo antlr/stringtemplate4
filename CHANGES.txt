@@ -15,6 +15,10 @@ April 10, 2011
   values for parameter x if x has no definition above. That is the same as
   having no value.  This is required to get default attributes to work
   with passthru in all cases.  Added unit tests.
+* Oops.  That is not quite correct. If no value exists or the attribute
+  itself does not exist, we must set the parameter to null ifthere is no
+  default parameter. otherwise the interpreter will complain about a
+  missing argument value.
 
 April 9, 2011
 
