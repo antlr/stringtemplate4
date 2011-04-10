@@ -14,7 +14,7 @@ public class TestModelAdaptors extends BaseTest {
 		{
 			if ( propertyName.equals("id") ) return ((User)o).id;
 			if ( propertyName.equals("name") ) return ((User)o).getName();
-			throw new STNoSuchPropertyException(null, "User."+propertyName);
+			throw new STNoSuchPropertyException(null, o, "User."+propertyName);
 		}
 	}
 
@@ -24,7 +24,7 @@ public class TestModelAdaptors extends BaseTest {
 		{
 			if ( propertyName.equals("id") ) return "const id value";
 			if ( propertyName.equals("name") ) return "const name value";
-			throw new STNoSuchPropertyException(null, "User."+propertyName);
+			throw new STNoSuchPropertyException(null, o, "User."+propertyName);
 		}
 	}
 

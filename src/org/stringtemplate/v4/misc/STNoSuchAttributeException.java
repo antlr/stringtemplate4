@@ -28,22 +28,16 @@
 
 package org.stringtemplate.v4.misc;
 
+import org.stringtemplate.v4.InstanceScope;
 import org.stringtemplate.v4.compiler.STException;
 
-/** For <a.b>, object a has no b property */
-public class STNoSuchPropertyException extends STException {
-	public Object o;
-	public String propertyName;
-	public STNoSuchPropertyException() {}
-	public STNoSuchPropertyException(Exception e, Object o, String propertyName) {
-		super(null, e);
-		this.o = o;
-		this.propertyName = propertyName;
-	}
+/** <name> where name is not found up the dynamic scoping chain. */
+public class STNoSuchAttributeException extends STException {
+	public InstanceScope scope;
+	public String name;
 
 	@Override
 	public String getMessage() {
-		if ( o!=null ) return "object "+o.getClass()+" has no "+propertyName+" property";
-		else return "no such property: "+propertyName;
+		return "from template "+scope.st.getName()+" no attribute "+name+" is visible";
 	}
 }

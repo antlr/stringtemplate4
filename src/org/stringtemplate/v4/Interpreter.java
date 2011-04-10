@@ -146,8 +146,9 @@ public class Interpreter {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
+			pw.flush();
 			errMgr.runTimeError(this, self, current_ip, ErrorType.INTERNAL_ERROR,
-								"internal error caused by: "+sw.toString());
+								"internal error: "+sw.toString());
 			return 0;
 		}
 		finally { popScope(); }
@@ -186,7 +187,7 @@ public class Interpreter {
 						o = getAttribute(self, name);
 						if ( o==ST.EMPTY_ATTR ) o = null;
 					}
-					catch (STNoSuchPropertyException nspe) {
+					catch (STNoSuchAttributeException nsae) {
 						errMgr.runTimeError(this, self, current_ip, ErrorType.NO_SUCH_ATTRIBUTE, name);
 						o = null;
 					}
@@ -1124,11 +1125,12 @@ public class Interpreter {
 		}
 
 		// not found, report unknown attr
-		if ( ST.cachedNoSuchPropException ==null ) {
-			ST.cachedNoSuchPropException = new STNoSuchPropertyException();
+		if ( ST.cachedNoSuchAttrException ==null ) {
+			ST.cachedNoSuchAttrException = new STNoSuchAttributeException();
 		}
-		ST.cachedNoSuchPropException.propertyName = name;
-		throw ST.cachedNoSuchPropException;
+		ST.cachedNoSuchAttrException.name = name;
+		ST.cachedNoSuchAttrException.scope = currentScope;
+		throw ST.cachedNoSuchAttrException;
 	}
 
 	/** Set any default argument values that were not set by the

@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+April 10, 2011
+
+* Added STNoSuchAttributeException to distinguish from no such property.
+
 April 9, 2011
 
 * Sam pointed out that regions didn't work with <% %>

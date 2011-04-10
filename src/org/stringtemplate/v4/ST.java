@@ -70,7 +70,7 @@ public class ST {
 	/** Cache exception since this could happen a lot if people use "missing"
 	 *  to mean boolean false.
 	 */
-	public static STNoSuchPropertyException cachedNoSuchPropException;
+	public static STNoSuchAttributeException cachedNoSuchAttrException;
 
     /** The implementation for this template among all instances of same tmpelate . */
     public CompiledST impl;
