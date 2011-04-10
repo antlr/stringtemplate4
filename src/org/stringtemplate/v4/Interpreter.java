@@ -477,7 +477,6 @@ public class Interpreter {
 	}
 
 	// TODO: refactor to remove dup'd code
-
 	void super_new(ST self, String name, int nargs) {
 		ST st = null;
 		CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);

@@ -372,10 +372,9 @@ includeExpr
 									emit2($INCLUDE_REGION,Bytecode.INSTR_NEW,impl.name,0);
 									}
 	|	^(INCLUDE_SUPER_REGION ID)	{
-									CompiledST impl =
-										Compiler.defineBlankRegion(outermostImpl, $ID.token);
-									//impl.dump();
-									emit2($INCLUDE_SUPER_REGION,Bytecode.INSTR_SUPER_NEW,impl.name,0);
+		                            String mangled =
+		                                STGroup.getMangledRegionName(outermostImpl.name, $ID.text);
+									emit2($INCLUDE_SUPER_REGION,Bytecode.INSTR_SUPER_NEW,mangled,0);
 									}
 	|	primary
 	;

@@ -28,10 +28,7 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STErrorListener;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import static org.junit.Assert.assertEquals;
@@ -252,45 +249,50 @@ public class TestRegions extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testRegionOverrideRefSuperRegion3Levels() throws Exception {
-        String dir = getRandomDir();
-        // Bug: This was causing infinite recursion:
-        // getInstanceOf(super::a)
-        // getInstanceOf(sub::a)
-        // getInstanceOf(subsub::a)
-        // getInstanceOf(subsub::region__a__r)
-        // getInstanceOf(subsub::super.region__a__r)
-        // getInstanceOf(subsub::super.region__a__r)
-        // getInstanceOf(subsub::super.region__a__r)
-        // ...
-        // Somehow, the ref to super in subsub is not moving up the chain
-        // to the @super.r(); oh, i introduced a bug when i put setGroup
-        // into STG.getInstanceOf()!
+	@Test public void testRegionOverrideRefSuperRegion2Levels() throws Exception {
+		String g =
+				"a() ::= \"X<@r()>Y\"\n" +
+				"@a.r() ::= \"foo\"\n";
+		STGroup group = new STGroupString(g);
 
-        String g =
-                "a() ::= \"X<@r()>Y\"" +
-                "@a.r() ::= \"foo\"" +newline;
-        writeFile(dir, "g.stg", g);
-        STGroupFile group = new STGroupFile(dir+"/g.stg");
+		String sub =
+				"@a.r() ::= \"<@super.r()>2\"\n";
+		STGroup subGroup = new STGroupString(sub);
+		subGroup.importTemplates(group);
 
-        String sub =
-                "@a.r() ::= \"<@super.r()>2\"" +newline;
-        writeFile(dir, "sub.stg", sub);
-        STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
-        subGroup.importTemplates(group);
+		ST st = subGroup.getInstanceOf("a");
 
-        String subsub =
-                "@a.r() ::= \"<@super.r()>3\"" +newline;
-        writeFile(dir, "subsub.stg", subsub);
-        STGroupFile subSubGroup = new STGroupFile(dir+"/subsub.stg");
-        subSubGroup.importTemplates(subGroup);
+		String result = st.render();
+		String expecting = "Xfoo2Y";
+		assertEquals(expecting, result);
+	}
 
-        ST st = subSubGroup.getInstanceOf("a");
+	@Test public void testRegionOverrideRefSuperRegion3Levels() throws Exception {
+		String dir = getRandomDir();
+		String g =
+				"a() ::= \"X<@r()>Y\"" +
+				"@a.r() ::= \"foo\"" +newline;
+		writeFile(dir, "g.stg", g);
+		STGroupFile group = new STGroupFile(dir+"/g.stg");
 
-        String result = st.render();
-        String expecting = "Xfoo23Y";
-        assertEquals(expecting, result);
-    }
+		String sub =
+				"@a.r() ::= \"<@super.r()>2\"" +newline;
+		writeFile(dir, "sub.stg", sub);
+		STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
+		subGroup.importTemplates(group);
+
+		String subsub =
+				"@a.r() ::= \"<@super.r()>3\"" +newline;
+		writeFile(dir, "subsub.stg", subsub);
+		STGroupFile subSubGroup = new STGroupFile(dir+"/subsub.stg");
+		subSubGroup.importTemplates(subGroup);
+
+		ST st = subSubGroup.getInstanceOf("a");
+
+		String result = st.render();
+		String expecting = "Xfoo23Y";
+		assertEquals(expecting, result);
+	}
 
     @Test public void testRegionOverrideRefSuperImplicitRegion() throws Exception {
         String dir = getRandomDir();

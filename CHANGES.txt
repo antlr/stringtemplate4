@@ -20,8 +20,11 @@ April 10, 2011
   default parameter. otherwise the interpreter will complain about a
   missing argument value.
 * Was missing alreadyLoaded = true; in STGroupString.
+* Bug fix for <@super.r()> exprs; it tried to doubly-define region.
+  Code generator didn't generate mangled name either; fixed and then updated
+  http://www.antlr.org/wiki/display/ST4/Template+to+Bytecode+mapping
 
-April 9, 2011
+ April 9, 2011
 
 * Sam pointed out that regions didn't work with <% %>
 * Cleaned up STViz.
