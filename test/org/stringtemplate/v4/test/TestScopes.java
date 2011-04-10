@@ -93,7 +93,7 @@ public class TestScopes extends BaseTest {
 		String result = st.render();
 		group.getInstanceOf("u").impl.dump();
 
-		String expectedError = "t.stg 2:11: attribute i isn't defined"+newline;
+		String expectedError = "t.stg 2:11: implicitly-defined attribute i not visible"+newline;
 		assertEquals(expectedError, errors.toString());
 
 		String expected = ":Ter";

@@ -23,8 +23,9 @@ April 10, 2011
 * Bug fix for <@super.r()> exprs; it tried to doubly-define region.
   Code generator didn't generate mangled name either; fixed and then updated
   http://www.antlr.org/wiki/display/ST4/Template+to+Bytecode+mapping
+* Improved error msg when referencing implicit attributes like 'i'.
 
- April 9, 2011
+April 9, 2011
 
 * Sam pointed out that regions didn't work with <% %>
 * Cleaned up STViz.

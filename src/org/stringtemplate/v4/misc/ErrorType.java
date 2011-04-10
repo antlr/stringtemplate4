@@ -32,7 +32,8 @@ public enum ErrorType {
     // RUNTIME SEMANTIC ERRORS
     NO_SUCH_TEMPLATE("no such template: %s"),
     NO_IMPORTED_TEMPLATE("no such template: super.%s"),
-    NO_SUCH_ATTRIBUTE("attribute %s isn't defined"),
+	NO_SUCH_ATTRIBUTE("attribute %s isn't defined"),
+	REF_TO_IMPLICIT_ATTRIBUTE_OUT_OF_SCOPE("implicitly-defined attribute %s not visible"),
     MISSING_FORMAL_ARGUMENTS("missing argument definitions"),
 	NO_SUCH_PROPERTY("no such property or can't access: %s"),
 	MAP_ARGUMENT_COUNT_MISMATCH("iterating through %s values in zip map but template has %s declared arguments"),
