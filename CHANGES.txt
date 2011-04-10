@@ -19,6 +19,7 @@ April 10, 2011
   itself does not exist, we must set the parameter to null ifthere is no
   default parameter. otherwise the interpreter will complain about a
   missing argument value.
+* Was missing alreadyLoaded = true; in STGroupString.
 
 April 9, 2011
 

@@ -63,6 +63,7 @@ public class STGroupString extends STGroup {
 
     public void load() {
 		if (alreadyLoaded) return;
+		alreadyLoaded = true;
 		GroupParser parser = null;
 		try {
 			ANTLRStringStream fs = new ANTLRStringStream(text);
