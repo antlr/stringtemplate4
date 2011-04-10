@@ -18,6 +18,7 @@ April 9, 2011
 * Added '...' pass through arg back in. Only allowed with named arg lists
   or as sole arg. Not allowed in <(name)()> indirect includes.
   Inserts new passthru bytecode to set any unset args.
+* AST pane not updated upon new St selection
 
 April 8, 2011
 

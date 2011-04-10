@@ -104,7 +104,7 @@ public class STViz {
 					TreePath path = treeSelectionEvent.getNewLeadSelectionPath();
 					if ( path==null ) return;
 					CommonTree node = (CommonTree)treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
-//					System.out.println("select AST: "+node);
+					//System.out.println("select AST: "+node);
 					CommonToken a = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStartIndex());
 					CommonToken b = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStopIndex());
 					highlight(viewFrame.template, a.getStartIndex(), b.getStopIndex());
@@ -224,6 +224,8 @@ public class STViz {
         m.bytecode.setText(currentScope.st.impl.disasm()); // BYTECODE DIS.
 		m.template.moveCaretPosition(0);
 		m.template.setText(currentScope.st.impl.template); // TEMPLATE SRC
+		JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
+		viewFrame.ast.setModel(astModel);
 
 		// highlight output text and, if {...} subtemplate, region in ST src
 		// get last event for currentScope.st; it's the event that captures ST eval
