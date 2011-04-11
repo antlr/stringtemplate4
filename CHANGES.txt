@@ -1,5 +1,5 @@
-ST 4.0 Release
-March 27, 2011
+ST 4.0.1 Release
+April 10, 2011
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
@@ -7,7 +7,7 @@ University of San Francisco
 
 CHANGES
 
-April 10, 2011
+4.0.1 -- April 10, 2011
 
 * Added STNoSuchAttributeException to distinguish from no such property.
 * Pass through didn't handle case properly of empty or nonexistent attributes.
