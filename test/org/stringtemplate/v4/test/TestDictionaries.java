@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.STGroupString;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import java.util.HashMap;
@@ -330,6 +331,23 @@ public class TestDictionaries extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir+"/"+"g.stg");
 		ST st = group.getInstanceOf("a");
 		String expected = "[foo]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportDictionary() throws Exception {
+		String Root =
+			"d ::= [\"a\":\"b\"]\n";
+
+		String Sub =
+			"t() ::= <<\n" +
+			"<d.a>\n" +
+			">>\n";
+		STGroup r = new STGroupString(Root);
+		STGroup s = new STGroupString(Sub);
+		s.importTemplates(r);
+		ST st = s.getInstanceOf("t"); // visible only if we can see inherited dicts
+		String expected = "b";
 		String result = st.render();
 		assertEquals(expected, result);
 	}

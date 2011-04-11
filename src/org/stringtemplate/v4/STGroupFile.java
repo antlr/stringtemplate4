@@ -96,6 +96,12 @@ public class STGroupFile extends STGroup {
 		this.encoding = encoding;
 	}
 
+	@Override
+	public boolean isDictionary(String name) {
+		if ( !alreadyLoaded ) load();
+		return super.isDictionary(name);
+	}
+
     public boolean isDefined(String name) {
         if ( !alreadyLoaded ) load();
         return super.isDefined(name);

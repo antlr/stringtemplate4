@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+April 11, 2011
+
+* Dictionaries weren't inherited. Added unit test.
+
 4.0.1 -- April 10, 2011
 
 * Added STNoSuchAttributeException to distinguish from no such property.

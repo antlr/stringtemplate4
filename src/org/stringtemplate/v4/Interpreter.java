@@ -1135,10 +1135,10 @@ public class Interpreter {
 			}
 			scope = scope.parent; // look up enclosing scope chain
 		}
-		// got to root scope and no definition, try dictionaries in group
-		if ( self.impl.nativeGroup.isDictionary(name) ) {
-			return self.impl.nativeGroup.rawGetDictionary(name);
-		}
+		// got to root scope and no definition, try dictionaries in group and up
+		STGroup g = self.impl.nativeGroup;
+		Object o = getDictionary(g, name);
+		if ( o!=null ) return o;
 
 		// not found, report unknown attr
 		if ( ST.cachedNoSuchAttrException ==null ) {
@@ -1147,6 +1147,19 @@ public class Interpreter {
 		ST.cachedNoSuchAttrException.name = name;
 		ST.cachedNoSuchAttrException.scope = currentScope;
 		throw ST.cachedNoSuchAttrException;
+	}
+
+	public Object getDictionary(STGroup g, String name) {
+		if ( g.isDictionary(name) ) {
+			return g.rawGetDictionary(name);
+		}
+		if ( g.imports!=null ) {
+			for (STGroup sup : g.imports) {
+				Object o = getDictionary(sup, name);
+				if ( o!=null ) return o;
+			}
+		}
+		return null;
 	}
 
 	/** Set any default argument values that were not set by the

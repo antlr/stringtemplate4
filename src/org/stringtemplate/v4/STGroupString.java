@@ -51,7 +51,13 @@ public class STGroupString extends STGroup {
 		this.text = text;
     }
 
-    public boolean isDefined(String name) {
+	@Override
+	public boolean isDictionary(String name) {
+		if ( !alreadyLoaded ) load();
+		return super.isDictionary(name);
+	}
+
+	public boolean isDefined(String name) {
 		if ( !alreadyLoaded ) load();
         return super.isDefined(name);
     }
