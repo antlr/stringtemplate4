@@ -484,7 +484,12 @@ public class ST {
 
     public String toString() {
         if ( impl==null ) return "bad-template()";
-        return impl.name+"()";
+		String name = impl.name+"()";
+		if (this.impl.isRegion) {
+			name = "@" + STGroup.getUnMangledTemplateName(name);
+		}
+
+        return name;
     }
 
 	// ST.format("name, phone | <name>:<phone>", n, p);
