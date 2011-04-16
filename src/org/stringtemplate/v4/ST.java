@@ -194,7 +194,13 @@ public class ST {
 				arg = new FormalArgument(name);
 				impl.addArg(arg);
 				if ( locals==null ) locals = new Object[1];
-				else locals = Arrays.copyOf(locals, impl.formalArguments.size());
+				//else locals = Arrays.copyOf(locals, impl.formalArguments.size());
+				else {
+					Object[] copy = new Object[impl.formalArguments.size()];
+					System.arraycopy(locals, 0, copy, 0,
+									 Math.min(locals.length, impl.formalArguments.size()));
+					locals = copy;
+				}
 				locals[arg.index] = EMPTY_ATTR;
 			}
 		}

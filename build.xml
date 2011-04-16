@@ -10,7 +10,8 @@
     <property name="jar.file" value="${dist.dir}/ST-${version}.jar" />
 
 	<path id="classpath">
-		<pathelement location="${antlr3.jar}"/>
+        <pathelement location="/usr/local/lib/antlr-3.3-complete.jar"/> <!-- parrt setup -->
+        <pathelement location="${antlr3.jar}"/> <!-- general setup -->
 		<pathelement location="${ant-antlr3.jar}"/>
 	</path>
 

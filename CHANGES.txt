@@ -7,6 +7,11 @@ University of San Francisco
 
 CHANGES
 
+April 16, 2011
+
+* Made compatible with Java 1.5; removed Arrays.copyOf() ref.
+* Updated ANT build to ref ant lib dir not /usr/local/lib/
+
 April 11, 2011
 
 * Dictionaries weren't inherited. Added unit test.
