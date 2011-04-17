@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+April 17, 2011
+
+* Added implements Serializable to ST, STGroup.
+
 April 16, 2011
 
 * Made compatible with Java 1.5; removed Arrays.copyOf() ref.
