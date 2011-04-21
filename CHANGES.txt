@@ -10,6 +10,9 @@ CHANGES
 April 21, 2011
 
 * Made STGroup.iterateAcrossValues an instance variable not static.
+  That needed a change to convertAnythingIteratableToIterator, etc..
+  to non-static.
+* Removed STDump as unneeded; Use STViz.
 
 April 17, 2011
 

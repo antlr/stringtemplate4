@@ -895,7 +895,7 @@ public class Interpreter {
 	}
 
 	protected void addToList(List<Object> list, Object o) {
-		o = Interpreter.convertAnythingIteratableToIterator(o);
+		o = convertAnythingIteratableToIterator(o);
 		if ( o instanceof Iterator ) {
 			// copy of elements into our temp list
 			Iterator it = (Iterator)o;
@@ -1070,19 +1070,19 @@ public class Interpreter {
 		return null;
 	}
 
-	public static Object convertAnythingIteratableToIterator(Object o) {
+	public Object convertAnythingIteratableToIterator(Object o) {
 		Iterator iter = null;
 		if ( o == null ) return null;
 		if ( o instanceof Collection )      iter = ((Collection)o).iterator();
 		else if ( o.getClass().isArray() ) iter = new ArrayIterator(o);
-		else if ( STGroup.iterateAcrossValues && o instanceof Map ) iter = ((Map)o).values().iterator();
+		else if ( group.iterateAcrossValues && o instanceof Map ) iter = ((Map)o).values().iterator();
 		else if ( o instanceof Map )        iter = ((Map)o).keySet().iterator();
 		else if ( o instanceof Iterator )  iter = (Iterator)o;
 		if ( iter==null ) return o;
 		return iter;
 	}
 
-	public static Iterator convertAnythingToIterator(Object o) {
+	public Iterator convertAnythingToIterator(Object o) {
 		o = convertAnythingIteratableToIterator(o);
 		if ( o instanceof Iterator ) return (Iterator)o;
 		List singleton = new ST.AttributeList(1);

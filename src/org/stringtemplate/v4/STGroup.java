@@ -133,13 +133,13 @@ public class STGroup implements Serializable {
 	/** For debugging with STViz. Records where in code an ST was created
 	 *  and where code added attributes.
 	 */
-	public boolean trackCreationEvents = false;
+	public static boolean trackCreationEvents = false;
 
 	/** v3 compatibility; used to iterate across values not keys like v4.
 	 *  But to convert ANTLR templates, it's too hard to find without
 	 *  static typing in templates.
 	 */
-	public static boolean iterateAcrossValues = false;
+	public boolean iterateAcrossValues = false;
 
 	public static STGroup defaultGroup = new STGroup();
 
