@@ -32,7 +32,10 @@ import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.misc.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -130,7 +133,7 @@ public class STGroup implements Serializable {
 	/** For debugging with STViz. Records where in code an ST was created
 	 *  and where code added attributes.
 	 */
-	public static boolean trackCreationEvents = false;
+	public boolean trackCreationEvents = false;
 
 	/** v3 compatibility; used to iterate across values not keys like v4.
 	 *  But to convert ANTLR templates, it's too hard to find without

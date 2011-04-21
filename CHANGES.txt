@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+April 21, 2011
+
+* Made STGroup.iterateAcrossValues an instance variable not static.
+
 April 17, 2011
 
 * Added implements Serializable to ST, STGroup.
