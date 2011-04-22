@@ -153,7 +153,9 @@ public class ST implements Serializable {
 	public ST(ST proto) {
 		this.impl = proto.impl;
 		if ( proto.locals!=null ) {
-			this.locals = Arrays.copyOf(proto.locals, proto.locals.length);
+			//this.locals = Arrays.copyOf(proto.locals, proto.locals.length);
+			this.locals = new Object[proto.locals.length];
+			System.arraycopy(proto.locals, 0, this.locals, 0, proto.locals.length);
 		}
 		this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
 	}
