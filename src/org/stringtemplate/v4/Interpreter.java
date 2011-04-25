@@ -1075,7 +1075,11 @@ public class Interpreter {
 		if ( o == null ) return null;
 		if ( o instanceof Collection )      iter = ((Collection)o).iterator();
 		else if ( o.getClass().isArray() ) iter = new ArrayIterator(o);
-		else if ( group.iterateAcrossValues && o instanceof Map ) iter = ((Map)o).values().iterator();
+		else if ( currentScope.st.groupThatCreatedThisInstance.iterateAcrossValues &&
+				  o instanceof Map )
+		{
+			iter = ((Map)o).values().iterator();
+		}
 		else if ( o instanceof Map )        iter = ((Map)o).keySet().iterator();
 		else if ( o instanceof Iterator )  iter = (Iterator)o;
 		if ( iter==null ) return o;
