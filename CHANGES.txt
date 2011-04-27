@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+April 26, 2011
+
+* rest() stripped nulls, which it shouldn't. Was inconsistent with trunc(), etc...
+
 April 21, 2011
 
 * Made STGroup.iterateAcrossValues an instance variable not static.

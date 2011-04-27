@@ -962,7 +962,7 @@ public class Interpreter {
 			it.next(); // ignore first value
 			while (it.hasNext()) {
 				Object o = it.next();
-				if ( o!=null ) a.add(o);
+				a.add(o);
 			}
 			return a;
 		}
