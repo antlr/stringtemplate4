@@ -35,7 +35,6 @@ import org.stringtemplate.v4.misc.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -46,7 +45,7 @@ import java.util.*;
  *  ST v3 had just the pure template inside, not the template name and header.
  *  Name inside must match filename (minus suffix).
  */
-public class STGroup implements Serializable {
+public class STGroup {
     /** When we use key as a value in a dictionary, this is how we signify. */
     public static final String DICT_KEY = "key";
     public static final String DEFAULT_KEY = "default";

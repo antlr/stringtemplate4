@@ -1,11 +1,15 @@
-ST 4.0.1 Release
-April 10, 2011
+ST 4.0.2 Release
+May 3, 2011
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
 University of San Francisco
 
 CHANGES
+
+4.0.1 -- May 3, 2011
+
+* Backing out change from 4/17; don't wnat Serializable implementation.
 
 April 26, 2011
 

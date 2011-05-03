@@ -49,7 +49,7 @@ import java.util.*;
  *  To use templates, you create one (usually via STGroup) and then inject
  *  attributes using add(). To render its attacks, use render().
  */
-public class ST implements Serializable {
+public class ST {
 	public final static String VERSION = "@version@";
 
 	/** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
