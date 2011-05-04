@@ -7,9 +7,9 @@ University of San Francisco
 
 CHANGES
 
-4.0.1 -- May 3, 2011
+4.0.2 -- May 3, 2011
 
-* Backing out change from 4/17; don't wnat Serializable implementation.
+* Backing out change from 4/17; don't want Serializable implementation.
 
 April 26, 2011
 
