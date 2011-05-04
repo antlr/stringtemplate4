@@ -10,6 +10,7 @@ CHANGES
 4.0.2 -- May 3, 2011
 
 * Backing out change from 4/17; don't want Serializable implementation.
+* Improved error msg for out of order required parameters (after optional ones)
 
 April 26, 2011
 

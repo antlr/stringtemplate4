@@ -176,10 +176,10 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Test public void testArg3() throws Exception {
-        String templates =
-            "foo(a b) ::= << >>\n";
-        writeFile(tmpdir, "t.stg", templates);
+	@Test public void testArg3() throws Exception {
+		String templates =
+			"foo(a b) ::= << >>\n";
+		writeFile(tmpdir, "t.stg", templates);
 
 		STGroupFile group = null;
 		ErrorBuffer errors = new ErrorBuffer();
@@ -189,6 +189,22 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		String expected =
 			"[t.stg 1:4: no viable alternative at input 'a', " +
 			"t.stg 1:6: garbled template definition starting at 'b']";
+		String result = errors.errors.toString();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testDefaultArgsOutOfOrder() throws Exception {
+		String templates =
+			"foo(a={hi}, b) ::= << >>\n";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroupFile group = null;
+		ErrorBuffer errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		group.load(); // force load
+		String expected =
+			"[t.stg 1:12: required parameters (b) must appear before optional parameters]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}

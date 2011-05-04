@@ -218,26 +218,24 @@ templateDef[String prefix]
 	|   alias=ID '::=' target=ID  {group.defineTemplateAlias($alias, $target);}
 	;
 
-formalArgs returns[List<FormalArgument> args]
-@init {$args = new ArrayList<FormalArgument>();}
-    :	formalArg[$args]
-    	( ',' formalArg[$args] )*
-    	( ',' formalArgWithDefaultValue[$args] )*
-    |	formalArgWithDefaultValue[$args] ( ',' formalArgWithDefaultValue[$args] )*
-    |
+formalArgs returns[List<FormalArgument> args = new ArrayList<FormalArgument>()]
+scope {
+	boolean hasOptionalParameter;
+}
+@init { $formalArgs::hasOptionalParameter = false; }
+	:	formalArg[$args] (',' formalArg[$args])*
+	|
 	;
 
 formalArg[List<FormalArgument> args]
 	:	ID
-		{$args.add(new FormalArgument($ID.text));}
-    ;
-
-formalArgWithDefaultValue[List<FormalArgument> args]
-	:	ID
-		(	'=' a=STRING
-		|	'=' a=ANONYMOUS_TEMPLATE
-		|	'=' a='true'
-		|	'=' a='false'
+		(	'=' a=(STRING|ANONYMOUS_TEMPLATE|'true'|'false') {$formalArgs::hasOptionalParameter = true;}
+		|	{
+			if ($formalArgs::hasOptionalParameter) {
+				group.errMgr.compileTimeError(ErrorType.REQUIRED_PARAMETER_AFTER_OPTIONAL,
+				 							  null, $ID);
+			}
+			}
 		)
 		{$args.add(new FormalArgument($ID.text, $a));}
     ;
@@ -327,7 +325,7 @@ STRING
 BIGSTRING_NO_NL // same as BIGSTRING but means ignore newlines later
 	:	'<%' (options {greedy=false;} : .)* '%>'
 	;
-	
+
 BIGSTRING
 	:	'<<'
 		(	options {greedy=false;}

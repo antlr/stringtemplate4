@@ -57,6 +57,7 @@ public enum ErrorType {
     NO_SUCH_OPTION("no such option: %s"),
 	INVALID_TEMPLATE_NAME("invalid template name or path: %s"),
 	ANON_ARGUMENT_MISMATCH("anonymous template has %s arg(s) but mapped across %s value(s)"),
+	REQUIRED_PARAMETER_AFTER_OPTIONAL("required parameters (%s) must appear before optional parameters"),
 
     // INTERNAL ERRORS
     INTERNAL_ERROR("%s"),
