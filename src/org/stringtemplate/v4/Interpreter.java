@@ -1185,7 +1185,11 @@ public class Interpreter {
 			}
 			//System.out.println("setting def arg "+arg.name+" to "+arg.defaultValueToken);
 			if ( arg.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
-				ST defaultArgST = group.createStringTemplateInternally(arg.compiledDefaultValue);
+				CompiledST code = arg.compiledDefaultValue;
+				if (code == null) {
+					code = new CompiledST();
+				}
+				ST defaultArgST = group.createStringTemplateInternally(code);
 				defaultArgST.groupThatCreatedThisInstance = group;
 				// If default arg is template with single expression
 				// wrapped in parens, x={<(...)>}, then eval to string
