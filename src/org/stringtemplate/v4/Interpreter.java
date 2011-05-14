@@ -516,6 +516,7 @@ public class Interpreter {
 	void passthru(ST self, String templateName, Map<String,Object> attrs) {
 		CompiledST c = group.lookupTemplate(templateName);
 		if ( c==null ) return; // will get error later
+		if ( c.formalArguments==null ) return;
 		for (FormalArgument arg : c.formalArguments.values()) {
 			// if not already set by user, set to value from outer scope
 			if ( !attrs.containsKey(arg.name) ) {

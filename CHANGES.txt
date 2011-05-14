@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+May 14, 2011
+
+* passthru() didn't watch for empty formal args
+
 4.0.2 -- May 3, 2011
 
 * Backing out change from 4/17; don't want Serializable implementation.
