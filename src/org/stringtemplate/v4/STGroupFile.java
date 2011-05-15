@@ -34,6 +34,8 @@ import org.stringtemplate.v4.misc.Misc;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /** The internal representation of a single group file (which must end in
@@ -94,6 +96,11 @@ public class STGroupFile extends STGroup {
 		super(delimiterStartChar, delimiterStopChar);
 		this.url = url;
 		this.encoding = encoding;
+		try {
+			this.fileName = new File(new URI(url.toString())).getAbsolutePath();
+		} catch (URISyntaxException e) {
+			// ignore. should not happen as we convert from a URL.
+		}
 	}
 
 	@Override

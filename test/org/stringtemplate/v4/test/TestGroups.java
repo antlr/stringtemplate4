@@ -691,4 +691,37 @@ public class TestGroups extends BaseTest {
 		result = st.render();
 		assertEquals(expected, result);
 	}
+	
+    @Test public void testGroupFileImport() throws Exception {
+        // /randomdir/group1.stg (a template) and /randomdir/group2.stg with b.
+    	// group1 imports group2, a includes b
+        String dir = getRandomDir();
+        String groupFile1 =
+            "import \"group2.stg\"\n"+
+            "a(x) ::= <<\n"+
+            "foo<b()>\n"+
+            ">>\n";
+        writeFile(dir, "group1.stg", groupFile1);
+        String groupFile2 =
+            "b() ::= \"bar\"\n";
+        writeFile(dir, "group2.stg", groupFile2);
+        STGroup group1 = new STGroupFile(dir+"/group1.stg");
+
+        // Is the imported template b found? 
+        ST stb = group1.getInstanceOf("b");
+        assertEquals("bar", stb.render());
+        
+        // Is the include of b() resolved?
+        ST sta = group1.getInstanceOf("a");
+        assertEquals("foobar", sta.render());
+        
+        // Are the correct "ThatCreatedThisInstance" groups assigned 
+        assertEquals("group1",sta.groupThatCreatedThisInstance.getName());
+        assertEquals("group1",stb.groupThatCreatedThisInstance.getName());
+        
+        // Are the correct (native) groups assigned for the templates 
+        assertEquals("group1",sta.impl.nativeGroup.getName());
+        assertEquals("group2",stb.impl.nativeGroup.getName());
+    }
+
 }
