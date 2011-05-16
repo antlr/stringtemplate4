@@ -11,6 +11,12 @@ May 14, 2011
 
 * passthru() didn't watch for empty formal args
 
+May 10-15, 2011 (Udo)
+
+* fixed bug raising a NullPointerException when a formalArg's default value has a syntax error.
+Example: main(a={(<"")>}) ::= ""
+* STGroupFile.getName() returns group name also for imported groups (was null before).
+
 4.0.2 -- May 3, 2011
 
 * Backing out change from 4/17; don't want Serializable implementation.
