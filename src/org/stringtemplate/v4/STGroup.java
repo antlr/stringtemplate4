@@ -789,4 +789,15 @@ public class STGroup {
 	public void setListener(STErrorListener listener) {
 		errMgr = new ErrorManager(listener);
 	}
+	
+	public Set<String> getTemplateNames() {
+		load();
+		HashSet<String> result = new HashSet<String>();
+		for (Map.Entry<String, CompiledST> e: templates.entrySet()) {
+			if (e.getValue() != NOT_FOUND_ST) {
+				result.add(e.getKey());
+			}
+		}
+		return result;
+	}
 }

@@ -27,6 +27,10 @@
 */
 package org.stringtemplate.v4.test;
 
+import java.util.Set;
+
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
@@ -724,4 +728,22 @@ public class TestGroups extends BaseTest {
         assertEquals("group2",stb.impl.nativeGroup.getName());
     }
 
+	@Test
+	public void testGetTemplateNames() throws Exception {
+		String templates = "t() ::= \"foo\"\nmain() ::= \"<t()>\"";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = new STGroupFile(tmpdir + "/t.stg");
+		// try to get an undefined template.
+		// This will add an entry to the "templates" field in STGroup, however
+		// this should not be returned.
+		group.lookupTemplate("t2");
+	
+		Set<String> names = group.getTemplateNames();
+		
+		// Should only contain "t" and "main" (not "t2")
+		Assert.assertEquals(2, names.size());
+		Assert.assertTrue(names.contains("t"));
+		Assert.assertTrue(names.contains("main"));
+	}
 }

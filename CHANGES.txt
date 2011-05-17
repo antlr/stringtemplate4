@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+May 17, 2011 (Udo)
+
+* Added getTemplateNames to STGroup
+
 May 14, 2011
 
 * passthru() didn't watch for empty formal args
