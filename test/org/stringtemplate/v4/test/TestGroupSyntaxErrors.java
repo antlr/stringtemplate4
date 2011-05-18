@@ -187,8 +187,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		String expected =
-			"[t.stg 1:4: no viable alternative at input 'a', " +
-			"t.stg 1:6: garbled template definition starting at 'b']";
+			"[t.stg 1:6: no viable alternative at input 'b']";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}

@@ -27,13 +27,12 @@
 */
 package org.stringtemplate.v4.test;
 
-import java.util.Set;
-
 import junit.framework.Assert;
-
 import org.junit.Test;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
+
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -565,7 +564,7 @@ public class TestGroups extends BaseTest {
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		group.load();
-		String expected = "group.stg 2:29: mismatched input '{' expecting ID"+newline;
+		String expected = "group.stg 2:18: mismatched input '{' expecting ELLIPSIS"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -581,7 +580,7 @@ public class TestGroups extends BaseTest {
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		group.load();
-		String expected = "group.stg 2:22: '=' came as a complete surprise to me"+newline;
+		String expected = "group.stg 2:21: 'x' came as a complete surprise to me"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -695,7 +694,7 @@ public class TestGroups extends BaseTest {
 		result = st.render();
 		assertEquals(expected, result);
 	}
-	
+
     @Test public void testGroupFileImport() throws Exception {
         // /randomdir/group1.stg (a template) and /randomdir/group2.stg with b.
     	// group1 imports group2, a includes b
@@ -711,19 +710,19 @@ public class TestGroups extends BaseTest {
         writeFile(dir, "group2.stg", groupFile2);
         STGroup group1 = new STGroupFile(dir+"/group1.stg");
 
-        // Is the imported template b found? 
+        // Is the imported template b found?
         ST stb = group1.getInstanceOf("b");
         assertEquals("bar", stb.render());
-        
+
         // Is the include of b() resolved?
         ST sta = group1.getInstanceOf("a");
         assertEquals("foobar", sta.render());
-        
-        // Are the correct "ThatCreatedThisInstance" groups assigned 
+
+        // Are the correct "ThatCreatedThisInstance" groups assigned
         assertEquals("group1",sta.groupThatCreatedThisInstance.getName());
         assertEquals("group1",stb.groupThatCreatedThisInstance.getName());
-        
-        // Are the correct (native) groups assigned for the templates 
+
+        // Are the correct (native) groups assigned for the templates
         assertEquals("group1",sta.impl.nativeGroup.getName());
         assertEquals("group2",stb.impl.nativeGroup.getName());
     }
@@ -738,15 +737,15 @@ public class TestGroups extends BaseTest {
 		// This will add an entry to the "templates" field in STGroup, however
 		// this should not be returned.
 		group.lookupTemplate("t2");
-	
+
 		Set<String> names = group.getTemplateNames();
-		
+
 		// Should only contain "t" and "main" (not "t2")
 		Assert.assertEquals(2, names.size());
 		Assert.assertTrue(names.contains("t"));
 		Assert.assertTrue(names.contains("main"));
 	}
-	
+
 	@Test
 	public void testUnloadWithImports() throws Exception {
 		writeFile(tmpdir, "t.stg",
