@@ -154,7 +154,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:6: mismatched input ')' expecting ID"+newline;
+		String expected = "t.stg 1:6: missing ID at ')'"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -170,8 +170,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		String expected =
-			"[t.stg 1:6: mismatched input ',' expecting ID, " +
-			"t.stg 1:7: mismatched input ')' expecting ID]";
+			"[t.stg 1:6: missing ID at ',', " +
+			"t.stg 1:7: missing ID at ')']";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
