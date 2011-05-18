@@ -746,4 +746,22 @@ public class TestGroups extends BaseTest {
 		Assert.assertTrue(names.contains("t"));
 		Assert.assertTrue(names.contains("main"));
 	}
+	
+	@Test
+	public void testUnloadWithImports() throws Exception {
+		writeFile(tmpdir, "t.stg",
+				"import \"g1.stg\"\n\nmain() ::= <<\nv1-<f()>\n>>");
+		writeFile(tmpdir, "g1.stg", "f() ::= \"g1\"");
+		writeFile(tmpdir, "g2.stg", "f() ::= \"g2\"\nf2() ::= \"f2\"\n");
+		STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir + "/t.stg");
+		ST st = group.getInstanceOf("main");
+		Assert.assertEquals("v1-g1", st.render());
+
+		// Change the text of group t, including the imports.
+		writeFile(tmpdir, "t.stg",
+				"import \"g2.stg\"\n\nmain() ::= <<\nv2-<f()>;<f2()>\n>>");
+		group.unload();
+		st = group.getInstanceOf("main");
+		Assert.assertEquals("v2-g2;f2", st.render());
+	}
 }
