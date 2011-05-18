@@ -12,6 +12,7 @@ May 18, 2011 (Udo)
 * unload in STGroup now also unloads the import relationships
 * Fixed test testRendererWithPredefinedFormat2 to also work in non-PDT timezones
 * Fixed tests testArg1, testArg2 in TestGroupSyntaxErrors
+* Fixed "URI is not hierarchical" issue when STGroupFile is imported from jar file
 
 May 17, 2011 (Udo)
 

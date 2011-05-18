@@ -35,7 +35,6 @@ import org.stringtemplate.v4.misc.Misc;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 /** The internal representation of a single group file (which must end in
@@ -97,9 +96,16 @@ public class STGroupFile extends STGroup {
 		this.url = url;
 		this.encoding = encoding;
 		try {
-			this.fileName = new File(new URI(url.toString())).getAbsolutePath();
-		} catch (URISyntaxException e) {
-			// ignore. should not happen as we convert from a URL.
+			// When group is loaded from jar file the URL starts with
+			// "jar:file:" which cannot be converted into a URI/File.
+			// Remove the "jar:" prefix to enable the conversion.
+			String urlString = url.toString();
+			if (urlString.startsWith("jar:file:")) {
+				urlString = urlString.substring(4);
+			}
+			this.fileName = new File(new URI(urlString)).getAbsolutePath();
+		} catch (Exception e) {
+			// ignore. If this happens (bad url etc.) filename is null
 		}
 	}
 
