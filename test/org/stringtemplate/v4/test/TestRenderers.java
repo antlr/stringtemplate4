@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 
@@ -84,11 +85,19 @@ public class TestRenderers extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
-        st.add("created", new GregorianCalendar(2005, 07-1, 05));
-        String expecting = " datetime: Tuesday, July 5, 2005 12:00:00 AM PDT ";
-        String result = st.render();
-        assertEquals(expecting, result);
-    }
+        TimeZone origTimeZone = TimeZone.getDefault();
+        try {
+        	// set Timezone to "PDT"
+        	TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
+        	st.add("created", new GregorianCalendar(2005, 07-1, 05));
+        	String expecting = " datetime: Tuesday, July 5, 2005 12:00:00 AM PDT ";
+        	String result = st.render();
+        	assertEquals(expecting, result);
+        } finally {
+           	// Restore original Timezone
+           	TimeZone.setDefault(origTimeZone);
+        }
+   }
 
     @Test public void testRendererWithPredefinedFormat3() throws Exception {
         String templates =

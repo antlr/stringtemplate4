@@ -10,6 +10,7 @@ CHANGES
 May 18, 2011 (Udo)
 
 * unload in STGroup now also unloads the import relationships
+* Fixed test testRendererWithPredefinedFormat2 to also work in non-PDT timezones
 
 May 17, 2011 (Udo)
 
