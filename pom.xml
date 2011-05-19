@@ -15,13 +15,13 @@
         SNAPSHOT replaced with the the data, time and unique number.
     -->
 
-    <version>4.0.2</version>
+    <version>4.0.3-SNAPSHOT</version>
 
     <!--
         The name of the project as seen by IDEs and release documentation etc.
     -->
 
-    <name>ANTLR StringTemplate 4.0.2</name>
+    <name>ANTLR StringTemplate 4.0.3-SNAPSHOT</name>
     <description>StringTemplate is a java template engine for generating source code,
 web pages, emails, or any other formatted text output.
 
