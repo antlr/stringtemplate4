@@ -28,7 +28,8 @@
 
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
+import org.junit.*;
+
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;

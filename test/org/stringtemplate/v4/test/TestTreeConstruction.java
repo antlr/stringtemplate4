@@ -2,8 +2,8 @@ package org.stringtemplate.v4.test;
 
 import org.antlr.runtime.RuleReturnScope;
 import org.antlr.runtime.tree.Tree;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
 

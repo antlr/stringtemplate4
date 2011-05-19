@@ -27,10 +27,11 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
+import org.junit.*;
 import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
+
 
 import java.io.IOException;
 import java.io.StringWriter;

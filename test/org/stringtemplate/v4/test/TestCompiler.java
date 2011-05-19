@@ -54,8 +54,8 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+
 import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.compiler.CompiledST;

@@ -27,6 +27,8 @@
 */
 package org.stringtemplate.v4.test;
 
+import org.junit.*;
+
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
@@ -42,9 +44,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-public class BaseTest {
+
+public abstract class BaseTest {
 	public static final String pathSep = System.getProperty("path.separator");
     public static final String tmpdir = System.getProperty("java.io.tmpdir");
     public static final String newline = Misc.newline;
@@ -62,6 +65,7 @@ public class BaseTest {
 											   "" :
 											   pathSep + SUREFIRE_CLASSPATH);
 
+    @Ignore
 	public static class StreamVacuum implements Runnable {
 		StringBuffer buf = new StringBuffer();
 		BufferedReader in;
@@ -235,6 +239,7 @@ public class BaseTest {
         assertEquals(expected, result);
     }
 
+    @Ignore
     public static class User {
         public int id;
         public String name;
@@ -244,6 +249,7 @@ public class BaseTest {
         public String getName() { return name; }
     }
 
+    @Ignore
     public static class HashableUser extends User {
         public HashableUser(int id, String name) { super(id, name); }
         public int hashCode() {
@@ -265,4 +271,10 @@ public class BaseTest {
         f.mkdirs();
         return randomDir;
     }
+
+    @Test public void testDummy() throws Exception {
+        assertTrue(true);
+    }
+
+    
 }

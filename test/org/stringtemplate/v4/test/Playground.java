@@ -1,7 +1,9 @@
 package org.stringtemplate.v4.test;
 
+import org.junit.*;
 import org.stringtemplate.v4.*;
 
+@Ignore
 public class Playground {
 	public static void main(String[] args) {
 		ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
