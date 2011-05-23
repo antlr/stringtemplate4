@@ -108,6 +108,10 @@ public class STGroupDir extends STGroup {
     protected CompiledST load(String name) {
 //		System.out.println("load in groupdir: "+name);
         String parent = Misc.getPrefix(name);
+    	if (parent.isEmpty()) {
+    		// no need to check for a group file as name has no parent
+            return loadTemplateFile(parent, name+".st"); // load t.st file
+    	}
 
         URL groupFileURL = null;
         try { // see if parent of template name is a group file
