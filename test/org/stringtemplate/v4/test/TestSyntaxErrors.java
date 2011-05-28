@@ -105,7 +105,6 @@ public class TestSyntaxErrors extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Ignore("Known Failure")
 	@Test public void testWeirdChar2() throws Exception {
 		String template = "\n<\\\n";
 		STGroup group = new STGroup();
@@ -118,7 +117,7 @@ public class TestSyntaxErrors extends BaseTest {
 			assert false;
 		}
 		String result = errors.toString();
-		String expected = "test 1:2: invalid escaped char: '<EOF>'\n" +
+		String expected = "test 1:2: invalid escaped char: '<EOF>'" + newline +
 						  "test 1:2: expecting '>', found '<EOF>'"+newline;
 		assertEquals(expected, result);
 	}

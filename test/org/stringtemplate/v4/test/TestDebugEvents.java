@@ -33,7 +33,6 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.STGroupString;
 import org.stringtemplate.v4.debug.InterpEvent;
-import org.stringtemplate.v4.misc.Misc;
 
 import java.util.List;
 
@@ -42,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 public class TestDebugEvents extends BaseTest {
     @Test public void testString() throws Exception {
         String templates =
-            "t() ::= <<foo>>" + Misc.newline;
+            "t() ::= <<foo>>" + newline;
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
@@ -57,7 +56,7 @@ public class TestDebugEvents extends BaseTest {
 
     @Test public void testAttribute() throws Exception {
         String templates =
-            "t(x) ::= << <x> >>" + Misc.newline;
+            "t(x) ::= << <x> >>" + newline;
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
@@ -97,7 +96,7 @@ public class TestDebugEvents extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Ignore("Known Failure")
+	@Ignore
     @Test
 	public void testEvalExprEventForSpecialCharacter() throws Exception {
 		String templates = "t() ::= <<[<\\n>]>>\n";
@@ -110,7 +109,7 @@ public class TestDebugEvents extends BaseTest {
 			"[EvalExprEvent{self=t(), expr='[', exprStartChar=0, exprStopChar=0, start=0, stop=0}, " +
 			"EvalExprEvent{self=t(), expr='\\n', exprStartChar=2, exprStopChar=3, start=1, stop=1}, " +
 			"EvalExprEvent{self=t(), expr=']', exprStartChar=5, exprStopChar=5, start=2, stop=2}, " +
-			"EvalTemplateEvent{self=t(), start=0, stop=2}]";
+			"EvalTemplateEvent{self=t(), start=0, stop="+newline.length()+"}]";
 		String result = events.toString();
 		assertEquals(expected, result);
 	}

@@ -93,10 +93,11 @@ public class TestImports extends BaseTest {
 		compile("Test.java", root);
 		// jar has sub, base as dirs in CLASSPATH
 		jar("test.jar", new String[]{"sub", "base"}, root);
-		Runtime.getRuntime().exec("rm -rf "+root+"/sub "+root+"/base");
+		deleteFile(root+"/sub");
+		deleteFile(root+"/base");
 		String result = java("Test", "test.jar", root);
 
-		String expected = "base b"+newline;
+		String expected = "base b\n"; 
 		assertEquals(expected, result);
 	}
 
@@ -126,10 +127,10 @@ public class TestImports extends BaseTest {
 			root);
 		compile("Test.java", root);
 		jar("test.jar", new String[] {"org"}, root);
-		Runtime.getRuntime().exec("rm -rf "+root+"/org");
+		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
-		String expected = "main a calls lib bold!"+newline;
+		String expected = "main a calls lib bold!\n";
 		assertEquals(expected, result);
 	}
 
@@ -160,10 +161,10 @@ public class TestImports extends BaseTest {
 			root);
 		compile("Test.java", root);
 		jar("test.jar", new String[] {"org"}, root);
-		Runtime.getRuntime().exec("rm -rf "+root+"/org");
+		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
-		String expected = "main a calls lib bold!"+newline;
+		String expected = "main a calls lib bold!\n";
 		assertEquals(expected, result);
 	}
 
@@ -195,10 +196,10 @@ public class TestImports extends BaseTest {
 			root);
 		compile("Test.java", root);
 		jar("test.jar", new String[] {"org"}, root);
-		Runtime.getRuntime().exec("rm -rf "+root+"/org");
+		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
-		String expected = "main a calls lib bold!"+newline;
+		String expected = "main a calls lib bold!\n";
 		assertEquals(expected, result);
 	}
 
@@ -228,10 +229,10 @@ public class TestImports extends BaseTest {
 			root);
 		compile("Test.java", root);
 		jar("test.jar", new String[] {"org"}, root);
-		Runtime.getRuntime().exec("rm -rf "+root+"/org");
+		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
-		String expected = "main a calls foo!"+newline;
+		String expected = "main a calls foo!\n";
 		assertEquals(expected, result);
 	}
 

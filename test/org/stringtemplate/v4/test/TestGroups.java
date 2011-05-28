@@ -552,7 +552,6 @@ public class TestGroups extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Ignore("Known Failure")
 	@Test public void testMissingNamedArg() throws Exception {
 		String dir = getRandomDir();
 		String groupFile =
@@ -570,6 +569,7 @@ public class TestGroups extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Ignore
 	@Test public void testNamedArgsNotAllowInIndirectInclude() throws Exception {
 		String dir = getRandomDir();
 		String groupFile =

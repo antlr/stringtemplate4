@@ -188,7 +188,6 @@ public class TestRegions extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Ignore("Known Failure")
 	@Test public void testIndentBeforeRegionIsIgnored() throws Exception {
 		String dir = getRandomDir();
 		String g = "a() ::= <<[\n" +
@@ -200,8 +199,8 @@ public class TestRegions extends BaseTest {
 
 		STGroupFile group = new STGroupFile(dir+"/g.stg");
 		ST st = group.getInstanceOf("a");
-		String expected = "[\n" +
-						  "  foo\n" +
+		String expected = "[" + newline +
+						  "  foo" + newline +
 						  "]";
 		String result = st.render();
 		assertEquals(expected, result);
@@ -315,7 +314,7 @@ public class TestRegions extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Ignore("Known Failure")
+	@Ignore
     @Test public void testUnknownRegionDefError() throws Exception {
         String dir = getRandomDir();
         String g =
@@ -391,7 +390,7 @@ public class TestRegions extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Ignore("Known Failure")
+	@Ignore
 	@Test public void testEmbeddedSubtemplate() throws Exception {
 		// fix so we ignore inside {...}
 		String dir = getRandomDir();

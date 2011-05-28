@@ -192,7 +192,6 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Ignore("Known Failure")
     @Test public void testParallelAttributeIterationWithMissingArgs() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
 		STGroup group = new STGroup();
@@ -207,9 +206,9 @@ public class TestInterptimeErrors extends BaseTest {
         e.add("salaries", "big");
         e.render();
         String errorExpecting =
-			"1:23: anonymous template has 2 arg(s) but mapped across 3 value(s)\n" +
-			"context [anonymous] 1:23 passed 3 arg(s) to template _sub1 with 2 declared arg(s)\n" +
-			"context [anonymous] 1:1 iterating through 3 values in zip map but template has 2 declared arguments\n";
+			"1:23: anonymous template has 2 arg(s) but mapped across 3 value(s)" + newline +
+			"context [anonymous] 1:23 passed 3 arg(s) to template _sub1 with 2 declared arg(s)" + newline +
+			"context [anonymous] 1:1 iterating through 3 values in zip map but template has 2 declared arguments" + newline;
         assertEquals(errorExpecting, errors.toString());
         String expecting = "Ter@1, Tom@2";
         assertEquals(expecting, e.render());

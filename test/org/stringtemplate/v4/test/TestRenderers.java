@@ -40,6 +40,21 @@ import java.util.TimeZone;
 import static org.junit.Assert.assertEquals;
 
 public class TestRenderers extends BaseTest {
+	
+	// Make sure to use the US Locale during the tests
+	private Locale origLocale;
+	
+	@Before
+	public void setUp() {
+		origLocale = Locale.getDefault();
+		Locale.setDefault(Locale.US);
+	}
+	
+	@After
+	public void tearDown() {
+		Locale.setDefault(origLocale);
+	}
+
 	@Test public void testRendererForGroup() throws Exception {
 		String templates =
 				"dateThing(created) ::= \"datetime: <created>\"\n";
@@ -173,7 +188,6 @@ public class TestRenderers extends BaseTest {
 		assertEquals(expecting, result);
 	}
 
-    @Ignore("Known Failure")
     @Test public void testLocaleWithNumberRenderer() throws Exception {
         String templates =
                 "foo(x,y) ::= <<\n" +

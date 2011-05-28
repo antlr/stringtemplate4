@@ -5,9 +5,7 @@ import org.antlr.runtime.tree.TreeAdaptor;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import org.junit.*;
 
-@Ignore
 public class gUnitBase {
     public String lexerClassName;
     public String parserClassName;

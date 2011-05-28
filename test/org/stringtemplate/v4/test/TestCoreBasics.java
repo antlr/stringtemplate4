@@ -847,7 +847,6 @@ public class TestCoreBasics extends BaseTest {
 	/** (...) forces early eval to string. early eval <(x)> using new
 	 *  STWriter derived from type of current STWriter. e.g., AutoIndentWriter.
 	 */
-	@Ignore("Known Failure")
     @Test public void testEarlyEvalIndent() throws Exception {
 		String templates =
 			"t() ::= <<  abc>>\n" +
@@ -863,14 +862,13 @@ public class TestCoreBasics extends BaseTest {
 		ST st = group.getInstanceOf("main");
 		String result = st.render();
 		String expected =
-			"  abc\n" +
-			"  abc\n" +
-			"    abc\n" +
+			"  abc" + newline +
+			"  abc" + newline +
+			"    abc" + newline +
 			"    abc";
 		assertEquals(expected, result);
 	}
 
-    @Ignore("Known Failure")
 	@Test public void testEarlyEvalNoIndent() throws Exception {
 		String templates =
 			"t() ::= <<  abc>>\n" +
@@ -889,9 +887,9 @@ public class TestCoreBasics extends BaseTest {
 		st.write(w);
 		String result = sw.toString();
 		String expected =
-			"abc\n" +
-			"abc\n" +
-			"abc\n" +
+			"abc" + newline +
+			"abc" + newline +
+			"abc" + newline +
 			"abc";
 		assertEquals(expected, result);
 	}

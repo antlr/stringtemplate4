@@ -65,7 +65,6 @@ public abstract class BaseTest {
 											   "" :
 											   pathSep + SUREFIRE_CLASSPATH);
 
-    @Ignore
 	public static class StreamVacuum implements Runnable {
 		StringBuffer buf = new StringBuffer();
 		BufferedReader in;
@@ -105,6 +104,19 @@ public abstract class BaseTest {
         Compiler.subtemplateCount = 0;
     }
 
+    /**
+     * Creates a file "Test.java" in the directory dirName containing a main 
+     * method with content starting as given by main. 
+     * <p>
+     * The value of a variable 'result' defined in 'main' is written to
+     * System.out, followed by a newline character.
+     * <p>
+     * The final newline character is just the '\n' character, not the
+     * system specific line separator ({@link #newline}).
+     * 
+     * @param main
+     * @param dirName
+     */
 	public void writeTestFile(String main, String dirName) {
 		ST outputFileST = new ST(
 			"import org.antlr.runtime.*;\n" +
@@ -239,7 +251,6 @@ public abstract class BaseTest {
         assertEquals(expected, result);
     }
 
-    @Ignore
     public static class User {
         public int id;
         public String name;
@@ -249,7 +260,6 @@ public abstract class BaseTest {
         public String getName() { return name; }
     }
 
-    @Ignore
     public static class HashableUser extends User {
         public HashableUser(int id, String name) { super(id, name); }
         public int hashCode() {
@@ -272,6 +282,35 @@ public abstract class BaseTest {
         return randomDir;
     }
 
+	/**
+	 * Removes the specified file or directory, and all subdirectories.
+	 * 
+	 * Nothing if the file does not exists.
+	 * 
+	 * @param file
+	 */
+	public static void deleteFile(File file) {
+		if (file.exists()) {
+			if (file.isDirectory()) {
+				File[] dir = file.listFiles();
+				for (int i = 0; i < dir.length; i++) {
+					deleteFile(dir[i]);
+				}
+			}
+			if (!file.delete()) {
+				throw new RuntimeException("Error when deleting file "
+						+ file.getAbsolutePath());
+			}
+		}
+	}
+	/**
+	 * see {@link #deleteFile(File)}
+	 * 
+	 * @param file
+	 */
+	public static void deleteFile(String file) {
+		deleteFile(new File(file));
+	}
     @Test public void testDummy() throws Exception {
         assertTrue(true);
     }

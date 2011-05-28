@@ -146,7 +146,6 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Ignore("Known Failure")
 	@Test public void testNestedTemplateInGroupFile() throws Exception {
 		String templates =
 			"t(a) ::= \"<a:{x | <x:{y | <y>}>}>\"" + Misc.newline;
@@ -154,14 +153,13 @@ public class TestGroupSyntax extends BaseTest {
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		String expected =
-			"t(a) ::= <<\n" +
-			"<a:{x | <x:{y | <y>}>}>\n" +
+			"t(a) ::= <<" + newline +
+			"<a:{x | <x:{y | <y>}>}>" + newline +
 			">>"+ Misc.newline;
 		String result = group.show();
 		assertEquals(expected, result);
 	}
 
-    @Ignore("Known Failure")
 	@Test public void testNestedDefaultValueTemplate() throws Exception {
 		String templates =
 			"t(a={x | <x:{y|<y>}>}) ::= \"ick\"" + Misc.newline;
@@ -170,8 +168,8 @@ public class TestGroupSyntax extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.load();
 		String expected =
-			"t(a={x | <x:{y|<y>}>}) ::= <<\n" +
-			"ick\n" +
+			"t(a={x | <x:{y|<y>}>}) ::= <<" + newline +
+			"ick" + newline +
 			">>"+ Misc.newline;
 		String result = group.show();
 		assertEquals(expected, result);

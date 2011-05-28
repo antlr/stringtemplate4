@@ -144,7 +144,6 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Ignore("Known Failure")
     @Test public void testArg() throws Exception {
         String templates =
             "foo(a,) ::= << >>\n";
@@ -160,7 +159,6 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Ignore("Known Failure")
     @Test public void testArg2() throws Exception {
         String templates =
             "foo(a,,) ::= << >>\n";
@@ -178,7 +176,6 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Ignore("Known Failure")
 	@Test public void testArg3() throws Exception {
 		String templates =
 			"foo(a b) ::= << >>\n";

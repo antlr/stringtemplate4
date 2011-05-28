@@ -133,7 +133,7 @@ public class TestWhitespace extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Ignore("Known Failure")
+	@Ignore
 	@Test public void testTabBeforeEndInSubtemplates() throws Exception {
 		// fails since it counts indent from outer too
 		STGroup group = new STGroup();
@@ -179,7 +179,6 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Ignore("Known Failure")
     @Test public void testSizeZeroOnLineByItselfGetsNoOutput() throws Exception {
         ST t = new ST(
             "begin\n"+
@@ -187,7 +186,7 @@ public class TestWhitespace extends BaseTest {
             "<users>\n"+
             "<users>\n"+
             "end\n");
-        String expecting="begin\nend\n";
+        String expecting="begin"+newline+"end"+newline;
         String result = t.render();
         assertEquals(expecting, result);
     }
