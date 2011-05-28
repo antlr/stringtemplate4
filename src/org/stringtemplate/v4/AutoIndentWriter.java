@@ -178,7 +178,9 @@ public class AutoIndentWriter implements STWriter {
 			// then spit out B.
 			for (int i=0; i<wrap.length(); i++) {
 				char c = wrap.charAt(i);
-				if ( c=='\n' ) {
+				if ( c=='\r' ) {
+					continue;
+				} else if ( c=='\n' ) {
 					out.write(newline);
                     n += newline.length();
 					charPosition = 0;
