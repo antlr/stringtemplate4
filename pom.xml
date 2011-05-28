@@ -175,7 +175,15 @@ There are currently about 600 StringTemplate source downloads a month.
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.6</source>
-                    <target>jsr14</target>
+                    <!--
+                        NB: If you want to generate 1.4 compatible classes then change
+                            the target to:
+                        <target>jsr14</target>
+
+                        However, the junit tests will then all be hidden from junit and
+                        none will run, hence this is not done by default.
+                     -->
+                    <target>1.6</target>
                     <sourceDirectory>src</sourceDirectory>
                 </configuration>
             </plugin>
@@ -187,7 +195,6 @@ There are currently about 600 StringTemplate source downloads a month.
                     <additionalClasspathElements>
                         <additionalClasspathElement>${basedir}/src</additionalClasspathElement>
                     </additionalClasspathElements>
-                    <parallel>none</parallel>
                 </configuration>
             </plugin>
 
