@@ -96,20 +96,22 @@ public class TestDebugEvents extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Ignore
     @Test
 	public void testEvalExprEventForSpecialCharacter() throws Exception {
 		String templates = "t() ::= <<[<\\n>]>>\n";
 		//                            012 345
+		// Rendering t() emits: "[\n]"  or  "[\r\n]" (depends on line.separator)
+		//                       01 2        01 2 3
 		STGroupString g = new STGroupString(templates);
 		ST st = g.getInstanceOf("t");
 		st.impl.dump();
 		List<InterpEvent> events = st.getEvents();
+		int n = newline.length();
 		String expected =
 			"[EvalExprEvent{self=t(), expr='[', exprStartChar=0, exprStopChar=0, start=0, stop=0}, " +
-			"EvalExprEvent{self=t(), expr='\\n', exprStartChar=2, exprStopChar=3, start=1, stop=1}, " +
-			"EvalExprEvent{self=t(), expr=']', exprStartChar=5, exprStopChar=5, start=2, stop=2}, " +
-			"EvalTemplateEvent{self=t(), start=0, stop="+newline.length()+"}]";
+			"EvalExprEvent{self=t(), expr='\\n', exprStartChar=2, exprStopChar=3, start=1, stop="+n+"}, " +
+			"EvalExprEvent{self=t(), expr=']', exprStartChar=5, exprStopChar=5, start="+(n+1)+", stop="+(n+1)+"}, " +
+			"EvalTemplateEvent{self=t(), start=0, stop="+(n+1)+"}]";
 		String result = events.toString();
 		assertEquals(expected, result);
 	}
