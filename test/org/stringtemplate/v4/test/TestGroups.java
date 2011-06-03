@@ -573,9 +573,10 @@ public class TestGroups extends BaseTest {
 	@Test public void testNamedArgsNotAllowInIndirectInclude() throws Exception {
 		String dir = getRandomDir();
 		String groupFile =
-			"f(x,y) ::= \"<x><y>\"\n" +
-			"g(name) ::= \"<(name)(x={a},y={b})>\"";
-		   //0123456789012345678901234567890
+		    "f(x,y) ::= \"<x><y>\"\n" +
+		   //01234567890 1234567 8 9 
+		    "g(name) ::= \"<(name)(x={a},y={b})>\"";
+		   //012345678901 2345678901234567890123 4 
 		writeFile(dir, "group.stg", groupFile);
 		STGroupFile group = new STGroupFile(dir+"/group.stg");
 		ErrorBuffer errors = new ErrorBuffer();

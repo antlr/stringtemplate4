@@ -143,6 +143,76 @@ public class TestRenderers extends BaseTest {
         assertEquals(expecting, result);
     }
 
+    @Test public void testStringRendererWithFormat_cap() throws Exception {
+        String templates =
+                "foo(x) ::= << <x; format=\"cap\"> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(String.class, new StringRenderer());
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "hi");
+        String expecting = " Hi ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testStringRendererWithFormat_cap_emptyValue() throws Exception {
+        String templates =
+                "foo(x) ::= << <x; format=\"cap\"> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(String.class, new StringRenderer());
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "");
+        String expecting = " ";//FIXME: why not two spaces?
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testStringRendererWithFormat_url_encode() throws Exception {
+        String templates =
+                "foo(x) ::= << <x; format=\"url-encode\"> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(String.class, new StringRenderer());
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "a b");
+        String expecting = " a+b ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testStringRendererWithFormat_xml_encode() throws Exception {
+        String templates =
+                "foo(x) ::= << <x; format=\"xml-encode\"> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(String.class, new StringRenderer());
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "a<b> &\t\b");
+        String expecting = " a&lt;b&gt; &amp;\t&#8; ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testStringRendererWithFormat_xml_encode_null() throws Exception {
+        String templates =
+                "foo(x) ::= << <x; format=\"xml-encode\"> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(String.class, new StringRenderer());
+        ST st = group.getInstanceOf("foo");
+        st.add("x", null);
+        String expecting = " ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
     @Test public void testStringRendererWithPrintfFormat() throws Exception {
         String templates =
                 "foo(x) ::= << <x; format=\"%6s\"> >>\n";
