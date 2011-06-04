@@ -27,7 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;;
+import org.junit.Test;
 
 public class TestTokensForDollarDelimiters extends BaseTest {
     @Test public void testSimpleAttr() throws Exception {
@@ -35,7 +35,7 @@ public class TestTokensForDollarDelimiters extends BaseTest {
         String expected = "[[@0,0:2='hi ',<TEXT>,1:0], [@1,3:3='$',<LDELIM>,1:3], [@2,4:7='name',<ID>,1:4], [@3,8:8='$',<RDELIM>,1:8]]";
         checkTokens(template, expected, '$', '$');
     }
-    
+
     @Test public void testString() throws Exception {
         String template = "hi $foo(a=\"$\")$";
         String expected = "[[@0,0:2='hi ',<TEXT>,1:0], [@1,3:3='$',<LDELIM>,1:3], [@2,4:6='foo',<ID>,1:4], [@3,7:7='(',<LPAREN>,1:7], [@4,8:8='a',<ID>,1:8], [@5,9:9='=',<EQUALS>,1:9], [@6,10:12='\"$\"',<STRING>,1:10], [@7,13:13=')',<RPAREN>,1:13], [@8,14:14='$',<RDELIM>,1:14]]";
