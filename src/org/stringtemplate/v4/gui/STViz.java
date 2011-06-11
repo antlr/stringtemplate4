@@ -300,7 +300,7 @@ public class STViz {
 	}
 
 	protected void updateStack(InstanceScope scope, STViewFrame m) {
-		List<ST> stack = interp.getEnclosingInstanceStack(scope, true);
+		List<ST> stack = Interpreter.getEnclosingInstanceStack(scope, true);
 		m.setTitle("STViz - ["+ Misc.join(stack.iterator()," ")+"]");
 //        // also do source stack
 //        StackTraceElement[] trace = st.newSTEvent.stack.getStackTrace();
