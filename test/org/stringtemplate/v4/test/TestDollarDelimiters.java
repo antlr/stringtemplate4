@@ -28,8 +28,7 @@
 
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
-
+import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -64,13 +63,13 @@ public class TestDollarDelimiters extends BaseTest {
 
     @Test public void testRefToAnotherTemplateInSameGroup() throws Exception {
         String dir = getRandomDir();
-        String a = "a() ::= << $b()$ >>\n";
+        String a = "a() ::= << <$b()$> >>\n";
         String b = "b() ::= <<bar>>\n";
         writeFile(dir, "a.st", a);
         writeFile(dir, "b.st", b);
         STGroup group = new org.stringtemplate.v4.STGroupDir(dir, '$', '$');
         org.stringtemplate.v4.ST st = group.getInstanceOf("a");
-        String expected = " bar ";
+        String expected = " <bar> ";
         String result = st.render();
         assertEquals(expected, result);
     }
