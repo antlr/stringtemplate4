@@ -27,9 +27,7 @@
  */
 package org.stringtemplate.v4.misc;
 
-import org.stringtemplate.v4.InstanceScope;
-import org.stringtemplate.v4.Interpreter;
-import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.*;
 
 /** Used to track errors that occur in the ST interpreter. */
 public class STRuntimeMessage extends STMessage {
@@ -68,7 +66,7 @@ public class STRuntimeMessage extends STMessage {
      *  return it's template line:col.
      */
     public String getSourceLocation() {
-        if ( ip<0 ) return null;
+        if ( ip<0 || self.impl==null ) return null;
         Interval I = self.impl.sourceMap[ip];
         if ( I==null ) return null;
         // get left edge and get line/col

@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+June 14, 2011
+
+* STRuntimeMessage got NPE upon ST.impl == null
+
 May 20, 2011 (Udo)
 
 * STGroupDir.load(String name) no longer checks for (parent) group file when name specifies no parent (no '/')
