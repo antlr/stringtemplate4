@@ -114,7 +114,7 @@ public class ST {
     }
 
 	/** Used by group creation routine, not by users */
-    public ST() {
+    protected ST() {
 		if ( STGroup.trackCreationEvents ) {
 			if ( debugState==null ) debugState = new ST.DebugState();
 			debugState.newSTEvent = new ConstructionEvent();

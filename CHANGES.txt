@@ -10,6 +10,7 @@ CHANGES
 June 14, 2011
 
 * STRuntimeMessage got NPE upon ST.impl == null
+* ctor ST() is protected; not for users. bad users!
 
 May 20, 2011 (Udo)
 
