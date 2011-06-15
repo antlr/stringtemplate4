@@ -12,6 +12,23 @@ June 14, 2011
 * STRuntimeMessage got NPE upon ST.impl == null
 * ctor ST() is protected; not for users. bad users!
 
+June 11, 2011 (Udo)
+
+* Removed warning (access static member through instance)
+
+June 4, 2011 (Udo)
+
+* Fixed and added tests
+
+May 29, 2011 (Udo)
+
+* Fixed test case for <\n> to handle different line.separator sizes
+
+May 28, 2011 (Udo)
+
+* BUG: On Windows wrapped lines are separated with \r\r\n
+* made tests run on Windows and non-US locales
+
 May 20, 2011 (Udo)
 
 * STGroupDir.load(String name) no longer checks for (parent) group file when name specifies no parent (no '/')
