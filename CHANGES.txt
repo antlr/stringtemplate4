@@ -7,6 +7,11 @@ University of San Francisco
 
 CHANGES
 
+June 15, 2011
+
+* STGroup.unload() calls unload() on each group in the imports list
+  instead of clearing the list. (Thanks to Sam)
+
 June 14, 2011
 
 * STRuntimeMessage got NPE upon ST.impl == null

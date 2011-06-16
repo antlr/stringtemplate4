@@ -29,14 +29,10 @@ package org.stringtemplate.v4;
 
 import org.antlr.runtime.*;
 import org.stringtemplate.v4.compiler.*;
-import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.misc.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.*;
+import java.net.*;
 import java.util.*;
 
 /** A directory or directory tree of .st template files and/or group files.
@@ -230,14 +226,19 @@ public class STGroup {
         return code;
     }
 
-	/** "unload" all templates, dictionaries and import relationships, but leave 
+	/** "unload" all templates, dictionaries and import relationships, but leave
 	 *  renderers and adaptors.  This essentially forces next getInstanceOf
-	 *  to reload templates.
+	 *  to reload templates. Call unload() on each group in the imports list
+	 *  instead of clearing the list.
 	 */
 	public synchronized void unload() {
 		templates.clear();
 		dictionaries.clear();
-		if (imports != null) imports.clear();
+		if (imports != null) {
+			for (STGroup imp : imports) {
+				imp.unload();
+			}
+		}
 	}
 
     /** Load st from disk if dir or load whole group file if .stg file (then
@@ -790,7 +791,7 @@ public class STGroup {
 	public void setListener(STErrorListener listener) {
 		errMgr = new ErrorManager(listener);
 	}
-	
+
 	public Set<String> getTemplateNames() {
 		load();
 		HashSet<String> result = new HashSet<String>();
