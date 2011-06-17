@@ -29,6 +29,7 @@ package org.stringtemplate.v4;
 
 import org.antlr.runtime.*;
 import org.stringtemplate.v4.compiler.*;
+import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.misc.*;
 
 import java.io.*;
