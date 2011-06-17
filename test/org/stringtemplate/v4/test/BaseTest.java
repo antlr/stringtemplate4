@@ -27,24 +27,17 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
-
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.Token;
+import org.antlr.runtime.*;
 import org.junit.Before;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.compiler.Compiler;
-import org.stringtemplate.v4.compiler.STLexer;
+import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.misc.Misc;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 
 public abstract class BaseTest {
@@ -105,15 +98,15 @@ public abstract class BaseTest {
     }
 
     /**
-     * Creates a file "Test.java" in the directory dirName containing a main 
-     * method with content starting as given by main. 
+     * Creates a file "Test.java" in the directory dirName containing a main
+     * method with content starting as given by main.
      * <p>
      * The value of a variable 'result' defined in 'main' is written to
      * System.out, followed by a newline character.
      * <p>
      * The final newline character is just the '\n' character, not the
      * system specific line separator ({@link #newline}).
-     * 
+     *
      * @param main
      * @param dirName
      */
@@ -284,9 +277,9 @@ public abstract class BaseTest {
 
 	/**
 	 * Removes the specified file or directory, and all subdirectories.
-	 * 
+	 *
 	 * Nothing if the file does not exists.
-	 * 
+	 *
 	 * @param file
 	 */
 	public static void deleteFile(File file) {
@@ -305,15 +298,11 @@ public abstract class BaseTest {
 	}
 	/**
 	 * see {@link #deleteFile(File)}
-	 * 
+	 *
 	 * @param file
 	 */
 	public static void deleteFile(String file) {
 		deleteFile(new File(file));
 	}
-    @Test public void testDummy() throws Exception {
-        assertTrue(true);
-    }
 
-    
 }

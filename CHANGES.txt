@@ -7,10 +7,22 @@ University of San Francisco
 
 CHANGES
 
+June 16, 2011
+
+* Major overhaul of template names:
+** '/' allowed as starting ID letter like </a/b()>
+** getInstanceOf names must be fully qualified.  If you don't put / on
+   front, one is added for you.
+** template refs in expr are relative to location of surrounding template
+   unless prefixed with /. In that case they are relative to root of group.
+** import statement no longer allows fully qualified file name.
+** Changed all unit tests to use fully qualified names and see results that way.
+
 June 15, 2011
 
 * STGroup.unload() calls unload() on each group in the imports list
-  instead of clearing the list. (Thanks to Sam)
+  instead of clearing the list. (Thanks to Sam...wait, did Udo already
+  try this?)
 
 June 14, 2011
 

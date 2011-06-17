@@ -28,11 +28,8 @@
 
 package org.stringtemplate.v4;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.stringtemplate.v4.compiler.CompiledST;
-import org.stringtemplate.v4.compiler.GroupLexer;
-import org.stringtemplate.v4.compiler.GroupParser;
+import org.antlr.runtime.*;
+import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.misc.ErrorType;
 
 /** A group derived from a string not a file or dir. */
@@ -79,7 +76,7 @@ public class STGroupString extends STGroup {
 			parser = new GroupParser(tokens);
 			// no prefix since this group file is the entire group, nothing lives
 			// beneath it.
-			parser.group(this, "");
+			parser.group(this, "/");
 		}
 		catch (Exception e) {
 			errMgr.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, "<string>");

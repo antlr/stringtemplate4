@@ -1,12 +1,8 @@
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
-
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
-import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorManager;
+import org.junit.Test;
+import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.misc.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -42,7 +38,7 @@ public class TestScopes extends BaseTest {
 		ST st = group.getInstanceOf("t");
 		String result = st.render();
 
-		String expectedError = "context [t] 1:1 passed 0 arg(s) to template u with 1 declared arg(s)"+newline;
+		String expectedError = "context [/t] 1:1 passed 0 arg(s) to template /u with 1 declared arg(s)"+newline;
 		assertEquals(expectedError, errors.toString());
 	}
 
@@ -56,7 +52,7 @@ public class TestScopes extends BaseTest {
 		ST st = group.getInstanceOf("t");
 		String result = st.render();
 
-		String expectedError = "context [t] 1:1 attribute x isn't defined"+newline;
+		String expectedError = "context [/t] 1:1 attribute x isn't defined"+newline;
 		assertEquals(expectedError, errors.toString());
 	}
 

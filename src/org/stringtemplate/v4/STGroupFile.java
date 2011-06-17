@@ -27,15 +27,11 @@
  */
 package org.stringtemplate.v4;
 
-import org.stringtemplate.v4.compiler.CompiledST;
-import org.stringtemplate.v4.compiler.STException;
-import org.stringtemplate.v4.misc.ErrorType;
-import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.compiler.*;
+import org.stringtemplate.v4.misc.*;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
+import java.net.*;
 
 /** The internal representation of a single group file (which must end in
  *  ".stg").  If we fail to find a group file, look for it via the
@@ -65,7 +61,7 @@ public class STGroupFile extends STGroup {
 			catch (MalformedURLException e) {
 				throw new STException("can't load group file "+fileName, e);
 			}
-			if ( verbose ) System.out.println("STGroupFile(" + fileName + ") == "+f.getAbsolutePath());
+			if ( verbose ) System.out.println("STGroupFile(" + fileName + ") == file "+f.getAbsolutePath());
 		}
 		else { // try in classpath
 			url = getURL(fileName);
@@ -73,7 +69,7 @@ public class STGroupFile extends STGroup {
 				throw new IllegalArgumentException("No such group file: "+
 													   fileName);
 			}
-			if ( verbose ) System.out.println("STGroupFile(" + fileName + ") == "+url);
+			if ( verbose ) System.out.println("STGroupFile(" + fileName + ") == url "+url);
 		}
 		this.fileName = fileName;
 	}
@@ -136,8 +132,8 @@ public class STGroupFile extends STGroup {
         alreadyLoaded = true; // do before actual load to say we're doing it
 		// no prefix since this group file is the entire group, nothing lives
 		// beneath it.
-		if ( verbose ) System.out.println("loading "+url.toString());
-        loadGroupFile("", url.toString());
+		if ( verbose ) System.out.println("loading group file "+url.toString());
+        loadGroupFile("/", url.toString());
 		if ( verbose ) System.out.println("found "+templates.size()+" templates in "+url.toString()+" = "+templates.keySet());
     }
 
@@ -161,28 +157,5 @@ public class STGroupFile extends STGroup {
 								mue, parent);
 		}
 		return null;
-//		String parent = Misc.stripLastPathElement(fileName);
-//		return parent;
-//		try {
-//			return new File(parent).toURI().toURL();
-//		}
-//		catch (MalformedURLException me) {
-//			errMgr.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
-//								me, parent);
-//		}
-//		return null;
-//		File f = new File(path);
-//		System.out.println("getRootDir: path="+path);
-//		System.out.println("parent file="+f.getParentFile());
-//		System.out.println("parent="+f.getParent());
-//		System.out.println("filename="+fileName);
-//		try {
-//			return f.getParentFile().toURI().toURL();
-//		}
-//		catch (MalformedURLException me) {
-//			errMgr.runTimeError(null, 0, ErrorType.INVALID_TEMPLATE_NAME,
-//								me, f.getParentFile());
-//		}
-//		return null;
 	}
 }

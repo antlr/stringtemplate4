@@ -29,16 +29,10 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
-import org.stringtemplate.v4.debug.EvalExprEvent;
-import org.stringtemplate.v4.debug.EvalTemplateEvent;
-import org.stringtemplate.v4.debug.IndentEvent;
-import org.stringtemplate.v4.debug.InterpEvent;
+import org.stringtemplate.v4.debug.*;
 import org.stringtemplate.v4.misc.*;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.util.*;
 

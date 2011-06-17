@@ -28,7 +28,6 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.*;
-
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
@@ -65,10 +64,8 @@ public class TestRegions extends BaseTest {
 
 	@Test public void testDefineRegionInSubgroup() throws Exception {
 		String dir = getRandomDir();
-		String g1 = "a() ::= <<[<@r()>]>>\n";
-		writeFile(dir, "g1.stg", g1);
-		String g2 = "@a.r() ::= <<foo>>\n";
-		writeFile(dir, "g2.stg", g2);
+		writeFile(dir, "g1.stg", "a() ::= <<[<@r()>]>>\n");
+		writeFile(dir, "g2.stg", "@a.r() ::= <<foo>>\n");
 
 		STGroup group1 = new STGroupFile(dir+"/g1.stg");
 		STGroup group2 = new STGroupFile(dir+"/g2.stg");
@@ -149,7 +146,7 @@ public class TestRegions extends BaseTest {
         ErrorBuffer errors = new ErrorBuffer();
         group.setListener(errors);
         group.load();
-        String expected = "g.stg 2:3: region a.r is embedded and thus already implicitly defined"+newline;
+        String expected = "g.stg 2:3: region /a.r is embedded and thus already implicitly defined"+newline;
         String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -169,7 +166,7 @@ public class TestRegions extends BaseTest {
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		group.load();
-		String expected = "g.stg 3:2: redefinition of region a.r"+newline;
+		String expected = "g.stg 3:2: redefinition of region /a.r"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}

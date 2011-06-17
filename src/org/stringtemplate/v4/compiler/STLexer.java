@@ -29,11 +29,9 @@ package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.*;
 import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.misc.ErrorManager;
-import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.misc.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /** This class represents the tokenizer for templates. It operates in two modes:
  *  inside and outside of expressions. It behaves like an ANTLR TokenSource,
@@ -510,7 +508,7 @@ public class STLexer implements TokenSource {
         while ( c==' ' || c=='\t' ) consume(); // scarf any indent
     }
 
-    public static boolean isIDStartLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c=='_'; }
+    public static boolean isIDStartLetter(char c) { return isIDLetter(c); }
 	public static boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9' || c=='_' || c=='/'; }
     public static boolean isWS(char c) { return c==' ' || c=='\t' || c=='\n' || c=='\r'; }
     public static boolean isUnicodeLetter(char c) { return c>='a'&&c<='f' || c>='A'&&c<='F' || c>='0'&&c<='9'; }

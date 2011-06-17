@@ -55,13 +55,10 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.*;
-
-import org.stringtemplate.v4.STErrorListener;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.compiler.CompiledST;
+import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
-import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.*;
 
 import java.util.Arrays;
 
@@ -540,7 +537,7 @@ public class TestCompiler extends BaseTest {
             "new 0 0, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[region__a__r]";
+        String stringsExpected = "[/region__/a__r]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }
@@ -553,7 +550,7 @@ public class TestCompiler extends BaseTest {
             "write_str 0, new 1 0, write";
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[x:, region__a__r]";
+        String stringsExpected = "[x:, /region__/a__r]";
         String stringsResult = Arrays.toString(code.strings);
         assertEquals(stringsExpected, stringsResult);
     }

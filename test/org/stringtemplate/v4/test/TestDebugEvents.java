@@ -27,11 +27,8 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
-import org.stringtemplate.v4.STGroupString;
+import org.junit.Test;
+import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.debug.InterpEvent;
 
 import java.util.List;
@@ -48,8 +45,8 @@ public class TestDebugEvents extends BaseTest {
         ST st = group.getInstanceOf("t");
         List<InterpEvent> events = st.getEvents();
         String expected =
-            "[EvalExprEvent{self=t(), expr='foo', exprStartChar=0, exprStopChar=2, start=0, stop=2}," +
-			" EvalTemplateEvent{self=t(), start=0, stop=2}]";
+            "[EvalExprEvent{self=/t(), expr='foo', exprStartChar=0, exprStopChar=2, start=0, stop=2}," +
+			" EvalTemplateEvent{self=/t(), start=0, stop=2}]";
         String result = events.toString();
         assertEquals(expected, result);
     }
@@ -63,10 +60,10 @@ public class TestDebugEvents extends BaseTest {
         ST st = group.getInstanceOf("t");
         List<InterpEvent> events = st.getEvents();
         String expected =
-            "[IndentEvent{self=t(), expr=' ', exprStartChar=0, exprStopChar=0, start=0, stop=0}," +
-			" EvalExprEvent{self=t(), expr='<x>', exprStartChar=1, exprStopChar=3, start=0, stop=-1}," +
-			" EvalExprEvent{self=t(), expr=' ', exprStartChar=4, exprStopChar=4, start=0, stop=0}," +
-			" EvalTemplateEvent{self=t(), start=0, stop=0}]";
+            "[IndentEvent{self=/t(), expr=' ', exprStartChar=0, exprStopChar=0, start=0, stop=0}," +
+			" EvalExprEvent{self=/t(), expr='<x>', exprStartChar=1, exprStopChar=3, start=0, stop=-1}," +
+			" EvalExprEvent{self=/t(), expr=' ', exprStartChar=4, exprStopChar=4, start=0, stop=0}," +
+			" EvalTemplateEvent{self=/t(), start=0, stop=0}]";
         String result = events.toString();
         assertEquals(expected, result);
     }
@@ -82,16 +79,16 @@ public class TestDebugEvents extends BaseTest {
 		group.getInstanceOf("u").impl.dump();
         List<InterpEvent> events = st.getEvents();
         String expected =
-            "[EvalExprEvent{self=t(), expr='[', exprStartChar=0, exprStopChar=0, start=0, stop=0}," +
-			" IndentEvent{self=u(), expr=' ', exprStartChar=0, exprStopChar=0, start=1, stop=1}," +
-			" EvalExprEvent{self=u(), expr='<x>', exprStartChar=1, exprStopChar=3, start=1, stop=0}," +
-			" EvalExprEvent{self=u(), expr=' ', exprStartChar=4, exprStopChar=4, start=1, stop=1}," +
-			" EvalTemplateEvent{self=u(), start=1, stop=1}," +
-			" EvalExprEvent{self=t(), expr='<u()>'," +
+            "[EvalExprEvent{self=/t(), expr='[', exprStartChar=0, exprStopChar=0, start=0, stop=0}," +
+			" IndentEvent{self=/u(), expr=' ', exprStartChar=0, exprStopChar=0, start=1, stop=1}," +
+			" EvalExprEvent{self=/u(), expr='<x>', exprStartChar=1, exprStopChar=3, start=1, stop=0}," +
+			" EvalExprEvent{self=/u(), expr=' ', exprStartChar=4, exprStopChar=4, start=1, stop=1}," +
+			" EvalTemplateEvent{self=/u(), start=1, stop=1}," +
+			" EvalExprEvent{self=/t(), expr='<u()>'," +
 			" exprStartChar=1, exprStopChar=5, start=1, stop=1}," +
-			" EvalExprEvent{self=t(), expr=']'," +
+			" EvalExprEvent{self=/t(), expr=']'," +
 			" exprStartChar=6, exprStopChar=6, start=2, stop=2}," +
-			" EvalTemplateEvent{self=t(), start=0, stop=2}]";
+			" EvalTemplateEvent{self=/t(), start=0, stop=2}]";
         String result = events.toString();
         assertEquals(expected, result);
     }
@@ -108,10 +105,10 @@ public class TestDebugEvents extends BaseTest {
 		List<InterpEvent> events = st.getEvents();
 		int n = newline.length();
 		String expected =
-			"[EvalExprEvent{self=t(), expr='[', exprStartChar=0, exprStopChar=0, start=0, stop=0}, " +
-			"EvalExprEvent{self=t(), expr='\\n', exprStartChar=2, exprStopChar=3, start=1, stop="+n+"}, " +
-			"EvalExprEvent{self=t(), expr=']', exprStartChar=5, exprStopChar=5, start="+(n+1)+", stop="+(n+1)+"}, " +
-			"EvalTemplateEvent{self=t(), start=0, stop="+(n+1)+"}]";
+			"[EvalExprEvent{self=/t(), expr='[', exprStartChar=0, exprStopChar=0, start=0, stop=0}, " +
+			"EvalExprEvent{self=/t(), expr='\\n', exprStartChar=2, exprStopChar=3, start=1, stop="+n+"}, " +
+			"EvalExprEvent{self=/t(), expr=']', exprStartChar=5, exprStopChar=5, start="+(n+1)+", stop="+(n+1)+"}, " +
+			"EvalTemplateEvent{self=/t(), start=0, stop="+(n+1)+"}]";
 		String result = events.toString();
 		assertEquals(expected, result);
 	}

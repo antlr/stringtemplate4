@@ -28,17 +28,11 @@
 package org.stringtemplate.v4;
 
 import org.antlr.runtime.ANTLRInputStream;
-import org.stringtemplate.v4.compiler.CompiledST;
-import org.stringtemplate.v4.compiler.STException;
-import org.stringtemplate.v4.misc.ErrorType;
-import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.compiler.*;
+import org.stringtemplate.v4.misc.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.*;
+import java.net.*;
 
 // TODO: caching?
 
@@ -65,7 +59,7 @@ public class STGroupDir extends STGroup {
 			catch (MalformedURLException e) {
 				throw new STException("can't load dir "+dirName, e);
 			}
-//			System.out.println("found "+dirName+" at "+root);
+			if ( verbose ) System.out.println("STGroupDir("+dirName+") found at "+root);
 		}
 		else {
 			ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -74,7 +68,7 @@ public class STGroupDir extends STGroup {
 				cl = this.getClass().getClassLoader();
 				root = cl.getResource(dirName);
 			}
-//			System.out.println("found "+dirName+" via CLASSPATH at "+root);
+			if ( verbose ) System.out.println("STGroupDir("+dirName+") found via CLASSPATH at "+root);
 			if ( root==null ) {
 				throw new IllegalArgumentException("No such directory: "+
 													   dirName);
@@ -102,16 +96,18 @@ public class STGroupDir extends STGroup {
 	}
 
     /** Load a template from dir or group file.  Group file is given
-     *  precedence over dir with same name.
+     *  precedence over dir with same name. name is always fully-qualified.
      */
 	@Override
     protected CompiledST load(String name) {
-//		System.out.println("load in groupdir: "+name);
-        String parent = Misc.getPrefix(name);
-    	if (parent.isEmpty()) {
-    		// no need to check for a group file as name has no parent
-            return loadTemplateFile(parent, name+".st"); // load t.st file
-    	}
+		if ( verbose ) System.out.println("STGroupDir.load("+name+")");
+        String parent = Misc.getPrefix(name); // must have parent; it's fully-qualified
+		String prefix = parent;
+		if ( !parent.endsWith("/") ) prefix += '/';
+//    	if (parent.isEmpty()) {
+//    		// no need to check for a group file as name has no parent
+//            return loadTemplateFile("/", name+".st"); // load t.st file
+//    	}
 
         URL groupFileURL = null;
         try { // see if parent of template name is a group file
@@ -127,7 +123,8 @@ public class STGroupDir extends STGroup {
         }
         catch (FileNotFoundException fnfe) {
             // must not be in a group file
-            return loadTemplateFile(parent, name+".st"); // load t.st file
+			String unqualifiedName = Misc.getFileName(name);
+            return loadTemplateFile(prefix, unqualifiedName+".st"); // load t.st file
         }
         catch (IOException ioe) {
             errMgr.internalError(null, "can't load template file "+name, ioe);
@@ -138,33 +135,34 @@ public class STGroupDir extends STGroup {
         catch (IOException ioe) {
             errMgr.internalError(null, "can't close template file stream "+name, ioe);
         }
-        loadGroupFile(parent, root+parent+".stg");
+        loadGroupFile(prefix, root+parent+".stg");
         return rawGetTemplate(name);
     }
 
 	/** Load .st as relative file name relative to root by prefix */
-	public CompiledST loadTemplateFile(String prefix, String fileName) {
-//		System.out.println("load in groupdir "+fileName+" from "+root+" prefix="+prefix);
+	public CompiledST loadTemplateFile(String prefix, String unqualifiedFileName) {
+		if ( verbose ) System.out.println("loadTemplateFile("+unqualifiedFileName+") in groupdir "+
+										  "from "+root+" prefix="+prefix);
 		URL f = null;
 		try {
-			f = new URL(root+"/"+fileName);
+			f = new URL(root+prefix+unqualifiedFileName);
 		}
 		catch (MalformedURLException me) {
 			errMgr.runTimeError(null, null, 0, ErrorType.INVALID_TEMPLATE_NAME,
-								me, root + fileName);
+								me, root + unqualifiedFileName);
 			return null;
 		}
 		ANTLRInputStream fs;
 		try {
 			fs = new ANTLRInputStream(f.openStream(), encoding);
-			fs.name = fileName;
+			fs.name = unqualifiedFileName;
 		}
 		catch (IOException ioe) {
-			// doesn't exist
-			//errMgr.IOError(null, ErrorType.NO_SUCH_TEMPLATE, ioe, fileName);
+			if ( verbose ) System.out.println(root+"/"+unqualifiedFileName+" doesn't exist");
+			//errMgr.IOError(null, ErrorType.NO_SUCH_TEMPLATE, ioe, unqualifiedFileName);
 			return null;
 		}
-		return loadTemplateFile(prefix, fileName, fs);
+		return loadTemplateFile(prefix, unqualifiedFileName, fs);
 	}
 
 	public String getName() { return groupDirName; }

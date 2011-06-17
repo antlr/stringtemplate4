@@ -27,13 +27,9 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
-
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
-import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.Misc;
+import org.junit.Test;
+import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.misc.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -60,7 +56,7 @@ public class TestInterptimeErrors extends BaseTest {
 		group.setListener(errors);
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [t] 1:0 no such template: foo"+newline;
+        String expected = "context [/t] 1:0 no such template: /foo"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -82,7 +78,7 @@ public class TestInterptimeErrors extends BaseTest {
         group.importTemplates(group2);
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [t] 1:1 no such template: super.t"+newline;
+        String expected = "context [/t] 1:1 no such template: super.t"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -150,7 +146,7 @@ public class TestInterptimeErrors extends BaseTest {
 		group.setListener(errors);
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [t] 1:1 passed 1 arg(s) to template u with 2 declared arg(s)"+newline;
+        String expected = "context [/t] 1:1 passed 1 arg(s) to template /u with 2 declared arg(s)"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -170,7 +166,7 @@ public class TestInterptimeErrors extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
 
-        expected = "context [t] 1:5 passed 1 arg(s) to template u with 2 declared arg(s)"+newline;
+        expected = "context [/t] 1:5 passed 1 arg(s) to template /u with 2 declared arg(s)"+newline;
 		result = errors.toString();
         assertEquals(expected, result);
     }
@@ -187,7 +183,7 @@ public class TestInterptimeErrors extends BaseTest {
 		group.setListener(errors);
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [t u] 1:1 attribute x isn't defined"+newline;
+        String expected = "context [/t /u] 1:1 attribute x isn't defined"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -207,7 +203,7 @@ public class TestInterptimeErrors extends BaseTest {
         e.render();
         String errorExpecting =
 			"1:23: anonymous template has 2 arg(s) but mapped across 3 value(s)" + newline +
-			"context [anonymous] 1:23 passed 3 arg(s) to template _sub1 with 2 declared arg(s)" + newline +
+			"context [anonymous] 1:23 passed 3 arg(s) to template /_sub1 with 2 declared arg(s)" + newline +
 			"context [anonymous] 1:1 iterating through 3 values in zip map but template has 2 declared arguments" + newline;
         assertEquals(errorExpecting, errors.toString());
         String expecting = "Ter@1, Tom@2";

@@ -28,7 +28,6 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.*;
-
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
@@ -39,11 +38,7 @@ import static org.junit.Assert.assertEquals;
 public class TestGroups extends BaseTest {
 	@Test public void testSimpleGroup() throws Exception {
 		String dir = getRandomDir();
-		String a =
-			"a(x) ::= <<"+newline+
-			"foo"+newline+
-			">>"+newline;
-		writeFile(dir, "a.st", a);
+		writeFile(dir, "a.st", "a(x) ::= <<foo>>");
 		STGroup group = new STGroupDir(dir);
 		ST st = group.getInstanceOf("a");
 		String expected = "foo";
@@ -64,14 +59,8 @@ public class TestGroups extends BaseTest {
 
     @Test public void testGroupWithTwoTemplates() throws Exception {
         String dir = getRandomDir();
-        String a =
-            "a(x) ::= <<"+newline+
-            "foo"+newline+
-            ">>"+newline;
-        writeFile(dir, "a.st", a);
-        String b =
-            "b() ::= \"bar\""+newline;
-        writeFile(dir, "b.st", b);
+		writeFile(dir, "a.st", "a(x) ::= <<foo>>");
+		writeFile(dir, "b.st", "b() ::= \"bar\"");
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");
         ST st2 = group.getInstanceOf("b");
@@ -83,77 +72,36 @@ public class TestGroups extends BaseTest {
     @Test public void testSubdir() throws Exception {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
-        String a =
-            "a(x) ::= <<"+newline+
-            "foo"+newline+
-            ">>"+newline;
-        writeFile(dir, "a.st", a);
-        String b =
-            "b() ::= \"bar\""+newline;
-        writeFile(dir+"/subdir", "b.st", b);
+        writeFile(dir,           "a.st", "a(x) ::= <<foo>>");
+		writeFile(dir+"/subdir", "b.st", "b() ::= \"bar\"");
         STGroup group = new STGroupDir(dir);
-        ST st1 = group.getInstanceOf("a");
-        ST st2 = group.getInstanceOf("subdir/b");
-        String expected = "foobar";
-        String result = st1.render()+st2.render();
-        assertEquals(expected, result);
-        st2 = group.getInstanceOf("subdir/b"); // should work with / in front too
-        expected = "bar";
-        result = st2.render();
-        assertEquals(expected, result);
-    }
-
-    @Test public void testAbsoluteTemplateRef() throws Exception {
-        // /randomdir/a and /randomdir/subdir/b
-        String dir = getRandomDir();
-        String a =
-            "a(x) ::= << <subdir/b()> >>\n";
-        writeFile(dir, "a.st", a);
-        String b =
-            "b() ::= <<bar>>\n";
-        writeFile(dir+"/subdir", "b.st", b);
-        STGroup group = new STGroupDir(dir);
-        ST st = group.getInstanceOf("a");
-        String expected = " bar ";
-        String result = st.render();
-        assertEquals(expected, result);
+		assertEquals("foo", group.getInstanceOf("a").render());
+		assertEquals("bar", group.getInstanceOf("/subdir/b").render());
+		assertEquals("bar", group.getInstanceOf("subdir/b").render());
     }
 
     @Test public void testGroupFileInDir() throws Exception {
         // /randomdir/a and /randomdir/group.stg with b and c templates
         String dir = getRandomDir();
-        String a =
-            "a(x) ::= <<\n"+
-            "foo\n"+
-            ">>\n";
-        writeFile(dir, "a.st", a);
+		writeFile(dir, "a.st", "a(x) ::= <<foo>>");
         String groupFile =
             "b() ::= \"bar\"\n"+
             "c() ::= \"duh\"\n";
         writeFile(dir, "group.stg", groupFile);
         STGroup group = new STGroupDir(dir);
-        ST st1 = group.getInstanceOf("a");
-        ST st2 = group.getInstanceOf("group/b");
-        ST st3 = group.getInstanceOf("group/c");
-        String expected = "foobarduh";
-        String result = st1.render()+st2.render()+st3.render();
-        assertEquals(expected, result);
+		assertEquals("foo", group.getInstanceOf("a").render());
+		assertEquals("bar", group.getInstanceOf("/group/b").render());
+		assertEquals("duh", group.getInstanceOf("/group/c").render());
     }
 
     @Test public void testSubSubdir() throws Exception {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
-        String a =
-            "a(x) ::= <<"+newline+
-            "foo"+newline+
-            ">>"+newline;
-        writeFile(dir, "a.st", a);
-        String b =
-            "b() ::= \"bar\""+newline;
-        writeFile(dir+"/sub1/sub2", "b.st", b);
+		writeFile(dir,              "a.st", "a(x) ::= <<foo>>");
+		writeFile(dir+"/sub1/sub2", "b.st", "b() ::= \"bar\"");
         STGroup group = new STGroupDir(dir);
         ST st1 = group.getInstanceOf("a");
-        ST st2 = group.getInstanceOf("sub1/sub2/b");
+        ST st2 = group.getInstanceOf("/sub1/sub2/b");
         String expected = "foobar";
         String result = st1.render()+st2.render();
         assertEquals(expected, result);
@@ -162,11 +110,7 @@ public class TestGroups extends BaseTest {
     @Test public void testGroupFileInSubDir() throws Exception {
         // /randomdir/a and /randomdir/group.stg with b and c templates
         String dir = getRandomDir();
-        String a =
-            "a(x) ::= <<\n"+
-            "foo\n"+
-            ">>\n";
-        writeFile(dir, "a.st", a);
+		writeFile(dir, "a.st", "a(x) ::= <<foo>>");
         String groupFile =
             "b() ::= \"bar\"\n"+
             "c() ::= \"duh\"\n";
@@ -177,34 +121,6 @@ public class TestGroups extends BaseTest {
         ST st3 = group.getInstanceOf("subdir/group/c");
         String expected = "foobarduh";
         String result = st1.render()+st2.render()+st3.render();
-        assertEquals(expected, result);
-    }
-
-    @Test public void testRefToAnotherTemplateInSameGroup() throws Exception {
-        String dir = getRandomDir();
-        String a = "a() ::= << <b()> >>\n";
-        String b = "b() ::= <<bar>>\n";
-        writeFile(dir, "a.st", a);
-        writeFile(dir, "b.st", b);
-        STGroup group = new STGroupDir(dir);
-        ST st = group.getInstanceOf("a");
-        String expected = " bar ";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
-    @Test public void testRefToAnotherTemplateInSameSubdir() throws Exception {
-        // /randomdir/a and /randomdir/subdir/b
-        String dir = getRandomDir();
-        String a = "a() ::= << <subdir/b()> >>\n";
-        String b = "b() ::= <<bar>>\n";
-        writeFile(dir+"/subdir", "a.st", a);
-        writeFile(dir+"/subdir", "b.st", b);
-        STGroup group = new STGroupDir(dir);
-        ST st = group.getInstanceOf("subdir/a");
-        st.impl.dump();
-        String expected = " bar ";
-        String result = st.render();
         assertEquals(expected, result);
     }
 
@@ -547,7 +463,7 @@ public class TestGroups extends BaseTest {
 		group.setListener(errors);
 		ST st = group.getInstanceOf("g");
 		st.render();
-		String expected = "context [g] 1:1 attribute z isn't defined"+newline;
+		String expected = "context [/g] 1:1 attribute z isn't defined"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -574,9 +490,9 @@ public class TestGroups extends BaseTest {
 		String dir = getRandomDir();
 		String groupFile =
 		    "f(x,y) ::= \"<x><y>\"\n" +
-		   //01234567890 1234567 8 9 
+		   //01234567890 1234567 8 9
 		    "g(name) ::= \"<(name)(x={a},y={b})>\"";
-		   //012345678901 2345678901234567890123 4 
+		   //012345678901 2345678901234567890123 4
 		writeFile(dir, "group.stg", groupFile);
 		STGroupFile group = new STGroupFile(dir+"/group.stg");
 		ErrorBuffer errors = new ErrorBuffer();
@@ -599,54 +515,6 @@ public class TestGroups extends BaseTest {
         STGroup group1 = new STGroupDir(dir);
         ST st = group1.getInstanceOf("group/a"); // can't see
         assertEquals(null, st);
-    }
-
-    // test fully-qualified template refs
-
-    @Test public void testFullyQualifiedGetInstanceOf() throws Exception {
-        String dir = getRandomDir();
-        String a =
-            "a(x) ::= <<"+newline+
-            "foo"+newline+
-            ">>"+newline;
-        writeFile(dir, "a.st", a);
-        STGroup group = new STGroupDir(dir);
-        ST st = group.getInstanceOf("a");
-        String expected = "foo";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
-    @Test public void testFullyQualifiedTemplateRef() throws Exception {
-        // /randomdir/a and /randomdir/subdir/b
-        String dir = getRandomDir();
-        String a = "a() ::= << <subdir/b()> >>\n";
-        String b = "b() ::= <<bar>>\n";
-        writeFile(dir+"/subdir", "a.st", a);
-        writeFile(dir+"/subdir", "b.st", b);
-        STGroup group = new STGroupDir(dir);
-        ST st = group.getInstanceOf("subdir/a");
-        String expected = " bar ";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
-
-    @Test public void testFullyQualifiedTemplateRef2() throws Exception {
-        // /randomdir/a and /randomdir/group.stg with b and c templates
-        String dir = getRandomDir();
-        String a =
-            "a(x) ::= << <group/b()> >>\n";
-        writeFile(dir, "a.st", a);
-        String groupFile =
-            "b() ::= \"bar\"\n"+
-            "c() ::= \"<a()>\"\n";
-        writeFile(dir, "group.stg", groupFile);
-        STGroup group = new STGroupDir(dir);
-        ST st1 = group.getInstanceOf("a");
-        ST st2 = group.getInstanceOf("group/c"); // invokes /a
-        String expected = " bar  bar ";
-        String result = st1.render()+st2.render();
-        assertEquals(expected, result);
     }
 
 	@Test public void testUnloadingSimpleGroup() throws Exception {
@@ -731,7 +599,9 @@ public class TestGroups extends BaseTest {
 
 	@Test
 	public void testGetTemplateNames() throws Exception {
-		String templates = "t() ::= \"foo\"\nmain() ::= \"<t()>\"";
+		String templates =
+			"t() ::= \"foo\"\n" +
+			"main() ::= \"<t()>\"";
 		writeFile(tmpdir, "t.stg", templates);
 
 		STGroup group = new STGroupFile(tmpdir + "/t.stg");
@@ -744,8 +614,8 @@ public class TestGroups extends BaseTest {
 
 		// Should only contain "t" and "main" (not "t2")
 		Assert.assertEquals(2, names.size());
-		Assert.assertTrue(names.contains("t"));
-		Assert.assertTrue(names.contains("main"));
+		Assert.assertTrue(names.contains("/t"));
+		Assert.assertTrue(names.contains("/main"));
 	}
 
 	@Test

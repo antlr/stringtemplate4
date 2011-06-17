@@ -155,8 +155,8 @@ public class STGroup {
      *  group. Names must be absolute, fully-qualified names like a/b
      */
     public ST getInstanceOf(String name) {
-		if ( verbose ) System.out.println("getInstanceOf("+name+") in group "+getName());
 		if ( name==null ) return null;
+		if ( verbose ) System.out.println(getName()+".getInstanceOf("+name+")");
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
 			return createStringTemplate(c);
@@ -169,12 +169,16 @@ public class STGroup {
 									   int ip,
 									   String name)
 	{
-		if ( verbose ) System.out.println("getEmbeddedInstanceOf("+name+")");
-        ST st = getInstanceOf(name);
+		String fullyQualifiedName = name;
+		if ( name.charAt(0)!='/' ) {
+			fullyQualifiedName = enclosingInstance.impl.prefix + name;
+		}
+		if ( verbose ) System.out.println("getEmbeddedInstanceOf(" + fullyQualifiedName +")");
+        ST st = getInstanceOf(fullyQualifiedName);
 		if ( st==null ) {
 			errMgr.runTimeError(interp, enclosingInstance, ip,
 								ErrorType.NO_SUCH_TEMPLATE,
-								name);
+								fullyQualifiedName);
 			return createStringTemplateInternally(new CompiledST());
 		}
 		// this is only called internally. wack any debug ST create events
@@ -211,19 +215,21 @@ public class STGroup {
 
 	/** Look up a fully-qualified name */
     public CompiledST lookupTemplate(String name) {
+		if ( name.charAt(0)!='/' ) name = "/"+name;
+		if ( verbose ) System.out.println(getName()+".lookupTemplate("+name+")");
         CompiledST code = rawGetTemplate(name);
         if ( code==NOT_FOUND_ST ) {
-			if ( verbose ) System.out.println(name+" not found");
+			if ( verbose ) System.out.println(name+" previously seen as not found");
 			return null;
 		}
         // try to load from disk and look up again
         if ( code==null ) code = load(name);
         if ( code==null ) code = lookupImportedTemplate(name);
         if ( code==null ) {
-			if ( verbose ) System.out.println(name+" not found");
+			if ( verbose ) System.out.println(name+" recorded not found");
             templates.put(name, NOT_FOUND_ST);
         }
-		if ( verbose ) if ( code!=null ) System.out.println("found "+name+" in "+getName());
+		if ( verbose ) if ( code!=null ) System.out.println(getName()+".lookupTemplate("+name+") found");
         return code;
     }
 
@@ -253,13 +259,14 @@ public class STGroup {
     protected CompiledST lookupImportedTemplate(String name) {
         if ( imports==null ) return null;
         for (STGroup g : imports) {
+			if ( verbose ) System.out.println("checking "+g.getName()+" for imported "+name);
             CompiledST code = g.lookupTemplate(name);
 			if ( code!=null ) {
-				if ( verbose ) System.out.println("found "+name+" in "+g.getName());
+				if ( verbose ) System.out.println(g.getName()+".lookupImportedTemplate("+name+") found");
 				return code;
 			}
         }
-		if ( verbose ) System.out.println(name+"not found in imports");
+		if ( verbose ) System.out.println(name+" not found in "+getName()+" imports");
         return null;
     }
 
@@ -269,6 +276,7 @@ public class STGroup {
 
 	// for testing
 	public CompiledST defineTemplate(String templateName, String template) {
+		if ( templateName.charAt(0)!='/' ) templateName = "/"+templateName;
 		try {
 			CompiledST impl =
 				defineTemplate(templateName,
@@ -285,6 +293,7 @@ public class STGroup {
 
 	// for testing
 	public CompiledST defineTemplate(String name, String argsS, String template) {
+		if ( name.charAt(0)!='/' ) name = "/"+name;
 		String[] args = argsS.split(",");
 		List<FormalArgument> a = new ArrayList<FormalArgument>();
 		for (String arg : args) {
@@ -294,24 +303,25 @@ public class STGroup {
 							  a, template, null);
 	}
 
-	public CompiledST defineTemplate(String templateName,
+	public CompiledST defineTemplate(String fullyQualifiedTemplateName,
 									 Token nameT,
                                      List<FormalArgument> args,
 									 String template,
 									 Token templateToken)
     {
-		if ( templateName==null || templateName.length()==0 ) {
+		if ( verbose ) System.out.println("defineTemplate("+fullyQualifiedTemplateName+")");
+		if ( fullyQualifiedTemplateName==null || fullyQualifiedTemplateName.length()==0 ) {
 			throw new IllegalArgumentException("empty template name");
 		}
-		if ( templateName.indexOf('.')>=0 ) {
+		if ( fullyQualifiedTemplateName.indexOf('.')>=0 ) {
 			throw new IllegalArgumentException("cannot have '.' in template names");
 		}
         template = Misc.trimOneStartingNewline(template);
         template = Misc.trimOneTrailingNewline(template);
 		// compile, passing in templateName as enclosing name for any embedded regions
-        CompiledST code = compile(getFileName(), templateName, args, template, templateToken);
-        code.name = templateName;
-        rawDefineTemplate(templateName, code, nameT);
+        CompiledST code = compile(getFileName(), fullyQualifiedTemplateName, args, template, templateToken);
+        code.name = fullyQualifiedTemplateName;
+        rawDefineTemplate(fullyQualifiedTemplateName, code, nameT);
 		code.defineArgDefaultValueTemplates(this);
         code.defineImplicitlyDefinedTemplates(this); // define any anonymous subtemplates
 
@@ -322,12 +332,12 @@ public class STGroup {
     public CompiledST defineTemplateAlias(Token aliasT, Token targetT) {
         String alias = aliasT.getText();
         String target = targetT.getText();
-        CompiledST targetCode = rawGetTemplate(target);
+        CompiledST targetCode = rawGetTemplate("/"+target);
         if ( targetCode==null ){
             errMgr.compileTimeError(ErrorType.ALIAS_TARGET_UNDEFINED, null, aliasT, alias, target);
             return null;
         }
-        templates.put(alias, targetCode);
+        rawDefineTemplate("/" + alias, targetCode, aliasT);
         return targetCode;
     }
 
@@ -360,7 +370,7 @@ public class STGroup {
     }
 
     public void defineTemplateOrRegion(
-		String templateName,
+		String fullyQualifiedTemplateName,
 		String regionSurroundingTemplateName,
         Token templateToken,
 		String template,
@@ -372,12 +382,12 @@ public class STGroup {
                 defineRegion(regionSurroundingTemplateName, nameToken, template, templateToken);
             }
             else {
-                defineTemplate(templateName, nameToken, args, template, templateToken);
+                defineTemplate(fullyQualifiedTemplateName, nameToken, args, template, templateToken);
             }
 		}
 		catch (STException e) {
 			// after getting syntax error in a template, we emit msg
-			// and throw exception to blast all the way out here.
+			// and throw exception to blast all the way out to here.
 		}
 	}
 
@@ -430,16 +440,19 @@ public class STGroup {
 		return c.compile(srcName, name, args, template, templateToken);
 	}
 
-    /** The "foo" of t() ::= "<@foo()>" is mangled to "region#t#foo" */
+    /** The "foo" of t() ::= "<@foo()>" is mangled to "/region__/t__foo" */
     public static String getMangledRegionName(String enclosingTemplateName,
                                               String name)
     {
-        return "region__"+enclosingTemplateName+"__"+name;
+		if ( enclosingTemplateName.charAt(0)!='/' ) {
+			enclosingTemplateName = '/'+enclosingTemplateName;
+		}
+        return "/region__"+enclosingTemplateName+"__"+name;
     }
 
-    /** Return "t.foo" from "region__t__foo" */
+    /** Return "t.foo" from "/region__/t__foo" */
     public static String getUnMangledTemplateName(String mangledName) {
-        String t = mangledName.substring("region__".length(),
+        String t = mangledName.substring("/region__".length(),
                                          mangledName.lastIndexOf("__"));
         String r = mangledName.substring(mangledName.lastIndexOf("__")+2,
                                          mangledName.length());
@@ -466,12 +479,6 @@ public class STGroup {
 	 *  that if an inherited template references template t() then we
 	 *  search for t() in the subgroup first.
 	 *
-	 *  If you specify an absolute file name or directory name, the
-	 *  import statement uses that directly. If it is not an absolute path,
-	 *  we look that entity up in the directory holding the group that
-	 *  initiates the import. If file or directory is not in that directory,
-	 *  then we load using the classpath.
-	 *
 	 *  Templates are loaded on-demand from import dirs.  Imported groups are
 	 *  loaded on-demand when searching for a template.
 	 *
@@ -479,6 +486,7 @@ public class STGroup {
 	 *  found while loading imported element are sent to listener of this group.
 	 */
 	public void importTemplates(Token fileNameToken) {
+		if ( verbose ) System.out.println("importTemplates("+fileNameToken.getText()+")");
 		String fileName = fileNameToken.getText();
 		// do nothing upon syntax error
 		if ( fileName==null || fileName.equals("<missing STRING>") ) return;
@@ -491,26 +499,7 @@ public class STGroup {
 
 		STGroup g = null;
 
-		File f = new File(fileName);
-		if ( f.isAbsolute() ) { // load directly if absolute
-			if ( isTemplateFile ) {
-				g = new STGroup();
-				g.setListener(this.getListener());
-				g.loadAbsoluteTemplateFile(fileName);
-			}
-			else if ( isGroupFile ) {
-				g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
-				g.setListener(this.getListener());
-			}
-			else if ( isGroupDir ) {
-				g = new STGroupDir(fileName, delimiterStartChar, delimiterStopChar);
-				g.setListener(this.getListener());
-			}
-			importTemplates(g);
-			return;
-		}
-
-		// it's a relative name; search path is working dir, g.stg's dir, CLASSPATH
+		// search path is: working dir, g.stg's dir, CLASSPATH
 		URL thisRoot = getRootDirURL();
 		URL fileUnderRoot = null;
 //		System.out.println("thisRoot="+thisRoot);
@@ -532,7 +521,7 @@ public class STGroup {
 					InputStream s = fileURL.openStream();
 					ANTLRInputStream templateStream = new ANTLRInputStream(s);
 					templateStream.name = fileName;
-					CompiledST code = g.loadTemplateFile("", fileName, templateStream);
+					CompiledST code = g.loadTemplateFile("/", fileName, templateStream);
 					if ( code==null ) g = null;
 				}
 				catch (IOException ioe) {
@@ -611,8 +600,11 @@ public class STGroup {
 		return loadTemplateFile("", fileName, fs);
 	}
 
-	/** Load template stream into this group */
-	public CompiledST loadTemplateFile(String prefix, String fileName, CharStream templateStream) {
+	/** Load template stream into this group. unqualifiedFileName is "a.st".
+	 *  The prefix is path from group root to unqualifiedFileName like /subdir
+	 *  if file is in /subdir/a.st
+	 */
+	public CompiledST loadTemplateFile(String prefix, String unqualifiedFileName, CharStream templateStream) {
 		GroupLexer lexer = new GroupLexer(templateStream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		GroupParser parser = new GroupParser(tokens);
@@ -623,12 +615,14 @@ public class STGroup {
 		}
 		catch (RecognitionException re) {
 			errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR,
-									fileName,
+									unqualifiedFileName,
 									re, re.getMessage());
 		}
-		String templateName = Misc.getFileNameNoSuffix(fileName);
-		if ( prefix!=null && prefix.length()>0 ) templateName = prefix+"/"+templateName;
-		return rawGetTemplate(templateName);
+		String templateName = Misc.getFileNameNoSuffix(unqualifiedFileName);
+		if ( prefix!=null && prefix.length()>0 ) templateName = prefix+templateName;
+		CompiledST impl = rawGetTemplate(templateName);
+		impl.prefix = prefix;
+		return impl;
 	}
 
 	/** Add an adaptor for a kind of object so ST knows how to pull properties

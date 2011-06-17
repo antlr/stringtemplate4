@@ -27,16 +27,12 @@
  */
 package org.stringtemplate.v4.compiler;
 
-import org.antlr.runtime.Token;
-import org.antlr.runtime.TokenStream;
+import org.antlr.runtime.*;
 import org.antlr.runtime.tree.CommonTree;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.misc.Interval;
-import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.misc.*;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.*;
 
 /** The result of compiling an ST.  Contains all the bytecode instructions,
@@ -46,6 +42,24 @@ import java.util.*;
  */
 public class CompiledST {
     public String name;
+
+	/**
+	Every template knows where it is relative to the group that
+	loaded it. The prefix is the relative path from the
+	root. "/prefix/name" is the fully qualified name of this
+	template. All ST.getInstanceOf() calls must use fully qualified
+	names. A "/" is added to the front if you don't specify
+	one. Template references within template code, however, uses
+	relative names, unless of course the name starts with "/".
+
+	This has nothing to do with the outer filesystem path to the group dir
+	or group file.
+
+	We set this as we load/compile the template.
+
+	Always ends with "/".
+	 */
+	public String prefix = "/";
 
     /** The original, immutable pattern (not really used again after
      *  initial "compilation"). Useful for debugging.  Even for
@@ -106,6 +120,8 @@ public class CompiledST {
 	}
 
     public void addImplicitlyDefinedTemplate(CompiledST sub) {
+		sub.prefix = this.prefix;
+		if ( sub.name.charAt(0)!='/' ) sub.name = sub.prefix+sub.name;
         if ( implicitlyDefinedTemplates == null ) {
             implicitlyDefinedTemplates = new ArrayList<CompiledST>();
         }

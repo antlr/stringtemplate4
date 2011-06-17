@@ -27,14 +27,9 @@
  */
 package org.stringtemplate.v4.misc;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.*;
+import java.lang.reflect.*;
+import java.net.*;
 import java.util.Iterator;
 
 public class Misc {
@@ -109,6 +104,7 @@ public class Misc {
 		if (name==null) return null;
 		int lastSlash=name.lastIndexOf('/');
 		if (lastSlash>0) return name.substring(0, lastSlash);
+		if (lastSlash==0) return "/";
 		//System.out.println("getPrefix("+name+")="+p);
 		return "";
 	}
