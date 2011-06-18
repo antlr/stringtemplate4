@@ -27,12 +27,10 @@
  */
 package org.stringtemplate.v4.misc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /** A hash table that maps a key to a list of elements not just a single. */
-public class MultiMap<K, V> extends HashMap<K, List<V>> {
+public class MultiMap<K, V> extends LinkedHashMap<K, List<V>> {
 	public void map(K key, V value) {
 		List<V> elementsForKey = get(key);
 		if ( elementsForKey==null ) {
