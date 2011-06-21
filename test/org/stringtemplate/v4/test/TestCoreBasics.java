@@ -27,11 +27,9 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
+import org.junit.Test;
 import org.stringtemplate.v4.*;
-import org.stringtemplate.v4.misc.ErrorBuffer;
-import org.stringtemplate.v4.misc.STNoSuchPropertyException;
-import org.stringtemplate.v4.misc.STRuntimeMessage;
+import org.stringtemplate.v4.misc.*;
 
 import java.io.StringWriter;
 import java.util.*;
@@ -237,7 +235,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testInclude() throws Exception {
         String template = "load <box()>;";
         ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box", "kewl"+newline+"daddy");
+        st.impl.nativeGroup.defineTemplate("box", "kewl" + newline + "daddy");
         String expected =
             "load kewl"+newline+"daddy;";
         String result = st.render();
@@ -254,6 +252,17 @@ public class TestCoreBasics extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
     }
+
+	@Test public void testIncludeWithEmptySubtemplateArg() throws Exception {
+		String template = "load <box({})>;";
+		ST st = new ST(template);
+		st.impl.nativeGroup.defineTemplate("box", "x", "kewl <x> daddy");
+		st.impl.dump();
+		st.add("name", "Ter");
+		String expected = "load kewl  daddy;";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testIncludeWithArg2() throws Exception {
         String template = "load <box(\"arg\", foo())>;";

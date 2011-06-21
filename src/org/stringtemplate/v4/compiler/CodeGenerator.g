@@ -229,6 +229,21 @@ subtemplate returns [String name, int nargs]
 			outermostImpl.addImplicitlyDefinedTemplate(sub);
 			}
 		 )
+	|	SUBTEMPLATE // {}
+			{
+			CompiledST sub = new CompiledST();
+			sub.name = $name;
+			sub.template = "";
+			sub.addArg(new FormalArgument("i"));
+			sub.addArg(new FormalArgument("i0"));
+			sub.isAnonSubtemplate = true;
+	        sub.templateDefStartToken = $SUBTEMPLATE.token;
+            sub.ast = $SUBTEMPLATE;
+            sub.ast.setUnknownTokenBoundaries();
+            sub.tokens = input.getTokenStream();
+			//sub.dump();
+			outermostImpl.addImplicitlyDefinedTemplate(sub);
+			}
 	;
 
 ifstat[CommonTree indent]

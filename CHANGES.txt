@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+June 21, 2011
+
+* {} wasn't allowed as a template
+
 June 16, 2011
 
 * Major overhaul of template names:
