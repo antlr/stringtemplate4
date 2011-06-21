@@ -27,7 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
+import org.junit.Test;
 
 public class TestLexer extends BaseTest {
 
@@ -52,10 +52,6 @@ public class TestLexer extends BaseTest {
 		checkTokens(template, expected);
     }
 
-    /*
-\signature{Laleh Shahideh, Ed.D. \\ Associate~Dean \\ Student Academic~Services \\ College of Arts and Sciences
-}
-*/
     @Test public void testEscEsc() throws Exception {
         String template = "hi \\\\ foo";
         String expected = "[[@0,0:8='hi \\ foo',<TEXT>,1:0]]";
