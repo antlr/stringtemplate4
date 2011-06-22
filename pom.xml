@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.antlr</groupId>
-    <artifactId>stringtemplate</artifactId>
+    <artifactId>ST4</artifactId>
     <packaging>jar</packaging>
 
     <!--
@@ -21,7 +21,7 @@
         The name of the project as seen by IDEs and release documentation etc.
     -->
 
-    <name>ANTLR StringTemplate 4.0.4-SNAPSHOT</name>
+    <name>ANTLR ST4 4.0.4-SNAPSHOT</name>
     <description>StringTemplate is a java template engine for generating source code,
 web pages, emails, or any other formatted text output.
 
