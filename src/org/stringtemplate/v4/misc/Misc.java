@@ -99,7 +99,7 @@ public class Misc {
         return f.getName();
     }
 
-	public static String getPrefix(String name) {
+	public static String getParent(String name) {
 		//System.out.println("getParent("+name+")="+p);
 		if (name==null) return null;
 		int lastSlash=name.lastIndexOf('/');
@@ -107,6 +107,14 @@ public class Misc {
 		if (lastSlash==0) return "/";
 		//System.out.println("getPrefix("+name+")="+p);
 		return "";
+	}
+
+	public static String getPrefix(String name) {
+		if (name==null) return "/";
+		String parent = getParent(name);
+		String prefix = parent;
+		if ( !parent.endsWith("/") ) prefix += '/';
+		return prefix;
 	}
 
     public static String replaceEscapes(String s) {

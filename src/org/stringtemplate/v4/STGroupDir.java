@@ -101,9 +101,8 @@ public class STGroupDir extends STGroup {
 	@Override
     protected CompiledST load(String name) {
 		if ( verbose ) System.out.println("STGroupDir.load("+name+")");
-        String parent = Misc.getPrefix(name); // must have parent; it's fully-qualified
-		String prefix = parent;
-		if ( !parent.endsWith("/") ) prefix += '/';
+        String parent = Misc.getParent(name); // must have parent; it's fully-qualified
+		String prefix = Misc.getPrefix(name);
 //    	if (parent.isEmpty()) {
 //    		// no need to check for a group file as name has no parent
 //            return loadTemplateFile("/", name+".st"); // load t.st file

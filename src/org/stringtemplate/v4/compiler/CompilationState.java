@@ -28,14 +28,10 @@
 
 package org.stringtemplate.v4.compiler;
 
-import org.antlr.runtime.CommonToken;
-import org.antlr.runtime.Token;
-import org.antlr.runtime.TokenStream;
+import org.antlr.runtime.*;
 import org.antlr.runtime.tree.CommonTree;
 import org.stringtemplate.v4.Interpreter;
-import org.stringtemplate.v4.misc.ErrorManager;
-import org.stringtemplate.v4.misc.ErrorType;
-import org.stringtemplate.v4.misc.Interval;
+import org.stringtemplate.v4.misc.*;
 
 /** temp data used during construction and functions that fill it / use it.
  *  Result is impl CompiledST object.
@@ -60,6 +56,7 @@ public class CompilationState {
 		this.errMgr = errMgr;
 		this.tokens = tokens;
 		impl.name = name;
+		impl.prefix = Misc.getPrefix(name);
 	}
 
 	public int defineString(String s) { return stringtable.add(s); }

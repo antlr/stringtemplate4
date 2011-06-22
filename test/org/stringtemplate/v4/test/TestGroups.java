@@ -80,6 +80,16 @@ public class TestGroups extends BaseTest {
 		assertEquals("bar", group.getInstanceOf("subdir/b").render());
     }
 
+	@Test public void testSubdirWithSubtemplate() throws Exception {
+		// /randomdir/a and /randomdir/subdir/b
+		String dir = getRandomDir();
+		writeFile(dir+"/subdir", "a.st", "a(x) ::= \"<x:{y|<y>}>\"");
+		STGroup group = new STGroupDir(dir);
+		ST st = group.getInstanceOf("/subdir/a");
+		st.add("x", new String[] {"a", "b"});
+		assertEquals("ab", st.render());
+	}
+
     @Test public void testGroupFileInDir() throws Exception {
         // /randomdir/a and /randomdir/group.stg with b and c templates
         String dir = getRandomDir();
