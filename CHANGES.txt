@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+June 22, 2011
+
+* subtemplates {...} in subdirectories didn't work.
+
 4.0.3 -- June 21, 2011
 
 June 21, 2011
