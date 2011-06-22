@@ -76,6 +76,34 @@ public class TestRegions extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testDefineRegionInSubgroupOneInSubdir() throws Exception {
+		String dir = getRandomDir();
+		writeFile(dir, "g1.stg", "a() ::= <<[<@r()>]>>\n");
+		writeFile(dir+"/subdir", "g2.stg", "@a.r() ::= <<foo>>\n");
+
+		STGroup group1 = new STGroupFile(dir+"/g1.stg");
+		STGroup group2 = new STGroupFile(dir+"/subdir/g2.stg");
+		group2.importTemplates(group1); // define r in g2
+		ST st = group2.getInstanceOf("a");
+		String expected = "[foo]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testDefineRegionInSubgroupBothInSubdir() throws Exception {
+		String dir = getRandomDir();
+		writeFile(dir+"/subdir", "g1.stg", "a() ::= <<[<@r()>]>>\n");
+		writeFile(dir+"/subdir", "g2.stg", "@a.r() ::= <<foo>>\n");
+
+		STGroup group1 = new STGroupFile(dir+"/subdir/g1.stg");
+		STGroup group2 = new STGroupFile(dir+"/subdir/g2.stg");
+		group2.importTemplates(group1); // define r in g2
+		ST st = group2.getInstanceOf("a");
+		String expected = "[foo]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
     @Test public void testDefineRegionInSubgroupThatRefsSuper() throws Exception {
         String dir = getRandomDir();
         String g1 = "a() ::= <<[<@r>foo<@end>]>>\n";
