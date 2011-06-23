@@ -105,7 +105,7 @@ public class Misc {
 		int lastSlash=name.lastIndexOf('/');
 		if (lastSlash>0) return name.substring(0, lastSlash);
 		if (lastSlash==0) return "/";
-		//System.out.println("getPrefix("+name+")="+p);
+		//System.out.println("getParent("+name+")="+p);
 		return "";
 	}
 
