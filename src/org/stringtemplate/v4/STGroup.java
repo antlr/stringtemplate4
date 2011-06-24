@@ -53,7 +53,9 @@ public class STGroup {
     /** Every group can import templates/dictionaries from other groups.
      *  The list must be synchronized (see importTemplates).
      */
-    protected List<STGroup> imports;
+    protected final List<STGroup> imports = Collections.synchronizedList(new ArrayList<STGroup>());
+
+    protected final List<STGroup> importsToClearOnUnload = Collections.synchronizedList(new ArrayList<STGroup>());
 
     public char delimiterStartChar = '<'; // Use <expr> by default
     public char delimiterStopChar = '>';
@@ -241,11 +243,13 @@ public class STGroup {
 	public synchronized void unload() {
 		templates.clear();
 		dictionaries.clear();
-		if (imports != null) {
-			for (STGroup imp : imports) {
-				imp.unload();
-			}
+		for (STGroup imp : imports) {
+			imp.unload();
 		}
+		for (STGroup imp : importsToClearOnUnload) {
+			imports.remove(imp);
+		}
+		importsToClearOnUnload.clear();
 	}
 
     /** Load st from disk if dir or load whole group file if .stg file (then
@@ -257,7 +261,7 @@ public class STGroup {
     public void load() { ; }
 
     protected CompiledST lookupImportedTemplate(String name) {
-        if ( imports==null ) return null;
+        if ( imports.size()==0 ) return null;
         for (STGroup g : imports) {
 			if ( verbose ) System.out.println("checking "+g.getName()+" for imported "+name);
             CompiledST code = g.lookupTemplate(name);
@@ -468,9 +472,7 @@ public class STGroup {
 
     /** Make this group import templates/dictionaries from g. */
     public void importTemplates(STGroup g) {
-        if ( g==null ) return;
-        if ( imports==null ) imports = Collections.synchronizedList(new ArrayList<STGroup>());
-        imports.add(g);
+        importTemplates(g, false);
     }
 
 	/** Import template files, directories, and group files.
@@ -563,7 +565,15 @@ public class STGroup {
 									fileNameToken, fileName);
 		}
 		else {
-			importTemplates(g);
+			importTemplates(g, true);
+		}
+	}
+
+	protected void importTemplates(STGroup g, boolean clearOnUnload) {
+		if ( g==null ) return;
+		imports.add(g);
+		if (clearOnUnload) {
+			importsToClearOnUnload.add(g);
 		}
 	}
 
@@ -762,7 +772,7 @@ public class STGroup {
 
     public String show() {
         StringBuilder buf = new StringBuilder();
-        if ( imports!=null ) buf.append(" : "+imports);
+        if ( imports.size()!=0 ) buf.append(" : "+imports);
         for (String name : templates.keySet()) {
 			CompiledST c = rawGetTemplate(name);
 			if ( c.isAnonSubtemplate || c==NOT_FOUND_ST ) continue;

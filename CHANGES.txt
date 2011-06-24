@@ -7,6 +7,12 @@ University of San Francisco
 
 CHANGES
 
+June 24, 2001
+
+* STGroup.unload() now removes imports that were specified in the group
+  file, but only calls unload() on templates that were explicitly added
+  in the program. Resolves both Sam's and Udo's concerns. :)
+
 June 22, 2011
 
 * subtemplates {...} in subdirectories didn't work.
