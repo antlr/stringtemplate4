@@ -27,6 +27,8 @@
 */
 package org.stringtemplate.v4.test;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.stringtemplate.v4.*;
 
@@ -545,4 +547,23 @@ public class TestImports extends BaseTest {
 		expected = "dir1 b";
 		assertEquals(expected, result);
 	}
+	
+	@Test
+	public void testUnloadImportedTemplatedSpecifiedInGroupFile() throws Exception {
+		writeFile(tmpdir, "t.stg",
+				"import \"g1.stg\"\n\nmain() ::= <<\nv1-<f()>\n>>");
+		writeFile(tmpdir, "g1.stg", "f() ::= \"g1\"");
+		writeFile(tmpdir, "g2.stg", "f() ::= \"g2\"\nf2() ::= \"f2\"\n");
+		STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir + "/t.stg");
+		ST st = group.getInstanceOf("main");
+		Assert.assertEquals("v1-g1", st.render());
+
+		// Change the imports of group t.
+		writeFile(tmpdir, "t.stg",
+				"import \"g2.stg\"\n\nmain() ::= <<\nv2-<f()>;<f2()>\n>>");
+		group.unload(); // will also unload already imported groups
+		st = group.getInstanceOf("main");
+		Assert.assertEquals("v2-g2;f2", st.render());
+	}
+
 }

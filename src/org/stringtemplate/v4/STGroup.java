@@ -238,7 +238,8 @@ public class STGroup {
 	/** "unload" all templates, dictionaries and import relationships, but leave
 	 *  renderers and adaptors.  This essentially forces next getInstanceOf
 	 *  to reload templates. Call unload() on each group in the imports list
-	 *  instead of clearing the list.
+	 *  and remove every import from the imports list imported with 
+	 *  "clearOnUnload".
 	 */
 	public synchronized void unload() {
 		templates.clear();
@@ -470,7 +471,11 @@ public class STGroup {
         dictionaries.put(name, mapping);
     }
 
-    /** Make this group import templates/dictionaries from g. */
+    /** 
+     * Make this group import templates/dictionaries from g. 
+     * 
+     * On unload imported templates are unloaded but stay in the imports list.
+     */
     public void importTemplates(STGroup g) {
         importTemplates(g, false);
     }
@@ -486,6 +491,13 @@ public class STGroup {
 	 *
 	 *  The listener of this group is passed to the import group so errors
 	 *  found while loading imported element are sent to listener of this group.
+	 *  
+	 *  On unload imported templates are unloaded and removed from the imports 
+	 *  list.
+	 *  
+	 *  This method is called when processing import statements specified in 
+	 *  group files. Use {@link #importTemplates(STGroup)} to import templates
+	 *  'programmatically'.
 	 */
 	public void importTemplates(Token fileNameToken) {
 		if ( verbose ) System.out.println("importTemplates("+fileNameToken.getText()+")");

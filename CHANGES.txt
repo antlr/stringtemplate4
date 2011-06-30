@@ -10,6 +10,8 @@ CHANGES
 June 30, 2011
 
 * Updated javadoc on getAttributeRenderer()
+* Updated javadoc on unload/importTemplates in STGroup() (ub)
+* Added test case for unload of groups specified in group file imports. (ub)
 
 June 24, 2011
 
