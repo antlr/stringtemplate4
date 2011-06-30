@@ -696,6 +696,17 @@ public class STGroup {
         renderers.put(attributeType, r);
 	}
 
+	/** Get renderer for class T associated with this group.
+	 *
+	 *  For non-imported groups and object-to-render of class T, use renderer
+	 *  (if any) registered for T.  For imports, any renderer
+	 *  set on import group is ignored even when using an imported template.
+	 *  You should set the renderer on the main group
+	 *  you use (or all to be sure).  I look at import groups as
+	 *  "helpers" that should give me templates and nothing else. If you
+	 *  have multiple renderers for String, say, then just make uber combined
+	 *  renderer with more specific format names.
+	 */
 	public AttributeRenderer getAttributeRenderer(Class attributeType) {
 		if ( renderers==null ) return null;
 		AttributeRenderer r = null;

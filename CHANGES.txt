@@ -7,7 +7,11 @@ University of San Francisco
 
 CHANGES
 
-June 24, 2001
+June 30, 2011
+
+* Updated javadoc on getAttributeRenderer()
+
+June 24, 2011
 
 * STGroup.unload() now removes imports that were specified in the group
   file, but only calls unload() on templates that were explicitly added
