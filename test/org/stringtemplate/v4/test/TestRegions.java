@@ -164,6 +164,23 @@ public class TestRegions extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Ignore public void testAnonymousTemplateInRegionInSubdir() throws Exception {
+		//fails since it makes region name /region__/g/a/_r
+		String dir = getRandomDir();
+		String g = "a() ::= <<[<@r()>]>>\n" +
+				   "@a.r() ::= <<\n" +
+				   "<[\"foo\"]:{x|<x>}>\n" +
+				   ">>\n";
+		writeFile(dir, "g.stg", g);
+
+		STGroup.verbose = true;
+		STGroup group = new STGroupDir(dir);
+		ST st = group.getInstanceOf("g/a");
+		String expected = "[foo]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
     @Test public void testCantDefineEmbeddedRegionAgain() throws Exception {
         String dir = getRandomDir();
         String g = "a() ::= <<[<@r>foo<@end>]>>\n"+
