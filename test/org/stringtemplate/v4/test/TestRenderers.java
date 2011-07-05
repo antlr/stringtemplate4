@@ -28,28 +28,23 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.*;
-
 import org.stringtemplate.v4.*;
 
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestRenderers extends BaseTest {
-	
+
 	// Make sure to use the US Locale during the tests
 	private Locale origLocale;
-	
+
 	@Before
 	public void setUp() {
 		origLocale = Locale.getDefault();
 		Locale.setDefault(Locale.US);
 	}
-	
+
 	@After
 	public void tearDown() {
 		Locale.setDefault(origLocale);
@@ -282,8 +277,7 @@ public class TestRenderers extends BaseTest {
                 "The names: <names; format=\"upper\">";
         STGroup group = new STGroup();
         group.registerRenderer(String.class, new StringRenderer());
-        ST st = new ST(template);
-        st.groupThatCreatedThisInstance = group;
+        ST st = new ST(group, template);
         st.add("names", "ter");
         st.add("names", "tom");
         st.add("names", "sriram");
@@ -297,8 +291,7 @@ public class TestRenderers extends BaseTest {
                 "The names: <names; separator=\" and \", format=\"upper\">";
         STGroup group = new STGroup();
         group.registerRenderer(String.class, new StringRenderer());
-        ST st = new ST(template);
-        st.groupThatCreatedThisInstance = group;
+        ST st = new ST(group, template);
         st.add("names", "ter");
         st.add("names", "tom");
         st.add("names", "sriram");
@@ -312,8 +305,7 @@ public class TestRenderers extends BaseTest {
                 "The names: <names; separator=\" and \", null=\"n/a\", format=\"upper\">";
         STGroup group = new STGroup();
         group.registerRenderer(String.class, new StringRenderer());
-        ST st = new ST(template);
-        st.groupThatCreatedThisInstance = group;
+        ST st = new ST(group, template);
         List names = new ArrayList();
         names.add("ter");
         names.add(null);
