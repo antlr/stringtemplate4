@@ -12,6 +12,7 @@ July 5, 2011
 * added "get import list" method.
 * added methods to allow deep vs shallow setting of renderers; interp always
   asks native group defining template for the renderer.
+* STGroup.getInstanceOf was not auto-adding "/" to front if none was present
 
 June 30, 2011
 

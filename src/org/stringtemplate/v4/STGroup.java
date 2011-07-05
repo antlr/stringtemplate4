@@ -159,6 +159,7 @@ public class STGroup {
     public ST getInstanceOf(String name) {
 		if ( name==null ) return null;
 		if ( verbose ) System.out.println(getName()+".getInstanceOf("+name+")");
+		if ( name.charAt(0)!='/' ) name = "/"+name;
         CompiledST c = lookupTemplate(name);
         if ( c!=null ) {
 			return createStringTemplate(c);
