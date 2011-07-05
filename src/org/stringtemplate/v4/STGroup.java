@@ -695,19 +695,29 @@ public class STGroup {
 
     /** Register a renderer for all objects of a particular "kind" for all
      *  templates evaluated relative to this group.  Use r to render if
-	 *  object in question is instanceof(attributeType).
+	 *  object in question is instanceof(attributeType).  Recursively set
+	 *  renderer into all import groups.
      */
     public void registerRenderer(Class attributeType, AttributeRenderer r) {
+		registerRenderer(attributeType, r, true);
+	}
+
+	public void registerRenderer(Class attributeType, AttributeRenderer r, boolean recursive) {
 		if ( attributeType.isPrimitive() ) {
 			throw new IllegalArgumentException("can't register renderer for primitive type "+
 											   attributeType.getSimpleName());
 		}
 		typeToAdaptorCache.clear(); // be safe, not clever; wack all values
-        if ( renderers ==null ) {
+        if ( renderers == null ) {
             renderers =
 				Collections.synchronizedMap(new LinkedHashMap<Class, AttributeRenderer>());
         }
         renderers.put(attributeType, r);
+
+		if ( recursive ) {
+			load(); // make sure imports exist (recursively)
+			for (STGroup g : imports) g.registerRenderer(attributeType, r, true);
+		}
 	}
 
 	/** Get renderer for class T associated with this group.

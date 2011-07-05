@@ -723,7 +723,8 @@ public class Interpreter {
 	protected int writePOJO(STWriter out, Object o, String[] options) throws IOException {
 		String formatString = null;
 		if ( options!=null ) formatString = options[Option.FORMAT.ordinal()];
-		AttributeRenderer r = group.getAttributeRenderer(o.getClass());
+		// ask the native group defining the surrounding template for the renderer
+		AttributeRenderer r = currentScope.st.impl.nativeGroup.getAttributeRenderer(o.getClass());
 		String v;
 		if ( r!=null ) v = r.toString(o, formatString, locale);
 		else v = o.toString();
