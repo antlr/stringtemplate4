@@ -340,7 +340,7 @@ public class Interpreter {
 					break;
 				case Bytecode.INSTR_TOSTR :
 					// replace with string value; early eval
-					operands[sp] = toString(out.getClass(), self, operands[sp]);
+					operands[sp] = toString(out, self, operands[sp]);
 					break;
 				case Bytecode.INSTR_FIRST  :
 					operands[sp] = first(operands[sp]);
@@ -638,7 +638,7 @@ public class Interpreter {
 		if ( options!=null ) {
 			optionStrings = new String[options.length];
 			for (int i=0; i<Compiler.NUM_OPTIONS; i++) {
-				optionStrings[i] = toString(out.getClass(), self, options[i]);
+				optionStrings[i] = toString(out, self, options[i]);
 			}
 		}
 		if ( options!=null && options[Option.ANCHOR.ordinal()]!=null ) {
@@ -683,19 +683,7 @@ public class Interpreter {
 					errMgr.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
 				}
 			}
-			if ( options!=null && options[Option.FORMAT.ordinal()]!=null ) {
-				// if we want to format an ST expression, must convert to string first
-				String strValue = toString(out.getClass(), self, o);
-				try {
-					n = writePOJO(out, strValue, options);
-				}
-				catch (IOException ioe) {
-					errMgr.IOError(self, ErrorType.WRITE_IO_ERROR, ioe, o);
-				}
-			}
-			else {
-				n = exec(out, st);
-			}
+			n = exec(out, st);
 		}
 		else {
 			o = convertAnythingIteratableToIterator(o); // normalize
@@ -1055,20 +1043,21 @@ public class Interpreter {
 		return i;
 	}
 
-	protected String toString(Class stWriterClass, ST self, Object value) {
+	protected String toString(STWriter out, ST self, Object value) {
 		if ( value!=null ) {
 			if ( value.getClass()==String.class ) return (String)value;
 			// if not string already, must evaluate it
 			StringWriter sw = new StringWriter();
 			STWriter stw = null;
 			try {
+				Class writerClass = out.getClass();
 				Constructor ctor =
-					stWriterClass.getConstructor(new Class[] {Writer.class});
+					writerClass.getConstructor(new Class[] {Writer.class});
 				stw = (STWriter)ctor.newInstance(sw);
 			}
 			catch (Exception e) {
 				stw = new AutoIndentWriter(sw);
-				errMgr.runTimeError(this, self, current_ip, ErrorType.WRITER_CTOR_ISSUE, stWriterClass.getSimpleName());
+				errMgr.runTimeError(this, self, current_ip, ErrorType.WRITER_CTOR_ISSUE, out.getClass().getSimpleName());
 			}
 			writeObjectNoOptions(stw, self, value);
 
@@ -1119,7 +1108,7 @@ public class Interpreter {
 
 		try {
 			ModelAdaptor adap = self.groupThatCreatedThisInstance.getModelAdaptor(o.getClass());
-			return adap.getProperty(this, self, o, property, toString(out.getClass(),self,property));
+			return adap.getProperty(this, self, o, property, toString(out,self,property));
 		}
 		catch (STNoSuchPropertyException e) {
 			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_SUCH_PROPERTY,
@@ -1206,7 +1195,7 @@ public class Interpreter {
 				if ( defArgTemplate.startsWith("{"+group.delimiterStartChar+"(") &&
 					defArgTemplate.endsWith(")"+group.delimiterStopChar+"}") ) {
 
-					invokedST.rawSetAttribute(arg.name, toString(out.getClass(), invokedST, defaultArgST));
+					invokedST.rawSetAttribute(arg.name, toString(out, invokedST, defaultArgST));
 				}
 				else {
 					invokedST.rawSetAttribute(arg.name, defaultArgST);

@@ -155,12 +155,11 @@ public class TestRenderers extends BaseTest {
 	@Test public void testStringRendererWithTemplateInclude_cap() throws Exception {
 		// must toString the t() ref before applying format
 		String templates =
-				"foo(x) ::= << <t(); format=\"cap\"> >>\n" +
+				"foo(x) ::= << <(t()); format=\"cap\"> >>\n" +
 				"t() ::= <<ack>>\n";
 
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/t.stg");
-		Interpreter.trace = true;
 		group.registerRenderer(String.class, new StringRenderer());
 		ST st = group.getInstanceOf("foo");
 		st.add("x", "hi");
@@ -170,13 +169,12 @@ public class TestRenderers extends BaseTest {
 	}
 
 	@Test public void testStringRendererWithSubtemplateInclude_cap() throws Exception {
-		// must toString the t() ref before applying format
 		String templates =
-				"foo(x) ::= << <{ack}; format=\"cap\"> >>\n";
+				"foo(x) ::= << <({ack}); format=\"cap\"> >>\n" +
+				"t() ::= <<ack>>\n";
 
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/t.stg");
-		Interpreter.trace = true;
 		group.registerRenderer(String.class, new StringRenderer());
 		ST st = group.getInstanceOf("foo");
 		st.add("x", "hi");
