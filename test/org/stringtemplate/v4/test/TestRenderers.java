@@ -152,6 +152,23 @@ public class TestRenderers extends BaseTest {
         assertEquals(expecting, result);
     }
 
+	@Test public void testStringRendererWithTemplateInclude_cap() throws Exception {
+		// must toString the t() ref before applying format
+		String templates =
+				"foo(x) ::= << <t(); format=\"cap\"> >>\n" +
+				"t() ::= <<ack>>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/t.stg");
+		Interpreter.trace = true;
+		group.registerRenderer(String.class, new StringRenderer());
+		ST st = group.getInstanceOf("foo");
+		st.add("x", "hi");
+		String expecting = " Ack ";
+		String result = st.render();
+		assertEquals(expecting, result);
+	}
+
     @Test public void testStringRendererWithFormat_cap_emptyValue() throws Exception {
         String templates =
                 "foo(x) ::= << <x; format=\"cap\"> >>\n";
