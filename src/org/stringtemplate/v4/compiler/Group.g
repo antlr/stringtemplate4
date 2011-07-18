@@ -153,7 +153,7 @@ GroupLexer lexer = (GroupLexer)input.getTokenSource();
 this.group = lexer.group = $group;
 }
 	:	oldStyleHeader?
-		delimiter?
+		delimiters?
 	    (	'import' STRING {group.importTemplates($STRING);}
 		|	'import' // common error: name not in string
 			{
@@ -176,7 +176,7 @@ groupName returns [String name]
 	:	a=ID {buf.append($a.text);} ('.' a=ID {buf.append($a.text);})*
 	;
 
-delimiter
+delimiters
     :	'delimiters' a=STRING ',' b=STRING
      	{
      	group.delimiterStartChar=$a.getText().charAt(1);
