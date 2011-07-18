@@ -1,5 +1,5 @@
-ST 4.0.3 Release
-June 21, 2011
+ST 4.0.4 Release
+July 18, 2011
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
@@ -7,7 +7,7 @@ University of San Francisco
 
 CHANGES
 
-July 18, 2011
+July 18, 2011 -- Release 4.0.4
 
 * Added delimiters "<", ">" notation to group file.
 
@@ -34,9 +34,7 @@ June 22, 2011
 
 * subtemplates {...} in subdirectories didn't work.
 
-4.0.3 -- June 21, 2011
-
-June 21, 2011
+June 21, 2011 -- Release 4.0.3
 
 * {} wasn't allowed as a template
 
