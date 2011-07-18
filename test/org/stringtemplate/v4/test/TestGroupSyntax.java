@@ -64,27 +64,55 @@ public class TestGroupSyntax extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Test public void testMultiTemplates() throws Exception {
-        String templates =
-            "ta(x) ::= \"[<x>]\"" + Misc.newline +
-            "duh() ::= <<hi there>>" + Misc.newline +
-            "wow() ::= <<last>>" + Misc.newline;
+	@Test public void testMultiTemplates() throws Exception {
+		String templates =
+			"ta(x) ::= \"[<x>]\"" + Misc.newline +
+			"duh() ::= <<hi there>>" + Misc.newline +
+			"wow() ::= <<last>>" + Misc.newline;
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        String expected =
-            "ta(x) ::= <<" +Misc.newline+
-            "[<x>]" +Misc.newline+
-            ">>" +Misc.newline+
-            "duh() ::= <<" +Misc.newline+
-            "hi there" +Misc.newline+
-            ">>" +Misc.newline+
-            "wow() ::= <<" +Misc.newline+
-            "last" +Misc.newline+
-            ">>"+ Misc.newline;
-        String result = group.show();
-        assertEquals(expected, result);
-    }
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		String expected =
+			"ta(x) ::= <<" +Misc.newline+
+			"[<x>]" +Misc.newline+
+			">>" +Misc.newline+
+			"duh() ::= <<" +Misc.newline+
+			"hi there" +Misc.newline+
+			">>" +Misc.newline+
+			"wow() ::= <<" +Misc.newline+
+			"last" +Misc.newline+
+			">>"+ Misc.newline;
+		String result = group.show();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testSetDefaultDelimiters() throws Exception {
+		String templates =
+			"delimiters \"<\", \">\"\n" +
+			"ta(x) ::= \"[<x>]\"" + Misc.newline;
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ST st = group.getInstanceOf("ta");
+		st.add("x", "hi");
+		String expected = "[hi]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testSetNonDefaultDelimiters() throws Exception {
+		String templates =
+			"delimiters \"%\", \"%\"\n" +
+			"ta(x) ::= \"[%x%]\"" + Misc.newline;
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		ST st = group.getInstanceOf("ta");
+		st.add("x", "hi");
+		String expected = "[hi]";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
     @Test public void testSingleTemplateWithArgs() throws Exception {
         String templates =

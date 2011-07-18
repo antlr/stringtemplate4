@@ -153,6 +153,7 @@ GroupLexer lexer = (GroupLexer)input.getTokenSource();
 this.group = lexer.group = $group;
 }
 	:	oldStyleHeader?
+		delimiter?
 	    (	'import' STRING {group.importTemplates($STRING);}
 		|	'import' // common error: name not in string
 			{
@@ -174,6 +175,14 @@ groupName returns [String name]
 @init {StringBuilder buf = new StringBuilder();}
 	:	a=ID {buf.append($a.text);} ('.' a=ID {buf.append($a.text);})*
 	;
+
+delimiter
+    :	'delimiters' a=STRING ',' b=STRING
+     	{
+     	group.delimiterStartChar=$a.getText().charAt(1);
+        group.delimiterStopChar=$b.getText().charAt(1);
+        }
+    ;
 
 /** Match template and dictionary defs outside of (...)+ loop in group.
  *  The key is catching while still in the loop; must keep prediction of
