@@ -7,6 +7,10 @@ University of San Francisco
 
 CHANGES
 
+July 19, 2011 (Udo)
+
+* Fixed Misc.newline issue in test code (Udo)
+
 July 18, 2011 -- Release 4.0.4
 
 * Added delimiters "<", ">" notation to group file.

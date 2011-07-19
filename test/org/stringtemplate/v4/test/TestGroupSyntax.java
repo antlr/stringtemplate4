@@ -88,7 +88,7 @@ public class TestGroupSyntax extends BaseTest {
 
 	@Test public void testSetDefaultDelimiters() throws Exception {
 		String templates =
-			"delimiters \"<\", \">\"\n" +
+			"delimiters \"<\", \">\"" + Misc.newline +
 			"ta(x) ::= \"[<x>]\"" + Misc.newline;
 
 		writeFile(tmpdir, "t.stg", templates);
@@ -102,7 +102,7 @@ public class TestGroupSyntax extends BaseTest {
 
 	@Test public void testSetNonDefaultDelimiters() throws Exception {
 		String templates =
-			"delimiters \"%\", \"%\"\n" +
+			"delimiters \"%\", \"%\"" + Misc.newline +
 			"ta(x) ::= \"[%x%]\"" + Misc.newline;
 
 		writeFile(tmpdir, "t.stg", templates);
