@@ -103,4 +103,38 @@ public class TestEarlyEvaluation extends BaseTest {
 		viz.viewFrame.dispose();
 		waitUntilAllWindowsAreClosed();
 	}
+	
+
+	/**
+	 *  see http://www.antlr.org/pipermail/stringtemplate-interest/2011-August/003758.html 
+	 * @throws Exception
+	 */
+	@Test
+	public void testBugArrayIndexOutOfBoundsExceptionInSTRuntimeMessage_getSourceLocation()
+			throws Exception {
+		String templates = "main(doit = true) ::= "
+				+ "\"<if(doit || other)><t(...)><endif>\"\n"
+				+ "t2() ::= \"Hello\"\n" //
+				+ "t(x={<(t2())>}) ::= \"<x>\"";
+
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = new STGroupFile(tmpdir + "/t.stg");
+
+		ST st = group.getInstanceOf("main");
+
+		String s = st.render();
+		Assert.assertEquals("Hello", s);
+
+		// Inspecting this template threw an ArrayIndexOutOfBoundsException 
+		// in 4.0.2. 
+		// With the default for x changed to {<t2()>} (i.e. lazy eval) inspect 
+		// works fine. Also removing the " || other" and keeping the early eval 
+		// works fine with inspect.
+		
+		STViz viz = st.inspect();
+		waitUntilAnyWindowIsVisible(4000);
+		viz.viewFrame.dispose();
+		waitUntilAllWindowsAreClosed();
+	}	
 }
