@@ -29,6 +29,7 @@
 tree grammar CodeGenerator;
 
 options {
+	language=Java;
 	tokenVocab=STParser;
 	ASTLabelType=CommonTree;
 }

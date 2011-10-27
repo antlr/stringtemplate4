@@ -30,6 +30,7 @@
 parser grammar STParser;
 
 options {
+	language=Java;
 	tokenVocab=STLexer;
 	TokenLabelType=CommonToken;
 	output=AST;

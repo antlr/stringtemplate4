@@ -27,6 +27,10 @@
  */
 grammar Group;
 
+options {
+	language=Java;
+}
+
 tokens {
 	TRUE='true'; FALSE='false';
 }
