@@ -1,4 +1,4 @@
-StringTemplate 4.0.3
+StringTemplate 4.0.5 (in progress)
 June 21, 2011
 
 Terence Parr, parrt at cs usfca edu
@@ -34,12 +34,12 @@ All you need to do is get the StringTemplate jar into your CLASSPATH
 as well as its dependent ANTLR jar. Download the following and put
 into your favorite lib directory such as /usr/local/lib on UNIX:
 
-  * antlr-complete.jar; http://www.antlr.org/download/antlr-3.3-complete.jar
-  * ST.jar; see http://www.stringtemplate.org/download/ST-4.0.3.jar
+  * antlr-complete.jar; http://www.antlr.org/download/antlr-3.4-complete.jar
+  * ST.jar; see http://www.stringtemplate.org/download/ST-4.0.5.jar
 
 Add to your CLASSPATH. On UNIX that looks like
 
-$ export CLASSPATH="/usr/local/lib/antlr-3.3-complete.jar:/usr/local/lib/ST-4.0.3.jar:$CLASSPATH"
+$ export CLASSPATH="/usr/local/lib/antlr-3.4-complete.jar:/usr/local/lib/ST-4.0.5.jar:$CLASSPATH"
 
 Java will now see all the libraries necessary to execute ST stuff.
 
@@ -53,7 +53,7 @@ http://www.antlr.org/wiki/display/ANTLR3/How+to+use+ant+with+ANTLR3
 
 Then, once you're set up with the ant task, go for it. Looks like this:
 
-$ cd /usr/local/ST-4.0.3
+$ cd /usr/local/ST-4.0.5
 $ ant
 Buildfile: /usr/local/website/st/depot/ST4/java/main/build.xml
 
@@ -77,15 +77,15 @@ compile:
     [javac] Note: Recompile with -Xlint:unchecked for details.
 
 zip-source:
-    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.3
-    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.3/src
-     [copy] Copying 53 files to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.3/src
-     [copy] Copying 4 files to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.3
-     [copy] Copying 1 file to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.3/lib
-      [zip] Building zip: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.3-src.zip
+    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.5
+    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.5/src
+     [copy] Copying 53 files to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.5/src
+     [copy] Copying 4 files to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.5
+     [copy] Copying 1 file to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.5/lib
+      [zip] Building zip: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.5-src.zip
 
 build-jar:
-      [jar] Building jar: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.3.jar
+      [jar] Building jar: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.5.jar
 
 distribute:
 
