@@ -104,7 +104,21 @@ public class TestGroups extends BaseTest {
 		assertEquals("duh", group.getInstanceOf("/group/c").render());
     }
 
-    @Test public void testSubSubdir() throws Exception {
+	@Test public void testGroupFileInDirImportsAnotherGroupFile() throws Exception {
+		// /randomdir/group.stg with b() imports /randomdir/imported.stg with c()
+		String dir = getRandomDir();
+		String groupFile =
+		"import \"imported.stg\"\n" +
+		"b() ::= \"bar <c()>\"\n";
+		writeFile(dir, "group.stg", groupFile);
+		String importedFile =
+			"c() ::= \"c\"\n";
+		writeFile(dir, "imported.stg", importedFile);
+		STGroup group = new STGroupDir(dir);
+		assertEquals("bar c", group.getInstanceOf("/group/b").render());
+	}
+
+	@Test public void testSubSubdir() throws Exception {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
 		writeFile(dir,              "a.st", "a(x) ::= <<foo>>");
