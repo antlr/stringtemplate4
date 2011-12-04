@@ -10,6 +10,7 @@ CHANGES
 December 4, 2011
 
 * synchronized object model adaptor
+* import illegal in group files embedded in STGroupDirs
 
 July 19, 2011 (Udo)
 
