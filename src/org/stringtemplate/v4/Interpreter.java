@@ -131,6 +131,7 @@ public class Interpreter {
 
 	/** Execute template self and return how many characters it wrote to out */
 	public int exec(STWriter out, ST self) {
+		if ( debug ) System.out.println("exec("+self.getName()+")");
 		pushScope(self);
 		try {
 			setDefaultArguments(out, self);

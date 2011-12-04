@@ -27,7 +27,7 @@
  */
 package org.stringtemplate.v4;
 
-import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.*;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.misc.*;
 
@@ -91,12 +91,21 @@ public class STGroupDir extends STGroup {
 					  char delimiterStartChar, char delimiterStopChar)
 	{
 		super(delimiterStartChar, delimiterStopChar);
+		this.groupDirName = new File(root.getFile()).getName();
 		this.root = root;
 		this.encoding = encoding;
 	}
 
-    /** Load a template from dir or group file.  Group file is given
-     *  precedence over dir with same name. name is always fully-qualified.
+	@Override
+	public void importTemplates(Token fileNameToken) {
+		String msg =
+			"import illegal in group files embedded in STGroupDirs; "+
+			"import "+fileNameToken.getText()+" in STGroupDir "+this.getName();
+		throw new UnsupportedOperationException(msg);
+	}
+
+	/** Load a template from dir or group file.  Group file is given
+	 *  precedence over dir with same name. name is always fully-qualified.
      */
 	@Override
     protected CompiledST load(String name) {

@@ -594,7 +594,8 @@ public class STGroup {
 
 	/** Load a group file with full path fileName; it's relative to root by prefix. */
 	public void loadGroupFile(String prefix, String fileName) {
-		//System.out.println("load group file prefix="+prefix+", fileName="+fileName);
+		if ( verbose ) System.out.println(this.getClass().getSimpleName()+
+										  ".loadGroupFile(group-file-prefix="+prefix+", fileName="+fileName+")");
 		GroupParser parser = null;
 		try {
 			URL f = new URL(fileName);

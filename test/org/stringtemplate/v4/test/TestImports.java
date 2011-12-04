@@ -31,8 +31,10 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestImports extends BaseTest {
 	@Test public void testImportDir() throws Exception {
@@ -239,6 +241,7 @@ public class TestImports extends BaseTest {
 			subdir
 				a.st
 				b.st
+				c.st
 		 */
 		String dir = getRandomDir();
 		String gstr =
@@ -246,15 +249,20 @@ public class TestImports extends BaseTest {
 			"a() ::= <<dir1 a>>\n";
 		writeFile(dir, "g.stg", gstr);
 
-		String a = "a() ::= <<dir2 a>>\n";
-		String b = "b() ::= <<dir2 b>>\n";
+		String a = "a() ::= <<subdir a>>\n";
+		String b = "b() ::= <<subdir b>>\n";
+		String c = "c() ::= <<subdir b>>\n";
 		writeFile(dir, "subdir/a.st", a);
 		writeFile(dir, "subdir/b.st", b);
+		writeFile(dir, "subdir/c.st", c);
 
 		STGroup group = new STGroupFile(dir +"/g.stg");
 		ST st = group.getInstanceOf("b"); // visible only if import worked
-		String expected = "dir2 b";
+		String expected = "subdir b";
 		String result = st.render();
+		assertEquals(expected, result);
+		st = group.getInstanceOf("c");
+		result = st.render();
 		assertEquals(expected, result);
 	}
 
@@ -547,7 +555,7 @@ public class TestImports extends BaseTest {
 		expected = "dir1 b";
 		assertEquals(expected, result);
 	}
-	
+
 	@Test
 	public void testUnloadImportedTemplatedSpecifiedInGroupFile() throws Exception {
 		writeFile(tmpdir, "t.stg",
@@ -566,4 +574,50 @@ public class TestImports extends BaseTest {
 		Assert.assertEquals("v2-g2;f2", st.render());
 	}
 
+	/** Cannot import from a group file unless it's the root.
+ 	 */
+	@Test public void testGroupFileInDirImportsAnotherGroupFile() throws Exception {
+		// /randomdir/group.stg with a() imports /randomdir/imported.stg with b()
+		// can't have groupdir then groupfile inside that imports
+		String dir = getRandomDir();
+		String groupFile =
+		"import \"imported.stg\"\n" +
+		"a() ::= \"a: <b()>\"\n";
+		writeFile(dir, "group.stg", groupFile);
+		String importedFile =
+			"b() ::= \"b\"\n";
+		writeFile(dir, "imported.stg", importedFile);
+		STErrorListener errors = new ErrorBuffer();
+		STGroup group = new STGroupDir(dir);
+		group.setListener(errors);
+		group.getInstanceOf("/group/a");
+		String result = errors.toString();
+		String expecting =
+			"import illegal in group files embedded in STGroupDirs; import \"imported.stg\" in STGroupDir";
+		assertTrue(result.contains(expecting));
+	}
+
+	@Test public void testGroupFileInDirImportsAGroupDir() throws Exception {
+		/*
+		dir
+			g.stg has a() that imports subdir with relative path
+			subdir
+				b.st
+				c.st
+		 */
+		String dir = getRandomDir();
+		String gstr =
+			"import \"subdir\"\n" + // finds subdir in dir
+			"a() ::= \"a: <b()>\"\n";
+		writeFile(dir, "g.stg", gstr);
+
+		writeFile(dir, "subdir/b.st", "b() ::= \"b: <c()>\"\n");
+		writeFile(dir, "subdir/c.st", "c() ::= <<subdir c>>\n");
+
+		STGroup group = new STGroupFile(dir +"/g.stg");
+		ST st = group.getInstanceOf("a");
+		String expected = "a: b: subdir c";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 }
