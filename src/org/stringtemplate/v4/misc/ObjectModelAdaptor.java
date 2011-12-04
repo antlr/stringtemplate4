@@ -46,7 +46,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 	 */
 	static STNoSuchPropertyException cachedException;
 
-	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
+	public synchronized Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{
 		Object value = null;
@@ -71,7 +71,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 		return lookupMethod(o, propertyName, value, c);
 	}
 
-	public Object lookupMethod(Object o, String propertyName, Object value, Class c) {
+	public synchronized Object lookupMethod(Object o, String propertyName, Object value, Class c) {
 		// try getXXX and isXXX properties, look up using reflection
 		String methodSuffix = Character.toUpperCase(propertyName.charAt(0))+
 			propertyName.substring(1, propertyName.length());
