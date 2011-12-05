@@ -29,8 +29,7 @@ package org.stringtemplate.v4.test;
 
 import org.junit.*;
 
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,6 +68,19 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
 		String expected = "12";
 		String result = st.render();
 		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testIndirectCallWithPassThru() throws Exception {
+		// indirectly call t1, with "pass thru" (...) parameter passing
+		// (used to fail with:
+		// "t.stg 2:21: mismatched input '...' expecting RPAREN")
+		writeFile(tmpdir, "t.stg",
+				"t1(x) ::= \"<x>\"\nmain(x=\"hello\",t=\"t1\") ::= <<\n<(t)(...)>\n>>");
+		STGroup group = new STGroupFile(tmpdir + "/t.stg");
+		ST st = group.getInstanceOf("main");
+		String result = st.render();
+		Assert.assertEquals("hello", result);
 	}
 
     @Test public void testIndirectTemplateIncludeViaTemplate() throws Exception {
