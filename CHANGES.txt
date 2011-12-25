@@ -1,5 +1,4 @@
-ST 4.0.4 Release
-July 18, 2011
+ST 4.0.5 Release
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
