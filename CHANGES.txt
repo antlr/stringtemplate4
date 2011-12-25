@@ -7,6 +7,13 @@ University of San Francisco
 
 CHANGES
 
+December 25, 2011
+
+* Added STRawGroupDir that expects pure templates in .st files not template defs
+  with headers. So use $name$ not
+
+  foo(name) ::= "$name"
+
 December 4, 2011
 
 * synchronized object model adaptor
