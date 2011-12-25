@@ -8,6 +8,8 @@ CHANGES
 
 December 25, 2011
 
+* STLexer.tokens missing from src build
+
 * Added STRawGroupDir that expects pure templates in .st files not template defs
   with headers. So use $name$ not
 
