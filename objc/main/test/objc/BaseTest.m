@@ -158,12 +158,12 @@ NSString *const newline = @"\n"/* Misc.newline */;
 - (void) checkTokens:(NSString *)template expected:(NSString *)expected delimiterStartChar:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimiterStopChar
 {
     STLexer *lexer = [[STLexer newSTLexer:STGroup.DEFAULT_ERR_MGR input:[ANTLRStringStream newANTLRStringStream:template] templateToken:nil delimiterStartChar:delimiterStartChar delimiterStopChar:delimiterStopChar] retain];
-    ANTLRCommonTokenStream *tokens = [[ANTLRCommonTokenStream newANTLRCommonTokenStreamWithTokenSource:lexer] retain];
+    CommonTokenStream *tokens = [[CommonTokenStream newCommonTokenStreamWithTokenSource:lexer] retain];
     NSMutableString *buf = [[NSMutableString stringWithCapacity:30] retain];
     [buf appendString:@"["];
     int i = 1;
     STToken *t = [tokens LT:i];
-    while (t.type != ANTLRTokenTypeEOF) {
+    while (t.type != TokenTypeEOF) {
         if (i > 1)
             [buf appendString:@", "];
         [buf appendString:[t toString]];

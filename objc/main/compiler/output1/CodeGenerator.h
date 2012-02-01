@@ -396,18 +396,18 @@ typedef enum {
 // convience funcs to hide offensive sending of emit messages to
 // CompilationState temp data object.
 
-- (void) emit1:(ANTLRCommonTree *)opAST opcode:(short)anOpcode arg:(NSInteger)arg;
-- (void) emit1:(ANTLRCommonTree *)opAST opcode:(short)anOpcode s:(NSString *)arg;
-- (void) emit2:(ANTLRCommonTree *)opAST opcode:(short)anOpcode arg:(NSInteger)anArg arg2:(NSInteger)anArg2;
-- (void) emit2:(ANTLRCommonTree *)opAST opcode:(short)anOpcode s:(NSString *)s arg2:(NSInteger)anArg;
+- (void) emit1:(CommonTree *)opAST opcode:(short)anOpcode arg:(NSInteger)arg;
+- (void) emit1:(CommonTree *)opAST opcode:(short)anOpcode s:(NSString *)arg;
+- (void) emit2:(CommonTree *)opAST opcode:(short)anOpcode arg:(NSInteger)anArg arg2:(NSInteger)anArg2;
+- (void) emit2:(CommonTree *)opAST opcode:(short)anOpcode s:(NSString *)s arg2:(NSInteger)anArg;
 - (void) emit:(short)anOpcode;
-- (void) emit:(ANTLRCommonTree *)opAST opcode:(short)anOpcode;
+- (void) emit:(CommonTree *)opAST opcode:(short)anOpcode;
 - (void) insert:(NSInteger)addr opcode:(short)anOpcode s:(NSString *)s;
-- (void) setOption:(ANTLRCommonTree *)anID;
+- (void) setOption:(CommonTree *)anID;
 - (void) write:(NSInteger)addr value:(short)value;
 - (NSInteger) address;
-- (void) func:(ANTLRCommonTree *)aTree;
-- (void) refAttr:(ANTLRCommonTree *)aTree;
+- (void) func:(CommonTree *)aTree;
+- (void) refAttr:(CommonTree *)aTree;
 - (NSInteger) defineString:(NSString *)s;
 
 /* ObjC end of actions.(actionScope).methodsDecl */
@@ -420,11 +420,11 @@ typedef enum {
 - (void)chunk; 
 - (void)element; 
 - (void)singleElement; 
-- (void)compoundElement:(ANTLRCommonTree *)indent ; 
+- (void)compoundElement:(CommonTree *)indent ; 
 - (void)exprElement; 
-- (CodeGenerator_region_return *)region:(ANTLRCommonTree *)indent ; 
+- (CodeGenerator_region_return *)region:(CommonTree *)indent ; 
 - (CodeGenerator_subtemplate_return *)subtemplate; 
-- (void)ifstat:(ANTLRCommonTree *)indent ; 
+- (void)ifstat:(CommonTree *)indent ; 
 - (CodeGenerator_conditional_return *)conditional; 
 - (void)exprOptions; 
 - (void)option; 

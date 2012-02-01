@@ -199,7 +199,7 @@
     @try {
         [st add:@"name" value:@"Ter"];
     }
-    @catch (ANTLRIllegalArgumentException *iae) {
+    @catch (IllegalArgumentException *iae) {
         result = [iae reason];
     }
     NSString *expected = @"no such attribute: name";

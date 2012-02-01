@@ -434,12 +434,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -472,12 +472,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -510,12 +510,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -548,12 +548,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -586,12 +586,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -624,12 +624,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -662,12 +662,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -700,12 +700,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -738,12 +738,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -776,12 +776,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -814,12 +814,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -852,12 +852,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -890,12 +890,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -928,12 +928,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -966,12 +966,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1004,12 +1004,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1042,12 +1042,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1080,12 +1080,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1118,12 +1118,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1156,12 +1156,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1194,12 +1194,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1232,12 +1232,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1270,12 +1270,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1308,12 +1308,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1346,12 +1346,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1384,12 +1384,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1422,12 +1422,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1460,12 +1460,12 @@ return self;
 }
 
 /* AST returnScope.methods */
-- (ANTLRCommonTree *)getTree
+- (CommonTree *)getTree
 {
     return tree;
 }
 
-- (void) setTree:(ANTLRCommonTree *)aTree
+- (void) setTree:(CommonTree *)aTree
 {
     if (tree != aTree) {
         if ( tree ) [tree release];
@@ -1701,12 +1701,12 @@ static ANTLRSymbolStack *conditional_stack;
     [ANTLRBaseRecognizer setGrammarFileName:@"/Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g"];
 }
 
-+ (STParser *)newSTParser:(id<ANTLRTokenStream>)aStream
++ (STParser *)newSTParser:(id<TokenStream>)aStream
 {
     return [[STParser alloc] initWithTokenStream:aStream];
 }
 
-- (id) initWithTokenStream:(id<ANTLRTokenStream>)aStream
+- (id) initWithTokenStream:(id<TokenStream>)aStream
 {
     self = [super initWithTokenStream:aStream State:[ANTLRRecognizerSharedState newANTLRRecognizerSharedStateWithRuleLen:28+1]];
     if ( self != nil ) {
@@ -1717,7 +1717,7 @@ static ANTLRSymbolStack *conditional_stack;
         /* start of actions-actionScope-init */
         /* start of init */
         /* AST genericParser.init */
-        [self setTreeAdaptor:[[ANTLRCommonTreeAdaptor newTreeAdaptor] retain]];
+        [self setTreeAdaptor:[[CommonTreeAdaptor newTreeAdaptor] retain]];
     }
     return self;
 }
@@ -1732,16 +1732,16 @@ static ANTLRSymbolStack *conditional_stack;
 
 /* ObjC start actions.(actionScope).methods */
 
-+ (id) newSTParser:(id<ANTLRTokenStream>)anInput error:(ErrorManager *)anErrMgr token:(STToken *)aTemplateToken
++ (id) newSTParser:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(STToken *)aTemplateToken
 {
     return [[[STParser alloc] init:anInput error:anErrMgr token:aTemplateToken] retain];
 }
 
-- (id) init:(id<ANTLRTokenStream>)anInput error:(ErrorManager *)anErrMgr token:(STToken *)aTemplateToken
+- (id) init:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(STToken *)aTemplateToken
 {
-    self = [super initWithTokenStream:(id<ANTLRTokenStream>)anInput];
+    self = [super initWithTokenStream:(id<TokenStream>)anInput];
     if ( self != nil ) {
-        [self setTreeAdaptor:[[ANTLRCommonTreeAdaptor newTreeAdaptor] retain]];
+        [self setTreeAdaptor:[[CommonTreeAdaptor newTreeAdaptor] retain]];
         errMgr = anErrMgr;
         if ( errMgr ) [errMgr retain];
         templateToken = aTemplateToken;
@@ -1788,7 +1788,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -1796,7 +1796,7 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_template_return * template1 = nil ;
          
 
-        ANTLRCommonTree *EOF2_tree=nil;
+        CommonTree *EOF2_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_EOF =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token EOF"] retain];
@@ -1833,7 +1833,7 @@ static ANTLRSymbolStack *conditional_stack;
             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                 description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
         // 107:31: -> ( template )?
         {
@@ -1861,7 +1861,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_EOF release];
         [stream_template release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -1892,7 +1892,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -1903,7 +1903,7 @@ static ANTLRSymbolStack *conditional_stack;
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:109:10: ( ( element )* ) // ruleBlockSingleAlt
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:109:12: ( element )* // alt
         {
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -1983,7 +1983,7 @@ static ANTLRSymbolStack *conditional_stack;
 
 
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -2014,7 +2014,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -2029,10 +2029,10 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_compoundElement_return * compoundElement10 = nil ;
          
 
-        ANTLRCommonTree *INDENT4_tree=nil;
-        ANTLRCommonTree *COMMENT5_tree=nil;
-        ANTLRCommonTree *NEWLINE6_tree=nil;
-        ANTLRCommonTree *INDENT7_tree=nil;
+        CommonTree *INDENT4_tree=nil;
+        CommonTree *COMMENT5_tree=nil;
+        CommonTree *NEWLINE6_tree=nil;
+        CommonTree *INDENT7_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_NEWLINE =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token NEWLINE"] retain];
@@ -2321,7 +2321,7 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 112:74: ->
                 {
@@ -2364,14 +2364,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 113:30: -> ^( INDENTED_EXPR INDENT ( singleElement )? )
                 {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:113:33: ^( INDENTED_EXPR INDENT ( singleElement )? )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:INDENTED_EXPR Text:@"INDENTED_EXPR"] retain]
                          old:root_1];
 
@@ -2401,7 +2401,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 3 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:114:9: singleElement // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -2420,7 +2420,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 4 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:115:9: compoundElement // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -2449,7 +2449,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_INDENT release];
         [stream_singleElement release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -2480,7 +2480,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -2490,9 +2490,9 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_exprTag_return * exprTag11 = nil ;
          
 
-        ANTLRCommonTree *TEXT12_tree=nil;
-        ANTLRCommonTree *NEWLINE13_tree=nil;
-        ANTLRCommonTree *COMMENT14_tree=nil;
+        CommonTree *TEXT12_tree=nil;
+        CommonTree *NEWLINE13_tree=nil;
+        CommonTree *COMMENT14_tree=nil;
 
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:119:5: ( exprTag | TEXT | NEWLINE | COMMENT !) //ruleblock
         NSInteger alt4=4;
@@ -2530,7 +2530,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 1 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:119:9: exprTag // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -2549,14 +2549,14 @@ static ANTLRSymbolStack *conditional_stack;
             case 2 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:120:9: TEXT // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
                 /* ASTParser tokenRef */
                 TEXT12=(STToken *)[self match:input TokenType:TEXT Follow:FOLLOW_TEXT_in_singleElement305]; 
                 TEXT12_tree = /* ASTParser createNodeFromToken */
-                (ANTLRCommonTree *)[[treeAdaptor create:TEXT12] retain]
+                (CommonTree *)[[treeAdaptor create:TEXT12] retain]
                 ;
                 [treeAdaptor addChild:TEXT12_tree  toTree:root_0];
 
@@ -2566,14 +2566,14 @@ static ANTLRSymbolStack *conditional_stack;
             case 3 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:121:9: NEWLINE // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
                 /* ASTParser tokenRef */
                 NEWLINE13=(STToken *)[self match:input TokenType:NEWLINE Follow:FOLLOW_NEWLINE_in_singleElement315]; 
                 NEWLINE13_tree = /* ASTParser createNodeFromToken */
-                (ANTLRCommonTree *)[[treeAdaptor create:NEWLINE13] retain]
+                (CommonTree *)[[treeAdaptor create:NEWLINE13] retain]
                 ;
                 [treeAdaptor addChild:NEWLINE13_tree  toTree:root_0];
 
@@ -2583,7 +2583,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 4 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:122:9: COMMENT ! // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -2600,7 +2600,7 @@ static ANTLRSymbolStack *conditional_stack;
 
 
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -2631,7 +2631,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -2697,7 +2697,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 1 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:126:9: ifstat // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -2716,7 +2716,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 2 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:127:9: region // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -2741,7 +2741,7 @@ static ANTLRSymbolStack *conditional_stack;
 
 
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -2772,7 +2772,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -2784,9 +2784,9 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_exprOptions_return * exprOptions20 = nil ;
          
 
-        ANTLRCommonTree *LDELIM17_tree=nil;
-        ANTLRCommonTree *char_literal19_tree=nil;
-        ANTLRCommonTree *RDELIM21_tree=nil;
+        CommonTree *LDELIM17_tree=nil;
+        CommonTree *char_literal19_tree=nil;
+        CommonTree *RDELIM21_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_RDELIM =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token RDELIM"] retain];
@@ -2867,14 +2867,14 @@ static ANTLRSymbolStack *conditional_stack;
             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                 description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
         // 132:9: -> ^( EXPR[$LDELIM,@\"EXPR\"] expr ( exprOptions )? )
         {
             // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:132:12: ^( EXPR[$LDELIM,@\"EXPR\"] expr ( exprOptions )? )
             {
-                ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                         [[treeAdaptor createTree:EXPR FromToken:LDELIM17 Text:@"EXPR"] retain]
                  old:root_1];
 
@@ -2910,7 +2910,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_exprOptions release];
         [stream_expr release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -2941,7 +2941,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
      STToken *indent=nil; 
     @try {
@@ -2959,16 +2959,16 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_template_return * template25 = nil ;
          
 
-        ANTLRCommonTree *i_tree=nil;
-        ANTLRCommonTree *x_tree=nil;
-        ANTLRCommonTree *char_literal22_tree=nil;
-        ANTLRCommonTree *ID23_tree=nil;
-        ANTLRCommonTree *RDELIM24_tree=nil;
-        ANTLRCommonTree *INDENT26_tree=nil;
-        ANTLRCommonTree *LDELIM27_tree=nil;
-        ANTLRCommonTree *string_literal28_tree=nil;
-        ANTLRCommonTree *RDELIM29_tree=nil;
-        ANTLRCommonTree *NEWLINE30_tree=nil;
+        CommonTree *i_tree=nil;
+        CommonTree *x_tree=nil;
+        CommonTree *char_literal22_tree=nil;
+        CommonTree *ID23_tree=nil;
+        CommonTree *RDELIM24_tree=nil;
+        CommonTree *INDENT26_tree=nil;
+        CommonTree *LDELIM27_tree=nil;
+        CommonTree *string_literal28_tree=nil;
+        CommonTree *RDELIM29_tree=nil;
+        CommonTree *NEWLINE30_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_AT =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token AT"] retain];
@@ -3127,14 +3127,14 @@ static ANTLRSymbolStack *conditional_stack;
             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                 description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
         // 142:9: -> {indent!=nil}? ^( INDENTED_EXPR $i ^( REGION[$x] ID ( template )? ) )
         if (indent!=nil) {
             // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:143:12: ^( INDENTED_EXPR $i ^( REGION[$x] ID ( template )? ) )
             {
-                ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                         [[treeAdaptor createTree:INDENTED_EXPR Text:@"INDENTED_EXPR"] retain]
                  old:root_1];
 
@@ -3142,8 +3142,8 @@ static ANTLRSymbolStack *conditional_stack;
 
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:143:31: ^( REGION[$x] ID ( template )? )
                 {
-                    ANTLRCommonTree *root_2 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                    root_2 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                    CommonTree *root_2 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                    root_2 = (CommonTree *)[treeAdaptor becomeRoot:
                             [[treeAdaptor createTree:REGION FromToken:x Text:@"REGION"] retain]
                      old:root_2];
 
@@ -3171,8 +3171,8 @@ static ANTLRSymbolStack *conditional_stack;
         {
             // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:144:31: ^( REGION[$x] ID ( template )? )
             {
-                ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                         [[treeAdaptor createTree:REGION FromToken:x Text:@"REGION"] retain]
                  old:root_1];
 
@@ -3214,7 +3214,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_INDENT release];
         [stream_template release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -3245,7 +3245,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -3259,12 +3259,12 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_template_return * template33 = nil ;
          
 
-        ANTLRCommonTree *lc_tree=nil;
-        ANTLRCommonTree *char_literal31_tree=nil;
-        ANTLRCommonTree *char_literal32_tree=nil;
-        ANTLRCommonTree *INDENT34_tree=nil;
-        ANTLRCommonTree *char_literal35_tree=nil;
-        ANTLRCommonTree *ids_tree = nil;
+        CommonTree *lc_tree=nil;
+        CommonTree *char_literal31_tree=nil;
+        CommonTree *char_literal32_tree=nil;
+        CommonTree *INDENT34_tree=nil;
+        CommonTree *char_literal35_tree=nil;
+        CommonTree *ids_tree = nil;
         ANTLRRewriteRuleTokenStream *stream_LCURLY =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token LCURLY"] retain];
@@ -3409,14 +3409,14 @@ static ANTLRSymbolStack *conditional_stack;
             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                 description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
         // 150:9: -> ^( SUBTEMPLATE[$lc,@\"SUBTEMPLATE\"] ( ^( ARGS $ids) )* ( template )? )
         {
             // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:150:12: ^( SUBTEMPLATE[$lc,@\"SUBTEMPLATE\"] ( ^( ARGS $ids) )* ( template )? )
             {
-                ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                         [[treeAdaptor createTree:SUBTEMPLATE FromToken:lc Text:@"SUBTEMPLATE"] retain]
                  old:root_1];
 
@@ -3424,8 +3424,8 @@ static ANTLRSymbolStack *conditional_stack;
                 while ( [stream_ids hasNext] ) {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:150:46: ^( ARGS $ids)
                     {
-                        ANTLRCommonTree *root_2 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_2 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_2 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_2 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:ARGS Text:@"ARGS"] retain]
                          old:root_2];
 
@@ -3470,7 +3470,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_RCURLY release];
         [stream_template release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -3501,7 +3501,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     STToken *indent = nil;
     @try {
@@ -3537,27 +3537,27 @@ static ANTLRSymbolStack *conditional_stack;
          
         ANTLRParserRuleReturnScope *c2 = nil;
         ANTLRParserRuleReturnScope *t2 = nil;
-        ANTLRCommonTree *i_tree=nil;
-        ANTLRCommonTree *endif_tree=nil;
-        ANTLRCommonTree *LDELIM36_tree=nil;
-        ANTLRCommonTree *string_literal37_tree=nil;
-        ANTLRCommonTree *char_literal38_tree=nil;
-        ANTLRCommonTree *char_literal39_tree=nil;
-        ANTLRCommonTree *RDELIM40_tree=nil;
-        ANTLRCommonTree *INDENT41_tree=nil;
-        ANTLRCommonTree *LDELIM42_tree=nil;
-        ANTLRCommonTree *string_literal43_tree=nil;
-        ANTLRCommonTree *char_literal44_tree=nil;
-        ANTLRCommonTree *char_literal45_tree=nil;
-        ANTLRCommonTree *RDELIM46_tree=nil;
-        ANTLRCommonTree *INDENT47_tree=nil;
-        ANTLRCommonTree *LDELIM48_tree=nil;
-        ANTLRCommonTree *string_literal49_tree=nil;
-        ANTLRCommonTree *RDELIM50_tree=nil;
-        ANTLRCommonTree *INDENT51_tree=nil;
-        ANTLRCommonTree *string_literal52_tree=nil;
-        ANTLRCommonTree *RDELIM53_tree=nil;
-        ANTLRCommonTree *NEWLINE54_tree=nil;
+        CommonTree *i_tree=nil;
+        CommonTree *endif_tree=nil;
+        CommonTree *LDELIM36_tree=nil;
+        CommonTree *string_literal37_tree=nil;
+        CommonTree *char_literal38_tree=nil;
+        CommonTree *char_literal39_tree=nil;
+        CommonTree *RDELIM40_tree=nil;
+        CommonTree *INDENT41_tree=nil;
+        CommonTree *LDELIM42_tree=nil;
+        CommonTree *string_literal43_tree=nil;
+        CommonTree *char_literal44_tree=nil;
+        CommonTree *char_literal45_tree=nil;
+        CommonTree *RDELIM46_tree=nil;
+        CommonTree *INDENT47_tree=nil;
+        CommonTree *LDELIM48_tree=nil;
+        CommonTree *string_literal49_tree=nil;
+        CommonTree *RDELIM50_tree=nil;
+        CommonTree *INDENT51_tree=nil;
+        CommonTree *string_literal52_tree=nil;
+        CommonTree *RDELIM53_tree=nil;
+        CommonTree *NEWLINE54_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_ENDIF =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token ENDIF"] retain];
@@ -3939,14 +3939,14 @@ static ANTLRSymbolStack *conditional_stack;
         ANTLRRewriteRuleSubtreeStream *stream_c2 =
             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                 description:@"token c2" elements:list_c2] retain];
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
         // 163:9: -> {indent!=nil}? ^( INDENTED_EXPR $i ^( 'if' $c1 ( $t1)? ( ^( 'elseif' $c2 $t2) )* ( ^( 'else' ( $t3)? ) )? ) )
         if (indent!=nil) {
             // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:164:12: ^( INDENTED_EXPR $i ^( 'if' $c1 ( $t1)? ( ^( 'elseif' $c2 $t2) )* ( ^( 'else' ( $t3)? ) )? ) )
             {
-                ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                         [[treeAdaptor createTree:INDENTED_EXPR Text:@"INDENTED_EXPR"] retain]
                  old:root_1];
 
@@ -3954,8 +3954,8 @@ static ANTLRSymbolStack *conditional_stack;
 
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:164:31: ^( 'if' $c1 ( $t1)? ( ^( 'elseif' $c2 $t2) )* ( ^( 'else' ( $t3)? ) )? )
                 {
-                    ANTLRCommonTree *root_2 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                    root_2 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                    CommonTree *root_2 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                    root_2 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [stream_IF nextNode]
                      old:root_2];
 
@@ -3972,8 +3972,8 @@ static ANTLRSymbolStack *conditional_stack;
                     while ( [stream_c2 hasNext]||[stream_ELSEIF hasNext]||[stream_t2 hasNext] ) {
                         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:164:47: ^( 'elseif' $c2 $t2)
                         {
-                            ANTLRCommonTree *root_3 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                            root_3 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                            CommonTree *root_3 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                            root_3 = (CommonTree *)[treeAdaptor becomeRoot:
                                         [stream_ELSEIF nextNode]
                              old:root_3];
 
@@ -3993,8 +3993,8 @@ static ANTLRSymbolStack *conditional_stack;
                     if ( [stream_t3 hasNext]||[stream_ELSE hasNext] ) {
                         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:164:68: ^( 'else' ( $t3)? )
                         {
-                            ANTLRCommonTree *root_3 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                            root_3 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                            CommonTree *root_3 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                            root_3 = (CommonTree *)[treeAdaptor becomeRoot:
                                         [stream_ELSE nextNode]
                              old:root_3];
 
@@ -4024,8 +4024,8 @@ static ANTLRSymbolStack *conditional_stack;
         {
             // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:165:31: ^( 'if' $c1 ( $t1)? ( ^( 'elseif' $c2 $t2) )* ( ^( 'else' ( $t3)? ) )? )
             {
-                ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                             [stream_IF nextNode]
                  old:root_1];
 
@@ -4042,8 +4042,8 @@ static ANTLRSymbolStack *conditional_stack;
                 while ( [stream_c2 hasNext]||[stream_t2 hasNext]||[stream_ELSEIF hasNext] ) {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:165:47: ^( 'elseif' $c2 $t2)
                     {
-                        ANTLRCommonTree *root_2 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_2 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_2 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_2 = (CommonTree *)[treeAdaptor becomeRoot:
                                     [stream_ELSEIF nextNode]
                          old:root_2];
 
@@ -4063,8 +4063,8 @@ static ANTLRSymbolStack *conditional_stack;
                 if ( [stream_t3 hasNext]||[stream_ELSE hasNext] ) {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:165:68: ^( 'else' ( $t3)? )
                     {
-                        ANTLRCommonTree *root_2 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_2 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_2 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_2 = (CommonTree *)[treeAdaptor becomeRoot:
                                     [stream_ELSE nextNode]
                          old:root_2];
 
@@ -4114,7 +4114,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_template release];
         [stream_conditional release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -4145,7 +4145,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -4155,12 +4155,12 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_andConditional_return * andConditional57 = nil ;
          
 
-        ANTLRCommonTree *string_literal56_tree=nil;
+        CommonTree *string_literal56_tree=nil;
 
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:172:5: ( andConditional ( '||' ^ andConditional )* ) // ruleBlockSingleAlt
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:172:7: andConditional ( '||' ^ andConditional )* // alt
         {
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -4190,9 +4190,9 @@ static ANTLRSymbolStack *conditional_stack;
 
                     string_literal56=(STToken *)[self match:input TokenType:OR Follow:FOLLOW_OR_in_conditional994]; 
                     string_literal56_tree = /* ASTParser createNodeFromToken */
-                    (ANTLRCommonTree *)[[treeAdaptor create:string_literal56] retain]
+                    (CommonTree *)[[treeAdaptor create:string_literal56] retain]
                     ;
-                    root_0 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:string_literal56_tree old:root_0];
+                    root_0 = (CommonTree *)[treeAdaptor becomeRoot:string_literal56_tree old:root_0];
 
                      
                     /* ASTParser ruleRef */
@@ -4224,7 +4224,7 @@ static ANTLRSymbolStack *conditional_stack;
 
 
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -4255,7 +4255,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -4265,12 +4265,12 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_notConditional_return * notConditional60 = nil ;
          
 
-        ANTLRCommonTree *string_literal59_tree=nil;
+        CommonTree *string_literal59_tree=nil;
 
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:175:16: ( notConditional ( '&&' ^ notConditional )* ) // ruleBlockSingleAlt
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:175:18: notConditional ( '&&' ^ notConditional )* // alt
         {
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -4300,9 +4300,9 @@ static ANTLRSymbolStack *conditional_stack;
 
                     string_literal59=(STToken *)[self match:input TokenType:AND Follow:FOLLOW_AND_in_andConditional1017]; 
                     string_literal59_tree = /* ASTParser createNodeFromToken */
-                    (ANTLRCommonTree *)[[treeAdaptor create:string_literal59] retain]
+                    (CommonTree *)[[treeAdaptor create:string_literal59] retain]
                     ;
-                    root_0 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:string_literal59_tree old:root_0];
+                    root_0 = (CommonTree *)[treeAdaptor becomeRoot:string_literal59_tree old:root_0];
 
                      
                     /* ASTParser ruleRef */
@@ -4334,7 +4334,7 @@ static ANTLRSymbolStack *conditional_stack;
 
 
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -4365,7 +4365,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -4375,7 +4375,7 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_memberExpr_return * memberExpr63 = nil ;
          
 
-        ANTLRCommonTree *char_literal61_tree=nil;
+        CommonTree *char_literal61_tree=nil;
 
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:178:5: ( '!' ^ notConditional | memberExpr ) //ruleblock
         NSInteger alt22=2;
@@ -4400,15 +4400,15 @@ static ANTLRSymbolStack *conditional_stack;
             case 1 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:178:9: '!' ^ notConditional // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
                 char_literal61=(STToken *)[self match:input TokenType:BANG Follow:FOLLOW_BANG_in_notConditional1038]; 
                 char_literal61_tree = /* ASTParser createNodeFromToken */
-                (ANTLRCommonTree *)[[treeAdaptor create:char_literal61] retain]
+                (CommonTree *)[[treeAdaptor create:char_literal61] retain]
                 ;
-                root_0 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:char_literal61_tree old:root_0];
+                root_0 = (CommonTree *)[treeAdaptor becomeRoot:char_literal61_tree old:root_0];
 
                  
                 /* ASTParser ruleRef */
@@ -4426,7 +4426,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 2 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:179:9: memberExpr // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -4451,7 +4451,7 @@ static ANTLRSymbolStack *conditional_stack;
 
 
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -4482,7 +4482,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -4494,11 +4494,11 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_mapExpr_return * mapExpr66 = nil ;
          
 
-        ANTLRCommonTree *p_tree=nil;
-        ANTLRCommonTree *prop_tree=nil;
-        ANTLRCommonTree *ID64_tree=nil;
-        ANTLRCommonTree *char_literal65_tree=nil;
-        ANTLRCommonTree *char_literal67_tree=nil;
+        CommonTree *p_tree=nil;
+        CommonTree *prop_tree=nil;
+        CommonTree *ID64_tree=nil;
+        CommonTree *char_literal65_tree=nil;
+        CommonTree *char_literal67_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_RPAREN =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token RPAREN"] retain];
@@ -4539,7 +4539,7 @@ static ANTLRSymbolStack *conditional_stack;
             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                 description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
         // 183:12: -> ID
         {
@@ -4602,14 +4602,14 @@ static ANTLRSymbolStack *conditional_stack;
                         [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                             description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                    root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                    root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                     // 184:49: -> ^( PROP[$p,@\"PROP\"] $notConditionalExpr $prop)
                     {
                         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:184:52: ^( PROP[$p,@\"PROP\"] $notConditionalExpr $prop)
                         {
-                            ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                            root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                            CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                            root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                     [[treeAdaptor createTree:PROP FromToken:p Text:@"PROP"] retain]
                              old:root_1];
 
@@ -4666,14 +4666,14 @@ static ANTLRSymbolStack *conditional_stack;
                         [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                             description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                    root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                    root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                     // 185:49: -> ^( PROP_IND[$p,@\"PROP_IND\"] $notConditionalExpr mapExpr )
                     {
                         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:185:52: ^( PROP_IND[$p,@\"PROP_IND\"] $notConditionalExpr mapExpr )
                         {
-                            ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                            root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                            CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                            root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                     [[treeAdaptor createTree:PROP_IND FromToken:p Text:@"PROP_IND"] retain]
                              old:root_1];
 
@@ -4714,7 +4714,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_LPAREN release];
         [stream_mapExpr release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -4745,7 +4745,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -4755,7 +4755,7 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_option_return * option70 = nil ;
          
 
-        ANTLRCommonTree *char_literal69_tree=nil;
+        CommonTree *char_literal69_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_COMMA =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token COMMA"] retain];
@@ -4825,14 +4825,14 @@ static ANTLRSymbolStack *conditional_stack;
             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                 description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
         // 189:38: -> ^( OPTIONS ( option )* )
         {
             // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:189:41: ^( OPTIONS ( option )* )
             {
-                ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                         [[treeAdaptor createTree:OPTIONS Text:@"OPTIONS"] retain]
                  old:root_1];
 
@@ -4863,7 +4863,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_COMMA release];
         [stream_option release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -4894,7 +4894,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
 
         NSString *IDstr = [input LT:1].text;
@@ -4908,8 +4908,8 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_exprNoComma_return * exprNoComma73 = nil ;
          
 
-        ANTLRCommonTree *ID71_tree=nil;
-        ANTLRCommonTree *char_literal72_tree=nil;
+        CommonTree *ID71_tree=nil;
+        CommonTree *char_literal72_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_EQUALS =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token EQUALS"] retain];
@@ -4982,14 +4982,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 203:49: -> {validOption}? ^( '=' ID exprNoComma )
                 if (validOption) {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:203:67: ^( '=' ID exprNoComma )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                     [stream_EQUALS nextNode]
                          old:root_1];
 
@@ -5041,14 +5041,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 210:49: -> {validOption&&defVal!=nil}? ^( EQUALS[EQUALS, @\"=\"] ID STRING[$ID, defVal] )
                 if (validOption&&defVal!=nil) {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:211:52: ^( EQUALS[EQUALS, @\"=\"] ID STRING[$ID, defVal] )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:EQUALS FromToken:EQUALS Text:@"="] retain]
                          old:root_1];
 
@@ -5093,7 +5093,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_ID release];
         [stream_exprNoComma release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -5124,7 +5124,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -5134,7 +5134,7 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_mapTemplateRef_return * mapTemplateRef76 = nil ;
          
 
-        ANTLRCommonTree *char_literal75_tree=nil;
+        CommonTree *char_literal75_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_COLON =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token COLON"] retain];
@@ -5204,14 +5204,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 218:49: -> ^( MAP memberExpr mapTemplateRef )
                 {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:218:52: ^( MAP memberExpr mapTemplateRef )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:MAP Text:@"MAP"] retain]
                          old:root_1];
 
@@ -5246,7 +5246,7 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 219:49: -> memberExpr
                 {
@@ -5276,7 +5276,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_memberExpr release];
         [stream_mapTemplateRef release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -5307,7 +5307,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -5318,7 +5318,7 @@ static ANTLRSymbolStack *conditional_stack;
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:223:6: ( mapExpr ) // ruleBlockSingleAlt
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:223:8: mapExpr // alt
         {
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -5341,7 +5341,7 @@ static ANTLRSymbolStack *conditional_stack;
 
 
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -5372,7 +5372,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -5387,9 +5387,9 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_mapTemplateRef_return * mapTemplateRef80 = nil ;
          
         ANTLRParserRuleReturnScope *x = nil;
-        ANTLRCommonTree *c_tree=nil;
-        ANTLRCommonTree *col_tree=nil;
-        ANTLRCommonTree *char_literal81_tree=nil;
+        CommonTree *c_tree=nil;
+        CommonTree *col_tree=nil;
+        CommonTree *char_literal81_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_COLON =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token COLON"] retain];
@@ -5505,21 +5505,21 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 230:49: -> ^( ZIP[$col] ^( ELEMENTS ( memberExpr )+ ) mapTemplateRef )
                 {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:230:52: ^( ZIP[$col] ^( ELEMENTS ( memberExpr )+ ) mapTemplateRef )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:ZIP FromToken:col Text:@"ZIP"] retain]
                          old:root_1];
 
                         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:230:64: ^( ELEMENTS ( memberExpr )+ )
                         {
-                            ANTLRCommonTree *root_2 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                            root_2 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                            CommonTree *root_2 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                            root_2 = (CommonTree *)[treeAdaptor becomeRoot:
                                     [[treeAdaptor createTree:ELEMENTS Text:@"ELEMENTS"] retain]
                              old:root_2];
 
@@ -5567,7 +5567,7 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 231:49: -> memberExpr
                 {
@@ -5678,14 +5678,14 @@ static ANTLRSymbolStack *conditional_stack;
                     ANTLRRewriteRuleSubtreeStream *stream_x =
                         [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                             description:@"token x" elements:list_x] retain];
-                    root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                    root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                     // 235:49: -> ^( MAP[$col] $mapExpr ( $x)+ )
                     {
                         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:235:52: ^( MAP[$col] $mapExpr ( $x)+ )
                         {
-                            ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                            root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                            CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                            root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                     [[treeAdaptor createTree:MAP FromToken:col Text:@"MAP"] retain]
                              old:root_1];
 
@@ -5736,7 +5736,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_memberExpr release];
         [stream_mapTemplateRef release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -5767,7 +5767,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -5787,13 +5787,13 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_argExprList_return * argExprList89 = nil ;
          
 
-        ANTLRCommonTree *lp_tree=nil;
-        ANTLRCommonTree *rp_tree=nil;
-        ANTLRCommonTree *ID82_tree=nil;
-        ANTLRCommonTree *char_literal83_tree=nil;
-        ANTLRCommonTree *char_literal85_tree=nil;
-        ANTLRCommonTree *char_literal88_tree=nil;
-        ANTLRCommonTree *char_literal90_tree=nil;
+        CommonTree *lp_tree=nil;
+        CommonTree *rp_tree=nil;
+        CommonTree *ID82_tree=nil;
+        CommonTree *char_literal83_tree=nil;
+        CommonTree *char_literal85_tree=nil;
+        CommonTree *char_literal88_tree=nil;
+        CommonTree *char_literal90_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_RPAREN =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token RPAREN"] retain];
@@ -5878,14 +5878,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 245:49: -> ^( INCLUDE ID ( args )? )
                 {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:245:52: ^( INCLUDE ID ( args )? )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:INCLUDE Text:@"INCLUDE"] retain]
                          old:root_1];
 
@@ -5915,7 +5915,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 2 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:246:9: subtemplate // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -6003,14 +6003,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 247:52: -> ^( INCLUDE_IND mapExpr ( argExprList )? )
                 {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:247:55: ^( INCLUDE_IND mapExpr ( argExprList )? )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:INCLUDE_IND Text:@"INCLUDE_IND"] retain]
                          old:root_1];
 
@@ -6049,7 +6049,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_args release];
         [stream_mapExpr release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -6080,7 +6080,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -6093,10 +6093,10 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_mapExpr_return * mapExpr94 = nil ;
          
 
-        ANTLRCommonTree *p_tree=nil;
-        ANTLRCommonTree *ID92_tree=nil;
-        ANTLRCommonTree *char_literal93_tree=nil;
-        ANTLRCommonTree *char_literal95_tree=nil;
+        CommonTree *p_tree=nil;
+        CommonTree *ID92_tree=nil;
+        CommonTree *char_literal93_tree=nil;
+        CommonTree *char_literal95_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_RPAREN =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token RPAREN"] retain];
@@ -6145,7 +6145,7 @@ static ANTLRSymbolStack *conditional_stack;
             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                 description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
         // 251:21: -> includeExpr
         {
@@ -6203,14 +6203,14 @@ static ANTLRSymbolStack *conditional_stack;
                         [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                             description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                    root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                    root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                     // 252:49: -> ^( PROP[$p,@\"PROP\"] $memberExpr ID )
                     {
                         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:252:52: ^( PROP[$p,@\"PROP\"] $memberExpr ID )
                         {
-                            ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                            root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                            CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                            root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                     [[treeAdaptor createTree:PROP FromToken:p Text:@"PROP"] retain]
                              old:root_1];
 
@@ -6270,14 +6270,14 @@ static ANTLRSymbolStack *conditional_stack;
                         [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                             description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                    root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                    root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                     // 253:49: -> ^( PROP_IND[$p,@\"PROP_IND\"] $memberExpr mapExpr )
                     {
                         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:253:52: ^( PROP_IND[$p,@\"PROP_IND\"] $memberExpr mapExpr )
                         {
-                            ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                            root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                            CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                            root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                     [[treeAdaptor createTree:PROP_IND FromToken:p Text:@"PROP_IND"] retain]
                              old:root_1];
 
@@ -6319,7 +6319,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_includeExpr release];
         [stream_mapExpr release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -6350,7 +6350,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -6383,26 +6383,26 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_primary_return * primary118 = nil ;
          
 
-        ANTLRCommonTree *rp_tree=nil;
-        ANTLRCommonTree *ID96_tree=nil;
-        ANTLRCommonTree *char_literal97_tree=nil;
-        ANTLRCommonTree *char_literal99_tree=nil;
-        ANTLRCommonTree *string_literal100_tree=nil;
-        ANTLRCommonTree *char_literal101_tree=nil;
-        ANTLRCommonTree *ID102_tree=nil;
-        ANTLRCommonTree *char_literal103_tree=nil;
-        ANTLRCommonTree *char_literal105_tree=nil;
-        ANTLRCommonTree *ID106_tree=nil;
-        ANTLRCommonTree *char_literal107_tree=nil;
-        ANTLRCommonTree *char_literal109_tree=nil;
-        ANTLRCommonTree *char_literal110_tree=nil;
-        ANTLRCommonTree *string_literal111_tree=nil;
-        ANTLRCommonTree *char_literal112_tree=nil;
-        ANTLRCommonTree *ID113_tree=nil;
-        ANTLRCommonTree *char_literal114_tree=nil;
-        ANTLRCommonTree *char_literal115_tree=nil;
-        ANTLRCommonTree *ID116_tree=nil;
-        ANTLRCommonTree *char_literal117_tree=nil;
+        CommonTree *rp_tree=nil;
+        CommonTree *ID96_tree=nil;
+        CommonTree *char_literal97_tree=nil;
+        CommonTree *char_literal99_tree=nil;
+        CommonTree *string_literal100_tree=nil;
+        CommonTree *char_literal101_tree=nil;
+        CommonTree *ID102_tree=nil;
+        CommonTree *char_literal103_tree=nil;
+        CommonTree *char_literal105_tree=nil;
+        CommonTree *ID106_tree=nil;
+        CommonTree *char_literal107_tree=nil;
+        CommonTree *char_literal109_tree=nil;
+        CommonTree *char_literal110_tree=nil;
+        CommonTree *string_literal111_tree=nil;
+        CommonTree *char_literal112_tree=nil;
+        CommonTree *ID113_tree=nil;
+        CommonTree *char_literal114_tree=nil;
+        CommonTree *char_literal115_tree=nil;
+        CommonTree *ID116_tree=nil;
+        CommonTree *char_literal117_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_AT =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token AT"] retain];
@@ -6555,14 +6555,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 260:49: -> ^( EXEC_FUNC ID ( expr )? )
                 {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:260:52: ^( EXEC_FUNC ID ( expr )? )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:EXEC_FUNC Text:@"EXEC_FUNC"] retain]
                          old:root_1];
 
@@ -6635,14 +6635,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 261:49: -> ^( INCLUDE_SUPER ID ( args )? )
                 {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:261:52: ^( INCLUDE_SUPER ID ( args )? )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:INCLUDE_SUPER Text:@"INCLUDE_SUPER"] retain]
                          old:root_1];
 
@@ -6707,14 +6707,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 262:49: -> ^( INCLUDE ID ( args )? )
                 {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:262:52: ^( INCLUDE ID ( args )? )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:INCLUDE Text:@"INCLUDE"] retain]
                          old:root_1];
 
@@ -6782,14 +6782,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 263:49: -> ^( INCLUDE_SUPER_REGION ID )
                 {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:263:52: ^( INCLUDE_SUPER_REGION ID )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:INCLUDE_SUPER_REGION Text:@"INCLUDE_SUPER_REGION"] retain]
                          old:root_1];
 
@@ -6842,14 +6842,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 264:49: -> ^( INCLUDE_REGION ID )
                 {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:264:52: ^( INCLUDE_REGION ID )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:INCLUDE_REGION Text:@"INCLUDE_REGION"] retain]
                          old:root_1];
 
@@ -6872,7 +6872,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 6 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:265:9: primary // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -6905,7 +6905,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_args release];
         [stream_expr release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -6936,7 +6936,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -6961,16 +6961,16 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_argExprList_return * argExprList131 = nil ;
          
 
-        ANTLRCommonTree *lp_tree=nil;
-        ANTLRCommonTree *ID119_tree=nil;
-        ANTLRCommonTree *STRING120_tree=nil;
-        ANTLRCommonTree *T_TRUE121_tree=nil;
-        ANTLRCommonTree *T_FALSE122_tree=nil;
-        ANTLRCommonTree *char_literal125_tree=nil;
-        ANTLRCommonTree *char_literal127_tree=nil;
-        ANTLRCommonTree *char_literal129_tree=nil;
-        ANTLRCommonTree *char_literal130_tree=nil;
-        ANTLRCommonTree *char_literal132_tree=nil;
+        CommonTree *lp_tree=nil;
+        CommonTree *ID119_tree=nil;
+        CommonTree *STRING120_tree=nil;
+        CommonTree *T_TRUE121_tree=nil;
+        CommonTree *T_FALSE122_tree=nil;
+        CommonTree *char_literal125_tree=nil;
+        CommonTree *char_literal127_tree=nil;
+        CommonTree *char_literal129_tree=nil;
+        CommonTree *char_literal130_tree=nil;
+        CommonTree *char_literal132_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_RPAREN =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token RPAREN"] retain];
@@ -7031,14 +7031,14 @@ static ANTLRSymbolStack *conditional_stack;
             case 1 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:269:9: ID // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
                 /* ASTParser tokenRef */
                 ID119=(STToken *)[self match:input TokenType:ID Follow:FOLLOW_ID_in_primary2497]; 
                 ID119_tree = /* ASTParser createNodeFromToken */
-                (ANTLRCommonTree *)[[treeAdaptor create:ID119] retain]
+                (CommonTree *)[[treeAdaptor create:ID119] retain]
                 ;
                 [treeAdaptor addChild:ID119_tree  toTree:root_0];
 
@@ -7048,14 +7048,14 @@ static ANTLRSymbolStack *conditional_stack;
             case 2 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:270:9: STRING // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
                 /* ASTParser tokenRef */
                 STRING120=(STToken *)[self match:input TokenType:STRING Follow:FOLLOW_STRING_in_primary2507]; 
                 STRING120_tree = /* ASTParser createNodeFromToken */
-                (ANTLRCommonTree *)[[treeAdaptor create:STRING120] retain]
+                (CommonTree *)[[treeAdaptor create:STRING120] retain]
                 ;
                 [treeAdaptor addChild:STRING120_tree  toTree:root_0];
 
@@ -7065,14 +7065,14 @@ static ANTLRSymbolStack *conditional_stack;
             case 3 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:271:9: T_TRUE // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
                 /* ASTParser tokenRef */
                 T_TRUE121=(STToken *)[self match:input TokenType:T_TRUE Follow:FOLLOW_T_TRUE_in_primary2517]; 
                 T_TRUE121_tree = /* ASTParser createNodeFromToken */
-                (ANTLRCommonTree *)[[treeAdaptor create:T_TRUE121] retain]
+                (CommonTree *)[[treeAdaptor create:T_TRUE121] retain]
                 ;
                 [treeAdaptor addChild:T_TRUE121_tree  toTree:root_0];
 
@@ -7082,14 +7082,14 @@ static ANTLRSymbolStack *conditional_stack;
             case 4 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:272:9: T_FALSE // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
                 /* ASTParser tokenRef */
                 T_FALSE122=(STToken *)[self match:input TokenType:T_FALSE Follow:FOLLOW_T_FALSE_in_primary2527]; 
                 T_FALSE122_tree = /* ASTParser createNodeFromToken */
-                (ANTLRCommonTree *)[[treeAdaptor create:T_FALSE122] retain]
+                (CommonTree *)[[treeAdaptor create:T_FALSE122] retain]
                 ;
                 [treeAdaptor addChild:T_FALSE122_tree  toTree:root_0];
 
@@ -7099,7 +7099,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 5 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:273:9: subtemplate // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -7118,7 +7118,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 6 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:274:9: list // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -7137,7 +7137,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 7 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:275:9: {...}? => '(' ! conditional ')' ! // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -7258,14 +7258,14 @@ static ANTLRSymbolStack *conditional_stack;
                             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                                 description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                         // 277:49: -> ^( INCLUDE_IND[$lp] expr ( argExprList )? )
                         {
                             // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:277:52: ^( INCLUDE_IND[$lp] expr ( argExprList )? )
                             {
-                                ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                                root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                                CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                                root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                         [[treeAdaptor createTree:INCLUDE_IND FromToken:lp Text:@"INCLUDE_IND"] retain]
                                  old:root_1];
 
@@ -7305,14 +7305,14 @@ static ANTLRSymbolStack *conditional_stack;
                             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                                 description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                         // 278:49: -> ^( TO_STR[$lp] expr )
                         {
                             // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:278:52: ^( TO_STR[$lp] expr )
                             {
-                                ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                                root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                                CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                                root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                         [[treeAdaptor createTree:TO_STR FromToken:lp Text:@"TO_STR"] retain]
                                  old:root_1];
 
@@ -7348,7 +7348,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_argExprList release];
         [stream_expr release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -7379,7 +7379,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -7394,10 +7394,10 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_namedArg_return * namedArg136 = nil ;
          
 
-        ANTLRCommonTree *char_literal135_tree=nil;
-        ANTLRCommonTree *char_literal137_tree=nil;
-        ANTLRCommonTree *string_literal138_tree=nil;
-        ANTLRCommonTree *string_literal139_tree=nil;
+        CommonTree *char_literal135_tree=nil;
+        CommonTree *char_literal137_tree=nil;
+        CommonTree *string_literal138_tree=nil;
+        CommonTree *string_literal139_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_ELLIPSIS =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token ELLIPSIS"] retain];
@@ -7449,7 +7449,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 1 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:282:9: argExprList // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -7559,7 +7559,7 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 283:49: -> ( namedArg )+ ( '...' )?
                 {
@@ -7596,14 +7596,14 @@ static ANTLRSymbolStack *conditional_stack;
             case 3 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:284:9: '...' // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
                 /* ASTParser tokenRef */
                 string_literal139=(STToken *)[self match:input TokenType:ELLIPSIS Follow:FOLLOW_ELLIPSIS_in_args2757]; 
                 string_literal139_tree = /* ASTParser createNodeFromToken */
-                (ANTLRCommonTree *)[[treeAdaptor create:string_literal139] retain]
+                (CommonTree *)[[treeAdaptor create:string_literal139] retain]
                 ;
                 [treeAdaptor addChild:string_literal139_tree  toTree:root_0];
 
@@ -7613,7 +7613,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 4 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:286:5:  // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
                 }
@@ -7630,7 +7630,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_COMMA release];
         [stream_namedArg release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -7661,7 +7661,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -7671,7 +7671,7 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_arg_return * arg142 = nil ;
          
 
-        ANTLRCommonTree *char_literal141_tree=nil;
+        CommonTree *char_literal141_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_COMMA =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token COMMA"] retain];
@@ -7741,7 +7741,7 @@ static ANTLRSymbolStack *conditional_stack;
             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                 description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
         // 288:32: -> ( arg )+
         {
@@ -7774,7 +7774,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_COMMA release];
         [stream_arg release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -7805,7 +7805,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -7816,7 +7816,7 @@ static ANTLRSymbolStack *conditional_stack;
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:290:5: ( exprNoComma ) // ruleBlockSingleAlt
         // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:290:7: exprNoComma // alt
         {
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -7839,7 +7839,7 @@ static ANTLRSymbolStack *conditional_stack;
 
 
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -7870,7 +7870,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -7879,8 +7879,8 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_arg_return * arg146 = nil ;
          
 
-        ANTLRCommonTree *ID144_tree=nil;
-        ANTLRCommonTree *char_literal145_tree=nil;
+        CommonTree *ID144_tree=nil;
+        CommonTree *char_literal145_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_EQUALS =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token EQUALS"] retain];
@@ -7924,14 +7924,14 @@ static ANTLRSymbolStack *conditional_stack;
             [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                 description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-        root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+        root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
         // 292:23: -> ^( '=' ID arg )
         {
             // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:292:26: ^( '=' ID arg )
             {
-                ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                             [stream_EQUALS nextNode]
                  old:root_1];
 
@@ -7963,7 +7963,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_ID release];
         [stream_arg release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -7994,7 +7994,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -8007,10 +8007,10 @@ static ANTLRSymbolStack *conditional_stack;
          STParser_listElement_return * listElement150 = nil ;
          
 
-        ANTLRCommonTree *lb_tree=nil;
-        ANTLRCommonTree *char_literal147_tree=nil;
-        ANTLRCommonTree *char_literal149_tree=nil;
-        ANTLRCommonTree *char_literal151_tree=nil;
+        CommonTree *lb_tree=nil;
+        CommonTree *char_literal147_tree=nil;
+        CommonTree *char_literal149_tree=nil;
+        CommonTree *char_literal151_tree=nil;
         ANTLRRewriteRuleTokenStream *stream_RBRACK =
             [[ANTLRRewriteRuleTokenStream newANTLRRewriteRuleTokenStream:treeAdaptor
                                                              description:@"token RBRACK"] retain];
@@ -8092,7 +8092,7 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 295:20: -> LIST[$lb]
                 {
@@ -8179,14 +8179,14 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 296:53: -> ^( LIST[$lb] ( listElement )* )
                 {
                     // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:296:56: ^( LIST[$lb] ( listElement )* )
                     {
-                        ANTLRCommonTree *root_1 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
-                        root_1 = (ANTLRCommonTree *)[treeAdaptor becomeRoot:
+                        CommonTree *root_1 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                        root_1 = (CommonTree *)[treeAdaptor becomeRoot:
                                 [[treeAdaptor createTree:LIST FromToken:lb Text:@"LIST"] retain]
                          old:root_1];
 
@@ -8221,7 +8221,7 @@ static ANTLRSymbolStack *conditional_stack;
         [stream_COMMA release];
         [stream_listElement release];
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }
@@ -8252,7 +8252,7 @@ static ANTLRSymbolStack *conditional_stack;
     [retval setStart:[input LT:1]];
 
 
-    ANTLRCommonTree *root_0 = nil;
+    CommonTree *root_0 = nil;
 
     @try {
         /* AST ruleLabelDefs */
@@ -8283,7 +8283,7 @@ static ANTLRSymbolStack *conditional_stack;
             case 1 : ;
                 // /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g:299:15: exprNoComma // alt
                 {
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
 
 
@@ -8315,7 +8315,7 @@ static ANTLRSymbolStack *conditional_stack;
                     [[ANTLRRewriteRuleSubtreeStream newANTLRRewriteRuleSubtreeStream:treeAdaptor
                         description:@"token retval" element:retval!=nil?[retval getTree]:nil] retain];
 
-                root_0 = (ANTLRCommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
+                root_0 = (CommonTree *)[[[treeAdaptor class] newEmptyTree] retain];
 
                 // 299:29: -> TNULL
                 {
@@ -8340,7 +8340,7 @@ static ANTLRSymbolStack *conditional_stack;
 
 
 
-            retval.tree = (ANTLRCommonTree *)[treeAdaptor rulePostProcessing:root_0];
+            retval.tree = (CommonTree *)[treeAdaptor rulePostProcessing:root_0];
             [treeAdaptor setTokenBoundaries:retval.tree From:retval.start To:retval.stopToken];
 
     }

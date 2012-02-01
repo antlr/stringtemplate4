@@ -28,12 +28,12 @@
                            templateToken:nil
                       delimiterStartChar:delimiterStartChar
                        delimiterStopChar:delimiterStopChar];
-    ANTLRCommonTokenStream *tokens = [ANTLRCommonTokenStream newANTLRCommonTokenStreamWithTokenSource:lexer];
+    CommonTokenStream *tokens = [CommonTokenStream newCommonTokenStreamWithTokenSource:lexer];
     NSMutableString *buf = [NSMutableString stringWithCapacity:30];
     [buf appendString:@"["];
     int i = 1;
     STToken *t = [tokens LT:i];
-    while (t.type != ANTLRTokenTypeEOF) {
+    while (t.type != TokenTypeEOF) {
         if (i > 1)
             [buf appendString:@", "];
         [buf appendString:[t description]];
