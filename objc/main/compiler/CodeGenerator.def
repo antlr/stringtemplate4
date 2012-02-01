@@ -1,0 +1,58 @@
+#pragma mark Tokens
+#ifdef EOF
+#undef EOF
+#endif
+#define EOF -1
+#define IF 4
+#define ELSE 5
+#define ELSEIF 6
+#define ENDIF 7
+#define SUPER 8
+#define SEMI 9
+#define BANG 10
+#define ELLIPSIS 11
+#define EQUALS 12
+#define COLON 13
+#define LPAREN 14
+#define RPAREN 15
+#define LBRACK 16
+#define RBRACK 17
+#define COMMA 18
+#define DOT 19
+#define LCURLY 20
+#define RCURLY 21
+#define TEXT 22
+#define LDELIM 23
+#define RDELIM 24
+#define ID 25
+#define STRING 26
+#define WS 27
+#define PIPE 28
+#define OR 29
+#define AND 30
+#define INDENT 31
+#define NEWLINE 32
+#define AT 33
+#define END 34
+#define EXPR 35
+#define OPTIONS 36
+#define PROP 37
+#define PROP_IND 38
+#define INCLUDE 39
+#define INCLUDE_IND 40
+#define EXEC_FUNC 41
+#define INCLUDE_SUPER 42
+#define INCLUDE_SUPER_REGION 43
+#define INCLUDE_REGION 44
+#define TO_STR 45
+#define LIST 46
+#define MAP 47
+#define ZIP 48
+#define SUBTEMPLATE 49
+#define ARGS 50
+#define ELEMENTS 51
+#define REGION 52
+#define A_NULL 53
+#pragma mark Dynamic Global Scopes
+#pragma mark Dynamic Rule Scopes
+

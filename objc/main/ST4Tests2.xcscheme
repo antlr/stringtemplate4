@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme
+   version = "1.3">
+   <BuildAction
+      parallelizeBuildables = "YES"
+      buildImplicitDependencies = "YES">
+      <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1ABB41CA134AA4650058956D"
+               BuildableName = "ST4Tests.octest"
+               BlueprintName = "ST4Tests"
+               ReferencedContainer = "container:ST4.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+      </BuildActionEntries>
+   </BuildAction>
+   <TestAction
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.GDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.GDB"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      buildConfiguration = "Debug">
+      <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1ABB41CA134AA4650058956D"
+               BuildableName = "ST4Tests.octest"
+               BlueprintName = "ST4Tests"
+               ReferencedContainer = "container:ST4.xcodeproj">
+            </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "BaseTest">
+               </Test>
+               <Test
+                  Identifier = "ST4Tests">
+               </Test>
+               <Test
+                  Identifier = "TestCompiler">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test01NullAttr">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test02aChainAttr">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test02Attr">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test03SetUnknownAttr">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test04MultiAttr">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test05AttrIsList">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test06AttrIsArray">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test07Prop">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test08aMapAcrossDictionaryUsesKeys">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test08PropWithNoAttr">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test09STProp">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test10BooleanISProp">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test11BooleanHASProp">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test12NullAttrProp">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test13NoSuchProp">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test14NullIndirectProp">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test15PropConvertsToString">
+               </Test>
+               <Test
+                  Identifier = "TestCoreBasics/test16Include">
+               </Test>
+               <Test
+                  Identifier = "TestLexer">
+               </Test>
+            </SkippedTests>
+         </TestableReference>
+      </Testables>
+   </TestAction>
+   <LaunchAction
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.GDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.GDB"
+      displayScaleIsEnabled = "NO"
+      displayScale = "1.00"
+      launchStyle = "0"
+      useCustomWorkingDirectory = "NO"
+      buildConfiguration = "Debug">
+      <PathRunnable
+         FilePath = "/Developer/Tools/otest">
+      </PathRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "-SenTest Self"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "$(BUILT_PRODUCTS_DIR)/ST4Tests.octest"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "DYLD_FRAMEWORK_PATH"
+            value = "$(BUILT_PRODUCTS_DIR)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "DYLD_LIBRARY_PATH"
+            value = "$(BUILT_PRODUCTS_DIR)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
+      <AdditionalOptions>
+         <AdditionalOption
+            key = "MallocScribble"
+            value = ""
+            isEnabled = "YES">
+         </AdditionalOption>
+         <AdditionalOption
+            key = "MallocStackLogging"
+            value = ""
+            isEnabled = "YES">
+         </AdditionalOption>
+         <AdditionalOption
+            key = "DYLD_INSERT_LIBRARIES"
+            value = "/usr/lib/libgmalloc.dylib"
+            isEnabled = "YES">
+         </AdditionalOption>
+         <AdditionalOption
+            key = "AUTO_LOG_ALL"
+            value = ""
+            isEnabled = "YES">
+         </AdditionalOption>
+         <AdditionalOption
+            key = "MallocGuardEdges"
+            value = ""
+            isEnabled = "YES">
+         </AdditionalOption>
+      </AdditionalOptions>
+   </LaunchAction>
+   <ProfileAction
+      displayScaleIsEnabled = "NO"
+      displayScale = "1.00"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      buildConfiguration = "Release">
+   </ProfileAction>
+   <AnalyzeAction
+      buildConfiguration = "Debug">
+   </AnalyzeAction>
+   <ArchiveAction
+      buildConfiguration = "Release"
+      revealArchiveInOrganizer = "YES">
+   </ArchiveAction>
+</Scheme>

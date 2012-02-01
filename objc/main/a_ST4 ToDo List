@@ -1,0 +1,7 @@
+All of the files now compile.
+
+OcTest runs the tests with garbage collection on GCON and GCOFF.
+ST4 ObjC also passes all of the TestCompiler tests with GCON.
+ST4 ObjC also passes all of the TestFunction tests with GCON.
+ST4 ObjC also passes all of the TestLexer tests with GCON.
+ST4 ObjC passes first 22 TextCoreBasics tests with GCON.
