@@ -124,7 +124,7 @@
 @property (assign) BOOL atStartOfLine;
 @property (assign) NSInteger charPosition;
 @property (assign) NSInteger charIndex;
-@property (assign, setter = setLineWidth:) NSInteger lineWidth;
+@property (assign, setter=setLineWidth:) NSInteger lineWidth;
 
 
 @end

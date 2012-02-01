@@ -176,7 +176,7 @@ NSString *RegionTypeDescription(RegionTypeEnum value)
 }
 
 /** Track construction-time add attribute "events"; used for ST user-level debugging */
-- (AMutableDictionary *)addAttrEvents
+- (AMutableDictionary *)setAddAttrEvents
 {
     addAttrEvents = [AMutableDictionary dictionaryWithCapacity:25];
     return addAttrEvents;

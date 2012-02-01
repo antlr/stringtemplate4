@@ -273,11 +273,6 @@
 {
 }
 
-- (void) setLineWidth:(NSInteger)aLineWidth
-{
-    lineWidth = aLineWidth;
-}
-
 - (void) pushIndentation:(NSString *)anIndent
 {
     [indents addObject:anIndent];

@@ -88,12 +88,12 @@ typedef enum {
 }
 
 @property (retain) ConstructionEvent *newSTEvent;
-@property (retain, getter = addAttrEvents) AMutableDictionary *addAttrEvents;
+@property (retain) AMutableDictionary *addAttrEvents;
 
 + (id) newDebugState;
 - (id) init;
 
-- (AMutableDictionary *)addAttrEvents;
+- (AMutableDictionary *)setAddAttrEvents;
 @end
 
 /**

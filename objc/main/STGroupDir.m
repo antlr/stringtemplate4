@@ -105,7 +105,6 @@
         root = theRoot;
         if ( root ) [root retain];
         encoding = theEncoding;
-        if ( encoding ) [encoding retain];
     }
     return self;
 }
