@@ -30,33 +30,33 @@
 #import "STCompiletimeMessage.h"
 #import "GroupLexer.h"
 
-@class STToken;
+@class CommonToken;
 
 
 @implementation STCompiletimeMessage
 
-+ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t
++ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t
 {
     return [[STCompiletimeMessage alloc] init:anError srcName:aSrcName templateToken:aTemplateToken t:t cause:nil arg:nil arg2:nil];
 }
 
-+ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t cause:(NSException *)aCause
++ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause
 {
     return [[STCompiletimeMessage alloc] init:anError srcName:aSrcName templateToken:aTemplateToken t:t cause:aCause arg:nil arg2:nil];
 }
             
-+ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t cause:(NSException *)aCause arg:(id)anArg
++ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause arg:(id)anArg
 {
     return [[STCompiletimeMessage alloc] init:anError srcName:aSrcName templateToken:aTemplateToken t:t cause:aCause arg:anArg arg2:nil];
 }
 
-+ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t cause:(NSException *)aCause arg:(id)anArg arg2:(id)anArg2
++ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause arg:(id)anArg arg2:(id)anArg2
 {
     return [[STCompiletimeMessage alloc] init:anError srcName:aSrcName templateToken:aTemplateToken t:t cause:aCause arg:anArg arg2:anArg2];
 }
 
 #ifdef DONTUSENOMO
-- (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t
+- (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t
 {
     if ( (self=[super init:anError who:nil cause:nil]) != nil ) {
         templateToken = aTemplateToken;
@@ -66,7 +66,7 @@
     return self;
 }
 
-- (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t cause:(NSException *)aCause
+- (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause
 {
     self=[super init:anError who:nil cause:aCause];
     if ( self != nil ) {
@@ -77,7 +77,7 @@
     return self;
 }
 
-- (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t cause:(NSException *)aCause arg:(id)anArg
+- (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause arg:(id)anArg
 {
     self=[super init:anError who:nil cause:aCause arg:anArg];
     if ( self != nil ) {
@@ -89,7 +89,7 @@
 }
 #endif
 
-- (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t cause:(NSException *)aCause arg:(id)anArg arg2:(id)anArg2
+- (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause arg:(id)anArg arg2:(id)anArg2
 {
     self=[super init:anError who:nil cause:aCause arg:anArg arg2:anArg2 arg3:nil];
     if ( self != nil ) {

@@ -70,10 +70,10 @@
 - (id) initWithListener:(id<STErrorListener>)listener;
 
 - (void) dealloc;
-- (void) compileTimeError:(ErrorTypeEnum)error templateToken:(STToken *)aTemplateToken t:(STToken *)t;
-- (void) compileTimeError:(ErrorTypeEnum)error templateToken:(STToken *)aTemplateToken t:(STToken *)t arg:(id)arg;
-- (void) compileTimeError:(ErrorTypeEnum)error templateToken:(STToken *)aTemplateToken t:(STToken *)t arg:(id)arg arg2:(id)arg2;
-- (void) lexerError:(NSString *)srcName msg:(NSString *)msg templateToken:(STToken *)aTemplateToken e:(RecognitionException *)e;
+- (void) compileTimeError:(ErrorTypeEnum)error templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t;
+- (void) compileTimeError:(ErrorTypeEnum)error templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t arg:(id)arg;
+- (void) compileTimeError:(ErrorTypeEnum)error templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t arg:(id)arg arg2:(id)arg2;
+- (void) lexerError:(NSString *)srcName msg:(NSString *)msg templateToken:(CommonToken *)aTemplateToken e:(RecognitionException *)e;
 - (void) groupSyntaxError:(ErrorTypeEnum)error srcName:(NSString *)srcName e:(RecognitionException *)e msg:(NSString *)msg;
 - (void) groupLexerError:(ErrorTypeEnum)error srcName:(NSString *)srcName e:(RecognitionException *)e msg:(NSString *)msg;
 - (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)error;

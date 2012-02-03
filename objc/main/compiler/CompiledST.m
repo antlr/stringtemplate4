@@ -42,6 +42,7 @@
 @implementation CompiledST
 
 @synthesize name;
+@synthesize prefix;
 @synthesize template;
 @synthesize templateDefStartToken;
 @synthesize tokens;
@@ -68,6 +69,7 @@
 {
     self=[super init];
     if ( self != nil ) {
+        prefix = @"/";
         nativeGroup = STGroup.defaultGroup;
         instrs = [[MemBuffer newMemBufferWithLen:30] retain];
         sourceMap = [[AMutableArray arrayWithCapacity:6] retain];
@@ -118,6 +120,10 @@
 
 - (void) addImplicitlyDefinedTemplate:(CompiledST *)sub
 {
+    sub.prefix = self.prefix;
+    if ( [sub.name characterAtIndex:0] != '/' ) {
+        sub.name = [NSString stringWithFormat:@"\%@", sub.name];
+    }
     if ( implicitlyDefinedTemplates == nil ) {
         implicitlyDefinedTemplates = [[AMutableArray arrayWithCapacity:5] retain];
     }
@@ -137,8 +143,7 @@
         if (fa.defaultValueToken != nil) {
             numberOfArgsWithDefaultValues++;
             if ( fa.defaultValueToken.type == ANONYMOUS_TEMPLATE ) {
-                NSString *argSTname = [NSString stringWithFormat:@"%@%@",
-                   fa.name, @"_default_value"];
+                NSString *argSTname = [NSString stringWithFormat:@"%@_default_value", fa.name];
                 Compiler *c2 = [Compiler newCompiler:group];
                 NSString *defArgTemplate = [Misc strip:fa.defaultValueToken.text n:1];
                 fa.compiledDefaultValue = [c2 compile:[nativeGroup getFileName] name:argSTname
@@ -245,7 +250,8 @@
 {
     NSString *tmp;
 
-    BytecodeDisassembler *dis = [[BytecodeDisassembler alloc] initWithCode:self];
+//    BytecodeDisassembler *dis = [[BytecodeDisassembler alloc] initWithCode:self];
+    BytecodeDisassembler *dis = [BytecodeDisassembler newBytecodeDisassembler:self];
     StringWriter *sw = [StringWriter newWriter];
     PrintWriter *pw = [[PrintWriter newWriterWithWriter:sw] retain];
     [pw println:[dis disassemble]];

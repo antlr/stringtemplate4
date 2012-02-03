@@ -93,7 +93,7 @@ static NSString *suffixes[] = {
     return [[FormalArgument alloc] initWithName:aName];
 }
 
-+ (id) newFormalArgument:(NSString *)aName token:(STToken *)aToken
++ (id) newFormalArgument:(NSString *)aName token:(CommonToken *)aToken
 {
     return [[FormalArgument alloc] init:aName token:aToken];
 }
@@ -127,7 +127,7 @@ static NSString *suffixes[] = {
     return self;
 }
 
-- (id) init:(NSString *)aName token:(STToken *)aToken
+- (id) init:(NSString *)aName token:(CommonToken *)aToken
 {
     self=[super init];
     if ( self != nil ) {

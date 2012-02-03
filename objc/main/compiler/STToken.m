@@ -1,7 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
 #import "STErrorListener.h"
-#import "STToken.h"
+#import <STToken.h>
 #import "Misc.h"
 #import "STParser.h"
 
@@ -12,27 +12,14 @@
     return [[STToken alloc] initWithInput:anInput Type:aType Channel:aChannel Start:aStart Stop:aStop];
 }
 
-+ (id) newToken:(id<CharStream>)input type:(NSInteger)aType start:(NSInteger)aStart stop:(NSInteger)aStop
++ (id) newToken:(NSInteger)aType Text:(NSString *)theText
 {
-    return [[STToken alloc] initWithInput:input type:aType start:aStart stop:aStop];
+    return [[STToken alloc] init:aType Text:theText];
 }
 
-+ (id) newToken:(NSInteger)aType text:(NSString *)theText
-{
-    return [[STToken alloc] init:aType text:theText];
-}
-
-- (id) init:(NSInteger)aType text:(NSString *)aText
+- (id) init:(NSInteger)aType Text:(NSString *)aText
 {
     self=[super initWithType:aType Text:aText];
-    if ( self != nil ) {
-    }
-    return self;
-}
-
-- (id) initWithInput:(id<CharStream>)anInput type:(NSInteger)aType start:(NSInteger)aStart stop:(NSInteger)aStop
-{
-    self=[super initWithInput:anInput Type:aType Channel:TokenChannelDefault Start:aStart Stop:aStop];
     if ( self != nil ) {
     }
     return self;
@@ -49,7 +36,7 @@
 - (void) dealloc
 {
 #ifdef DEBUG_DEALLOC
-    NSLog( @"called dealloc in STToken" );
+    NSLog( @"called dealloc in CommonToken" );
 #endif
     [super dealloc];
 }

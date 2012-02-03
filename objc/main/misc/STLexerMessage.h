@@ -30,20 +30,20 @@
 
 @interface STLexerMessage : STMessage {
   NSString *msg;
-  STToken *templateToken;
+  CommonToken *templateToken;
   NSString *srcName;
 }
 
-+ (id) newMessage:(NSString *)aSrcName msg:(NSString *)aMsg templateToken:(STToken *)aTemplateToken cause:(NSException *)aCause;
++ (id) newMessage:(NSString *)aSrcName msg:(NSString *)aMsg templateToken:(CommonToken *)aTemplateToken cause:(NSException *)aCause;
 
-- (id) init:(NSString *)aSrcName msg:(NSString *)aMsg templateToken:(STToken *)aTemplateToken cause:(NSException *)aCause;
+- (id) init:(NSString *)aSrcName msg:(NSString *)aMsg templateToken:(CommonToken *)aTemplateToken cause:(NSException *)aCause;
 
 - (void) dealloc;
 - (NSString *) description;
 - (NSString *) toString;
 
 @property (retain, getter=getMsg, setter=setMsg:) NSString *msg;
-@property (retain, getter=getTemplateToken, setter=setTemplateToken:) STToken *templateToken;
+@property (retain, getter=getTemplateToken, setter=setTemplateToken:) CommonToken *templateToken;
 @property (retain, getter=getSrcName, setter=setSrcName:) NSString *srcName;
 
 @end

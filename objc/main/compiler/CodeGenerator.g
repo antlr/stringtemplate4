@@ -62,7 +62,7 @@ options {
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#import "STToken.h"
+#import <ANTLR/CommonToken.h>
 #import "Compiler.h"
 #import "CompiledST.h"
 #import "CompilationState.h"
@@ -75,7 +75,7 @@ options {
 	template_Scope *template_scope;
 	NSString *outermostTemplateName;	// name of overall template
 	CompiledST *outermostImpl;
-	STToken *templateToken;			    // overall template token
+	CommonToken *templateToken;			    // overall template token
 	NSString *template;  				// overall template text
 	ErrorManager *errMgr;
 }
@@ -84,7 +84,7 @@ options {
 	@property(retain) template_Scope *template_scope;
 	@property(retain) NSString *outermostTemplateName; // name of overall template
 	@property(retain) CompiledST *outermostImpl;
-	@property(retain) STToken *templateToken;// overall template token
+	@property(retain) CommonToken *templateToken;// overall template token
 	@property(retain) NSString *template;    // overall template text
 	@property(retain) ErrorManager *errMgr;
 }
@@ -94,13 +94,13 @@ options {
                  errMgr:(ErrorManager *)anErrMgr
                    name:(NSString *)aName
                template:(NSString *)aTemplate
-                  token:(STToken *)aTemplateToken;
+                  token:(CommonToken *)aTemplateToken;
 
 - (id) init:(id<TreeNodeStream>)input
                      errMgr:(ErrorManager *)anErrMgr
                    name:(NSString *)aName
                template:(NSString *)aTemplate
-                  token:(STToken *)aTemplateToken;
+                  token:(CommonToken *)aTemplateToken;
 
 // convience funcs to hide offensive sending of emit messages to
 // CompilationState temp data object.
@@ -134,7 +134,7 @@ options {
                  errMgr:(ErrorManager *)anErrMgr
                    name:(NSString *)aName
                template:(NSString *)aTemplate
-                  token:(STToken *)aTemplateToken
+                  token:(CommonToken *)aTemplateToken
 {
     return [[[CodeGenerator alloc] init:anInput
                                 errMgr:anErrMgr
@@ -147,7 +147,7 @@ options {
                      errMgr:(ErrorManager *)anErrMgr
                    name:(NSString *)aName
                template:(NSString *)aTemplate
-                  token:(STToken *)aTemplateToken
+                  token:(CommonToken *)aTemplateToken
 {
     self=[super initWithStream:anInput State:[RecognizerSharedState newRecognizerSharedState]];
     if ( self != nil ) {
@@ -324,7 +324,7 @@ subtemplate returns [NSString *name, NSInteger nargs]
 			template[$name,args]
 			{
 			CompiledST *sub = $template.impl;
-			sub.isAnonSubtemplate = true;
+			sub.isAnonSubtemplate = YES;
 	        sub.templateDefStartToken = $SUBTEMPLATE.token;
 			sub.ast = $SUBTEMPLATE;
 			[sub.ast setUnknownTokenBoundaries];
@@ -333,6 +333,21 @@ subtemplate returns [NSString *name, NSInteger nargs]
 			[outermostImpl addImplicitlyDefinedTemplate:sub];
 			}
 		 )
+	|	SUBTEMPLATE // {}
+			{
+			CompiledST *sub = [CompiledST newCompiledST];
+			sub.name = $name;
+			sub.template = @"";
+			[sub addArg:[FormalArgument newFormalArgument:@"i"]];
+			[sub addArg:[FormalArgument newFormalArgument:@"i0"]];
+			sub.isAnonSubtemplate = YES;
+	        sub.templateDefStartToken = $SUBTEMPLATE.token;
+            sub.ast = $SUBTEMPLATE;
+            [sub.ast setUnknownTokenBoundaries];
+            sub.tokens = [input getTokenStream];
+			//sub.dump();
+			[outermostImpl addImplicitlyDefinedTemplate:sub];
+			}
 	;
 
 ifstat[CommonTree *indent]

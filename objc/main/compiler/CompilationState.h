@@ -27,7 +27,7 @@
  */
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
-#import "STToken.h"
+#import <ANTLR/CommonToken.h>
 #import "Interpreter.h"
 #import "ErrorManager.h"
 #import "Interpreter.h"
@@ -66,9 +66,9 @@
      stream:(CommonTokenStream *)theTokens;
      
 - (NSInteger) defineString:(NSString *)s;
-- (void) refAttr:(STToken *)templateToken tree:(CommonTree *)id;
+- (void) refAttr:(CommonToken *)templateToken tree:(CommonTree *)id;
 - (void) setOption:(CommonTree *)id;
-- (void) func:(STToken *)templateToken tree:(CommonTree *)id;
+- (void) func:(CommonToken *)templateToken tree:(CommonTree *)id;
 - (void) emit:(short)opcode;
 - (void) emit:(CommonTree *)opAST opcode:(short)opcode;
 - (void) emit1:(CommonTree *)opAST opcode:(short)opcode arg:(NSInteger)arg;

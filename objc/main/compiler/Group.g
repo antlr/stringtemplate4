@@ -30,7 +30,7 @@ grammar Group;
 options {
     language=ObjC;
     tokenVocab=Group1;
-    TokenLabelType=STToken;
+    TokenLabelType=CommonToken;
 }
 
 tokens { ID; WS; STRING; ANONYMOUS_TEMPLATE; COMMENT; LINE_COMMENT; BIGSTRING; BIGSTRING_NO_NL;
@@ -188,7 +188,7 @@ STGroup *group;
     NSString *msg = nil;
     if ( [e isKindOfClass:[NoViableAltException class]] ) {
 #pragma error fix formatting
-        msg = [NSString stringWithFormat:@"invalid character '***c'", [input LA:1]];
+        msg = [NSString stringWithFormat:@"invalid character '\%C'", [input LA:1]];
     }
     else if ( [e isKindOfClass:[MismatchedTokenException class]] && ((MismatchedTokenException *)e).expecting=='"' ) {
         msg = @"unterminated string";
@@ -212,6 +212,7 @@ GroupLexer *lexer = (GroupLexer *)[input getTokenSource];
 self.group = lexer.group = $aGroup;
 }
     :   oldStyleHeader?
+		delimiters?
     (   'import' STRING {[aGroup importTemplatesWithFileName:$STRING];}
     |   'import' // common error: name not in string
             {
@@ -234,6 +235,14 @@ groupName returns [NSString *name]
     :   a=ID {[buf appendString:$a.text];} ('.' a=ID {[buf appendString:$a.text];})*
     ;
 
+delimiters
+    :	'delimiters' a=STRING ',' b=STRING
+     	{
+     	group.delimiterStartChar=[$a characterAtIndex:0];
+        group.delimiterStopChar=[$b characterAtIndex:0];
+        }
+    ;
+
 /** Match template and dictionary defs outside of (...)+ loop in group.
  *  The key is catching while still in the loop; must keep prediction of
  *  elements separate from "stay in loop" prediction.
@@ -254,7 +263,7 @@ templateDef[NSString *prefix]
         |   name=ID '(' formalArgs ')'
         )
         '::='
-        {STToken *templateToken = [input LT:1];}
+        {CommonToken *templateToken = [input LT:1];}
         (   STRING     {template=$STRING.text; n=1;}
         |   BIGSTRING  {template=$BIGSTRING.text; n=2;}
         |   BIGSTRING_NO_NL  {template=$BIGSTRING_NO_NL.text; n=2;}
@@ -292,7 +301,7 @@ scope {
 
 formalArg[AMutableArray *args]
     :   ID
-        (   '=' a=(STRING|ANONYMOUS_TEMPLATE|'true'|'false') {$formalArgs::hasOptionalParameter = true;}
+        (   '=' a=(STRING|ANONYMOUS_TEMPLATE|'true'|'false') {$formalArgs::hasOptionalParameter = YES;}
         |   {
             if ( $formalArgs::hasOptionalParameter ) {
                 [group.errMgr compileTimeError:REQUIRED_PARAMETER_AFTER_OPTIONAL templateToken:nil t:$ID];
@@ -405,7 +414,7 @@ BIGSTRING
 ANONYMOUS_TEMPLATE
     :   '{'
         {
-        STToken *templateToken = [STToken newToken:input
+        CommonToken *templateToken = [CommonToken newToken:input
                                               Type:ANONYMOUS_TEMPLATE
                                            Channel:0
                                              Start:input.index
@@ -416,7 +425,7 @@ ANONYMOUS_TEMPLATE
                           delimiterStartChar:group.delimiterStartChar
                            delimiterStopChar:group.delimiterStopChar];
         [lexer setSubtemplateDepth:1];
-        STToken *t = [lexer nextToken];
+        CommonToken *t = [lexer nextToken];
         while ( [lexer subtemplateDepth] >= 1 || t.type != STLexer.RCURLY ) {
             if ( t.type == STLexer.EOF_TYPE ) {
                 MismatchedTokenException *e = [MismatchedTokenException newException:'}' Stream:input];

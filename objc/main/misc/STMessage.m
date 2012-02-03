@@ -55,7 +55,7 @@
     return [[STMessage alloc] init:anError who:aWho cause:aCause arg:arg arg2:@"" arg3:@""];
 }
 
-+ (id) newMessage:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause where:(STToken *)where  arg:(id)arg;
++ (id) newMessage:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause where:(CommonToken *)where  arg:(id)arg;
 {
     return [[STMessage alloc] init:anError who:aWho cause:aCause arg:where arg2:arg arg3:@""];
 }
@@ -127,7 +127,7 @@
     return self;
 }
 
-- (id) init:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause where:(STToken *)where arg:(id)anArg
+- (id) init:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause where:(CommonToken *)where arg:(id)anArg
 {
     self=[super init];
     if ( self != nil ) {

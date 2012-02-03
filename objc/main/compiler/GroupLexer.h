@@ -1,9 +1,9 @@
-// $ANTLR ${project.version} ${buildNumber} /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/Group.g 2011-05-08 16:46:26
+// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-02-02 11:03:28
 
 /* =============================================================================
  * Standard antlr3 OBJC runtime definitions
  */
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <ANTLR/ANTLR.h>
 /* End of standard antlr3 runtime definitions
  * =============================================================================
@@ -52,6 +52,15 @@
  */
 
 /* Start cyclicDFAInterface */
+#pragma mark Cyclic DFA interface start DFA8
+@interface DFA8 : DFA {
+}
++ newDFA8WithRecognizer:(BaseRecognizer *)theRecognizer;
+- initWithRecognizer:(BaseRecognizer *)recognizer;
+@end /* end of DFA8 interface  */
+
+#pragma mark Cyclic DFA interface end DFA8
+
 
 #pragma mark Rule return scopes Interface start
 #pragma mark Rule return scopes Interface end
@@ -68,10 +77,8 @@
 #define LINE_COMMENT 9
 #define BIGSTRING 10
 #define BIGSTRING_NO_NL 11
-#ifndef T_TRUE
-#define T_TRUE 12
-#define T_FALSE 13
-#endif
+#define T_FALSE 12
+#define T_TRUE 13
 #define T__14 14
 #define T__15 15
 #define T__16 16
@@ -87,8 +94,10 @@
 #define T__26 26
 #define T__27 27
 #define T__28 28
+#define T__29 29
 /* interface lexer class */
 @interface GroupLexer : Lexer { // line 283
+DFA8 *dfa8;
 /* ObjC start of actions.lexer.memVars */
 
 STGroup *group;
@@ -120,6 +129,7 @@ STGroup *group;
 - (void) mT__26 ; 
 - (void) mT__27 ; 
 - (void) mT__28 ; 
+- (void) mT__29 ; 
 - (void) mID ; 
 - (void) mSTRING ; 
 - (void) mBIGSTRING_NO_NL ; 

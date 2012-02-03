@@ -97,7 +97,7 @@
 + (Compiler_Anon2 *) defaultOptionValues;
 + (Compiler_Anon3 *) funcs;
 + (NSInteger) subtemplateCount;
-+ (CompiledST *) defineBlankRegion:(CompiledST *)outermostImpl token:(STToken *)token;
++ (CompiledST *) defineBlankRegion:(CompiledST *)outermostImpl token:(CommonToken *)token;
 
 + (Compiler *) newCompiler;
 + (Compiler *) newCompiler:(STGroup *)aSTGroup;
@@ -112,9 +112,9 @@
                     name:(NSString *)name
                     args:(AMutableArray *)args
                 template:(NSString *)template
-           templateToken:(STToken *)templateToken;
+           templateToken:(CommonToken *)templateToken;
 - (void) reportMessageAndThrowSTException:(CommonTokenStream *)tokens
-                            templateToken:(STToken *)templateToken
+                            templateToken:(CommonToken *)templateToken
                                   aParser:(Parser *)aParser
                                        re:(RecognitionException *)re;
 @end

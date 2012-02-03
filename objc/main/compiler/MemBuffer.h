@@ -47,7 +47,7 @@
 @property (assign) NSInteger BuffSize;
 @property (retain) NSMutableData *buffer;
 @property (assign) char *ptrBuffer;
-@property (assign, getter=getCount) NSInteger count;
+@property (assign, getter=getCount, setter=setCount:) NSInteger count;
 @property (assign) NSInteger ptr;
 
 // Contruction/Destruction

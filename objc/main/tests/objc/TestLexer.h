@@ -2,6 +2,7 @@
 #import <ANTLR/ANTLR.h>
 #import <SenTestingKit/SenTestingKit.h>
 #import "STLexer.h"
+#import "STToken.h"
 
 @interface TestLexer : SenTestCase {
 }

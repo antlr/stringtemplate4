@@ -28,7 +28,7 @@
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
 #import "STErrorListener.h"
-#import "STToken.h"
+#import <ANTLR/CommonToken.h>
 #import "ModelAdaptor.h"
 #import "AttributeRenderer.h"
 
@@ -163,7 +163,7 @@
 - (void)dealloc;
 - (ST *) getInstanceOf:(NSString *)name;
 - (ST *) getEmbeddedInstanceOf:(Interpreter *)interp who:(ST *)enclosingInstance ip:(NSInteger)ip name:(NSString *)name;
-- (ST *) createSingleton:(STToken *)templateToken;
+- (ST *) createSingleton:(CommonToken *)templateToken;
 - (BOOL) isDefined:(NSString *)name;
 - (CompiledST *) lookupTemplate:(NSString *)name;
 - (void) unload;
@@ -176,16 +176,16 @@
 - (CompiledST *) defineTemplate:(NSString *)templateName template:(NSString *)template;
 
 - (CompiledST *) defineTemplate:(NSString *)aName argsS:(NSString *)argsS template:(NSString *)template;
-- (CompiledST *) defineTemplate:(NSString *)templateName nameT:(STToken *)nameT args:(AMutableArray *)args template:(NSString *)template templateToken:(STToken *)templateToken;
-- (CompiledST *) defineTemplateAlias:(STToken *)aliasT targetT:(STToken *)targetT;
-- (CompiledST *) defineRegion:(NSString *)enclosingTemplateName regionT:(STToken *)regionT template:(NSString *)template templateToken:(STToken *)templateToken;
-- (void) defineTemplateOrRegion:(NSString *)templateName regionSurroundingTemplateName:(NSString *)regionSurroundingTemplateName templateToken:(STToken *)templateToken template:(NSString *)template nameToken:(STToken *)nameToken args:(AMutableArray *)args;
-- (void) rawDefineTemplate:(NSString *)name code:(CompiledST *)code defT:(STToken *)defT;
+- (CompiledST *) defineTemplate:(NSString *)templateName nameT:(CommonToken *)nameT args:(AMutableArray *)args template:(NSString *)template templateToken:(CommonToken *)templateToken;
+- (CompiledST *) defineTemplateAlias:(CommonToken *)aliasT targetT:(CommonToken *)targetT;
+- (CompiledST *) defineRegion:(NSString *)enclosingTemplateName regionT:(CommonToken *)regionT template:(NSString *)template templateToken:(CommonToken *)templateToken;
+- (void) defineTemplateOrRegion:(NSString *)templateName regionSurroundingTemplateName:(NSString *)regionSurroundingTemplateName templateToken:(CommonToken *)templateToken template:(NSString *)template nameToken:(CommonToken *)nameToken args:(AMutableArray *)args;
+- (void) rawDefineTemplate:(NSString *)name code:(CompiledST *)code defT:(CommonToken *)defT;
 - (void) undefineTemplate:(NSString *)name;
-- (CompiledST *) compile:(NSString *)srcName name:(NSString *)name args:(AMutableArray *)args template:(NSString *)template templateToken:(STToken *)templateToken;
+- (CompiledST *) compile:(NSString *)srcName name:(NSString *)name args:(AMutableArray *)args template:(NSString *)template templateToken:(CommonToken *)templateToken;
 - (void) defineDictionary:(NSString *)name mapping:(AMutableDictionary *)mapping;
 - (void) importTemplates:(STGroup *)g;
-- (void) importTemplatesWithFileName:(STToken *)fileNameToken;
+- (void) importTemplatesWithFileName:(CommonToken *)fileNameToken;
 - (void) loadGroupFile:(NSString *)prefix fileName:(NSString *)fileName;
 - (CompiledST *) loadTemplateFile:(NSString *)prefix fileName:(NSString *)fileName stream:(id<CharStream>)templateStream;
 - (CompiledST *) loadAbsoluteTemplateFile:(NSString *) fileName;

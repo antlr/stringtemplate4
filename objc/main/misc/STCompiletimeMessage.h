@@ -33,26 +33,26 @@
  */
 
 @interface STCompiletimeMessage : STMessage {
-  __strong STToken *templateToken;
-  __strong STToken *token;
+  __strong CommonToken *templateToken;
+  __strong CommonToken *token;
   __strong NSString *srcName;
 }
 
-+ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t;
-+ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t cause:(NSException *)aCause;
-+ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t cause:(NSException *)aCause arg:(id)anArg;
-+ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(STToken *)aTemplateToken t:(STToken *)t cause:(NSException *)aCause arg:(id)anArg arg2:(id)anArg2;
++ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t;
++ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause;
++ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause arg:(id)anArg;
++ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause arg:(id)anArg arg2:(id)anArg2;
 
 #ifdef DONTUSENOMO
-- (id) init:(ErrorTypeEnum)error srcName:(NSString *)srcName templateToken:(STToken *)templateToken t:(STToken *)t;
-- (id) init:(ErrorTypeEnum)error srcName:(NSString *)srcName templateToken:(STToken *)templateToken t:(STToken *)t cause:(NSException *)aCause;
-- (id) init:(ErrorTypeEnum)error srcName:(NSString *)srcName templateToken:(STToken *)templateToken t:(STToken *)t cause:(NSException *)aCause arg:(id)arg;
+- (id) init:(ErrorTypeEnum)error srcName:(NSString *)srcName templateToken:(CommonToken *)templateToken t:(CommonToken *)t;
+- (id) init:(ErrorTypeEnum)error srcName:(NSString *)srcName templateToken:(CommonToken *)templateToken t:(CommonToken *)t cause:(NSException *)aCause;
+- (id) init:(ErrorTypeEnum)error srcName:(NSString *)srcName templateToken:(CommonToken *)templateToken t:(CommonToken *)t cause:(NSException *)aCause arg:(id)arg;
 #endif
-- (id) init:(ErrorTypeEnum)error srcName:(NSString *)srcName templateToken:(STToken *)templateToken t:(STToken *)t cause:(NSException *)aCause arg:(id)arg arg2:(id)arg2;
+- (id) init:(ErrorTypeEnum)error srcName:(NSString *)srcName templateToken:(CommonToken *)templateToken t:(CommonToken *)t cause:(NSException *)aCause arg:(id)arg arg2:(id)arg2;
 - (NSString *) description;
 - (NSString *) toString;
 
-@property (retain) STToken *templateToken;
-@property (retain) STToken *token;
+@property (retain) CommonToken *templateToken;
+@property (retain) CommonToken *token;
 @property (retain) NSString *srcName;
 @end

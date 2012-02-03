@@ -1,9 +1,9 @@
-// $ANTLR ${project.version} ${buildNumber} /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/Group.g 2011-05-08 16:46:26
+// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-02-02 11:03:28
 
 /* =============================================================================
  * Standard antlr3 OBJC runtime definitions
  */
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <ANTLR/ANTLR.h>
 /* End of standard antlr3 runtime definitions
  * =============================================================================
@@ -96,21 +96,19 @@ typedef enum {
 #define T__26 26
 #define T__27 27
 #define T__28 28
-#pragma mark Dynamic Global Scopes
-#pragma mark Dynamic Rule Scopes Interface start
+#define T__29 29
+#pragma mark Dynamic Global Scopes globalAttributeScopeInterface
+#pragma mark Dynamic Rule Scopes ruleAttributeScopeInterface
 /* start of ruleAttributeScopeInterface */
-
 @interface formalArgs_Scope : SymbolsScope {
-    BOOL hasOptionalParameter;
-
+ BOOL hasOptionalParameter;
+ 
 }
 
-/* start properties */
-
+/* start property declarations */
 @property (assign, getter=gethasOptionalParameter, setter=sethasOptionalParameter:) BOOL hasOptionalParameter;
 
-/* end properties */
-
+/* start method declarations */
 + (formalArgs_Scope *)newformalArgs_Scope;
 - (id) init;
 - (BOOL)gethasOptionalParameter;
@@ -119,22 +117,14 @@ typedef enum {
 @end /* end of ruleAttributeScopeInterface */
 
 
-#pragma mark Dynamic Rule Scopes Interface stop
-
-#pragma mark Rule Return Scopes Interface start
-#pragma mark Rule Return Scopes Interface stop
+#pragma mark Rule Return Scopes returnScopeInterface
 
 /* Interface grammar class */
-@interface GroupParser : Parser { /* line 572 */
-/* ObjC start of ruleAttributeScopeMemVar */
-formalArgs_Scope *formalArgs_scope;
+@interface GroupParser  : Parser { /* line 572 */
+#pragma mark Dynamic Rule Scopes ruleAttributeScopeDecl
+#pragma mark Dynamic Global Rule Scopes globalAttributeScopeMemVar
 
 
-/* ObjC end of ruleAttributeScopeMemVar */
-/* ObjC start of globalAttributeScopeMemVar */
-
-
-/* ObjC end of globalAttributeScopeMemVar */
 /* ObjC start of actions.(actionScope).memVars */
 
 STGroup *group;
@@ -175,6 +165,7 @@ STGroup *group;
 - (void)group:(STGroup *)aGroup arg1:(NSString *)prefix ; 
 - (void)oldStyleHeader; 
 - (NSString *)groupName; 
+- (void)delimiters; 
 - (void)def:(NSString *)prefix ; 
 - (void)templateDef:(NSString *)prefix ; 
 - (AMutableArray *)formalArgs; 

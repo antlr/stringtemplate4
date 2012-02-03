@@ -348,7 +348,7 @@ static NSString *SUBTEMPLATE_PREFIX = @"_sub";
                     name:(NSString *)name
                 args:(AMutableArray *)args
                 template:(NSString *)template
-           templateToken:(STToken *)aTemplateToken
+           templateToken:(CommonToken *)aTemplateToken
 {
     BOOL mustRelease = NO;
     __strong FormalArgument *a;
@@ -410,7 +410,7 @@ static NSString *SUBTEMPLATE_PREFIX = @"_sub";
     return impl;
 }
 
-+ (CompiledST *) defineBlankRegion:(CompiledST *)outermostImpl token:(STToken *)nameToken
++ (CompiledST *) defineBlankRegion:(CompiledST *)outermostImpl token:(CommonToken *)nameToken
 {
     NSString *outermostTemplateName = outermostImpl.name;
     NSString *mangled = [STGroup getMangledRegionName:outermostTemplateName name:nameToken.text];
@@ -429,7 +429,7 @@ static NSString *SUBTEMPLATE_PREFIX = @"_sub";
 }
 
 - (void) reportMessageAndThrowSTException:(CommonTokenStream *)tokens
-                            templateToken:(STToken *)templateToken
+                            templateToken:(CommonToken *)templateToken
                                   aParser:(Parser *)aParser
                                        re:(RecognitionException *)re
 {

@@ -1,4 +1,4 @@
-// $ANTLR ${project.version} ${buildNumber} /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/CodeGenerator.g 2011-05-08 21:31:56
+// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/CodeGenerator.g 2012-02-01 18:16:42
 
 /* =============================================================================
  * Standard antlr3 OBJC runtime definitions
@@ -41,7 +41,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#import "STToken.h"
+#import <ANTLR/CommonToken.h>
 #import "Compiler.h"
 #import "CompiledST.h"
 #import "CompilationState.h"
@@ -131,17 +131,15 @@ typedef enum {
 #pragma mark Dynamic Global Scopes globalAttributeScopeInterface
 #pragma mark Dynamic Rule Scopes ruleAttributeScopeInterface
 /* start of ruleAttributeScopeInterface */
-
 @interface template_Scope : SymbolsScope {
-    CompilationState * cstate;
+ CompilationState * cstate;
+ 
 }
 
 /* start property declarations */
-
 @property (assign, getter=getcstate, setter=setcstate:) CompilationState * cstate;
 
 /* start method declarations */
-
 + (template_Scope *)newtemplate_Scope;
 - (id) init;
 - (CompilationState *)getcstate;
@@ -154,21 +152,28 @@ typedef enum {
 /* returnScopeInterface CodeGenerator_region_return */
 @interface CodeGenerator_region_return : TreeRuleReturnScope { /* returnScopeInterface line 1838 */
  /* ObjC start of memVars() */
-NSString * name;
+
+ NSString * name;
+ 
 
 }
 /* start property declarations */
+
+
 @property (assign, getter=getname, setter=setname:) NSString * name;
+
 
 /* start of method declarations */
 
 + (CodeGenerator_region_return *)newCodeGenerator_region_return;
 /* this is start of set and get methods */
   /* methodsDecl */
+
 /* start of iterated get and set functions */
 
 - (NSString *)getname;
 - (void)setname:(NSString *)aVal;
+
 
 @end /* end of returnScopeInterface interface */
 
@@ -176,21 +181,27 @@ NSString * name;
 /* returnScopeInterface CodeGenerator_subtemplate_return */
 @interface CodeGenerator_subtemplate_return : TreeRuleReturnScope { /* returnScopeInterface line 1838 */
  /* ObjC start of memVars() */
-NSString * name;
 
-NSInteger nargs;
+ NSString * name;
+
+ NSInteger nargs;
+ 
 
 }
 /* start property declarations */
+
+
 @property (assign, getter=getname, setter=setname:) NSString * name;
 
 @property (assign, getter=getnargs, setter=setnargs:) NSInteger nargs;
+
 
 /* start of method declarations */
 
 + (CodeGenerator_subtemplate_return *)newCodeGenerator_subtemplate_return;
 /* this is start of set and get methods */
   /* methodsDecl */
+
 /* start of iterated get and set functions */
 
 - (NSString *)getname;
@@ -199,83 +210,106 @@ NSInteger nargs;
 - (NSInteger)getnargs;
 - (void)setnargs:(NSInteger)aVal;
 
+
 @end /* end of returnScopeInterface interface */
 
 
 /* returnScopeInterface CodeGenerator_conditional_return */
 @interface CodeGenerator_conditional_return : TreeRuleReturnScope { /* returnScopeInterface line 1838 */
  /* ObjC start of memVars() */
+
 }
 /* start property declarations */
+
+
 /* start of method declarations */
 
 + (CodeGenerator_conditional_return *)newCodeGenerator_conditional_return;
 /* this is start of set and get methods */
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
 /* returnScopeInterface CodeGenerator_mapTemplateRef_return */
 @interface CodeGenerator_mapTemplateRef_return : TreeRuleReturnScope { /* returnScopeInterface line 1838 */
  /* ObjC start of memVars() */
+
 }
 /* start property declarations */
+
+
 /* start of method declarations */
 
 + (CodeGenerator_mapTemplateRef_return *)newCodeGenerator_mapTemplateRef_return;
 /* this is start of set and get methods */
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
 /* returnScopeInterface CodeGenerator_includeExpr_return */
 @interface CodeGenerator_includeExpr_return : TreeRuleReturnScope { /* returnScopeInterface line 1838 */
  /* ObjC start of memVars() */
+
 }
 /* start property declarations */
+
+
 /* start of method declarations */
 
 + (CodeGenerator_includeExpr_return *)newCodeGenerator_includeExpr_return;
 /* this is start of set and get methods */
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
 /* returnScopeInterface CodeGenerator_primary_return */
 @interface CodeGenerator_primary_return : TreeRuleReturnScope { /* returnScopeInterface line 1838 */
  /* ObjC start of memVars() */
+
 }
 /* start property declarations */
+
+
 /* start of method declarations */
 
 + (CodeGenerator_primary_return *)newCodeGenerator_primary_return;
 /* this is start of set and get methods */
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
 /* returnScopeInterface CodeGenerator_args_return */
 @interface CodeGenerator_args_return : TreeRuleReturnScope { /* returnScopeInterface line 1838 */
  /* ObjC start of memVars() */
-NSInteger n;
 
-BOOL namedArgs;
+ NSInteger n;
 
-BOOL passThru;
+ BOOL namedArgs;
+
+ BOOL passThru;
+ 
 
 }
 /* start property declarations */
+
+
 @property (assign, getter=getn, setter=setn:) NSInteger n;
 
 @property (assign, getter=getnamedArgs, setter=setnamedArgs:) BOOL namedArgs;
 
 @property (assign, getter=getpassThru, setter=setpassThru:) BOOL passThru;
 
+
 /* start of method declarations */
 
 + (CodeGenerator_args_return *)newCodeGenerator_args_return;
 /* this is start of set and get methods */
   /* methodsDecl */
+
 /* start of iterated get and set functions */
 
 - (NSInteger)getn;
@@ -287,19 +321,24 @@ BOOL passThru;
 - (BOOL)getpassThru;
 - (void)setpassThru:(BOOL)aVal;
 
+
 @end /* end of returnScopeInterface interface */
 
 
 /* returnScopeInterface CodeGenerator_listElement_return */
 @interface CodeGenerator_listElement_return : TreeRuleReturnScope { /* returnScopeInterface line 1838 */
  /* ObjC start of memVars() */
+
 }
 /* start property declarations */
+
+
 /* start of method declarations */
 
 + (CodeGenerator_listElement_return *)newCodeGenerator_listElement_return;
 /* this is start of set and get methods */
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -307,15 +346,17 @@ BOOL passThru;
 /* Interface grammar class */
 @interface CodeGenerator  : TreeParser { /* line 572 */
 #pragma mark Dynamic Rule Scopes ruleAttributeScopeDecl
-    template_Scope *template_scope;
+#pragma mark Dynamic Global Rule Scopes globalAttributeScopeMemVar
+
 
 /* ObjC start of actions.(actionScope).memVars */
 
-    NSString *outermostTemplateName;    // name of overall template
-    CompiledST *outermostImpl;
-    STToken *templateToken;             // overall template token
-    NSString *template;                 // overall template text
-    ErrorManager *errMgr;
+	template_Scope *template_scope;
+	NSString *outermostTemplateName;	// name of overall template
+	CompiledST *outermostImpl;
+	CommonToken *templateToken;			    // overall template token
+	NSString *template;  				// overall template text
+	ErrorManager *errMgr;
 
 /* ObjC end of actions.(actionScope).memVars */
 /* ObjC start of memVars */
@@ -324,12 +365,13 @@ BOOL passThru;
  }
 
 /* ObjC start of actions.(actionScope).properties */
-    @property(retain) template_Scope *template_scope;
-    @property(retain) NSString *outermostTemplateName; // name of overall template
-    @property(retain) CompiledST *outermostImpl;
-    @property(retain) STToken *templateToken;// overall template token
-    @property(retain) NSString *template;    // overall template text
-    @property(retain) ErrorManager *errMgr;
+
+	@property(retain) template_Scope *template_scope;
+	@property(retain) NSString *outermostTemplateName; // name of overall template
+	@property(retain) CompiledST *outermostImpl;
+	@property(retain) CommonToken *templateToken;// overall template token
+	@property(retain) NSString *template;    // overall template text
+	@property(retain) ErrorManager *errMgr;
 
 /* ObjC end of actions.(actionScope).properties */
 /* ObjC start of properties */
@@ -343,13 +385,13 @@ BOOL passThru;
                  errMgr:(ErrorManager *)anErrMgr
                    name:(NSString *)aName
                template:(NSString *)aTemplate
-                  token:(STToken *)aTemplateToken;
+                  token:(CommonToken *)aTemplateToken;
 
 - (id) init:(id<TreeNodeStream>)input
                      errMgr:(ErrorManager *)anErrMgr
                    name:(NSString *)aName
                template:(NSString *)aTemplate
-                  token:(STToken *)aTemplateToken;
+                  token:(CommonToken *)aTemplateToken;
 
 - (void) dealloc;
 // convience funcs to hide offensive sending of emit messages to

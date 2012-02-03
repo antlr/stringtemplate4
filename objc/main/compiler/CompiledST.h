@@ -48,10 +48,11 @@
  * initial "compilation"). Useful for debugging.  Even for
  * subtemplates, this is entire overall template.
  */
+    __strong NSString *prefix;
     __strong NSString *template;
     
     /** The token that begins template definition; could be <@r> of region. */
-    __strong STToken *templateDefStartToken;
+    __strong CommonToken *templateDefStartToken;
     /** Overall token stream for template (debug only) */
     __strong CommonTokenStream *tokens;
     
@@ -94,8 +95,9 @@
 }
 
 @property (retain) NSString *name;
+@property (retain) NSString *prefix;
 @property (retain) NSString *template;
-@property (retain) STToken *templateDefStartToken;
+@property (retain) CommonToken *templateDefStartToken;
 @property (retain) CommonTokenStream *tokens;
 @property (retain) CommonTree *ast;
 @property (retain) AMutableDictionary *formalArguments;

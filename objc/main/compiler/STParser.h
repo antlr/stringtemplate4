@@ -1,4 +1,4 @@
-// $ANTLR ${project.version} ${buildNumber} /Users/acondit/source/antlr3/acondit_localhost/code/ST4/objc/main/compiler/STParser.g 2011-05-09 15:08:49
+// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/STParser.g 2012-02-02 11:12:33
 
 /* =============================================================================
  * Standard antlr3 OBJC runtime definitions
@@ -14,33 +14,6 @@
  * This is what the grammar programmer asked us to put at the top of every file.
  */
 
-/*
- * [The "BSD license"]
- *  Copyright (c) 2011 Terence Parr and Alan Condit
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *  1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *  3. The name of the author may not be used to endorse or promote products
- *     derived from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- *  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- *  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- *  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 #import "Compiler.h"
 #import "ErrorManager.h"
 #import "ErrorType.h"
@@ -129,18 +102,15 @@ typedef enum {
 #pragma mark Dynamic Global Scopes globalAttributeScopeInterface
 #pragma mark Dynamic Rule Scopes ruleAttributeScopeInterface
 /* start of ruleAttributeScopeInterface */
-
 @interface conditional_Scope : SymbolsScope {
-    BOOL inside;
-
+ BOOL inside;
+ 
 }
 
 /* start property declarations */
-
 @property (assign, getter=getinside, setter=setinside:) BOOL inside;
 
 /* start method declarations */
-
 + (conditional_Scope *)newconditional_Scope;
 - (id) init;
 - (BOOL)getinside;
@@ -154,10 +124,12 @@ typedef enum {
 @interface STParser_templateAndEOF_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_templateAndEOF_return *)newSTParser_templateAndEOF_return;
@@ -167,6 +139,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -174,10 +147,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_template_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_template_return *)newSTParser_template_return;
@@ -187,6 +162,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -194,10 +170,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_element_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_element_return *)newSTParser_element_return;
@@ -207,6 +185,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -214,10 +193,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_singleElement_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_singleElement_return *)newSTParser_singleElement_return;
@@ -227,6 +208,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -234,10 +216,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_compoundElement_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_compoundElement_return *)newSTParser_compoundElement_return;
@@ -247,6 +231,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -254,10 +239,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_exprTag_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_exprTag_return *)newSTParser_exprTag_return;
@@ -267,6 +254,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -274,10 +262,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_region_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_region_return *)newSTParser_region_return;
@@ -287,6 +277,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -294,10 +285,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_subtemplate_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_subtemplate_return *)newSTParser_subtemplate_return;
@@ -307,6 +300,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -314,10 +308,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_ifstat_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_ifstat_return *)newSTParser_ifstat_return;
@@ -327,6 +323,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -334,10 +331,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_conditional_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_conditional_return *)newSTParser_conditional_return;
@@ -347,6 +346,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -354,10 +354,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_andConditional_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_andConditional_return *)newSTParser_andConditional_return;
@@ -367,6 +369,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -374,10 +377,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_notConditional_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_notConditional_return *)newSTParser_notConditional_return;
@@ -387,6 +392,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -394,10 +400,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_notConditionalExpr_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_notConditionalExpr_return *)newSTParser_notConditionalExpr_return;
@@ -407,6 +415,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -414,10 +423,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_exprOptions_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_exprOptions_return *)newSTParser_exprOptions_return;
@@ -427,6 +438,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -434,10 +446,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_option_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_option_return *)newSTParser_option_return;
@@ -447,6 +461,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -454,10 +469,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_exprNoComma_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_exprNoComma_return *)newSTParser_exprNoComma_return;
@@ -467,6 +484,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -474,10 +492,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_expr_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_expr_return *)newSTParser_expr_return;
@@ -487,6 +507,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -494,10 +515,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_mapExpr_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_mapExpr_return *)newSTParser_mapExpr_return;
@@ -507,6 +530,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -514,10 +538,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_mapTemplateRef_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_mapTemplateRef_return *)newSTParser_mapTemplateRef_return;
@@ -527,6 +553,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -534,10 +561,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_memberExpr_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_memberExpr_return *)newSTParser_memberExpr_return;
@@ -547,6 +576,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -554,10 +584,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_includeExpr_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_includeExpr_return *)newSTParser_includeExpr_return;
@@ -567,6 +599,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -574,10 +607,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_primary_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_primary_return *)newSTParser_primary_return;
@@ -587,6 +622,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -594,10 +630,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_args_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_args_return *)newSTParser_args_return;
@@ -607,6 +645,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -614,10 +653,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_argExprList_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_argExprList_return *)newSTParser_argExprList_return;
@@ -627,6 +668,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -634,10 +676,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_arg_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_arg_return *)newSTParser_arg_return;
@@ -647,6 +691,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -654,10 +699,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_namedArg_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_namedArg_return *)newSTParser_namedArg_return;
@@ -667,6 +714,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -674,10 +722,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_list_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_list_return *)newSTParser_list_return;
@@ -687,6 +737,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -694,10 +745,12 @@ CommonTree *tree; /* ObjC start of memVars() */
 @interface STParser_listElement_return : ParserRuleReturnScope { /* returnScopeInterface line 1838 */
 /* AST returnScopeInterface.memVars */
 CommonTree *tree; /* ObjC start of memVars() */
+
 }
 /* start property declarations */
 /* AST returnScopeInterface.properties */
 @property (retain, getter=getTree, setter=setTree:) CommonTree *tree;
+
 /* start of method declarations */
 
 + (STParser_listElement_return *)newSTParser_listElement_return;
@@ -707,6 +760,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 - (void) setTree:(CommonTree *)aTree;
   /* methodsDecl */
+
 @end /* end of returnScopeInterface interface */
 
 
@@ -721,7 +775,7 @@ CommonTree *tree; /* ObjC start of memVars() */
 
 conditional_Scope *conditional_scope;
 ErrorManager *errMgr;
-STToken *templateToken;
+CommonToken *templateToken;
 
 /* ObjC end of actions.(actionScope).memVars */
 /* ObjC start of memVars */
@@ -739,7 +793,7 @@ id<TreeAdaptor> treeAdaptor;   /* AST parserMemVars */
 
 @property (retain) conditional_Scope *conditional_scope;
 @property (retain, getter=getErrorManager, setter=setErrorManager:) ErrorManager *errMgr;
-@property (retain, getter=getTemplateToken, setter=setTemplateToken:) STToken *templateToken;
+@property (retain, getter=getTemplateToken, setter=setTemplateToken:) CommonToken *templateToken;
 
 /* ObjC end of actions.(actionScope).properties */
 /* ObjC start of properties */
@@ -753,8 +807,8 @@ id<TreeAdaptor> treeAdaptor;   /* AST parserMemVars */
 + (id) newSTParser:(id<TokenStream>)aStream;
 /* ObjC start of actions.(actionScope).methodsDecl */
 
-+ (id) newSTParser:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(STToken *)aTemplateToken;
-- (id) init:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(STToken *)aTemplateToken;
++ (id) newSTParser:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(CommonToken *)aTemplateToken;
+- (id) init:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(CommonToken *)aTemplateToken;
 - (id) recoverFromMismatchedToken:(id<IntStream>)anInput type:(NSInteger)ttype follow:(ANTLRBitSet *)follow;
 
 /* ObjC end of actions.(actionScope).methodsDecl */

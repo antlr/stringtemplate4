@@ -80,7 +80,7 @@
     return [stringtable addObject:s];
 }
 
-- (void) refAttr:(STToken *)templateToken tree:(CommonTree *)aTree
+- (void) refAttr:(CommonToken *)templateToken tree:(CommonTree *)aTree
 {
     if ( aTree == nil )
         @throw [STNoSuchAttributeException newException:@"nil tree in refAttr()"];
@@ -92,7 +92,7 @@
     }
     else {
         if ( [[Interpreter predefinedAnonSubtemplateAttributes] objectForKey:name] != nil ) {
-            [errMgr compileTimeError:REF_TO_IMPLICIT_ATTRIBUTE_OUT_OF_SCOPE templateToken:templateToken t:(STToken *)aTree.token];
+            [errMgr compileTimeError:REF_TO_IMPLICIT_ATTRIBUTE_OUT_OF_SCOPE templateToken:templateToken t:(CommonToken *)aTree.token];
             [self emit:aTree opcode:Bytecode.INSTR_NULL];
         }
         else {
@@ -108,11 +108,11 @@
     [self emit1:aTree opcode:Bytecode.INSTR_STORE_OPTION arg:Opt];
 }
 
-- (void) func:(STToken *)templateToken tree:(CommonTree *)aTree
+- (void) func:(CommonToken *)templateToken tree:(CommonTree *)aTree
 {
     NSString *funcBytecode = [[[Compiler funcs] getDict] objectForKey:aTree.text];
     if (funcBytecode == nil) {
-        [errMgr compileTimeError:NO_SUCH_FUNCTION templateToken:templateToken t:(STToken *)aTree.token];
+        [errMgr compileTimeError:NO_SUCH_FUNCTION templateToken:templateToken t:(CommonToken *)aTree.token];
         [self emit:aTree opcode:Bytecode.INSTR_POP];
     }
     else {
@@ -189,6 +189,7 @@
         }
         a += I.nopnds * Bytecode.OPND_SIZE_IN_BYTES + 1;
     }
+	//NSLog([NSString stringWithFormat:@"after  insert of $d(%@):", opcode, [impl.instrs description]]);
 }
 
 - (void) write:(NSInteger)addr value:(short)value

@@ -28,7 +28,7 @@
 #import <ANTLR/ANTLR.h>
 #import <Cocoa/Cocoa.h>
 #import "ErrorType.h"
-#import "STToken.h"
+#import <ANTLR/CommonToken.h>
 
 @class ST;
 
@@ -58,7 +58,7 @@
 + (id) newMessage:(ErrorTypeEnum)anError who:(ST *)aWho;
 + (id) newMessage:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause;
 + (id) newMessage:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause arg:(id)arg;
-+ (id) newMessage:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause where:(STToken *)where  arg:(id)arg;
++ (id) newMessage:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause where:(CommonToken *)where  arg:(id)arg;
 + (id) newMessage:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause arg:(id)arg arg2:(id)arg2;
 + (id) newMessage:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause arg:(id)arg arg2:(id)arg2 arg3:(id)arg3;
 
@@ -67,7 +67,7 @@
 - (id) init:(ErrorTypeEnum)anError who:(ST *)aWho;
 - (id) init:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause;
 - (id) init:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause arg:(id)arg;
-- (id) init:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause where:(STToken *)where arg:(id)arg;
+- (id) init:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause where:(CommonToken *)where arg:(id)arg;
 - (id) init:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause arg:(id)arg arg2:(id)arg2;
 #endif
 - (id) init:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause arg:(id)arg arg2:(id)arg2 arg3:(id)arg3;

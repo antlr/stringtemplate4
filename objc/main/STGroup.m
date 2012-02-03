@@ -318,7 +318,7 @@ static BOOL trackCreationEvents = NO;
 }
 
 /** Create singleton template for use with dictionary values */
-- (ST *) createSingleton:(STToken *)templateToken
+- (ST *) createSingleton:(CommonToken *)templateToken
 {
     NSString *template;
     if ( templateToken.type == GroupParser.TBIGSTRING ) {
@@ -433,7 +433,7 @@ static BOOL trackCreationEvents = NO;
 {
     @try {
         CompiledST *impl = [self defineTemplate:aTemplateName
-                                          nameT:[STToken newToken:ID Text:aTemplateName]
+                                          nameT:[CommonToken newToken:ID Text:aTemplateName]
                                            args:nil
                                        template:aTemplate
                                   templateToken:nil];
@@ -462,17 +462,17 @@ static BOOL trackCreationEvents = NO;
         [a addObject:[FormalArgument newFormalArgument:arg]];
     }
     return [self defineTemplate:aName
-                          nameT:[STToken newToken:GroupParser.TID Text:aName]
+                          nameT:[CommonToken newToken:GroupParser.TID Text:aName]
                            args:a
                        template:template
                   templateToken:nil];
 }
 
 - (CompiledST *) defineTemplate:(NSString *)templateName
-                          nameT:(STToken *)nameT
+                          nameT:(CommonToken *)nameT
                            args:(AMutableArray *)args
                        template:(NSString *)template
-                  templateToken:(STToken *)templateToken
+                  templateToken:(CommonToken *)templateToken
 {
     if (templateName == nil || [templateName length] == 0) {
         @throw [IllegalArgumentException newException:@"empty template name"];
@@ -496,7 +496,7 @@ static BOOL trackCreationEvents = NO;
 }
 
 /** Make name and alias for target.  Replace any previous def of name */
-- (CompiledST *) defineTemplateAlias:(STToken *)aliasT targetT:(STToken *)targetT
+- (CompiledST *) defineTemplateAlias:(CommonToken *)aliasT targetT:(CommonToken *)targetT
 {
     NSString *alias = aliasT.text;
     NSString *target = targetT.text;
@@ -510,9 +510,9 @@ static BOOL trackCreationEvents = NO;
 }
 
 - (CompiledST *) defineRegion:(NSString *)enclosingTemplateName
-                      regionT:(STToken *)regionT
+                      regionT:(CommonToken *)regionT
                      template:(NSString *)template
-                templateToken:(STToken *)templateToken
+                templateToken:(CommonToken *)templateToken
 {
     NSString *aName = regionT.text;
     template = [Misc trimOneStartingNewline:template];
@@ -536,9 +536,9 @@ static BOOL trackCreationEvents = NO;
 
 - (void) defineTemplateOrRegion:(NSString *)templateName
   regionSurroundingTemplateName:(NSString *)regionSurroundingTemplateName
-                  templateToken:(STToken *)templateToken
+                  templateToken:(CommonToken *)templateToken
                        template:(NSString *)template
-                      nameToken:(STToken *)nameToken
+                      nameToken:(CommonToken *)nameToken
                            args:(AMutableArray *)args
 {
     @try {
@@ -555,7 +555,7 @@ static BOOL trackCreationEvents = NO;
     }
 }
 
-- (void) rawDefineTemplate:(NSString *)aName code:(CompiledST *)code defT:(STToken *)defT
+- (void) rawDefineTemplate:(NSString *)aName code:(CompiledST *)code defT:(CommonToken *)defT
 {
     CompiledST *prev = [self rawGetTemplate:aName];
     if ( prev != nil ) {
@@ -591,7 +591,7 @@ static BOOL trackCreationEvents = NO;
                     name:(NSString *)aName
                     args:(AMutableArray *)args
                 template:(NSString *)aTemplate
-           templateToken:(STToken *)aTemplateToken
+           templateToken:(CommonToken *)aTemplateToken
 {
     // if ( verbose ) NSLog(@"STGroup.compile: %@", enclosingTemplateName);
     Compiler *c = [Compiler newCompiler:self];
@@ -654,7 +654,7 @@ static BOOL trackCreationEvents = NO;
  *   The listener of this group is passed to the import group so errors
  *   found while loading imported element are sent to listener of this group.
  */
-- (void) importTemplatesWithFileName:(STToken *)fileNameToken
+- (void) importTemplatesWithFileName:(CommonToken *)fileNameToken
 {
     NSError *error;
     NSString *aFileName = fileNameToken.text;

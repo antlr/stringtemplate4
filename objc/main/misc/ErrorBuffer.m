@@ -28,7 +28,7 @@
 #import <ANTLR/ANTLR.h>
 #import "ErrorBuffer.h"
 
-@class STToken;
+@class CommonToken;
 @class STMessage;
 
 @implementation ErrorBuffer

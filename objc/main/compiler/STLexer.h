@@ -31,9 +31,9 @@
 #import "Misc.h"
 
 
-@class STToken;
+@class CommonToken;
 /**
- * We build STToken tokens instead of relying on CommonToken so we
+ * We build CommonToken tokens instead of relying on CommonToken so we
  * can override toString(). It just converts token types to
  * token names like 23 to LDELIM.
  */
@@ -73,7 +73,7 @@
      */
     NSInteger subtemplateDepth;
     ErrorManager *errMgr;
-    STToken *templateToken;
+    CommonToken *templateToken;
     id<CharStream> input;
     unichar c;
     
@@ -94,7 +94,7 @@
 
 + (NSInteger) RCURLY;
 + (NSInteger) LDELIM;
-+ (STToken *) SKIP;
++ (CommonToken *) SKIP;
 + (char) Token_EOF;
 + (NSInteger) EOF_TYPE;
 + (NSString *)str:(NSInteger)aChar;
@@ -102,43 +102,43 @@
 + (void) initialize;
 
 + (id) newSTLexer:(id<CharStream>)input;
-+ (id) newSTLexer:(ErrorManager *)errMgr input:(id<CharStream>)input templateToken:(STToken *)templateToken;
++ (id) newSTLexer:(ErrorManager *)errMgr input:(id<CharStream>)input templateToken:(CommonToken *)templateToken;
 + (id) newSTLexer:(ErrorManager *)errMgr
             input:(id<CharStream>)input
-    templateToken:(STToken *)templateToken
+    templateToken:(CommonToken *)templateToken
 delimiterStartChar:(unichar)delimiterStartChar
 delimiterStopChar:(unichar)delimiterStopChar;
 
 - (id) initWithInput:(id<CharStream>)input;
-- (id) init:(ErrorManager *)errMgr input:(id<CharStream>)input templateToken:(STToken *)templateToken;
+- (id) init:(ErrorManager *)errMgr input:(id<CharStream>)input templateToken:(CommonToken *)templateToken;
 - (id) init:(ErrorManager *)errMgr
-      input:(id<CharStream>)input templateToken:(STToken *)templateToken
+      input:(id<CharStream>)input templateToken:(CommonToken *)templateToken
 delimiterStartChar:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimiterStopChar;
 
-- (STToken *) nextToken;
+- (CommonToken *) nextToken;
 - (void) match:(unichar)x;
 - (void) consume;
-- (void) emit:(STToken *)token;
-- (STToken *) _nextToken;
-- (STToken *) outside;
-- (STToken *) inside;
-- (STToken *) subTemplate;
-- (STToken *) mESCAPE;
-- (STToken *) mUNICODE;
-- (STToken *) mTEXT;
-- (STToken *) mID;
-- (STToken *) mSTRING;
+- (void) emit:(CommonToken *)token;
+- (CommonToken *) _nextToken;
+- (CommonToken *) outside;
+- (CommonToken *) inside;
+- (CommonToken *) subTemplate;
+- (CommonToken *) mESCAPE;
+- (CommonToken *) mUNICODE;
+- (CommonToken *) mTEXT;
+- (CommonToken *) mID;
+- (CommonToken *) mSTRING;
 - (void) mWS;
-- (STToken *) mCOMMENT;
+- (CommonToken *) mCOMMENT;
 - (void) mLINEBREAK;
 + (BOOL) isIDStartLetter:(unichar)c;
 + (BOOL) isIDLetter:(unichar)c;
 + (BOOL) isWS:(unichar)c;
 + (BOOL) isUnicodeLetter:(unichar)c;
-- (STToken *) newToken:(NSInteger)ttype;
-- (STToken *) newTokenFromPreviousChar:(NSInteger)ttype;
-- (STToken *) newToken:(NSInteger)ttype text:(NSString *)text pos:(NSInteger)pos;
-- (STToken *) newToken:(NSInteger)ttype text:(NSString *)text;
+- (CommonToken *) newToken:(NSInteger)ttype;
+- (CommonToken *) newTokenFromPreviousChar:(NSInteger)ttype;
+- (CommonToken *) newToken:(NSInteger)ttype text:(NSString *)text;
+- (CommonToken *) newToken:(NSInteger)ttype text:(NSString *)text pos:(NSInteger)pos;
 - (id) copyWithZone:(NSZone *)aZone;
 - (NSString *) getSourceName;
 
@@ -147,7 +147,7 @@ delimiterStartChar:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimi
 @property (assign) BOOL scanningInsideExpr;
 @property (assign) NSInteger subtemplateDepth;
 @property (retain) ErrorManager *errMgr;
-@property (retain) STToken *templateToken;
+@property (retain) CommonToken *templateToken;
 @property (retain) id<CharStream> input;
 @property (assign) unichar c;
 @property (assign) NSInteger startCharIndex;
@@ -165,16 +165,16 @@ delimiterStartChar:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimi
 
 + (STLexer_NO_NL *) newSTLexer_NO_NL:(ErrorManager *)errMgr
                                input:(id<CharStream>)anInput
-                       templateToken:(STToken *)aTemplateToken
+                       templateToken:(CommonToken *)aTemplateToken
                   delimiterStartChar:(unichar)aStartChar
                    delimiterStopChar:(unichar)aStopChar;
 
 - (id) init:(ErrorManager *)anErrMgr
              input:(id<CharStream>)anInput                             
-     templateToken:(STToken *)aTemplateToken
+     templateToken:(CommonToken *)aTemplateToken
 delimiterStartChar:(unichar)aStartChar
  delimiterStopChar:(unichar)aStopChar;
 
-- (STToken *)nextToken;
+- (CommonToken *)nextToken;
 
 @end

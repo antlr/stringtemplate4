@@ -162,7 +162,7 @@ NSString *const newline = @"\n"/* Misc.newline */;
     NSMutableString *buf = [[NSMutableString stringWithCapacity:30] retain];
     [buf appendString:@"["];
     int i = 1;
-    STToken *t = [tokens LT:i];
+    CommonToken *t = [tokens LT:i];
     while (t.type != TokenTypeEOF) {
         if (i > 1)
             [buf appendString:@", "];

@@ -49,7 +49,7 @@
     __strong NSString *name;
     NSInteger index; // which argument is it? from 0..n-1
 	/** If they specified default value x=y, store the token here */
-    __strong STToken *defaultValueToken;
+    __strong CommonToken *defaultValueToken;
     id defaultValue; // x="str", x=true, x=false
     NSInteger cardinality;
     /*** If they specified name="value", store the template here */
@@ -64,11 +64,11 @@
     
 + (id) newFormalArgument;
 + (id) newFormalArgument:(NSString *)aName;
-+ (id) newFormalArgument:(NSString *)aName token:(STToken *)aToken;
++ (id) newFormalArgument:(NSString *)aName token:(CommonToken *)aToken;
 
 - (id) init;
 - (id) initWithName:(NSString *)name;
-- (id) init:(NSString *)name token:(STToken *)aDefaultValueToken;
+- (id) init:(NSString *)name token:(CommonToken *)aDefaultValueToken;
 
 - (void) dealloc;
 - (NSInteger) hash;
@@ -78,7 +78,7 @@
 
 @property (retain) NSString *name;
 @property (assign) NSInteger index;
-@property (retain) STToken *defaultValueToken;
+@property (retain) CommonToken *defaultValueToken;
 @property (retain) id defaultValue;
 @property (retain) CompiledST *compiledDefaultValue;
 

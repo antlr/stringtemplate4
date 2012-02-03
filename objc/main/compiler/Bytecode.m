@@ -81,8 +81,10 @@ NSString *OperandTypeDescription(NSInteger value)
 
 - (id) init:(NSString *)aName
 {
-    self = [self init:aName a:T_NONE b:T_NONE];
-    if ( self != nil ) {
+    if ( (self = [super init]) != nil ) {
+        name = aName;
+        ttype[0]=T_NONE;
+        ttype[1]=T_NONE;
         nopnds = 0;
     }
     return self;
@@ -90,8 +92,10 @@ NSString *OperandTypeDescription(NSInteger value)
 
 - (id) init:(NSString *)aName a:(OperandType)a
 {
-    self = [self init:aName a:a b:T_NONE];
-    if ( self != nil ) {
+    if ( (self = [super init]) != nil ) {
+        name = aName;
+        ttype[0]=a;
+        ttype[1]=T_NONE;
         nopnds = 1;
     }
     return self;
@@ -99,8 +103,7 @@ NSString *OperandTypeDescription(NSInteger value)
 
 - (id) init:(NSString *)aName a:(OperandType)a b:(OperandType)b
 {
-    self=[super init];
-    if ( self != nil ) {
+    if ( (self = [super init]) != nil ) {
         name = aName;
         ttype[0]=a;
         ttype[1]=b;
@@ -210,7 +213,7 @@ static const short INSTR_WRITE_STR          = 47; // load_str n, write
 static const short INSTR_WRITE_LOCAL        = 48; // load_local n, write
 
 static const short MAX_BYTECODE             = 48;
-#define INSTR_ARRAY_SIZE 50
+#define INSTR_ARRAY_SIZE MAX_BYTECODE+2
 
 /**
  * Used for assembly/disassembly; describes instruction set
@@ -242,7 +245,7 @@ static Instruction *instructions[INSTR_ARRAY_SIZE];
     instructions[INSTR_OPTIONS]             = [[Instruction newInstruction:@"options"] retain];
     instructions[INSTR_ARGS]                = [[Instruction newInstruction:@"args"] retain];
     instructions[INSTR_PASSTHRU]            = [[Instruction newInstruction:@"passthru"] retain];
-    instructions[INSTR_PASSTHRU_IND]        = [[Instruction newInstruction:@"passthru_ind"] retain];
+    instructions[INSTR_PASSTHRU_IND]        = nil; //[[Instruction newInstruction:@"passthru_ind"] retain];
     instructions[INSTR_LIST]                = [[Instruction newInstruction:@"list"] retain];
     instructions[INSTR_ADD]                 = [[Instruction newInstruction:@"add"] retain];
     instructions[INSTR_TOSTR]               = [[Instruction newInstruction:@"tostr"] retain];

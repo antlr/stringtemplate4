@@ -153,7 +153,7 @@ static ErrorManager *DEFAULT_ERR_MGR;
     [super dealloc];
 }
 
-- (void) compileTimeError:(ErrorTypeEnum)anError templateToken:(STToken *)aTemplateToken t:(STToken *)t
+- (void) compileTimeError:(ErrorTypeEnum)anError templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t
 {
     NSString *srcName = [t.input getSourceName];
     if (srcName != nil)
@@ -161,14 +161,14 @@ static ErrorManager *DEFAULT_ERR_MGR;
     [listener compileTimeError:[STCompiletimeMessage newMessage:anError srcName:srcName templateToken:aTemplateToken t:t cause:nil arg:t.text]];
 }
 
-- (void) compileTimeError:(ErrorTypeEnum)anError templateToken:(STToken *)aTemplateToken t:(STToken *)t arg:(id)arg
+- (void) compileTimeError:(ErrorTypeEnum)anError templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t arg:(id)arg
 {
     NSString *srcName = [t.input getSourceName];
     srcName = [Misc getFileName:srcName];
     [listener compileTimeError:[STCompiletimeMessage newMessage:anError srcName:srcName templateToken:aTemplateToken t:t cause:nil arg:arg]];
 }
 
-- (void) compileTimeError:(ErrorTypeEnum)anError templateToken:(STToken *)aTemplateToken t:(STToken *)t arg:(id)arg arg2:(id)arg2
+- (void) compileTimeError:(ErrorTypeEnum)anError templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t arg:(id)arg arg2:(id)arg2
 {
     NSString *srcName = [t.input getSourceName];
     if (srcName != nil)
@@ -176,7 +176,7 @@ static ErrorManager *DEFAULT_ERR_MGR;
     [listener compileTimeError:[STCompiletimeMessage newMessage:anError srcName:srcName templateToken:aTemplateToken t:t cause:nil arg:arg arg2:arg2]];
 }
 
-- (void) lexerError:(NSString *)srcName msg:(NSString *)aMsg templateToken:(STToken *)aTemplateToken e:(RecognitionException *)e
+- (void) lexerError:(NSString *)srcName msg:(NSString *)aMsg templateToken:(CommonToken *)aTemplateToken e:(RecognitionException *)e
 {
     [listener compileTimeError:[STLexerMessage newMessage:srcName msg:aMsg templateToken:aTemplateToken cause:e]];
 }

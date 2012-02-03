@@ -37,12 +37,12 @@
 @synthesize templateToken;
 @synthesize srcName;
 
-+ (id) newMessage:(NSString *)aSrcName msg:(NSString *)aMsg templateToken:(STToken *)aTemplateToken cause:(NSException *)aCause
++ (id) newMessage:(NSString *)aSrcName msg:(NSString *)aMsg templateToken:(CommonToken *)aTemplateToken cause:(NSException *)aCause
 {
-    return [[STLexerMessage alloc] init:(NSString *)aSrcName msg:(NSString *)aMsg templateToken:(STToken *)aTemplateToken cause:(NSException *)aCause];
+    return [[STLexerMessage alloc] init:(NSString *)aSrcName msg:(NSString *)aMsg templateToken:(CommonToken *)aTemplateToken cause:(NSException *)aCause];
 }
 
-- (id) init:(NSString *)aSrcName msg:(NSString *)aMsg templateToken:(STToken *)aTemplateToken cause:(NSException *)aCause
+- (id) init:(NSString *)aSrcName msg:(NSString *)aMsg templateToken:(CommonToken *)aTemplateToken cause:(NSException *)aCause
 {
     self=[super init:LEXER_ERROR who:nil cause:aCause arg:nil arg2:nil arg3:nil];
     if ( self != nil ) {
