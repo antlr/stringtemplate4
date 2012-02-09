@@ -1,0 +1,21 @@
+Export-Package: *
+Bundle-Version: @version@
+Bundle-Description: StringTemplate is a java template engine for generating source code,\
+web pages, emails, or any other formatted text output.\
+\
+StringTemplate is particularly good at multi-targeted code generators,\
+multiple site skins, and internationalization/localization. \
+\
+It evolved over years of effort developing jGuru.com. \
+\
+StringTemplate also generates the stringtemplate website: http://www.stringtemplate.org\
+and powers the ANTLR v3 code generator. Its distinguishing characteristic \
+is that unlike other engines, it strictly enforces model-view separation.\
+\
+Strict separation makes websites and code generators more flexible\
+and maintainable; it also provides an excellent defense against malicious\
+template authors.\
+\
+There are currently about 600 StringTemplate source downloads a month.
+Bundle-License: http://antlr.org/license.html
+Bundle-SymbolicName: org.antlr.ST4

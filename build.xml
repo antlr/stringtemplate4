@@ -6,13 +6,15 @@
     <property name="build.dir" value="${basedir}/build" />
     <property name="lib.dir" value="${basedir}/lib" />
     <property name="install.root.dir" value="${dist.dir}/ST-${version}" />
+    <property name="osgi.file" value="${basedir}/osgi.bnd" />
 
     <property name="jar.file" value="${dist.dir}/ST-${version}.jar" />
+    <property name="bnd.jar" value="/usr/local/lib/biz.aQute.bnd.jar" />
 
 	<path id="classpath">
         <pathelement location="/usr/local/lib/antlr-3.4-complete.jar"/> <!-- parrt setup -->
         <pathelement location="${antlr3.jar}"/> <!-- general setup -->
-		<pathelement location="${ant-antlr3.jar}"/>
+	<pathelement location="${ant-antlr3.jar}"/>
 	</path>
 
     <target name="clean">
@@ -62,18 +64,19 @@
     </target>
 
     <target name="build-jar" depends="compile" description="Build ST4.jar">
-        <mkdir dir="${dist.dir}"/>
+	<mkdir dir="${dist.dir}" />
+	<replace file="${osgi.file}" token="@version@" value="${version}" />
+	<taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.jar}" />
+	<bnd
+		classpath="${build.dir}/classes/"
+		failok="false"
+		exceptions="true"
+		files="${osgi.file}"
+		output="${jar.file}"
+	/>
+</target>
 
-        <jar jarfile="${jar.file}">
-            <fileset dir="${build.dir}/classes" includes="**/*.class"/>
-
-            <manifest>
-                <attribute name="Version" value="${version}"/>
-            </manifest>
-        </jar>
-    </target>
-
-    <target name="zip-source" depends="compile">
+<target name="zip-source" depends="compile">
         <mkdir dir="${install.root.dir}"/>
 
         <mkdir dir="${install.root.dir}/src"/>

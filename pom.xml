@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.antlr</groupId>
     <artifactId>ST4</artifactId>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
 
     <!--
         The version number defined here in the version tag indicates how the
@@ -239,6 +239,18 @@ There are currently about 600 StringTemplate source downloads a month.
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			
+		<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<version>2.3.6</version>
+				<configuration>
+					<instructions>
+						<Import-Package>org.stringtemplate.v4,org.stringtemplate.v4.misc,org.stringtemplate.v4.debug,*</Import-Package>
+					</instructions>
+				</configuration>
 			</plugin>
 	</plugins>
     </build>
