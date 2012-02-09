@@ -1,5 +1,5 @@
-StringTemplate 4.0.5 (in progress)
-June 21, 2011
+StringTemplate 4.0.5
+February 8, 2012
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
