@@ -509,8 +509,6 @@ public class ST {
 
 	public static String format(int lineWidth, String template, Object... attributes) {
 		template = template.replaceAll("%([0-9]+)", "arg$1");
-		System.out.println(template);
-
 		ST st = new ST(template);
 		int i = 1;
 		for (Object a : attributes) {

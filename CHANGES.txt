@@ -6,6 +6,8 @@ University of San Francisco
 
 CHANGES
 
+February 8, 2012 -- 4.0.5 release
+
 December 25, 2011
 
 * STLexer.tokens missing from src build
