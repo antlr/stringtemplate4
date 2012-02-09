@@ -166,15 +166,13 @@ typedef enum {
 + (DebugState *)debugState;
 //+ (AttributeList *) attributeList;
 
-+ (id) newST;
-+ (id) newSTWithTemplate:(NSString *)template;
-+ (id) newST:(NSString *)template delimiterStartChar:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimiterStopChar;
-+ (id) newST:(STGroup *)group template:(NSString *)template;
-+ (id) newSTWithProto:(ST *)proto;
++ (ST *) newST;
++ (ST *) newSTWithTemplate:(NSString *)template;
++ (ST *) newST:(NSString *)template delimiterStartChar:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimiterStopChar;
++ (ST *) newST:(STGroup *)aGroup template:(NSString *)template;
++ (ST *) newSTWithProto:(ST *)proto;
 - (id) init;
-- (id) initWithTemplate:(NSString *)template;
-- (id) init:(NSString *)template delimiterStartChar:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimiterStopChar;
-- (id) init:(STGroup *)group template:(NSString *)template;
+- (id) init:(STGroup *)aGroup template:(NSString *)template;
 - (id) initWithProto:(ST *)proto;
 - (void)dealloc;
 - (ST *) add:(NSString *)name value:(id)value;

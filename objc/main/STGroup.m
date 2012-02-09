@@ -126,9 +126,9 @@
  * Used to indicate that the template doesn't exist.
  * Prevents duplicate group file loads and unnecessary file checks.
  */
-static STGroup      *defaultGroup = nil;
+static STGroup      *aDefaultGroup = nil;
 static CompiledST   *NOT_FOUND_ST = nil;
-static ErrorManager *DEFAULT_ERR_MGR = nil;
+static ErrorManager *aDEFAULT_ERR_MGR = nil;
 /**
  * When we use key as a value in a dictionary, this is how we signify.
  */
@@ -153,7 +153,7 @@ static BOOL trackCreationEvents = NO;
 
 + (void) initialize
 {
-    defaultGroup = [[STGroup newSTGroup] retain];
+    aDefaultGroup = [[STGroup newSTGroup] retain];
 }
 
 + (CompiledST *) NOT_FOUND_ST
@@ -173,24 +173,24 @@ static BOOL trackCreationEvents = NO;
     return DICT_KEY;
 }
 
-+ (id) defaultGroup
++ (STGroup *) defaultGroup
 {
-    if (defaultGroup == nil)
-        defaultGroup = [[STGroup newSTGroup] retain];
-    return defaultGroup;
+    if (aDefaultGroup == nil)
+        aDefaultGroup = [[STGroup newSTGroup] retain];
+    return aDefaultGroup;
 }
 
 + (void) resetDefaultGroup
 {
-    if ( defaultGroup ) [defaultGroup release];
-    defaultGroup = nil;
+    if ( aDefaultGroup ) [aDefaultGroup release];
+    aDefaultGroup = nil;
 }
 
 + (ErrorManager *) DEFAULT_ERR_MGR
 {
-    if (DEFAULT_ERR_MGR == nil)
-        DEFAULT_ERR_MGR = [[ErrorManager newErrorManager] retain];
-    return DEFAULT_ERR_MGR;
+    if (aDEFAULT_ERR_MGR == nil)
+        aDEFAULT_ERR_MGR = [[ErrorManager newErrorManager] retain];
+    return aDEFAULT_ERR_MGR;
 }
 
 + (BOOL)trackCreationEvents
@@ -220,30 +220,12 @@ static BOOL trackCreationEvents = NO;
 
 + (id) newSTGroup
 {
-    return [[STGroup alloc] init];
+    return [[STGroup alloc] init:(unichar)'<' delimiterStopChar:(unichar)'>'];
 }
 
 + (id) newSTGroup:(unichar)startChar delimiterStopChar:(unichar)stopChar
 {
     return [[STGroup alloc] init:(unichar)startChar delimiterStopChar:(unichar)stopChar];
-}
-
-- (id) init
-{
-    self=[super init];
-    if ( self != nil ) {
-        encoding = NSUTF8StringEncoding;
-        delimiterStartChar = '<';
-        delimiterStopChar = '>';
-        templates = [[AMutableDictionary dictionaryWithCapacity:16] retain];
-        dictionaries = [[AMutableDictionary dictionaryWithCapacity:16] retain];
-        adaptors = [[[STGroup_Anon1 newSTGroup_Anon1] getDict] retain];
-        typeToAdaptorCache = [[AMutableDictionary dictionaryWithCapacity:16] retain];
-        iterateAcrossValues = NO;
-        errMgr = STGroup.DEFAULT_ERR_MGR;
-        [errMgr retain];
-    }
-    return self;
 }
 
 - (id) init:(unichar)aDelimiterStartChar delimiterStopChar:(unichar)aDelimiterStopChar
@@ -278,6 +260,7 @@ static BOOL trackCreationEvents = NO;
     if ( typeToRendererCache ) [typeToRendererCache release];
     if ( errMgr ) [errMgr release];
     [super dealloc];
+    if (self == aDefaultGroup) aDefaultGroup = nil;
 }
 
 

@@ -42,6 +42,7 @@
 #import "STGroup.h"
 #import "ST.h"
 #import "CompiledST.h"
+#import "AddAttributeEvent.h"
 
 RegionTypeEnum RegionTypeValueOf(NSString *text)
 {
@@ -277,22 +278,22 @@ static DebugState *st_debugState = nil;
 */
 
 /** Used by group creation routine, not by users */
-+ (id) newST
++ (ST *) newST
 {
-    return [[ST alloc] init];
+    return [[ST alloc] init:STGroup.defaultGroup template:nil];
 }
 
-+ (id) newSTWithTemplate:(NSString *)aTemplate
++ (ST *) newSTWithTemplate:(NSString *)aTemplate
 {
-    return [[ST alloc] initWithTemplate:(NSString *)aTemplate];
+    return [[ST alloc] init:STGroup.defaultGroup template:(NSString *)aTemplate];
 }
 
-+ (id) newST:(NSString *)aTemplate delimiterStartChar:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimiterStopChar
++ (ST *) newST:(NSString *)aTemplate delimiterStartChar:(unichar)aDelimiterStartChar delimiterStopChar:(unichar)aDelimiterStopChar
 {
-    return [[ST alloc] init:aTemplate delimiterStartChar:delimiterStartChar delimiterStopChar:delimiterStopChar];
+    return [[ST alloc] init:[STGroup newSTGroup:aDelimiterStartChar delimiterStopChar:aDelimiterStopChar] template:aTemplate];
 }
 
-+ (id) newST:(STGroup *)aGroup template:(NSString *)aTemplate
++ (ST *) newST:(STGroup *)aGroup template:(NSString *)aTemplate
 {
     return [[ST alloc] init:aGroup template:aTemplate];
 }
@@ -306,9 +307,6 @@ static DebugState *st_debugState = nil;
     return [[ST alloc] initWithProto:(ST *)aProto];
 }
 
-/**
- * Used by group creation routine, not by users
- */
 - (id) init
 {
     self=[super init];
@@ -317,27 +315,17 @@ static DebugState *st_debugState = nil;
             EMPTY_ATTR = @"";
             [EMPTY_ATTR retain];
         }
-        if ( st_debugState==nil ) st_debugState = [[DebugState newDebugState] retain];
         if ( STGroup.trackCreationEvents ) {
+            if ( st_debugState==nil )
+                st_debugState = [[DebugState newDebugState] retain];
             debugState = st_debugState;
             st_debugState.newSTEvent = [[ConstructionEvent newEvent] retain];
         }
-        groupThatCreatedThisInstance = STGroup.defaultGroup;
-        if ( groupThatCreatedThisInstance ) [groupThatCreatedThisInstance retain];
-        impl = [groupThatCreatedThisInstance compile:[groupThatCreatedThisInstance getFileName] name:nil args:nil template:nil templateToken:nil];
-        impl.hasFormalArgs = NO;
-        impl.name = UNKNOWN_NAME;
-        [impl defineImplicitlyDefinedTemplates:groupThatCreatedThisInstance];
-        [impl retain];
     }
     return self;
 }
 
-/**
- * Used to make templates inline in code for simple things like SQL or log records.
- * No formal args are set and there is no enclosing instance.
- */
-- (id) initWithTemplate:(NSString *)aTemplate
+- (id) init:(STGroup *)aGroup template:(NSString *)template
 {
     self=[super init];
     if ( self != nil ) {
@@ -345,56 +333,12 @@ static DebugState *st_debugState = nil;
             EMPTY_ATTR = @"";
             [EMPTY_ATTR retain];
         }
-        groupThatCreatedThisInstance = STGroup.defaultGroup;
-        if ( groupThatCreatedThisInstance ) [groupThatCreatedThisInstance retain];
-        impl = [groupThatCreatedThisInstance compile:[groupThatCreatedThisInstance getFileName] name:nil args:nil template:aTemplate templateToken:nil];
-        impl.hasFormalArgs = NO;
-        impl.name = UNKNOWN_NAME;
-        [impl defineImplicitlyDefinedTemplates:groupThatCreatedThisInstance];
-        [impl retain];
-    }
-    return self;
-}
-
-/**
- * Create ST using non-default delimiters; each one of these will live
- * in it's own group since you're overriding a default; don't want to
- * alter STGroup.defaultGroup.
- */
-- (id) init:(NSString *)template delimiterStartChar:(unichar)aDelimiterStartChar delimiterStopChar:(unichar)aDelimiterStopChar
-{
-    self=[super init];
-    if ( self != nil ) {
-        if (EMPTY_ATTR == nil) {
-            EMPTY_ATTR = @"";
-            [EMPTY_ATTR retain];
+        if ( STGroup.trackCreationEvents ) {
+            if ( st_debugState==nil )
+                st_debugState = [[DebugState newDebugState] retain];
+            debugState = st_debugState;
+            st_debugState.newSTEvent = [[ConstructionEvent newEvent] retain];
         }
-        groupThatCreatedThisInstance = [[STGroup alloc] init:aDelimiterStartChar delimiterStopChar:aDelimiterStopChar];
-        if ( groupThatCreatedThisInstance ) [groupThatCreatedThisInstance retain];
-        impl = [groupThatCreatedThisInstance compile:[groupThatCreatedThisInstance getFileName] name:nil args:nil template:template templateToken:nil];
-        impl.hasFormalArgs = NO;
-        impl.name = UNKNOWN_NAME;
-        [impl defineImplicitlyDefinedTemplates:groupThatCreatedThisInstance];
-        [impl retain];
-    }
-    return self;
-}
-
-- (id) init:(STGroup *)group template:(NSString *)template
-{
-    self=[super init];
-    if ( self != nil ) {
-        if (EMPTY_ATTR == nil) {
-            EMPTY_ATTR = @"";
-            [EMPTY_ATTR retain];
-        }
-        groupThatCreatedThisInstance = group;
-        if ( groupThatCreatedThisInstance ) [groupThatCreatedThisInstance retain];
-        impl = [groupThatCreatedThisInstance compile:[group getFileName] name:nil args:nil template:template templateToken:nil];
-        impl.hasFormalArgs = NO;
-        impl.name = UNKNOWN_NAME;
-        [impl defineImplicitlyDefinedTemplates:groupThatCreatedThisInstance];
-        [impl retain];
     }
     return self;
 }
@@ -449,20 +393,18 @@ static DebugState *st_debugState = nil;
  */
 - (ST *) add:(NSString *)aName value:(id)value
 {
-    NSRange aRange;
     if ( aName == nil )
         return self;
+    NSRange aRange;
     aRange = [aName rangeOfString:@"."];
     if (aRange.location != NSNotFound) {
         @throw [IllegalArgumentException newException:@"cannot have '.' in attribute names"];
     }
 #pragma mark fix this
-#ifdef DONTUSEYET
     if ( STGroup.trackCreationEvents ) {
         if ( debugState==nil ) debugState = [DebugState newDebugState];
         [[debugState addAttrEvents] map:aName event:[AddAttributeEvent newEvent:value forKey:aName]];
     }
-#endif
     FormalArgument *arg = nil;
     if (impl.hasFormalArgs) {
         if (impl.formalArguments != nil)
@@ -493,12 +435,10 @@ static DebugState *st_debugState = nil;
     }
     AttributeList *multi = [ST convertToAttributeList:curvalue];
     [locals replaceObjectAtIndex:arg.index withObject:multi];
-#ifdef DONTUSENOMO
     if ( [value isKindOfClass:[NSDictionary class]] ) {
         [multi addObjectsFromArray:(NSArray *)[value allValues]];
     }
     else
-#endif
     if ( [value isKindOfClass:[NSArray class]] ) {
         [multi addObjectsFromArray:(AMutableArray *)value];
     }
@@ -515,7 +455,7 @@ static DebugState *st_debugState = nil;
 
 #pragma mark fix this
 #ifdef DONTUSEYET
-    /** Split "aggrName.{propName1,propName2}" into list [propName1, propName2]
+/** Split "aggrName.{propName1,propName2}" into list [propName1, propName2]
      *  and the aggrName. Spaces are allowed around ','.
      */
 - (ST *) addAggr:(NSString *)aggrSpec values:(id)values
@@ -550,7 +490,7 @@ static DebugState *st_debugState = nil;
         return self;
 }
 #endif
-
+                                                           
 /**
  * Remove an attribute value entirely (can't remove attribute definitions).
  */

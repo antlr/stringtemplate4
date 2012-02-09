@@ -32,6 +32,8 @@
   NSObject *value;
 }
 
++ (AddAttributeEvent *) newAddAttributeEvent:(NSString *)aName value:(id)aValue;
+
 - (id) init:(NSString *)aName value:(id)aValue;
 - (NSString *) description;
 - (NSString *) toString;

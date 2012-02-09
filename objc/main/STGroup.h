@@ -158,7 +158,6 @@
 
 + (id) newSTGroup;
 + (id) newSTGroup:(unichar)startChar delimiterStopChar:(unichar)stopChar;
-- (id) init;
 - (id) init:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimiterStopChar;
 - (void)dealloc;
 - (ST *) getInstanceOf:(NSString *)name;

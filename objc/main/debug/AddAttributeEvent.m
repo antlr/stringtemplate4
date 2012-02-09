@@ -29,6 +29,11 @@
 
 @implementation AddAttributeEvent
 
++ (AddAttributeEvent *) newAddAttributeEvent:(NSString *)aName value:(id)aValue
+{
+    return [[AddAttributeEvent alloc] init:aName value:aValue];
+}
+
 - (id) init:(NSString *)aName value:(id)aValue
 {
     self=[super init];

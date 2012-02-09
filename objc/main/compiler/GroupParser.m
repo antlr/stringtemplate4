@@ -1399,7 +1399,7 @@ static formalArgs_Scope *formalArgs_scope;
 
                  
 
-                /* scopeSetAttributeRef */((formalArgs_Scope *)[formalArgs_stack peek]).hasOptionalParameter =  true;
+                /* scopeSetAttributeRef */((formalArgs_Scope *)[formalArgs_stack peek]).hasOptionalParameter =  YES;
 
                  
                 }
