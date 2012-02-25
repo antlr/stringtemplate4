@@ -92,6 +92,7 @@ typedef enum {
 
 + (id) newDebugState;
 - (id) init;
+- (void) dealloc;
 
 - (AMutableDictionary *)setAddAttrEvents;
 @end
@@ -177,6 +178,7 @@ typedef enum {
 - (void)dealloc;
 - (ST *) add:(NSString *)name value:(id)value;
 - (ST *) addInt:(NSString *)name value:(NSInteger)value;
+- (ST *) addAggr:(NSString *)aggrSpec values:(id)values;
 - (void) remove:(NSString *)name;
 - (void) rawSetAttribute:(NSString *)name value:(id)value;
 - (id) getAttribute:(NSString *)name;

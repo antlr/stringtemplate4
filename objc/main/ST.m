@@ -43,6 +43,7 @@
 #import "ST.h"
 #import "CompiledST.h"
 #import "AddAttributeEvent.h"
+#import "Aggregate.h"
 
 RegionTypeEnum RegionTypeValueOf(NSString *text)
 {
@@ -169,7 +170,7 @@ NSString *RegionTypeDescription(RegionTypeEnum value)
 - (void) dealloc
 {
 #ifdef DEBUG_DEALLOC
-    NSLog( @"called dealloc in STGroup_Anon1" );
+    NSLog( @"called dealloc in DebugState" );
 #endif
     if ( newSTEvent ) [newSTEvent release];
     if ( addAttrEvents ) [addAttrEvents release];
@@ -339,6 +340,12 @@ static DebugState *st_debugState = nil;
             debugState = st_debugState;
             st_debugState.newSTEvent = [[ConstructionEvent newEvent] retain];
         }
+        groupThatCreatedThisInstance = aGroup;
+		impl = [aGroup compile:[aGroup getFileName] name:nil args:nil template:template templateToken:nil];
+		impl.hasFormalArgs = NO;
+		impl.name = UNKNOWN_NAME;
+		[impl defineImplicitlyDefinedTemplates:groupThatCreatedThisInstance];
+
     }
     return self;
 }
@@ -403,7 +410,7 @@ static DebugState *st_debugState = nil;
 #pragma mark fix this
     if ( STGroup.trackCreationEvents ) {
         if ( debugState==nil ) debugState = [DebugState newDebugState];
-        [[debugState addAttrEvents] map:aName event:[AddAttributeEvent newEvent:value forKey:aName]];
+        [debugState.addAttrEvents setObject:(id)[AddAttributeEvent newAddAttributeEvent:aName value:value] forKey:aName];
     }
     FormalArgument *arg = nil;
     if (impl.hasFormalArgs) {
@@ -420,8 +427,12 @@ static DebugState *st_debugState = nil;
         if (arg == nil) {
             arg = [FormalArgument newFormalArgument:aName];
             [impl addArg:arg];
-            if (locals == nil)
-                locals = [[AMutableArray arrayWithCapacity:5] retain];
+            if (locals == nil) locals = [[AMutableArray arrayWithCapacity:5] retain];
+            else {
+                 AMutableArray *copy = [AMutableArray arrayWithCapacity:[impl.formalArguments count]];
+                 [copy addObjectsFromArray:impl.formalArguments];
+                 locals = copy;
+            }
             [locals insertObject:EMPTY_ATTR atIndex:arg.index];
         }
     }
@@ -454,42 +465,48 @@ static DebugState *st_debugState = nil;
 }
 
 #pragma mark fix this
-#ifdef DONTUSEYET
 /** Split "aggrName.{propName1,propName2}" into list [propName1, propName2]
      *  and the aggrName. Spaces are allowed around ','.
      */
 - (ST *) addAggr:(NSString *)aggrSpec values:(id)values
 {
-        NSRange dot = [aggrSpec rangeOfString:@".{"];
-        if ( values == nil || values.length == 0 ) {
-            @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"missing values for aggregate attribute format: %@", aggrSpec]];
+    NSInteger finalCurly;
+    NSRange dot = [aggrSpec rangeOfString:@".{"];
+    if ( values == nil || [values count] == 0 ) {
+        @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"missing values for aggregate attribute format: %@", aggrSpec]];
+    }
+    //NSInteger finalCurly = [aggrSpec indexOfCharacter:'}'];
+    for (finalCurly = [aggrSpec length]; finalCurly > 0;  ) {
+        finalCurly--;
+        if ( [aggrSpec characterAtIndex:finalCurly] == '}' ) {
+            break;
         }
-        int finalCurly = [aggrSpec indexOfCharacter:'}'];
-        if ( dot.length < 0 || finalCurly < 0 ) {
-            @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"invalid aggregate attribute format: %@", aggrSpec]];
-        }
-        NSString *aggrName = [aggrSpec subStringWithRange:(NSMakeRange(0, dot.location)];
-        NSString *propString = [aggrSpec subStringWithRange:NSMakeRange(dot.location+2, ([aggrSpec length]-(dot.location+3)))];
-//      propString = propString.trim();
-        NSString[] *propNames = propString.split("\\ *,\\ *");
-        if ( propNames==nil || [propNames length]==0 ) {
-            @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"invalid aggregate attribute format: %@", aggrSpec]];
-        }
-        if ( values.length != propNames.length ) {
-            @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"number of properties and values mismatch for aggregate attribute format: %@", aggrSpec]];
-        }
-        int i=0;
-        Aggregate *aggr = [Aggregate newAggregate];
-        NSString *p;
-        for (NSString *p in propNames) {
-            id v = values[i++];
-            [aggr.properties setObject:v forKey:p];
-        }
+    }
+       
+    if ( dot.location == NSNotFound || finalCurly < 0 ) {
+        @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"invalid aggregate attribute format: %@", aggrSpec]];
+    }
+    NSString *aggrName = [aggrSpec substringWithRange:(NSMakeRange(0, dot.location))];
+    NSString *propString = [aggrSpec substringWithRange:NSMakeRange(dot.location+2, ([aggrSpec length]-(dot.location+3)))];
+        propString = [propString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+//    NSString[] *propNames = propString.split("\\ *,\\ *");
+    NSArray *propNames = [propString componentsSeparatedByString:@"\\ *,\\ *"];
+    if ( propNames == nil || [propNames count]==0 ) {
+        @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"invalid aggregate attribute format: %@", aggrSpec]];
+    }
+    if ( [values count] != [propNames count] ) {
+        @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"number of properties and values mismatch for aggregate attribute format: %@", aggrSpec]];
+    }
+    int i=0;
+    Aggregate *aggr = [Aggregate newAggregate];
+    for (NSString *p in propNames) {
+        id v = [values objectAtIndex:i++];
+        [aggr.props setObject:v forKey:p];
+    }
 
-        [ST add:aggrName value:aggr]; // now add as usual
-        return self;
+    [self add:aggrName value:aggr]; // now add as usual
+    return self;
 }
-#endif
                                                            
 /**
  * Remove an attribute value entirely (can't remove attribute definitions).
