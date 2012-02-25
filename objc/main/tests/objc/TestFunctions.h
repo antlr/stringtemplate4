@@ -1,8 +1,11 @@
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
-#import <SenTestingKit/SenTestingKit.h>
+#import <GHUnit/GHTestCase.h>
 #import "ST.h"
 #import "STGroup.h"
+#import "BaseTest.h"
+
+#define STAssertTrue GHAssertTrue
 
 @interface TestFunctions_Anon1 : AMutableArray {
 }
@@ -53,7 +56,7 @@
 - (id) init:a b:(id)b;
 @end
 
-@interface TestFunctions : SenTestCase {
+@interface TestFunctions : BaseTest {
 }
 
 - (void) test01First;

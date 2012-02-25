@@ -115,7 +115,7 @@ NSString *const newline = @"\n"/* Misc.newline */;
     [super tearDown];
 }
 
-+ (void) writeFile:(NSString *)dir fileName:(NSString *)fileName content:(NSString *)content
+- (void) writeFile:(NSString *)dir fileName:(NSString *)fileName content:(NSString *)content
 {
     NSString *path;
     NSFileHandle *fh;
@@ -127,6 +127,13 @@ NSString *const newline = @"\n"/* Misc.newline */;
         path = [[dir stringByAppendingPathComponent:fileName] stringByExpandingTildeInPath];
         // NSFileHandle *f = [[File alloc] init:dir arg1:fileName];
         fh = [NSFileHandle fileHandleForWritingAtPath:path];
+        if (fh == nil) {
+            NSFileManager *nfm = [[NSFileManager alloc] init];
+            NSData *data = [NSData dataWithContentsOfFile:content];
+            if ([nfm createFileAtPath:path contents:data attributes:nil]) {
+                fh = [NSFileHandle fileHandleForWritingAtPath:path];
+            }
+        }
 #ifdef DONTUSENOMo
         if (![[f parentFile] exists])
             [[f parentFile] mkdirs];

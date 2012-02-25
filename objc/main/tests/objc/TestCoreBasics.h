@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
-#import <SenTestingKit/SenTestingKit.h>
+#import <GHUnit/GHTestCase.h>
 #import "ErrorBuffer.h"
 #import "STException.h"
 #import "STRuntimeMessage.h"
@@ -48,7 +48,7 @@
 
 @end
 
-@interface TestCoreBasics : SenTestCase {
+@interface TestCoreBasics : BaseTest {
 }
 - (void)setUp;
 - (void)tearDown;

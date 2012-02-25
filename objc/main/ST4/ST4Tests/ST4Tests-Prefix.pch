@@ -1,7 +1,0 @@
-//
-// Prefix header for all source files of the 'ST4Tests' target in the 'ST4Tests' project
-//
-
-#ifdef __OBJC__
-    #import <Cocoa/Cocoa.h>
-#endif

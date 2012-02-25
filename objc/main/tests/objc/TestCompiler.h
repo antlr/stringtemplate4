@@ -1,6 +1,5 @@
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
-#import <SenTestingKit/SenTestingKit.h>
 #import "STErrorListener.h"
 #import "STGroup.h"
 #import "CompiledST.h"
@@ -10,7 +9,7 @@
 #import "BaseTest.h"
 #import "Writer.h"
 
-@interface TestCompiler : SenTestCase {
+@interface TestCompiler : GHTestCase {
 }
 
 - (void)setUp;

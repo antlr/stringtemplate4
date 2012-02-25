@@ -27,7 +27,7 @@
 */
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
-#import <SenTestingKit/SenTestingKit.h>
+#import "BaseTest.h"
 #import "TestCoreBasics.h"
 #import "STGroup.h"
 #import "STGroupString.h"
@@ -190,7 +190,7 @@
 {
     NSString *aTemplate = @"t() ::= <<hi <name>!>>\n";
     ErrorBuffer *errors = [[ErrorBuffer newErrorBuffer] retain];
-    [BaseTest writeFile:tmpdir fileName:@"t.stg" content:aTemplate];
+    [self writeFile:tmpdir fileName:@"t.stg" content:aTemplate];
     STGroupFile *group = [[STGroupFile newSTGroupFile:[tmpdir stringByAppendingPathComponent:@"t.stg"]] retain];
     group.errMgr = [ErrorManager newErrorManagerWithListener:errors];
     ST *st = [[group getInstanceOf:@"t"] retain];
@@ -542,7 +542,7 @@
                            @"d ::= [\"foo\":\"bold\"]\n",
                            @"test(name) ::= \"<name:(d.foo)()>\"\n",
                            @"bold(x) ::= <<*<x>*>>\n"];
-    [BaseTest writeFile:tmpdir fileName:@"t.stg" content:aTemplate];
+    [self writeFile:tmpdir fileName:@"t.stg" content:aTemplate];
     STGroupFile *group = [STGroupFile newSTGroupFile:[tmpdir stringByAppendingPathComponent:@"t.stg"]];
     ST *st = [group getInstanceOf:@"test"];
     [st add:@"name" value:@"Ter"];
@@ -766,7 +766,7 @@
 {
     NSString *dir = [BaseTest randomDir];
     NSString *groupFile = [NSString stringWithFormat:@"a(scope) ::= <<%@foo%@    <if(scope)>oops<endif>%@bar%@>>", newline, newline, newline, newline];
-    [BaseTest writeFile:dir fileName:@"group.stg" content:groupFile];
+    [self writeFile:dir fileName:@"group.stg" content:groupFile];
     STGroupFile *group = [STGroupFile newSTGroupFile:[dir stringByAppendingPathComponent:@"group.stg"]];
     ST *st = [group getInstanceOf:@"a"];
     [st.impl dump];
@@ -1010,7 +1010,7 @@
 - (void) test61EarlyEvalIndent
 {
     NSString *aTemplates = @"t() ::= <<  abc>>\nmain() ::= <<\n<t()>\n<(t())>\n  <t()>\n  <(t())>\n>>\n";
-    [BaseTest writeFile:tmpdir fileName:@"t.stg" content:aTemplates];
+    [self writeFile:tmpdir fileName:@"t.stg" content:aTemplates];
     STGroupFile *group = [STGroupFile newSTGroupFile:[tmpdir stringByAppendingPathComponent:@"t.stg"]];
     ST *st = [group getInstanceOf:@"main"];
     NSString *result = [st render];
@@ -1024,7 +1024,7 @@
 - (void) test62EarlyEvalNoIndent
 {
     NSString *aTemplate = @"t() ::= <<  abc>>\nmain() ::= <<\n<t()>\n<(t())>\n  <t()>\n  <(t())>\n>>\n";
-    [BaseTest writeFile:tmpdir fileName:@"t.stg" content:aTemplate];
+    [self writeFile:tmpdir fileName:@"t.stg" content:aTemplate];
     STGroupFile *group = [STGroupFile newSTGroupFile:[tmpdir stringByAppendingPathComponent:@"t.stg"]];
     ST *st = [group getInstanceOf:@"main"];
     StringWriter *sw = [StringWriter new];

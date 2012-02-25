@@ -1,6 +1,8 @@
 #import <Cocoa/Cocoa.h>
 #import "TestCompiler.h"
 
+#define STAssertTrue GHAssertTrue
+
 @implementation TestCompiler
 
 - (void)setUp

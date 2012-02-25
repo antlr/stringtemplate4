@@ -1,7 +1,0 @@
-//
-// Prefix header for all source files of the 'ST4TestWhitespace' target in the 'ST4TestWhitespace' project
-//
-
-#ifdef __OBJC__
-    #import <Cocoa/Cocoa.h>
-#endif

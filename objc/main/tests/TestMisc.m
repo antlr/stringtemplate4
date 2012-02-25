@@ -12,6 +12,8 @@
 #import "Writer.h"
 
 
+#define STAssertTrue GHAssertTrue
+
 @implementation TestMisc
 
 - (void)setUp

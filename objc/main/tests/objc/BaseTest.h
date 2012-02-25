@@ -8,13 +8,18 @@
 
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
-#import <SenTestingKit/SenTestingKit.h>
+#import <GHUnit/GHTestCase.h>
 #import "STGroup.h"
 #import "Compiler.h"
 #import "Misc.h"
 #import "Writer.h"
 #import "STException.h"
 #import "Assert.h"
+
+#define STAssertTrue GHAssertTrue
+
+extern NSString *const tmpdir;
+extern NSString *const newline;
 
 @interface User : NSObject {
     NSInteger num;
@@ -48,12 +53,12 @@
 extern NSString *const tmpdir;
 extern NSString *const newline;
 
-@interface BaseTest : SenTestCase {
+@interface BaseTest : GHTestCase {
     NSString *randomDir;
 }
 
 + (NSString *) randomDir;
-+ (void) writeFile:(NSString *)dir fileName:(NSString *)fileName content:(NSString *)content;
+- (void) writeFile:(NSString *)dir fileName:(NSString *)fileName content:(NSString *)content;
 
 - (void) setUp;
 - (void) checkTokens:(NSString *)template expected:(NSString *)expected;

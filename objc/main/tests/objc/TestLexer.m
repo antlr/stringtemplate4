@@ -1,5 +1,7 @@
 #import "TestLexer.h"
 
+#define STAssertTrue GHAssertTrue
+
 @implementation TestLexer
 
 - (void)setUp

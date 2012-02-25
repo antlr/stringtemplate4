@@ -7,10 +7,10 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <SenTestingKit/SenTestingKit.h>
+#import <GHUnit/GHTestCase.h>
 
 
-@interface TestMisc : SenTestCase {
+@interface TestMisc : GHTestCase {
 
 }
 

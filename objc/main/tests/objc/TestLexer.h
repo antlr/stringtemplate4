@@ -1,10 +1,10 @@
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
-#import <SenTestingKit/SenTestingKit.h>
+#import <GHUnit/GHTestCase.h>
 #import "STLexer.h"
 #import "STToken.h"
 
-@interface TestLexer : SenTestCase {
+@interface TestLexer : GHTestCase {
 }
 
 - (void)setUp;
