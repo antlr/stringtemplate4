@@ -46,6 +46,8 @@ typedef enum {
 #endif
 
 #pragma mark Tokens
+#ifndef TOKENLISTAlreadyDefined
+#define TOKENLISTAlreadyDefined 1
 #ifdef EOF
 #undef EOF
 #endif
@@ -108,43 +110,50 @@ typedef enum {
 #define REGION 59
 #define T_NULL 60
 #define INDENTED_EXPR 61
+#endif
+
+#undef RCURLY
+#undef LDELIM
+#ifndef REGION_END
+#define REGION_END END
+#endif
 
 @implementation STLexer
 
-static CommonToken *SKIP;
-static char Token_EOF = (char)-1;            // EOF char
-static NSInteger EOF_TYPE = TokenTypeEOF;  // EOF token type
-static NSInteger RCURLY = 31;
-static NSInteger LDELIM = 33;
+static CommonToken *SKIP_TOK;
+static char Token_EOF_CHAR = (char)-1;         // EOF char
+static NSInteger EOF_TYPE_INT = TokenTypeEOF;  // EOF token type
+static NSInteger RCURLY_INT = 31;
+static NSInteger LDELIM_INT = 33;
 
 + (NSInteger) LDELIM
 {
-    return LDELIM;
+    return LDELIM_INT;
 }
 
 + (NSInteger) RCURLY
 {
-    return RCURLY;
+    return RCURLY_INT;
 }
 
 + (CommonToken *) SKIP
 {
-    return SKIP;
+    return SKIP_TOK;
 }
 
 + (char) Token_EOF
 {
-    return (char)Token_EOF;
+    return (char)Token_EOF_CHAR;
 }
 
 + (NSInteger) EOF_TYPE
 {
-    return EOF_TYPE;
+    return EOF_TYPE_INT;
 }
 
 + (void) initialize
 {
-    SKIP = [CommonToken newToken:-1 Text:@"<skip>"];
+    SKIP_TOK = [CommonToken newToken:-1 Text:@"<skip>"];
 }
 
 + (id) newSTLexer:(id<CharStream>)anInput
@@ -282,14 +291,14 @@ delimiterStopChar:(unichar)aStopChar
         startCharIndex = input.index;
         startLine = [input getLine];
         startCharPositionInLine = [input getCharPositionInLine];
-        if (c == (unichar) EOF_TYPE)
+        if (c == (unichar) EOF_TYPE_INT)
             return [self newToken:TokenTypeEOF];
         CommonToken *t;
         if (scanningInsideExpr)
             t = [self inside];
         else
             t = [self outside];
-        if (t != SKIP)
+        if (t != SKIP_TOK)
             return t;
     }
 }
@@ -299,7 +308,7 @@ delimiterStopChar:(unichar)aStopChar
     if ([input getCharPositionInLine] == 0 && (c == ' ' || c == '\t')) {
         while (c == ' ' || c == '\t') // scarf indent
             [self consume];
-        if (c != (unichar) EOF_TYPE)
+        if (c != (unichar) EOF_TYPE_INT)
             return [self newToken:INDENT];
         return [self newToken:TEXT];
     }
@@ -308,7 +317,7 @@ delimiterStopChar:(unichar)aStopChar
         if (c == '!')  return [self mCOMMENT];
         if (c == '\\') return [self mESCAPE];
         scanningInsideExpr = YES;
-        return [self newToken:LDELIM];
+        return [self newToken:LDELIM_INT];
     }
     if (c == '\r') {
         if ([input LA:1] == '\n') [self consume];
@@ -323,7 +332,7 @@ delimiterStopChar:(unichar)aStopChar
         scanningInsideExpr = YES;
         subtemplateDepth--;
         [self consume];
-        return [self newTokenFromPreviousChar:RCURLY];
+        return [self newTokenFromPreviousChar:RCURLY_INT];
     }
     return [self mTEXT];
 }
@@ -339,7 +348,7 @@ delimiterStopChar:(unichar)aStopChar
             case '\n':
             case '\r':
                 [self consume];
-                return SKIP;
+                return SKIP_TOK;
             case '.':
                 [self consume];
                 if ([input LA:1] == '.' && [input LA:2] == '.') {
@@ -398,8 +407,8 @@ delimiterStopChar:(unichar)aStopChar
                 re.line = startLine;
                 re.charPositionInLine = startCharPositionInLine;
                 [errMgr lexerError:[input getSourceName] msg:[NSString stringWithFormat:@"invalid character '%c'", c] templateToken:templateToken e:re];
-                if (c == (unichar)Token_EOF) {
-                    return [self newToken:EOF_TYPE];
+                if (c == (unichar)Token_EOF_CHAR) {
+                    return [self newToken:EOF_TYPE_INT];
                 }
                 [self consume];
         }
@@ -464,7 +473,7 @@ delimiterStopChar:(unichar)aStopChar
     NoViableAltException *e;
     
     switch (c) {
-        case '\\': [self mLINEBREAK]; return SKIP;
+        case '\\': [self mLINEBREAK]; return SKIP_TOK;
         case 'n': text = @"\n"; break;
         case 't': text = @"\t"; break;
         case ' ': text = @" "; break;
@@ -473,7 +482,7 @@ delimiterStopChar:(unichar)aStopChar
             [errMgr lexerError:[input getSourceName] msg:[NSString stringWithFormat:@"invalid escaped char: '%c'", c] templateToken:templateToken e:e];
             [self consume];
             [self match:delimiterStopChar];
-            return SKIP;
+            return SKIP_TOK;
     }
     [self consume];
     CommonToken *t = [self newToken:TEXT text:text pos:[input getCharPositionInLine]-2];
@@ -523,7 +532,7 @@ delimiterStopChar:(unichar)aStopChar
     BOOL modifiedText = NO;
     NSMutableString *buf = [NSMutableString stringWithCapacity:16];
     
-    while (c != (unichar) EOF_TYPE && c != delimiterStartChar) {
+    while (c != (unichar) EOF_TYPE_INT && c != delimiterStartChar) {
         if (c == '\r' || c == '\n') break;
         if (c == '}' && subtemplateDepth > 0) break;
         if (c == '\\') {
@@ -597,7 +606,7 @@ delimiterStopChar:(unichar)aStopChar
         }
         [buf appendFormat:@"%c", c];
         [self consume];
-        if (c == (unichar) EOF_TYPE) {
+        if (c == (unichar) EOF_TYPE_INT) {
             RecognitionException *re = [MismatchedTokenException newException:'"' Stream:input];
             re.line = [input getLine];
             re.charPositionInLine = [input getCharPositionInLine];

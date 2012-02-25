@@ -102,6 +102,7 @@ options {
                template:(NSString *)aTemplate
                   token:(CommonToken *)aTemplateToken;
 
+- (void) dealloc;
 // convience funcs to hide offensive sending of emit messages to
 // CompilationState temp data object.
 

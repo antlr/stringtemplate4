@@ -269,9 +269,11 @@ static BOOL trackCreationEvents = NO;
  */
 - (ST *) getInstanceOf:(NSString *)aName
 {
-    if ( verbose ) NSLog(@"getInstanceOf(%@) in group %@", aName, [self getName]);
     if ( aName == nil )
         return nil;
+    if ( verbose ) NSLog(@"getInstanceOf(%@) in group %@", aName, [self getName]);
+    if ( [aName characterAtIndex:0] != '/')
+        aName = [NSString stringWithFormat:@"/%@", aName];
     CompiledST *c = [self lookupTemplate:aName];
     if ( c != nil ) {
         return [self createStringTemplate:c];

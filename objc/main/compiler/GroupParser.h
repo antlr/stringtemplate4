@@ -1,9 +1,9 @@
-// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-02-02 11:03:28
+// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-02-22 16:19:26
 
 /* =============================================================================
- * Standard antlr3 OBJC runtime definitions
+ * Standard antlr OBJC runtime definitions
  */
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
 /* End of standard antlr3 runtime definitions
  * =============================================================================
@@ -65,6 +65,8 @@ typedef enum {
 #endif
 
 #pragma mark Tokens
+#ifndef TOKENLISTAlreadyDefined
+#define TOKENLISTAlreadyDefined 1
 #ifdef EOF
 #undef EOF
 #endif
@@ -77,10 +79,8 @@ typedef enum {
 #define LINE_COMMENT 9
 #define BIGSTRING 10
 #define BIGSTRING_NO_NL 11
-#ifndef T_TRUE
-#define T_TRUE 12
-#define T_FALSE 13
-#endif
+#define T_FALSE 12
+#define T_TRUE 13
 #define T__14 14
 #define T__15 15
 #define T__16 16
@@ -97,11 +97,12 @@ typedef enum {
 #define T__27 27
 #define T__28 28
 #define T__29 29
+#endif
 #pragma mark Dynamic Global Scopes globalAttributeScopeInterface
 #pragma mark Dynamic Rule Scopes ruleAttributeScopeInterface
 /* start of ruleAttributeScopeInterface */
 @interface formalArgs_Scope : SymbolsScope {
- BOOL hasOptionalParameter;
+BOOL hasOptionalParameter;
  
 }
 
@@ -144,7 +145,7 @@ STGroup *group;
 /* ObjC end of properties */
 
 + (void) initialize;
-+ (id) newGroupParser:(id<TokenStream>)aStream;
++ (GroupParser *) newGroupParser:(id<TokenStream>)aStream;
 /* ObjC start of actions.(actionScope).methodsDecl */
 
 + (NSInteger) TANONYMOUS_TEMPLATE;

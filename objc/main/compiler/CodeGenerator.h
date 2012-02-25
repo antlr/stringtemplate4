@@ -1,7 +1,7 @@
-// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/CodeGenerator.g 2012-02-01 18:16:42
+// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/CodeGenerator.g 2012-02-22 16:19:00
 
 /* =============================================================================
- * Standard antlr3 OBJC runtime definitions
+ * Standard antlr OBJC runtime definitions
  */
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
@@ -66,6 +66,8 @@ typedef enum {
 #endif
 
 #pragma mark Tokens
+#ifndef TOKENLISTAlreadyDefined
+#define TOKENLISTAlreadyDefined 1
 #ifdef EOF
 #undef EOF
 #endif
@@ -128,11 +130,12 @@ typedef enum {
 #define TNULL 59
 #define TO_STR 60
 #define ZIP 61
+#endif
 #pragma mark Dynamic Global Scopes globalAttributeScopeInterface
 #pragma mark Dynamic Rule Scopes ruleAttributeScopeInterface
 /* start of ruleAttributeScopeInterface */
 @interface template_Scope : SymbolsScope {
- CompilationState * cstate;
+CompilationState * cstate;
  
 }
 
@@ -153,7 +156,7 @@ typedef enum {
 @interface CodeGenerator_region_return : TreeRuleReturnScope { /* returnScopeInterface line 1838 */
  /* ObjC start of memVars() */
 
- NSString * name;
+NSString * name;
  
 
 }
@@ -182,9 +185,9 @@ typedef enum {
 @interface CodeGenerator_subtemplate_return : TreeRuleReturnScope { /* returnScopeInterface line 1838 */
  /* ObjC start of memVars() */
 
- NSString * name;
+NSString * name;
 
- NSInteger nargs;
+NSInteger nargs;
  
 
 }
@@ -286,11 +289,11 @@ typedef enum {
 @interface CodeGenerator_args_return : TreeRuleReturnScope { /* returnScopeInterface line 1838 */
  /* ObjC start of memVars() */
 
- NSInteger n;
+NSInteger n;
 
- BOOL namedArgs;
+BOOL namedArgs;
 
- BOOL passThru;
+BOOL passThru;
  
 
 }
@@ -378,7 +381,7 @@ typedef enum {
 /* ObjC end of properties */
 
 + (void) initialize;
-+ (id) newCodeGenerator:(id<TreeNodeStream>)aStream;
++ (CodeGenerator *) newCodeGenerator:(id<TreeNodeStream>)aStream;
 /* ObjC start of actions.(actionScope).methodsDecl */
 
 + (id) newCodeGenerator:(id<TreeNodeStream>)input

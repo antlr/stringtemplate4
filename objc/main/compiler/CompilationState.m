@@ -30,6 +30,7 @@
 #import "CompilationState.h"
 #import "Bytecode.h"
 #import "STException.h"
+#import "Misc.h"
 
 @implementation CompilationState
 
@@ -59,6 +60,7 @@
         if ( tokens ) [tokens retain];
         impl.name = aName;
         if ( impl.name ) [impl.name retain];
+        impl.prefix = [Misc getPrefix:aName];
     }
     return self;
 }

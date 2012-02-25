@@ -45,6 +45,7 @@
     if ( self != nil ) {
         alreadyLoaded = NO;
         sourceName = @"<string>";
+        [sourceName retain];
         text = theText;
     }
     return self;
@@ -55,6 +56,7 @@
     self = [super init:'<' delimiterStopChar:'>'];
     if ( self != nil ) {
         alreadyLoaded = NO;
+        if ( aSourceName ) [aSourceName retain];
         sourceName = aSourceName;
         text = theText;
     }
@@ -88,8 +90,9 @@
 
 - (BOOL) isDictionary:(NSString *)name
 {
-	if ( !alreadyLoaded ) [self load];
-	return [super isDictionary:name];
+    if ( !alreadyLoaded )
+        [self load];
+    return [super isDictionary:name];
 }
 
 - (BOOL) isDefined:(NSString *)name
@@ -101,7 +104,7 @@
 
 - (CompiledST *) load:(NSString *)name
 {
-    if (!alreadyLoaded)
+    if (alreadyLoaded)
         [self load];
     return [self rawGetTemplate:name];
 }
@@ -115,10 +118,10 @@
     @try {
         ANTLRStringStream * fs = [ANTLRStringStream newANTLRStringStream:text];
         fs.name = sourceName;
-        GroupLexer * lexer = [GroupLexer newGroupLexerWithCharStream:fs];
+        GroupLexer *lexer = [GroupLexer newGroupLexerWithCharStream:fs];
         CommonTokenStream *tokens = [CommonTokenStream newCommonTokenStreamWithTokenSource:lexer];
         parser = [GroupParser newGroupParser:tokens];
-        [parser group:self arg1:@""];
+        [parser group:self arg1:@"/"];
     }
     @catch (NSException * e) {
         [errMgr IOError:nil error:CANT_LOAD_GROUP_FILE e:e arg:@"<string>"];

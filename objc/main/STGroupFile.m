@@ -92,7 +92,7 @@
 - (id) initWithFileName:(NSString *)aFileName encoding:(NSStringEncoding)theEncoding delimiterStartChar:(unichar)aDelimiterStartChar delimiterStopChar:(unichar)aDelimiterStopChar
 {
     BOOL fExists, isDir;
-    self=[super init:aDelimiterStartChar delimiterStopChar:aDelimiterStopChar];
+    self = [super init:aDelimiterStartChar delimiterStopChar:aDelimiterStopChar];
     if ( self != nil ) {
         if (![aFileName hasSuffix:@".stg"]) {
             @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"Group file names must end in .stg: %@", aFileName]];
@@ -108,8 +108,15 @@
             fm = [NSFileManager defaultManager];
             fExists = [fm fileExistsAtPath:fileName isDirectory:&isDir];
             if (fExists && isDir) {
-                URL = [NSURL fileURLWithPath:fileName];
-                if ( URL ) [URL retain];
+                @try {
+                   URL = [NSURL fileURLWithPath:fileName];
+                   if ( URL ) [URL retain];
+                }
+                @catch (MalformedURLException *e) {
+                    @throw [MalformedURLException newException:fileName];
+                }
+                if ( STGroup.verbose )
+                    NSLog(@"STGroupFile(%@) == file %@", aFileName, fileName);
             }
             else {
 #ifdef DONTUSEYET
@@ -196,9 +203,13 @@
 {
     if (alreadyLoaded)
         return;
-    alreadyLoaded = YES;
-    [self loadGroupFile:@"" fileName:fileName];
-}
+    alreadyLoaded = YES; // do before actual load to say we're doing it
+        // no prefix since this group file is the entire group, nothing lives
+        // beneath it.
+    if ( STGroup.verbose ) NSLog(@"loading group file %@", [URL description]);
+    [self loadGroupFile:@"/" fileName:fileName];
+    if ( STGroup.verbose ) NSLog(@"found %d templates in %@ = %@", [templates count], [URL description], [templates allKeys]);
+ }
 
 - (NSString *) show
 {

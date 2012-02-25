@@ -53,18 +53,18 @@ tokens {
 @memVars {
 conditional_Scope *conditional_scope;
 ErrorManager *errMgr;
-Token *templateToken;
+CommonToken *templateToken;
 }
 
 @properties {
 @property (retain) conditional_Scope *conditional_scope;
 @property (retain, getter=getErrorManager, setter=setErrorManager:) ErrorManager *errMgr;
-@property (retain, getter=getTemplateToken, setter=setTemplateToken:) Token *templateToken;
+@property (retain, getter=getTemplateToken, setter=setTemplateToken:) CommonToken *templateToken;
 }
 
 @methodsDecl {
-+ (id) newSTParser:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(Token *)aTemplateToken;
-- (id) init:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(Token *)aTemplateToken;
++ (id) newSTParser:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(CommonToken *)aTemplateToken;
+- (id) init:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(CommonToken *)aTemplateToken;
 - (id) recoverFromMismatchedToken:(id<IntStream>)anInput type:(NSInteger)ttype follow:(ANTLRBitSet *)follow;
 }
 
@@ -75,12 +75,12 @@ Token *templateToken;
 }
 
 @methods {
-+ (id) newSTParser:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(Token *)aTemplateToken
++ (id) newSTParser:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(CommonToken *)aTemplateToken
 {
     return [[[STParser alloc] init:anInput error:anErrMgr token:aTemplateToken] retain];
 }
 
-- (id) init:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(Token *)aTemplateToken
+- (id) init:(id<TokenStream>)anInput error:(ErrorManager *)anErrMgr token:(CommonToken *)aTemplateToken
 {
     self = [super initWithTokenStream:(id<TokenStream>)anInput];
     if ( self != nil ) {
@@ -134,7 +134,7 @@ exprTag
     ;
 
 region
-@init { Token *indent=nil; }
+@init { CommonToken *indent=nil; }
     :   i=INDENT? x=LDELIM '@' ID RDELIM { if ([input LA:1] != NEWLINE) indent=$i;}
         template
         INDENT? LDELIM '@end' RDELIM
@@ -152,7 +152,7 @@ subtemplate
     ;
 
 ifstat
-@init {Token *indent = nil;}
+@init {CommonToken *indent = nil;}
     :   i=INDENT? LDELIM 'if' '(' c1=conditional ')' RDELIM {if ([input LA:1]!=NEWLINE) indent=$i;}
             t1=template
             ( INDENT? LDELIM 'elseif' '(' c2+=conditional ')' RDELIM t2+=template )*

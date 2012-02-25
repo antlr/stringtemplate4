@@ -1,9 +1,9 @@
-// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-02-02 11:03:28
+// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-02-22 16:19:26
 
 /* =============================================================================
- * Standard antlr3 OBJC runtime definitions
+ * Standard antlr OBJC runtime definitions
  */
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
 /* End of standard antlr3 runtime definitions
  * =============================================================================
@@ -55,7 +55,7 @@
 #pragma mark Cyclic DFA interface start DFA8
 @interface DFA8 : DFA {
 }
-+ newDFA8WithRecognizer:(BaseRecognizer *)theRecognizer;
++ (DFA8 *) newDFA8WithRecognizer:(BaseRecognizer *)theRecognizer;
 - initWithRecognizer:(BaseRecognizer *)recognizer;
 @end /* end of DFA8 interface  */
 
@@ -65,6 +65,8 @@
 #pragma mark Rule return scopes Interface start
 #pragma mark Rule return scopes Interface end
 #pragma mark Tokens
+#ifndef TOKENLISTAlreadyDefined
+#define TOKENLISTAlreadyDefined 1
 #ifdef EOF
 #undef EOF
 #endif
@@ -95,6 +97,7 @@
 #define T__27 27
 #define T__28 28
 #define T__29 29
+#endif
 /* interface lexer class */
 @interface GroupLexer : Lexer { // line 283
 DFA8 *dfa8;

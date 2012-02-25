@@ -238,8 +238,8 @@ groupName returns [NSString *name]
 delimiters
     :	'delimiters' a=STRING ',' b=STRING
      	{
-     	group.delimiterStartChar=[$a characterAtIndex:0];
-        group.delimiterStopChar=[$b characterAtIndex:0];
+     	group.delimiterStartChar=[$a.text characterAtIndex:0];
+        group.delimiterStopChar=[$b.text characterAtIndex:0];
         }
     ;
 
@@ -278,7 +278,7 @@ templateDef[NSString *prefix]
         if ( $name.index >= 0 ) { // if ID missing
             template = [Misc strip:template n:n];
             NSString *templateName = $name.text;
-            if ( [prefix length] > 0 ) templateName = [NSString stringWithFormat: @"\%@/\%@", prefix, $name.text];
+            if ( [prefix length] > 0 ) templateName = [NSString stringWithFormat: @"\%@\%@", prefix, $name.text];
             [group defineTemplateOrRegion:templateName
             regionSurroundingTemplateName:$enclosing.text
                             templateToken:templateToken
@@ -301,7 +301,7 @@ scope {
 
 formalArg[AMutableArray *args]
     :   ID
-        (   '=' a=(STRING|ANONYMOUS_TEMPLATE|'true'|'false') {$formalArgs::hasOptionalParameter = YES;}
+        (   '=' a=(STRING|ANONYMOUS_TEMPLATE|'true'|'false') {$formalArgs::hasOptionalParameter = true;}
         |   {
             if ( $formalArgs::hasOptionalParameter ) {
                 [group.errMgr compileTimeError:REQUIRED_PARAMETER_AFTER_OPTIONAL templateToken:nil t:$ID];
