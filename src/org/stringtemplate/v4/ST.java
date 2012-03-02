@@ -355,7 +355,7 @@ public class ST {
             multi = new AttributeList(); // make list to hold multiple values
             multi.add(curvalue);                 // add previous single-valued attribute
         }
-        else if ( curvalue.getClass() == AttributeList.class ) { // already a list made by ST
+        else if ( curvalue instanceof AttributeList ) { // already a list made by ST
             multi = (AttributeList)curvalue;
         }
         else if ( curvalue instanceof List) { // existing attribute is non-ST List

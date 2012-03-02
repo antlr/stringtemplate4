@@ -249,7 +249,7 @@ public class Interpreter {
 					nameIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = self.impl.strings[nameIndex];
-					Map<String,Object> attrs = (Map<String,Object>)operands[sp--];
+					Map<String, Object> attrs = (ArgumentsMap)operands[sp--];
 					// look up in original hierarchy not enclosing template (variable group)
 					// see TestSubtemplates.testEvalSTFromAnotherGroup()
 					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, self, ip, name);
@@ -269,7 +269,7 @@ public class Interpreter {
 					nameIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = self.impl.strings[nameIndex];
-					attrs = (Map<String,Object>)operands[sp--];
+					attrs = (ArgumentsMap)operands[sp--];
 					super_new(self, name, attrs);
 					break;
 				case Bytecode.INSTR_STORE_OPTION:
@@ -284,7 +284,7 @@ public class Interpreter {
 					name = self.impl.strings[nameIndex];
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					o = operands[sp--];
-					attrs = (Map<String,Object>)operands[sp];
+					attrs = (ArgumentsMap)operands[sp];
 					attrs.put(name, o); // leave attrs on stack
 					break;
 				case Bytecode.INSTR_WRITE :
@@ -318,7 +318,7 @@ public class Interpreter {
 					st = (ST)operands[sp--];
 					nmaps = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
-					List<Object> exprs = new ArrayList<Object>();
+					List<Object> exprs = new ObjectList();
 					for (int i=nmaps-1; i>=0; i--) exprs.add(operands[sp-i]);
 					sp -= nmaps;
 					operands[++sp] = zip_map(self, exprs, st);
@@ -336,21 +336,21 @@ public class Interpreter {
 					operands[++sp] = new Object[Compiler.NUM_OPTIONS];
 					break;
 				case Bytecode.INSTR_ARGS:
-					operands[++sp] = new HashMap<String,Object>();
+					operands[++sp] = new ArgumentsMap();
 					break;
 				case Bytecode.INSTR_PASSTHRU :
 					nameIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = self.impl.strings[nameIndex];
-					attrs = (Map<String,Object>)operands[sp];
+					attrs = (ArgumentsMap)operands[sp];
 					passthru(self, name, attrs);
 					break;
 				case Bytecode.INSTR_LIST :
-					operands[++sp] = new ArrayList<Object>();
+					operands[++sp] = new ObjectList();
 					break;
 				case Bytecode.INSTR_ADD :
 					o = operands[sp--];             // pop value
-					List<Object> list = (List<Object>)operands[sp]; // don't pop list
+					List<Object> list = (ObjectList)operands[sp]; // don't pop list
 					addToList(list, o);
 					break;
 				case Bytecode.INSTR_TOSTR :
@@ -1390,6 +1390,12 @@ public class Interpreter {
 		int b1 = memory[index]&0xFF; // mask off sign-extended bits
 		int b2 = memory[index+1]&0xFF;
 		return b1<<(8*1) | b2;
+	}
+
+	protected static class ObjectList extends ArrayList<Object> {
+	}
+
+	protected static class ArgumentsMap extends HashMap<String, Object> {
 	}
 
 }
