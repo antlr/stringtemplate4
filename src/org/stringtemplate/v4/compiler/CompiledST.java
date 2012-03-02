@@ -35,29 +35,29 @@ import org.stringtemplate.v4.misc.*;
 import java.io.*;
 import java.util.*;
 
-/** The result of compiling an ST.  Contains all the bytecode instructions,
+/** The result of compiling an {@link ST}.  Contains all the bytecode instructions,
  *  string table, bytecode address to source code map, and other bookkeeping
  *  info.  It's the implementation of an ST you might say.  All instances
- *  of the same template share a single implementation (impl field).
+ *  of the same template share a single implementation ({@link ST#impl} field).
  */
 public class CompiledST {
     public String name;
 
 	/**
-	Every template knows where it is relative to the group that
-	loaded it. The prefix is the relative path from the
-	root. "/prefix/name" is the fully qualified name of this
-	template. All ST.getInstanceOf() calls must use fully qualified
-	names. A "/" is added to the front if you don't specify
-	one. Template references within template code, however, uses
-	relative names, unless of course the name starts with "/".
-
-	This has nothing to do with the outer filesystem path to the group dir
-	or group file.
-
-	We set this as we load/compile the template.
-
-	Always ends with "/".
+	 * Every template knows where it is relative to the group that loaded it.
+	 * The prefix is the relative path from the root. {@code "/prefix/name"} is
+	 * the fully qualified name of this template. All calls to
+	 * {@link STGroup#getInstanceOf} calls must use fully qualified names. A
+	 * {@code "/"} is added to the front if you don't specify one. Template
+	 * references within template code, however, uses relative names, unless of
+	 * course the name starts with {@code "/"}.
+	 * <p/>
+	 * This has nothing to do with the outer filesystem path to the group dir or
+	 * group file.
+	 * <p/>
+	 * We set this as we load/compile the template.
+	 * <p/>
+	 * Always ends with {@code "/"}.
 	 */
 	public String prefix = "/";
 
@@ -67,10 +67,10 @@ public class CompiledST {
      */
     public String template;
 
-	/** The token that begins template definition; could be <@r> of region. */
+	/** The token that begins template definition; could be {@code <@r>} of region. */
 	public Token templateDefStartToken;
 
-	/** Overall token stream for template (debug only) */
+	/** Overall token stream for template (debug only). */
 	public TokenStream tokens;
 
 	/** How do we interpret syntax of template? (debug only) */
@@ -82,28 +82,32 @@ public class CompiledST {
 
 	public int numberOfArgsWithDefaultValues;
 
-    /** A list of all regions and subtemplates */
+    /** A list of all regions and subtemplates. */
     public List<CompiledST> implicitlyDefinedTemplates;
 
-    /** The group that physically defines this ST definition.  We use it to initiate
-     *  interpretation via ST.toString().  From there, it becomes field 'group'
-     *  in interpreter and is fixed until rendering completes.
-     */
+	/**
+	 * The group that physically defines this {@link ST} definition. We use it
+	 * to initiate interpretation via {@link ST#toString}. From there, it
+	 * becomes field {@link Interpreter#group} and is fixed until rendering
+	 * completes.
+	 */
     public STGroup nativeGroup = STGroup.defaultGroup;
 
-    /** Does this template come from a <@region>...<@end> embedded in
+    /** Does this template come from a {@code <@region>...<@end>} embedded in
      *  another template?
      */
     public boolean isRegion;
 
-    /** If someone refs <@r()> in template t, an implicit
-     *
-     *   @t.r() ::= ""
-     *
-     *  is defined, but you can overwrite this def by defining your
-     *  own.  We need to prevent more than one manual def though.  Between
-     *  this var and isEmbeddedRegion we can determine these cases.
-     */
+	/**
+	 * If someone refs {@code <@r()>} in template t, an implicit
+	 *
+	 * <p/>
+	 * {@code @t.r() ::= ""}
+	 * <p/>
+	 * is defined, but you can overwrite this def by defining your own. We need
+	 * to prevent more than one manual def though. Between this var and
+	 * {@link #isRegion} we can determine these cases.
+	 */
     public ST.RegionType regionDefType;
 
     public boolean isAnonSubtemplate; // {...}
@@ -161,7 +165,7 @@ public class CompiledST {
 		else for (FormalArgument a : args) addArg(a);
 	}
 
-	/** Used by ST.add() to add args one by one w/o turning on full formal args definition signal */
+	/** Used by {@link ST#add} to add args one by one without turning on full formal args definition signal. */
 	public void addArg(FormalArgument a) {
 		if ( formalArguments==null ) {
 			formalArguments = Collections.synchronizedMap(new LinkedHashMap<String,FormalArgument>());

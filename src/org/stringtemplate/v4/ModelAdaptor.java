@@ -29,25 +29,31 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 
-/** An object that knows how to convert property references to appropriate
- *  actions on a model object.  Some models, like JDBC, are interface based
- *  (we aren't supposed to care about implementation classes). Some other
- *  models don't follow getter method naming convention.  So, if we have
- *  an object of type M with property method foo() (not getFoo()), we
- *  register a model adaptor object, adap, that converts foo lookup to foo().
- *
- *  Given <a.foo>, we look up foo via the adaptor if "a instanceof(M)".
- *
- *  See unit tests.
+import java.util.Map;
+
+/**
+ * An object that knows how to convert property references to appropriate
+ * actions on a model object. Some models, like JDBC, are interface based (we
+ * aren't supposed to care about implementation classes). Some other models
+ * don't follow StringTemplate's getter method naming convention. So, if we have
+ * an object of type {@code M} with property method {@code M.foo()} (as opposed
+ * to {@code M.getFoo()}), we can register a model adaptor object, {@code adap},
+ * that converts a lookup for property {@code foo} into a call to
+ * {@code M.foo()}.
+ * <p/>
+ * Given {@code <a.foo>}, we look up {@code foo} via the adaptor if
+ * {@code a instanceof M}.
+ * <p/>
+ * @see TestModelAdaptors
  */
 public interface ModelAdaptor {
-	/** Lookup property name in o and return its value.  It's a good
-	 *  idea to cache a Method or Field reflection object to make
-	 *  this fast after the first look up.
-	 *
-	 *  property is normally a String but doesn't have to be. E.g.,
-	 *  if o is Map, property could be any key type.  If we need to convert
-	 *  to string, then it's done by ST and passed in here.
+	/**
+	 * Lookup property name in {@code o} and return its value.
+	 * <p/>
+	 * {@code property} is normally a {@code String} but doesn't have to be.
+	 * E.g., if {@code o} is {@link Map}, {@code property} could be
+	 * any key type. If we need to convert to {@code String}, then it's done by
+	 * {@code ST} and passed in here.
 	 */
 	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException;

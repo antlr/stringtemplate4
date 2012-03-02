@@ -100,10 +100,10 @@ public abstract class BaseTest {
     /**
      * Creates a file "Test.java" in the directory dirName containing a main
      * method with content starting as given by main.
-     * <p>
+     * <p/>
      * The value of a variable 'result' defined in 'main' is written to
      * System.out, followed by a newline character.
-     * <p>
+     * <p/>
      * The final newline character is just the '\n' character, not the
      * system specific line separator ({@link #newline}).
      *

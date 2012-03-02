@@ -64,22 +64,22 @@ public class Misc {
 //        return s.substring(0, s.length()-n);
 //    }
 
-    // strip newline from front but just one
+    /** Strip a single newline character from the front of {@code s}. */
     public static String trimOneStartingNewline(String s) {
         if ( s.startsWith("\r\n") ) s = s.substring(2);
         else if ( s.startsWith("\n") ) s = s.substring(1);
         return s;
     }
 
-    // strip newline from end but just one
+    /** Strip a single newline character from the end of {@code s}. */
     public static String trimOneTrailingNewline(String s) {
         if ( s.endsWith("\r\n") ) s = s.substring(0, s.length()-2);
         else if ( s.endsWith("\n") ) s = s.substring(0, s.length()-1);
         return s;
     }
 
-	/** Given, say, file:/tmp/test.jar!/org/foo/templates/main.stg
-	 *  convert to file:/tmp/test.jar!/org/foo/templates
+	/** Given, say, {@code file:/tmp/test.jar!/org/foo/templates/main.stg}
+	 *  convert to {@code file:/tmp/test.jar!/org/foo/templates}
 	 */
 	public static String stripLastPathElement(String f) {
 		int slash = f.lastIndexOf('/');
@@ -136,7 +136,10 @@ public class Misc {
 		}
 	}
 
-	/** Given index into string, compute the line and char position in line */
+	/**
+	 * Given {@code index} into string {@code s}, compute the line and char
+	 * position in line.
+	 */
 	public static Coordinate getLineCharPosition(String s, int index) {
         int line = 1;
         int charPos = 0;

@@ -30,7 +30,7 @@ package org.stringtemplate.v4;
 import java.io.IOException;
 import java.io.Writer;
 
-/** Just pass through the text */
+/** Just pass through the text. */
 public class NoIndentWriter extends AutoIndentWriter {
     public NoIndentWriter(Writer out) {
         super(out);

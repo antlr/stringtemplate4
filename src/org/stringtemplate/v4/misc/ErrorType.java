@@ -27,7 +27,7 @@
  */
 package org.stringtemplate.v4.misc;
 
-/** All the errors that can happen and how to generate a message */
+/** All the errors that can happen and how to generate a message. */
 public enum ErrorType {
     // RUNTIME SEMANTIC ERRORS
     NO_SUCH_TEMPLATE("no such template: %s"),

@@ -8,8 +8,8 @@ import org.stringtemplate.v4.misc.Misc;
 
 import java.net.URL;
 
-/** A dir of templates w/o headers like ST v3 had.  Still allows group files
- *  in dir though like STGroupDir parent.
+/** A directory of templates without headers like ST v3 had.  Still allows group
+ *  files in directory though like {@link STGroupDir} parent.
  */
 public class STRawGroupDir extends STGroupDir {
 	public STRawGroupDir(String dirName) {

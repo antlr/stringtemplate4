@@ -35,7 +35,8 @@ import org.stringtemplate.v4.compiler.GroupParser;
 /** */
 public class STLexerMessage extends STMessage {
 	public String msg;
-	public Token templateToken; // overall token pulled from group file
+	/** overall token pulled from group file */
+	public Token templateToken;
 	public String srcName;
 
 	public STLexerMessage(String srcName, String msg, Token templateToken, Throwable cause) {

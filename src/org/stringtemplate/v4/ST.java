@@ -41,24 +41,34 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 /** An instance of the StringTemplate. It consists primarily of
- *  a reference to its implementation (shared among all instances)
- *  and a hash table of attributes.  Because of dynamic scoping,
- *  we also need a reference to any enclosing instance. For example,
- *  in a deeply nested template for an HTML page body, we could still reference
- *  the title attribute defined in the outermost page template.
- *
- *  To use templates, you create one (usually via STGroup) and then inject
- *  attributes using add(). To render its attacks, use render().
+ *  a {@linkplain ST#impl reference} to its implementation (shared among all
+ *  instances) and a hash table of {@linkplain ST#locals attributes}.  Because
+ *  of dynamic scoping, we also need a reference to any enclosing instance. For
+ *  example, in a deeply nested template for an HTML page body, we could still
+ *  reference the title attribute defined in the outermost page template.
+ * <p/>
+ *  To use templates, you create one (usually via {@link STGroup}) and then inject
+ *  attributes using {@link #add}. To render its attacks, use {@link ST#render()}.
+ * <p/>
+ *  TODO: {@link ST#locals} is not actually a hash table like the documentation
+ *  says.
  */
 public class ST {
 	public final static String VERSION = "4.0.7-SNAPSHOT";
 
-	/** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
-    public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT }
+	/** {@code <@r()>}, {@code <@r>...<@end>}, and {@code @t.r() ::= "..."} defined manually by coder */
+    public static enum RegionType {
+		/** {@code <@r()>} */
+		IMPLICIT,
+		/** {@code <@r>...<@end>} */
+		EMBEDDED,
+		/** {@code @t.r() ::= "..."} */
+		EXPLICIT
+	}
 
 	/** Events during template hierarchy construction (not evaluation) */
 	public static class DebugState {
-		/** Record who made us? ConstructionEvent creates Exception to grab stack */
+		/** Record who made us? {@link ConstructionEvent} creates {@link Exception} to grab stack */
 		public ConstructionEvent newSTEvent;
 
 		/** Track construction-time add attribute "events"; used for ST user-level debugging */
@@ -75,44 +85,50 @@ public class ST {
 
 
 	/** Cache exception since this could happen a lot if people use "missing"
-	 *  to mean boolean false.
+	 *  to mean boolean {@code false}.
 	 */
 	public static STNoSuchAttributeException cachedNoSuchAttrException;
 
-    /** The implementation for this template among all instances of same tmpelate . */
+    /** The implementation for this template among all instances of same template . */
     public CompiledST impl;
 
-	/** Safe to simultaneously write via add, which is synchronized.  Reading
-	 *  during exec is, however, NOT synchronized.  So, not thread safe to
-	 *  add attributes while it is being evaluated.  Initialized to EMPTY_ATTR
-	 *  to distinguish null from empty.
+	/** Safe to simultaneously write via {@link #add}, which is synchronized.
+	 *  Reading during exec is, however, NOT synchronized.  So, not thread safe
+	 *  to add attributes while it is being evaluated.  Initialized to
+	 *  {@link #EMPTY_ATTR} to distinguish {@code null} from empty.
 	 */
 	protected Object[] locals;
 
-    /** Created as instance of which group? We need this to init interpreter
+    /** Created as instance of which group? We need this to initialize interpreter
      *  via render.  So, we create st and then it needs to know which
      *  group created it for sake of polymorphism:
      *
+	 *  <pre>
      *  st = skin1.getInstanceOf("searchbox");
      *  result = st.render(); // knows skin1 created it
+	 *  </pre>
 	 *
-	 *  Say we have a group, g1, with template t and import t and u templates from
-	 *  another group, g2.  g1.getInstanceOf("u") finds u in g2 but remembers
-	 *  that g1 created it.  If u includes t, it should create g1.t not g2.t.
+	 *  Say we have a group {@code g1} with template {@code t} that imports
+	 *  templates {@code t} and {@code u} from another group {@code g2}.
+	 *  {@code g1.getInstanceOf("u")} finds {@code u} in {@code g2} but remembers
+	 *  that {@code g1} created it.  If {@code u} includes {@code t}, it should
+	 *  create {@code g1.t} not {@code g2.t}.
 	 *
+	 *  <pre>
 	 *   g1 = {t(), u()}
 	 *   |
 	 *   v
 	 *   g2 = {t()}
+	 *  </pre>
      */
     public STGroup groupThatCreatedThisInstance;
 
-	/** If Interpreter.trackCreationEvents, track creation, add-attr events
-	 *  for each object. Create this object on first use.
+	/** If {@link STGroup#trackCreationEvents}, track creation and add
+	 *  attribute events for each object. Create this object on first use.
 	 */
 	public DebugState debugState;
 
-	/** Just an alias for ArrayList, but this way I can track whether a
+	/** Just an alias for {@link ArrayList}, but this way I can track whether a
      *  list is something ST created or it's an incoming list.
      */
     public static final class AttributeList<T> extends ArrayList<T> {
@@ -129,7 +145,7 @@ public class ST {
 	}
 
 	/** Used to make templates inline in code for simple things like SQL or log records.
-	 *  No formal args are set and there is no enclosing instance.
+	 *  No formal arguments are set and there is no enclosing instance.
 	 */
     public ST(String template) {
         this(STGroup.defaultGroup, template);
@@ -137,7 +153,7 @@ public class ST {
 
     /** Create ST using non-default delimiters; each one of these will live
      *  in it's own group since you're overriding a default; don't want to
-     *  alter STGroup.defaultGroup.
+     *  alter {@link STGroup#defaultGroup}.
      */
     public ST(String template, char delimiterStartChar, char delimiterStopChar) {
         this(new STGroup(delimiterStartChar, delimiterStopChar), template);
@@ -154,8 +170,8 @@ public class ST {
     }
 
 	/** Clone a prototype template.
-	 *  Copy all fields minus debugState; don't call this(), which creates
-	 *  ctor event
+	 *  Copy all fields minus {@link #debugState}; don't delegate to {@link #ST()},
+	 *  which creates {@link ConstructionEvent}.
 	 */
 	public ST(ST proto) {
 		this.impl = proto.impl;
@@ -167,14 +183,16 @@ public class ST {
 		this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
 	}
 
-	/** Inject an attribute (name/value pair). If there is already an
-     *  attribute with that name, this method turns the attribute into an
-     *  AttributeList with both the previous and the new attribute as elements.
-     *  This method will never alter a List that you inject.  If you send
-     *  in a List and then inject a single value element, add() copies
-     *  original list and adds the new value.
-	 *
-	 *  Return self so we can chain.  t.add("x", 1).add("y", "hi");
+	/** Inject an attribute (name/value pair). If there is already an attribute
+	 *  with that name, this method turns the attribute into an
+	 *  {@link AttributeList} with both the previous and the new attribute as
+	 *  elements. This method will never alter a {@link List} that you inject.
+	 *  If you send in a {@link List} and then inject a single value element,
+	 *  {@code add} copies original list and adds the new value.
+	 *  <p/>
+	 *  Return {@code this} so we can chain:
+	 *  <p/>
+	 *  {@code t.add("x", 1).add("y", "hi")}
      */
     public synchronized ST add(String name, Object value) {
         if ( name==null ) return this; // allow null value but not name
@@ -245,8 +263,9 @@ public class ST {
 		return this;
     }
 
-	/** Split "aggrName.{propName1,propName2}" into list [propName1,propName2]
-	 *  and the aggrName. Spaces are allowed around ','.
+	/** Split {@code aggrName.{propName1,propName2}} into list
+	 *  {@code [propName1, propName2]} and the {@code aggrName}. Spaces are
+	 *  allowed around {@code ','}.
 	 */
 	public synchronized ST addAggr(String aggrSpec, Object... values) {
 		int dot = aggrSpec.indexOf(".{");
@@ -298,9 +317,9 @@ public class ST {
 		locals[arg.index] = EMPTY_ATTR; // reset value
 	}
 
-	/** Set this.locals attr value when you only know the name, not the index.
-	 *  This is ultimately invoked by calling ST.add() from outside so toss
-	 *  an exception to notify them.
+	/** Set {@code locals} attribute value when you only know the name, not the
+	 *  index. This is ultimately invoked by calling {@code ST#add} from
+	 *  outside so toss an exception to notify them.
 	 */
     protected void rawSetAttribute(String name, Object value) {
 		if ( impl.formalArguments==null ) {
@@ -313,7 +332,7 @@ public class ST {
 		locals[arg.index] = value;
 	}
 
-	/** Find an attr in this template only. */
+	/** Find an attribute in this template only. */
 	public Object getAttribute(String name) {
 		FormalArgument localArg = null;
 		if ( impl.formalArguments!=null ) localArg = impl.formalArguments.get(name);
@@ -519,9 +538,13 @@ public class ST {
         return name;
     }
 
-	// ST.format("name, phone | <name>:<phone>", n, p);
-	// ST.format("<%1>:<%2>", n, p);
-	// ST.format("<name>:<phone>", "name", x, "phone", y);
+	/**
+	 * <pre>
+	 * ST.format("name, phone | &lt;name>:&lt;phone>", n, p);
+	 * ST.format("&lt;%1>:&lt;%2>", n, p);
+	 * ST.format("&lt;name>:&lt;phone>", "name", x, "phone", y);
+	 * </pre>
+	 */
 	public static String format(String template, Object... attributes) {
 		return format(STWriter.NO_WRAP, template, attributes);
 	}

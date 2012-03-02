@@ -29,7 +29,7 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.misc.STMessage;
 
-/** How to handle messages */
+/** How to handle messages. */
 public interface STErrorListener {
     public void compileTimeError(STMessage msg);
     public void runTimeError(STMessage msg);

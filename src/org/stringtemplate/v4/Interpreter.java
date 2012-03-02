@@ -30,6 +30,7 @@ package org.stringtemplate.v4;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.debug.*;
+import org.stringtemplate.v4.gui.STViz;
 import org.stringtemplate.v4.misc.*;
 
 import java.io.*;
@@ -37,22 +38,22 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-/** This class knows how to execute template bytecodes relative to a
- *  particular STGroup. To execute the byte codes, we need an output stream
- *  and a reference to an ST an instance. That instance's impl field points at
- *  a CompiledST, which contains all of the byte codes and other information
- *  relevant to execution.
- *
- *  This interpreter is a stack-based bytecode interpreter.  All operands
- *  go onto an operand stack.
- *
- *  If the group that we're executing relative to has debug set, we track
- *  interpreter events. For now, I am only tracking instance creation events.
- *  These are used by STViz to pair up output chunks with the template
- *  expressions that generate them.
- *
- *  We create a new interpreter for each ST.render(), DebugST.inspect, or
- *  DebugST.getEvents() invocation.
+/**
+ * This class knows how to execute template bytecodes relative to a particular
+ * {@link STGroup}. To execute the byte codes, we need an output stream and a
+ * reference to an {@link ST} instance. That instance's {@link ST#impl} field
+ * points at a {@link CompiledST}, which contains all of the byte codes and
+ * other information relevant to execution.
+ * <p/>
+ * This interpreter is a stack-based bytecode interpreter. All operands go onto
+ * an operand stack.
+ * <p/>
+ * If {@link #debug} set, we track interpreter events. For now, I am only
+ * tracking instance creation events. These are used by {@link STViz} to pair up
+ * output chunks with the template expressions that generate them.
+ * <p/>
+ * We create a new interpreter for each invocation of
+ * {@link ST#render}, {@link ST#inspect}, or {@link ST#getEvents}.
  */
 public class Interpreter {
 	public enum Option { ANCHOR, FORMAT, NULL, SEPARATOR, WRAP }
@@ -61,40 +62,49 @@ public class Interpreter {
 	public static final Set<String> predefinedAnonSubtemplateAttributes =
 		new HashSet<String>() { { add("i"); add("i0"); } };
 
-	/** Operand stack, grows upwards */
+	/** Operand stack, grows upwards. */
 	Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
-	int sp = -1;        // stack pointer register
-	int current_ip = 0; // mirrors ip in exec(), but visible to all methods
-	int nwline = 0;     // how many char written on this template LINE so far?
+	/** Stack pointer register. */
+	int sp = -1;
+	/** Mirrors {@code ip} in {@link #exec}, but visible to all methods. */
+	int current_ip = 0;
+	/** The number of characters written on this template line so far. */
+	int nwline = 0;
 
 	/** Stack of enclosing instances (scopes).  Used for dynamic scoping
 	 *  of attributes.
 	 */
 	public InstanceScope currentScope = null;
 
-	/** Exec st with respect to this group. Once set in ST.toString(),
-	 *  it should be fixed. ST has group also.
+	/** Render template with respect to this group.
+	 *
+	 *  @see ST#groupThatCreatedThisInstance
+	 *  @see CompiledST#nativeGroup
 	 */
 	STGroup group;
 
-	/** For renderers, we have to pass in the locale */
+	/** For renderers, we have to pass in the locale. */
 	Locale locale;
 
 	ErrorManager errMgr;
 
-	/** Dump bytecode instructions as we execute them? mainly for parrt */
+	/**
+	 * Dump bytecode instructions as they are executed. This field is mostly for
+	 * StringTemplate development.
+	 */
 	public static boolean trace = false;
 
-	/** If trace mode, track trace here */
+	/** If {@link #trace} is {@code true}, track trace here. */
 	// TODO: track the pieces not a string and track what it contributes to output
 	protected List<String> executeTrace;
 
-	/** Track events inside templates and in this.events */
+	/** When {@code true}, track events inside templates and in {@link #events}. */
 	public boolean debug = false;
 
-	/** Track everything happening in interp if debug across all templates.
-	 *  The last event in this field is the EvalTemplateEvent for the root
-	 *  template.
+	/**
+	 * Track everything happening in interpreter across all templates if
+	 * {@link #debug}. The last event in this field is the
+	 * {@link EvalTemplateEvent} for the root template.
 	 */
 	protected List<InterpEvent> events;
 
@@ -130,7 +140,10 @@ public class Interpreter {
 //		}
 //	}
 
-	/** Execute template self and return how many characters it wrote to out */
+	/** Execute template {@code self} and return how many characters it wrote to {@code out}.
+	 *
+	 * @return the number of characters written to {@code out}
+	 */
 	public int exec(STWriter out, ST self) {
 		if ( debug ) System.out.println("exec("+self.getName()+")");
 		pushScope(self);
@@ -622,7 +635,7 @@ public class Interpreter {
 	}
 
 	/** Write out an expression result that doesn't use expression options.
-	 *  E.g., <name>
+	 *  E.g., {@code <name>}
 	 */
 	protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
 		int start = out.index(); // track char we're about to write
@@ -638,7 +651,7 @@ public class Interpreter {
 	}
 
 	/** Write out an expression result that uses expression options.
-	 *  E.g., <names; separator=", ">
+	 *  E.g., {@code <names; separator=", ">}
 	 */
 	protected int writeObjectWithOptions(STWriter out, ST self, Object o,
 										 Object[] options)
@@ -765,7 +778,10 @@ public class Interpreter {
 		rot_map(self, attr, new ArrayList<ST>() {{add(st);}});
 	}
 
-	// <names:a()> or <names:a(),b()>
+	/**
+	 * Renders expressions of the form {@code <names:a()>} or
+	 * {@code <names:a(),b()>}.
+	 */
 	protected void rot_map(ST self, Object attr, List<ST> prototypes) {
 		if ( attr==null ) {
 			operands[++sp] = null;
@@ -818,7 +834,10 @@ public class Interpreter {
 		return mapped;
 	}
 
-	// <names,phones:{n,p | ...}> or <a,b:t()>
+	/**
+	 * Renders expressions of the form {@code <names,phones:{n,p | ...}>} or
+	 * {@code <a,b:t()>}.
+	 */
 	// todo: i, i0 not set unless mentioned? map:{k,v | ..}?
 	protected ST.AttributeList zip_map(ST self, List<Object> exprs, ST prototype) {
 		if ( exprs==null || prototype==null || exprs.size()==0 ) {
@@ -920,8 +939,12 @@ public class Interpreter {
 		}
 	}
 
-	/** Return the first attribute if multiple valued or the attribute
-	 *  itself if single-valued.  Used in <names:first()>
+	/**
+	 * Return the first attribute if multi-valued, or the attribute itself if
+	 * single-valued.
+	 * <p/>
+	 * This method is used for rendering expressions of the form
+	 * {@code <names:first()>}.
 	 */
 	public Object first(Object v) {
 		if ( v==null ) return null;
@@ -936,9 +959,13 @@ public class Interpreter {
 		return r;
 	}
 
-	/** Return the last attribute if multiple valued or the attribute
-	 *  itself if single-valued. Unless it's a list or array, this is pretty
-	 *  slow as it iterates until the last element.
+	/**
+	 * Return the last attribute if multi-valued, or the attribute itself if
+	 * single-valued. Unless it's a {@link List} or array, this is pretty slow
+	 * as it iterates until the last element.
+	 * <p/>
+	 * This method is used for rendering expressions of the form
+	 * {@code <names:last()>}.
 	 */
 	public Object last(Object v) {
 		if ( v==null ) return null;
@@ -957,8 +984,9 @@ public class Interpreter {
 		return last;
 	}
 
-	/** Return everything but the first attribute if multiple valued
-	 *  or null if single-valued.
+	/**
+	 * Return everything but the first attribute if multi-valued, or
+	 * {@code null} if single-valued.
 	 */
 	public Object rest(Object v) {
 		if ( v == null ) return null;
@@ -982,7 +1010,7 @@ public class Interpreter {
 		return null;  // rest of single-valued attribute is null
 	}
 
-	/** Return all but the last element.  trunc(x)=null if x is single-valued. */
+	/** Return all but the last element. <code>trunc(<i>x</i>)==null</code> if <code><i>x</i></code> is single-valued. */
 	public Object trunc(Object v) {
 		if ( v ==null ) return null;
 		if ( v instanceof List ) { // optimize list case
@@ -1003,7 +1031,7 @@ public class Interpreter {
 		return null; // trunc(x)==null when x single-valued attribute
 	}
 
-	/** Return a new list w/o null values. */
+	/** Return a new list without {@code null} values. */
 	public Object strip(Object v) {
 		if ( v ==null ) return null;
 		v = convertAnythingIteratableToIterator(v);
@@ -1019,8 +1047,11 @@ public class Interpreter {
 		return v; // strip(x)==x when x single-valued attribute
 	}
 
-	/** Return a list with the same elements as v but in reverse order. null
-	 *  values are NOT stripped out. use reverse(strip(v)) to do that.
+	/**
+	 * Return a list with the same elements as {@code v} but in reverse order.
+	 * <p/>
+	 * Note that {@code null} values are <i>not</i> stripped out; use
+	 * {@code reverse(strip(v))} to do that.
 	 */
 	public Object reverse(Object v) {
 		if ( v==null ) return null;
@@ -1034,10 +1065,12 @@ public class Interpreter {
 		return v;
 	}
 
-	/** Return the length of a mult-valued attribute or 1 if it is a
-	 *  single attribute. If attribute is null return 0.
-	 *  Special case several common collections and primitive arrays for
-	 *  speed. This method by Kay Roepke from v3.
+	/**
+	 * Return the length of a multi-valued attribute or 1 if it is a single
+	 * attribute. If {@code v} is {@code null} return 0.
+	 * <p/>
+	 * The implementation treats several common collections and arrays as
+	 * special cases for speed.
 	 */
 	public Object length(Object v) {
 		if ( v == null) return 0;
@@ -1134,11 +1167,12 @@ public class Interpreter {
 		return null;
 	}
 
-	/** Find an attr via dynamic scoping up enclosing scope chain.
-	 *  If not found, look for a map.  So attributes sent in to a template
-	 *  override dictionary names.
-	 *
-	 *  return EMPTY_ATTR if found def but no value
+	/**
+	 * Find an attribute via dynamic scoping up enclosing scope chain. Only look
+	 * for a dictionary definition if the attribute is not found, so attributes
+	 * sent in to a template override dictionary names.
+	 * <p/>
+	 * Return {@link ST#EMPTY_ATTR} if found definition but no value.
 	 */
 	public Object getAttribute(ST self, String name) {
 		InstanceScope scope = currentScope;
@@ -1179,12 +1213,13 @@ public class Interpreter {
 		return null;
 	}
 
-	/** Set any default argument values that were not set by the
-	 *  invoking template or by setAttribute directly.  Note
-	 *  that the default values may be templates.
-	 *
-	 *  The evaluation context is the invokedST template itself so
-	 *  template default args can see other args.
+	/**
+	 * Set any default argument values that were not set by the invoking
+	 * template or by {@link ST#add} directly. Note that the default values may
+	 * be templates.
+	 * <p/>
+	 * The evaluation context is the {@code invokedST} template itself so
+	 * template default arguments can see other arguments.
 	 */
 	public void setDefaultArguments(STWriter out, ST invokedST) {
 		if ( invokedST.impl.formalArguments==null ||
@@ -1238,9 +1273,10 @@ public class Interpreter {
 		currentScope.ret_ip = current_ip;
 	}
 
-	/** If an instance of x is enclosed in a y which is in a z, return
-	 *  a String of these instance names in order from topmost to lowest;
-	 *  here that would be "[z y x]".
+	/**
+	 * If an instance of <i>x</i> is enclosed in a <i>y</i> which is in a
+	 * <i>z</i>, return a {@code String} of these instance names in order from
+	 * topmost to lowest; here that would be {@code [z y x]}.
 	 */
 	public static String getEnclosingInstanceStackString(InstanceScope scope) {
 		List<ST> templates = getEnclosingInstanceStack(scope, true);
@@ -1332,10 +1368,13 @@ public class Interpreter {
 
 	public List<InterpEvent> getEvents() { return events; }
 
-	/** For every event, we track in overall list and in self's
-	 *  event list so that each template has a list of events used to
-	 *  create it.  If EvalTemplateEvent, store in parent's
-	 *  childEvalTemplateEvents list for STViz tree view.
+	/**
+	 * For every event, we track in overall {@link #events} list and in
+	 * {@code self}'s {@link InstanceScope#events} list so that each template
+	 * has a list of events used to create it. If {@code e} is an
+	 * {@link EvalTemplateEvent}, store in parent's
+	 * {@link InstanceScope#childEvalTemplateEvents} list for {@link STViz} tree
+	 * view.
 	 */
 	protected void trackDebugEvent(ST self, InterpEvent e) {
 //		System.out.println(e);

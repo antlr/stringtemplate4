@@ -29,10 +29,11 @@ package org.stringtemplate.v4.misc;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
-/** Iterator for an array so I don't have to copy the array to a List
- *  just to make it iteratable.
+/** Iterator for an array so I don't have to copy the array to a {@link List}
+ *  just to make it implement {@link Iterator}.
  */
 public class ArrayIterator implements Iterator {
 	/** Index into the data array */

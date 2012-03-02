@@ -31,47 +31,50 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
-/** Essentially a char filter that knows how to auto-indent output
- *  by maintaining a stack of indent levels.
- *
- *  The indent stack is a stack of strings so we can repeat original indent
- *  not just the same number of columns (don't have to worry about tabs vs
- *  spaces then).
- *
- *  Anchors are char positions (tabs won't work) that indicate where all
- *  future wraps should justify to.  The wrap position is actually the
- *  larger of either the last anchor or the indentation level.
- *
- *  This is a filter on a Writer.
- *
- *  \n is the proper way to say newline for options and templates.
- *  Templates can mix \r\n and \n them but use \n for sure in options like
- *  wrap="\n". ST will generate the right thing. Override the default (locale)
- *  newline by passing in a string to the constructor.
+/**
+ * Essentially a char filter that knows how to auto-indent output by maintaining
+ * a stack of indent levels.
+ * <p/>
+ * The indent stack is a stack of strings so we can repeat original indent not
+ * just the same number of columns (don't have to worry about tabs vs spaces
+ * then). Anchors are char positions (tabs won't work) that indicate where all
+ * future wraps should justify to. The wrap position is actually the larger of
+ * either the last anchor or the indentation level.
+ * <p/>
+ * This is a filter on a {@link Writer}.
+ * <p/>
+ * {@code \n} is the proper way to say newline for options and templates.
+ * Templates can mix {@code \r\n} and {@code \n} them, but use {@code \n} in
+ * options like {@code wrap="\n"}. This writer will render newline characters
+ * according to {@link #newline}. The default value is taken from the
+ * {@code line.separator} system property, and can be overridden by passing in a
+ * {@code String} to the appropriate constructor.
  */
 public class AutoIndentWriter implements STWriter {
-	/** stack of indents; use List as it's much faster than Stack. Grows
+	/** Stack of indents. Use {@link List} as it's much faster than {@link Stack}. Grows
 	 *  from 0..n-1.
 	 */
 	public List<String> indents = new ArrayList<String>();
 
-	/** Stack of integer anchors (char positions in line); avoid Integer
+	/** Stack of integer anchors (char positions in line); avoid {@link Integer}
 	 *  creation overhead.
 	 */
 	public int[] anchors = new int[10];
 	public int anchors_sp = -1;
 
-	/** \n or \r\n? */
+	/** {@code \n} or {@code \r\n}? */
 	public String newline;
 
 	public Writer out = null;
     public boolean atStartOfLine = true;
 
-	/** Track char position in the line (later we can think about tabs).
-	 *  Indexed from 0.  We want to keep charPosition <= lineWidth.
-	 *  This is the position we are *about* to write not the position
-	 *  last written to.
+	/**
+	 * Track char position in the line (later we can think about tabs). Indexed
+	 * from 0. We want to keep {@code charPosition <= }{@link #lineWidth}.
+	 * This is the position we are <em>about</em> to write, not the position
+	 * last written to.
 	 */
     public int charPosition = 0;
 
@@ -118,7 +121,7 @@ public class AutoIndentWriter implements STWriter {
 
     public int index() { return charIndex; }
 
-	/** Write out a string literal or attribute expression or expression element.*/
+	/** Write out a string literal or attribute expression or expression element. */
 	public int write(String str) throws IOException {
 		int n = 0;
 		int nll = newline.length();
@@ -154,11 +157,12 @@ public class AutoIndentWriter implements STWriter {
 		return write(str);
 	}
 
-	/** Write out a string literal or attribute expression or expression element.
-	 *
-	 *  If doing line wrap, then check wrap before emitting this str.  If
-	 *  at or beyond desired line width then emit a \n and any indentation
-	 *  before spitting out this str.
+	/**
+	 * Write out a string literal or attribute expression or expression element.
+	 * <p/>
+	 * If doing line wrap, then check {@code wrap} before emitting {@code str}.
+	 * If at or beyond desired line width then emit a {@link #newline} and any
+	 * indentation before spitting out {@code str}.
 	 */
 	public int write(String str, String wrap) throws IOException {
 		int n = writeWrap(wrap);

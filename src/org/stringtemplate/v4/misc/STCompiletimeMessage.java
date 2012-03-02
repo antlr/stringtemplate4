@@ -35,8 +35,10 @@ import org.stringtemplate.v4.compiler.GroupParser;
  *  interpretation. For ST parsing ONLY not group parsing.
  */
 public class STCompiletimeMessage extends STMessage {
-	public Token templateToken; // overall token pulled from group file
-    public Token token;         // token inside template
+	/** overall token pulled from group file */
+	public Token templateToken;
+	/** token inside template */
+    public Token token;
     public String srcName;
 
     public STCompiletimeMessage(ErrorType error, String srcName, Token templateToken, Token t) {

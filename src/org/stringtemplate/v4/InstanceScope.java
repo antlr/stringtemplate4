@@ -30,32 +30,39 @@ package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.debug.EvalTemplateEvent;
 import org.stringtemplate.v4.debug.InterpEvent;
+import org.stringtemplate.v4.gui.STViz;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** */
 public class InstanceScope {
-	public InstanceScope parent;	// template that invoked us
-	public ST st;      				// template we're executing
-	public int ret_ip; 				// return address
+	/** Template that invoked us. */
+	public InstanceScope parent;
+	/** Template we've executing. */
+	public ST st;
+	/** Return address. */
+	public int ret_ip;
 
-	/* Includes the EvalTemplateEvent for this template.  This
-	*  is a subset of Interpreter.events field. The final
-	*  EvalTemplateEvent is stored in 3 places:
-	*
-	*  	1. In enclosing instance's childTemplateEvents
-	*  	2. In this event list
-	*  	3. In the overall event list
-	*
-	*  The root ST has the final EvalTemplateEvent in its list.
-	*
-	*  All events get added to the enclosingInstance's event list.
-	*/
+	/**
+	 * Includes the {@link EvalTemplateEvent} for this template. This is a
+	 * subset of {@link Interpreter#events} field. The final
+	 * {@link EvalTemplateEvent} is stored in 3 places:
+	 *
+	 * <ol>
+	 *  <li>In {@link #parent}'s {@link #childEvalTemplateEvents} list</li>
+	 *  <li>In this list</li>
+	 *  <li>In the {@link Interpreter#events} list</li>
+	 * </ol>
+	 *
+	 * The root ST has the final {@link EvalTemplateEvent} in its list.
+	 * <p/>
+	 * All events get added to the {@link #parent}'s event list.
+	 */
 	public List<InterpEvent> events = new ArrayList<InterpEvent>();
 
-	/** All templates evaluated and embedded in this ST. Used
-	 *  for tree view in STViz.
+	/** All templates evaluated and embedded in this {@link ST}. Used
+	 *  for tree view in {@link STViz}.
 	 */
 	public List<EvalTemplateEvent> childEvalTemplateEvents =
 		new ArrayList<EvalTemplateEvent>();

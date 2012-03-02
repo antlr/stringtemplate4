@@ -33,7 +33,7 @@ import org.stringtemplate.v4.ST;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-/** Upon error, ST creates an STMessage or subclass instance and notifies
+/** Upon error, ST creates an {@link STMessage} or subclass instance and notifies
  *  the listener.  This root class is used for IO and internal errors.
  *
  *  @see STRuntimeMessage

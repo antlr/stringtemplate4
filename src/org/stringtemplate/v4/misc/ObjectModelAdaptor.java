@@ -37,12 +37,12 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 public class ObjectModelAdaptor implements ModelAdaptor {
-	/** Cache exact attribute type and property name reflection Member object */
+	/** Cache exact attribute type and property name reflection {@link Member} object. */
 	protected DoubleKeyMap<Class, String, Member> classAndPropertyToMemberCache =
 		new DoubleKeyMap<Class, String, Member>();
 
 	/** Cached exception to reuse since creation is expensive part.
-	 *  Just in case people use "missing" to mean boolean false not error.
+	 *  Just in case people use "missing" to mean boolean {@code false} not error.
 	 */
 	static STNoSuchPropertyException cachedException;
 

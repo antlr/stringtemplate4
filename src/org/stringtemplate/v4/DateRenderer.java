@@ -31,10 +31,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/** A renderer for java.util.Date and Calendar objects. It understands a
- *  variety of format names as shown in formatToInt field.  By default
- *  it assumes "short" format.  A prefix of date: or time: shows only
- *  those components of the time object.
+/**
+ * A renderer for {@link Date} and {@link Calendar} objects. It understands a
+ * variety of format names as shown in {@link #formatToInt} field. By default it
+ * assumes {@code "short"} format. A prefix of {@code "date:"} or
+ * {@code "time:"} shows only those components of the time object.
  */
 public class DateRenderer implements AttributeRenderer {
     public static final Map<String,Integer> formatToInt =
