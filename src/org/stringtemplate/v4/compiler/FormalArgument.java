@@ -30,12 +30,12 @@ package org.stringtemplate.v4.compiler;
 import org.antlr.runtime.Token;
 
 /** Represents the name of a formal argument defined in a template:
- *
- *  test(a,b,x=defaultvalue) ::= "<a> <n> <x>"
- *
+ *  <pre>
+ *  test(a,b,x=defaultvalue) ::= "&lt;a> &lt;n> &lt;x>"
+ *  </pre>
  *  Each template has a set of these formal arguments or uses
  *  a placeholder object: UNKNOWN (indicating that no arguments
- *  were specified such as when we create a template with "new ST(...)").
+ *  were specified such as when we create a template with {@code new ST(...)}).
  *
  *  Note: originally, I tracked cardinality as well as the name of an
  *  attribute.  I'm leaving the code here as I suspect something may come
@@ -66,7 +66,7 @@ public class FormalArgument {
 
 	public int index; // which argument is it? from 0..n-1
 
-	/** If they specified default value x=y, store the token here */
+	/** If they specified default value {@code x=y}, store the token here */
 	public Token defaultValueToken;
 	public Object defaultValue; // x="str", x=true, x=false
 	public CompiledST compiledDefaultValue; // x={...}

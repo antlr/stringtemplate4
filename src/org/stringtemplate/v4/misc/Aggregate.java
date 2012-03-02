@@ -35,40 +35,40 @@ import java.util.HashMap;
  *  I often have lists of things that need to be formatted, but the list
  *  items are actually pieces of data that are not already in an object.  I
  *  need ST to do something like:
- *
- *  Ter=3432
- *  Tom=32234
+ *  <p>
+ *  Ter=3432<br/>
+ *  Tom=32234<br/>
  *  ....
- *
+ *  <p>
  *  using template:
- *
- *  $items:{it.name$=$it.type$}$
- *
- *  This example will call getName() on the objects in items attribute, but
+ *  <p>
+ *  {@code $items:{it.name$=$it.type$}$}
+ *  <p>
+ *  This example will call {@code getName()} on the objects in items attribute, but
  *  what if they aren't objects?  I have perhaps two parallel arrays
  *  instead of a single array of objects containing two fields.  One
- *  solution is allow Maps to be handled like properties so that it.name
- *  would fail getName() but then see that it's a Map and do
- *  it.get("name") instead.
- *
+ *  solution is allow {@code Map}s to be handled like properties so that {@code it.name}
+ *  would fail {@code getName()} but then see that it's a {@code Map} and do
+ *  {@code it.get("name")} instead.
+ *  <p>
  *  This very clean approach is espoused by some, but the problem is that
  *  it's a hole in my separation rules.  People can put the logic in the
  *  view because you could say: "go get bob's data" in the view:
- *
- *  Bob's Phone: $db.bob.phone$
- *
+ *  <p>
+ *  Bob's Phone: {@code $db.bob.phone$}
+ *  <p>
  *  A view should not be part of the program and hence should never be able
  *  to go ask for a specific person's data.
- *
+ *  <p>
  *  After much thought, I finally decided on a simple solution.  I've
  *  added setAttribute variants that pass in multiple property values,
  *  with the property names specified as part of the name using a special
- *  attribute name syntax: "name.{propName1,propName2,...}".  This
- *  object is a special kind of HashMap that hopefully prevents people
+ *  attribute name syntax: {@code "name.{propName1,propName2,...}"}.  This
+ *  object is a special kind of {@code HashMap} that hopefully prevents people
  *  from passing a subclass or other variant that they have created as
- *  it would be a loophole.  Anyway, the ASTExpr.getObjectProperty()
- *  method looks for Aggregate as a special case and does a get() instead
- *  of getPropertyName.
+ *  it would be a loophole.  Anyway, the {@link ASTExpr#getObjectProperty}
+ *  method looks for {@code Aggregate} as a special case and does a {@link #get(String)} instead
+ *  of {@code getPropertyName}.
  */
 public class Aggregate {
 	public HashMap<String, Object> properties = new HashMap<String, Object>();

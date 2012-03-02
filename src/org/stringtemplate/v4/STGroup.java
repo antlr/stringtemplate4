@@ -47,11 +47,11 @@ public class STGroup {
     public static final String DICT_KEY = "key";
     public static final String DEFAULT_KEY = "default";
 
-    /** Load files using what encoding? */
+    /** Load files using what encoding? Defaults to UTF-8. */
     public String encoding = "UTF-8";
 
     /** Every group can import templates/dictionaries from other groups.
-     *  The list must be synchronized (see importTemplates).
+     *  The list must be synchronized (see {@link STGroup#importTemplates}).
      */
     protected final List<STGroup> imports = Collections.synchronizedList(new ArrayList<STGroup>());
 
@@ -64,8 +64,8 @@ public class STGroup {
     protected Map<String, CompiledST> templates =
 		Collections.synchronizedMap(new LinkedHashMap<String, CompiledST>());
 
-    /** Maps dict names to HashMap objects.  This is the list of dictionaries
-     *  defined by the user like typeInitMap ::= ["int":"0"]
+    /** Maps dictionary names to {@link Map} objects.  This is the list of dictionaries
+     *  defined by the user like {@code typeInitMap ::= ["int":"0"]}
      */
     protected Map<String, Map<String,Object>> dictionaries =
         Collections.synchronizedMap(new HashMap<String, Map<String,Object>>());
@@ -73,20 +73,20 @@ public class STGroup {
     /** A dictionary that allows people to register a renderer for
      *  a particular kind of object for any template evaluated relative to this
      *  group.  For example, a date should be formatted differently depending
-     *  on the locale.  You can set Date.class to an object whose
-     *  toString(Object) method properly formats a Date attribute
+     *  on the locale.  You can set {@code Date.class} to an object whose
+     *  {@code toString(Object)} method properly formats a {@link Date} attribute
      *  according to locale.  Or you can have a different renderer object
      *  for each locale.
-     *
+     *  <p>
 	 *  Order of addition is recorded and matters.  If more than one
 	 *  renderer works for an object, the first registered has priority.
-	 *
-	 *  Renderer associated with type t works for object o if
-	 *
-	 * 		t.isAssignableFrom(o.getClass()) // would assignment t = o work?
-	 *
-	 *  So it works if o is subclass or implements t.
-	 *
+	 *  <p>
+	 *  Renderer associated with type {@code t} works for object {@code o} if
+	 *  <pre>
+	 *  t.isAssignableFrom(o.getClass()) // would assignment t = o work?
+	 *  </pre>
+	 *  So it works if {@code o} is subclass or implements {@code t}.
+	 *  <p>
      *  This structure is synchronized.
      */
     protected Map<Class, AttributeRenderer> renderers;
@@ -96,10 +96,9 @@ public class STGroup {
 	 *  for any template evaluated relative to this group.
 	 *
 	 *  ST initializes with model adaptors that know how to pull
-	 *  properties out of Objects, Maps, and STs.
+	 *  properties out of {@link Object}s, {@link Map}s, and {@link ST}s.
 	 *
-	 *  The last one you register gets priority; do least to most
-	 *  specific.
+	 *  The last one you register gets priority; do least to most specific.
 	 */
 	protected Map<Class, ModelAdaptor> adaptors =
 		Collections.synchronizedMap(
@@ -111,11 +110,11 @@ public class STGroup {
 			}}
 		);
 
-	/** Cache exact attribute type to adaptor object */
+	/** Cache exact attribute type to {@link ModelAdaptor} object. */
 	protected Map<Class, ModelAdaptor> typeToAdaptorCache =
 		Collections.synchronizedMap(new LinkedHashMap<Class, ModelAdaptor>());
 
-	/** Cache exact attribute type to renderer object */
+	/** Cache exact attribute type to {@link AttributeRenderer} object. */
 	protected Map<Class, AttributeRenderer> typeToRendererCache;
 
     /** Used to indicate that the template doesn't exist.
@@ -125,15 +124,16 @@ public class STGroup {
 
 	public static final ErrorManager DEFAULT_ERR_MGR = new ErrorManager();
 
-	/** Watch loading of groups and templates */
+	/** Watch loading of groups and templates. */
 	public static boolean verbose = false;
 
-	/** For debugging with STViz. Records where in code an ST was created
+	/** For debugging with STViz. Records where in code an {@link ST} was created
 	 *  and where code added attributes.
 	 */
 	public static boolean trackCreationEvents = false;
 
-	/** v3 compatibility; used to iterate across values not keys like v4.
+	/** v3 compatibility; used to iterate across {@link Map#values()} instead of
+	 *  v4's default {@link Map#keySet()}.
 	 *  But to convert ANTLR templates, it's too hard to find without
 	 *  static typing in templates.
 	 */
@@ -141,7 +141,7 @@ public class STGroup {
 
 	public static STGroup defaultGroup = new STGroup();
 
-	/** The errMgr for entire group; all compilations and executions.
+	/** The {@link ErrorManager} for entire group; all compilations and executions.
 	 *  This gets copied to parsers, walkers, and interpreters.
 	 */
 	public ErrorManager errMgr = STGroup.DEFAULT_ERR_MGR;
@@ -154,7 +154,7 @@ public class STGroup {
     }
 
     /** The primary means of getting an instance of a template from this
-     *  group. Names must be absolute, fully-qualified names like a/b
+     *  group. Names must be absolute, fully-qualified names like {@code /a/b}
      */
     public ST getInstanceOf(String name) {
 		if ( name==null ) return null;
@@ -191,7 +191,7 @@ public class STGroup {
         return st;
     }
 
-	/** Create singleton template for use with dictionary values */
+	/** Create singleton template for use with dictionary values. */
 	public ST createSingleton(Token templateToken) {
 		String template;
 		if ( templateToken.getType()==GroupParser.BIGSTRING ) {
@@ -210,7 +210,7 @@ public class STGroup {
 	}
 
     /** Is this template defined in this group or from this group below?
-     *  Names must be absolute, fully-qualified names like /a/b
+     *  Names must be absolute, fully-qualified names like {@code /a/b}
      */
     public boolean isDefined(String name) {
         return lookupTemplate(name)!=null;
@@ -237,10 +237,10 @@ public class STGroup {
     }
 
 	/** "unload" all templates, dictionaries and import relationships, but leave
-	 *  renderers and adaptors.  This essentially forces next getInstanceOf
-	 *  to reload templates. Call unload() on each group in the imports list
+	 *  renderers and adaptors.  This essentially forces next {@link #getInstanceOf}
+	 *  to reload templates. Call {@code unload()} on each group in the imports list
 	 *  and remove every import from the imports list imported with
-	 *  "clearOnUnload".
+	 *  {@link #importTemplates(STGroup, boolean)} with {@code clearOnUnload} set to {@code true}.
 	 */
 	public synchronized void unload() {
 		templates.clear();
@@ -254,12 +254,12 @@ public class STGroup {
 		importsToClearOnUnload.clear();
 	}
 
-    /** Load st from disk if dir or load whole group file if .stg file (then
-     *  return just one template). name is fully-qualified.
+    /** Load st from disk if directory or load whole group file if .stg file (then
+     *  return just one template). {@code name} is fully-qualified.
      */
     protected CompiledST load(String name) { return null; }
 
-    /** Force a load if it makes sense for the group */
+    /** Force a load if it makes sense for the group. */
     public void load() { ; }
 
     protected CompiledST lookupImportedTemplate(String name) {
@@ -297,7 +297,7 @@ public class STGroup {
 		return null;
 	}
 
-	// for testing
+	/** for testing */
 	public CompiledST defineTemplate(String name, String argsS, String template) {
 		if ( name.charAt(0)!='/' ) name = "/"+name;
 		String[] args = argsS.split(",");
@@ -334,7 +334,7 @@ public class STGroup {
         return code;
     }
 
-    /** Make name and alias for target.  Replace any previous def of name */
+    /** Make name and alias for target.  Replace any previous definition of name. */
     public CompiledST defineTemplateAlias(Token aliasT, Token targetT) {
         String alias = aliasT.getText();
         String target = targetT.getText();
@@ -434,7 +434,7 @@ public class STGroup {
 		templates.remove(name);
 	}
 
-	/** Compile a template */
+	/** Compile a template. */
 	public CompiledST compile(String srcName,
 							  String name,
 							  List<FormalArgument> args,
@@ -446,7 +446,9 @@ public class STGroup {
 		return c.compile(srcName, name, args, template, templateToken);
 	}
 
-    /** The "foo" of t() ::= "<@foo()>" is mangled to "/region__/t__foo" */
+    /** The {@code "foo"} of {@code t() ::= "<@foo()>"} is mangled to
+	 *  {@code "/region__/t__foo"}
+	 */
     public static String getMangledRegionName(String enclosingTemplateName,
                                               String name)
     {
@@ -456,7 +458,7 @@ public class STGroup {
         return "/region__"+enclosingTemplateName+"__"+name;
     }
 
-    /** Return "t.foo" from "/region__/t__foo" */
+    /** Return {@code "t.foo"} from {@code "/region__/t__foo"} */
     public static String getUnMangledTemplateName(String mangledName) {
         String t = mangledName.substring("/region__".length(),
                                          mangledName.lastIndexOf("__"));
@@ -473,7 +475,7 @@ public class STGroup {
     }
 
     /**
-     * Make this group import templates/dictionaries from g.
+     * Make this group import templates/dictionaries from {@code g}.
      *
      * On unload imported templates are unloaded but stay in the imports list.
      */
@@ -484,18 +486,18 @@ public class STGroup {
 	/** Import template files, directories, and group files.
 	 *  Priority is given to templates defined in the current group;
 	 *  this, in effect, provides inheritance. Polymorphism is in effect so
-	 *  that if an inherited template references template t() then we
-	 *  search for t() in the subgroup first.
-	 *
+	 *  that if an inherited template references template {@code t()} then we
+	 *  search for {@code t()} in the subgroup first.
+	 *  <p>
 	 *  Templates are loaded on-demand from import dirs.  Imported groups are
 	 *  loaded on-demand when searching for a template.
-	 *
+	 *  <p>
 	 *  The listener of this group is passed to the import group so errors
 	 *  found while loading imported element are sent to listener of this group.
-	 *
+	 *  <p>
 	 *  On unload imported templates are unloaded and removed from the imports
 	 *  list.
-	 *
+	 *  <p>
 	 *  This method is called when processing import statements specified in
 	 *  group files. Use {@link #importTemplates(STGroup)} to import templates
 	 *  'programmatically'.
@@ -611,7 +613,7 @@ public class STGroup {
 		}
 	}
 
-	/** Load template file into this group using absolute filename */
+	/** Load template file into this group using absolute filename. */
 	public CompiledST loadAbsoluteTemplateFile(String fileName) {
 		ANTLRFileStream fs;
 		try {
@@ -626,9 +628,10 @@ public class STGroup {
 		return loadTemplateFile("", fileName, fs);
 	}
 
-	/** Load template stream into this group. unqualifiedFileName is "a.st".
-	 *  The prefix is path from group root to unqualifiedFileName like /subdir
-	 *  if file is in /subdir/a.st
+	/** Load template stream into this group. {@code unqualifiedFileName} is
+	 *  {@code "a.st"}. The {@code prefix} is path from group root to
+	 *  {@code unqualifiedFileName} like {@code "/subdir"} if file is in
+	 *  {@code /subdir/a.st}.
 	 */
 	public CompiledST loadTemplateFile(String prefix, String unqualifiedFileName, CharStream templateStream) {
 		GroupLexer lexer = new GroupLexer(templateStream);
@@ -652,14 +655,15 @@ public class STGroup {
 	}
 
 	/** Add an adaptor for a kind of object so ST knows how to pull properties
-	 *  from them. Add adaptors in increasing order of specificity.  ST adds Object,
-	 *  Map, and ST model adaptors for you first. Adaptors you add have
-	 *  priority over default adaptors.
-	 *
-	 *  If an adaptor for type T already exists, it is replaced by the adaptor arg.
-	 *
+	 *  from them. Add adaptors in increasing order of specificity.  ST adds
+	 *  {@link Object}, {@link Map}, and {@link ST} model adaptors for you first.
+	 *  Adaptors you add have priority over default adaptors.
+	 *  <p>
+	 *  If an adaptor for type {@code T} already exists, it is replaced by the
+	 *  {@code adaptor} argument.
+	 *  <p>
 	 *  This must invalidate cache entries, so set your adaptors up before
-	 *  render()ing your templates for efficiency.
+	 *  {@link #render()}ing your templates for efficiency.
 	 */
 	public void registerModelAdaptor(Class attributeType, ModelAdaptor adaptor) {
 		if ( attributeType.isPrimitive() ) {
@@ -670,7 +674,9 @@ public class STGroup {
 		invalidateModelAdaptorCache(attributeType);
 	}
 
-	/** remove at least all types in cache that are subclasses or implement attributeType */
+	/** Remove at least all types in cache that are subclasses or implement
+	 *  {@code attributeType}.
+	 */
 	public void invalidateModelAdaptorCache(Class attributeType) {
 		typeToAdaptorCache.clear(); // be safe, not clever; wack all values
 	}
@@ -696,9 +702,9 @@ public class STGroup {
 	}
 
     /** Register a renderer for all objects of a particular "kind" for all
-     *  templates evaluated relative to this group.  Use r to render if
-	 *  object in question is instanceof(attributeType).  Recursively set
-	 *  renderer into all import groups.
+     *  templates evaluated relative to this group.  Use {@code r} to render if
+	 *  object in question is an instance of {@code attributeType}.  Recursively
+	 *  set renderer into all import groups.
      */
     public void registerRenderer(Class attributeType, AttributeRenderer r) {
 		registerRenderer(attributeType, r, true);
@@ -722,15 +728,15 @@ public class STGroup {
 		}
 	}
 
-	/** Get renderer for class T associated with this group.
+	/** Get renderer for class {@code T} associated with this group.
 	 *
-	 *  For non-imported groups and object-to-render of class T, use renderer
-	 *  (if any) registered for T.  For imports, any renderer
+	 *  For non-imported groups and object-to-render of class {@code T}, use renderer
+	 *  (if any) registered for {@code T}.  For imports, any renderer
 	 *  set on import group is ignored even when using an imported template.
 	 *  You should set the renderer on the main group
 	 *  you use (or all to be sure).  I look at import groups as
 	 *  "helpers" that should give me templates and nothing else. If you
-	 *  have multiple renderers for String, say, then just make uber combined
+	 *  have multiple renderers for {@code String}, say, then just make uber combined
 	 *  renderer with more specific format names.
 	 */
 	public AttributeRenderer getAttributeRenderer(Class attributeType) {

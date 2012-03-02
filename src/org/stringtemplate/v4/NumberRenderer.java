@@ -33,11 +33,11 @@ import java.util.Locale;
 /** Works with Byte, Short, Integer, Long, and BigInteger as well as
  *  Float, Double, and BigDecimal.  You pass in a format string suitable
  *  for Formatter object:
- *
- *  http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html
- *
- *  For example, "%10d" emits a number as a decimal int padding to 10 char.
- *  This can even do long to date conversions using the format string.
+ *  <p>
+ *  <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html"/>
+ *  <p>
+ *  For example, {@code %10d} emits a number as a decimal int padding to 10 char.
+ *  This can even do {@code long} to {@code Date} conversions using the format string.
  */
 public class NumberRenderer implements AttributeRenderer {
     public String toString(Object o, String formatString, Locale locale) {

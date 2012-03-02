@@ -31,7 +31,7 @@ import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-/** Iterator for an array so I don't have to copy the array to a List
+/** Iterator for an array so I don't have to copy the array to a {@code List}
  *  just to make it iteratable.
  */
 public class ArrayIterator implements Iterator {

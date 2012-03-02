@@ -32,7 +32,7 @@ import org.antlr.runtime.*;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.misc.ErrorType;
 
-/** A group derived from a string not a file or dir. */
+/** A group derived from a string not a file or directory. */
 public class STGroupString extends STGroup {
 	public String sourceName;
 	public String text;
