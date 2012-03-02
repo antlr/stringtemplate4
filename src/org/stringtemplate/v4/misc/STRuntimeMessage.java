@@ -31,7 +31,7 @@ import org.stringtemplate.v4.*;
 
 /** Used to track errors that occur in the ST interpreter. */
 public class STRuntimeMessage extends STMessage {
-	/** Which interpreter was executing?  If null, can be IO error or
+	/** Which interpreter was executing?  If {@code null}, can be IO error or
 	 *  bad URL etc...
 	 */
 	Interpreter interp;
@@ -62,7 +62,7 @@ public class STRuntimeMessage extends STMessage {
 		if ( interp!=null ) scope = interp.currentScope;
 	}
 
-    /** Given an ip (code location), get it's range in source template then
+    /** Given an IP (code location), get it's range in source template then
      *  return it's template line:col.
      */
     public String getSourceLocation() {

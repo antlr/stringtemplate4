@@ -40,11 +40,11 @@ public class InstanceScope {
 	public ST st;      				// template we're executing
 	public int ret_ip; 				// return address
 
-	/* Includes the EvalTemplateEvent for this template.  This
-	*  is a subset of Interpreter.events field. The final
+	/** Includes the {@link EvalTemplateEvent} for this template.  This
+	*  is a subset of {@link Interpreter#events} field. The final
 	*  EvalTemplateEvent is stored in 3 places:
 	*
-	*  	1. In enclosing instance's childTemplateEvents
+	*  	1. In enclosing instance's childTemplateEvents (todo: missing?)
 	*  	2. In this event list
 	*  	3. In the overall event list
 	*

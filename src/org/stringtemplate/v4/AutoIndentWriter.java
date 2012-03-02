@@ -51,7 +51,7 @@ import java.util.List;
  *  newline by passing in a string to the constructor.
  */
 public class AutoIndentWriter implements STWriter {
-	/** stack of indents; use List as it's much faster than Stack. Grows
+	/** Stack of indents. Use List as it's much faster than Stack. Grows
 	 *  from 0..n-1.
 	 */
 	public List<String> indents = new ArrayList<String>();
@@ -69,7 +69,7 @@ public class AutoIndentWriter implements STWriter {
     public boolean atStartOfLine = true;
 
 	/** Track char position in the line (later we can think about tabs).
-	 *  Indexed from 0.  We want to keep charPosition <= lineWidth.
+	 *  Indexed from 0.  We want to keep charPosition &lt;= {@link #lineWidth}.
 	 *  This is the position we are *about* to write not the position
 	 *  last written to.
 	 */

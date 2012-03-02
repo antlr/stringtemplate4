@@ -44,7 +44,7 @@ public class STGroupFile extends STGroup {
 
     protected boolean alreadyLoaded = false;
 
-    /** Load a file relative to current dir or from root or via CLASSPATH. */
+    /** Load a file relative to current directory or from root or via CLASSPATH. */
 	public STGroupFile(String fileName) { this(fileName, '<', '>'); }
 
 	public STGroupFile(String fileName, char delimiterStartChar, char delimiterStopChar) {

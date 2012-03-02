@@ -30,7 +30,10 @@ package org.stringtemplate.v4.debug;
 import org.stringtemplate.v4.InstanceScope;
 
 public class EvalExprEvent extends InterpEvent {
-	public final int exprStartChar, exprStopChar; // template pattern location
+	/** Index of first char in template. */
+	public final int exprStartChar;
+	/** Index of last char in template (inclusive). */
+	public final int exprStopChar;
 	public final String expr;
 	public EvalExprEvent(InstanceScope scope, int start, int stop,
 						 int exprStartChar, int exprStopChar)

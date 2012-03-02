@@ -34,16 +34,16 @@ import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.misc.*;
 
 /** temp data used during construction and functions that fill it / use it.
- *  Result is impl CompiledST object.
+ *  Result is {@link #impl} CompiledST object.
  */
 public class CompilationState {
 	/** The compiled code implementation to fill in. */
 	CompiledST impl = new CompiledST();
 
-	/** Track unique strings; copy into CompiledST's String[] after compilation */
+	/** Track unique strings; copy into {@link CompiledST#strings} after compilation. */
 	StringTable stringtable = new StringTable();
 
-	/** Track instruction location within code.instrs array; this is
+	/** Track instruction location within {@code impl.instrs} array; this is
 	 *  next address to write to.  Byte-addressable memory.
 	 */
 	int ip = 0;

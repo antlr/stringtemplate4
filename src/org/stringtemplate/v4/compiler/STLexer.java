@@ -34,23 +34,23 @@ import org.stringtemplate.v4.misc.*;
 import java.util.*;
 
 /** This class represents the tokenizer for templates. It operates in two modes:
- *  inside and outside of expressions. It behaves like an ANTLR TokenSource,
- *  implementing nextToken().  Outside of expressions, we can return these
- *  token types: TEXT, INDENT, LDELIM (start of expr), RCURLY (end of subtemplate),
- *  and NEWLINE.  Inside of an expression, this lexer returns all of the tokens
- *  needed by the STParser. From the parser's point of view, it can treat a
- *  template as a simple stream of elements.
+ *  inside and outside of expressions. It implements the  {@link TokenSource}
+ *  interface so it can be used with ANTLR parsers. Outside of expressions, we
+ *  can return these token types: TEXT, INDENT, LDELIM (start of expr), RCURLY
+ *  (end of subtemplate), and NEWLINE.  Inside of an expression, this lexer returns
+ *  all of the tokens needed by {@link STParser}. From the parser's point of view,
+ *  it can treat a template as a simple stream of elements.
  *
- *  This class defines the token types and communicates these values to STParser.g
- *  via STLexer.tokens file (which must remain consistent).
+ *  This class defines the token types and communicates these values to {@code STParser.g}
+ *  via {@code STLexer.tokens} file (which must remain consistent).
  */
 public class STLexer implements TokenSource {
     public static final char EOF = (char)-1;            // EOF char
     public static final int EOF_TYPE = CharStream.EOF;  // EOF token type
 
-    /** We build STToken tokens instead of relying on CommonToken so we
-     *  can override toString(). It just converts token types to
-     *  token names like 23 to LDELIM.
+    /** We build {@code STToken} tokens instead of relying on {@link CommonToken}
+	 *  so we can override {@link #toString()}. It just converts token types to
+     *  token names like 23 to {@code "LDELIM"}.
      */
     public static class STToken extends CommonToken {
         public STToken(CharStream input, int type, int start, int stop) {
@@ -122,17 +122,19 @@ public class STLexer implements TokenSource {
 
     /** To be able to properly track the inside/outside mode, we need to
      *  track how deeply nested we are in some templates. Otherwise, we
-     *  know whether a '}' and the outermost subtemplate to send this back to
-     *  outside mode.
+     *  know whether a {@code '}'} and the outermost subtemplate to send this
+	 *  back to outside mode.
      */
 	public int subtemplateDepth = 0; // start out *not* in a {...} subtemplate
 
 	ErrorManager errMgr;
 
-	Token templateToken; // template embedded in a group file? this is the template
+	/** template embedded in a group file? this is the template */
+	Token templateToken;
 
     CharStream input;
-    char c;        // current character
+	/** current character */
+    char c;
 
     /** When we started token, track initial coordinates so we can properly
      *  build token objects.
@@ -174,7 +176,10 @@ public class STLexer implements TokenSource {
 		return t;
 	}
 
-    /** Ensure x is next character on the input stream */
+    /** Consume if {@code x} is next character on the input stream.
+	 *
+	 * @throws NoViableAltException
+	 */
     public void match(char x) {
         if ( c != x ) {
 			NoViableAltException e = new NoViableAltException("",0,0,input);
@@ -427,7 +432,12 @@ public class STLexer implements TokenSource {
         else return newToken(TEXT);
     }
 
-    /** ID  :   ('a'..'z'|'A'..'Z'|'_'|'/') ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'/')* ; */
+    /** <pre>
+	 *  ID  : ('a'..'z'|'A'..'Z'|'_'|'/')
+	 *        ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'/')*
+	 *      ;
+	 *  </pre>
+	 */
     Token mID() {
         // called from subTemplate; so keep resetting position during speculation
         startCharIndex = input.index();
@@ -440,7 +450,16 @@ public class STLexer implements TokenSource {
         return newToken(ID);
     }
 
-    /** STRING : '"' ( '\\' '"' | '\\' ~'"' | ~('\\'|'"') )* '"' ; */
+    /** <pre>
+	 *  STRING : '"'
+	 *           (   '\\' '"'
+	 *           |   '\\' ~'"'
+	 *           |   ~('\\'|'"')
+	 *           )*
+	 *           '"'
+	 *         ;
+	 * </pre>
+	 */
     Token mSTRING() {
     	//{setText(getText().substring(1, getText().length()-1));}
         boolean sawEscape = false;

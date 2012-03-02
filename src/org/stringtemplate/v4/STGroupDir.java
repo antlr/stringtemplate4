@@ -104,8 +104,8 @@ public class STGroupDir extends STGroup {
 		throw new UnsupportedOperationException(msg);
 	}
 
-	/** Load a template from dir or group file.  Group file is given
-	 *  precedence over dir with same name. name is always fully-qualified.
+	/** Load a template from directory or group file.  Group file is given
+	 *  precedence over directory with same name. {@code name} is always fully-qualified.
      */
 	@Override
     protected CompiledST load(String name) {
@@ -147,7 +147,7 @@ public class STGroupDir extends STGroup {
         return rawGetTemplate(name);
     }
 
-	/** Load .st as relative file name relative to root by prefix */
+	/** Load .st as relative file name relative to root by {@code prefix}. */
 	public CompiledST loadTemplateFile(String prefix, String unqualifiedFileName) {
 		if ( verbose ) System.out.println("loadTemplateFile("+unqualifiedFileName+") in groupdir "+
 										  "from "+root+" prefix="+prefix);

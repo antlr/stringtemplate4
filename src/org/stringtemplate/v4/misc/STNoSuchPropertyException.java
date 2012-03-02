@@ -30,7 +30,7 @@ package org.stringtemplate.v4.misc;
 
 import org.stringtemplate.v4.compiler.STException;
 
-/** For <a.b>, object a has no b property */
+/** For {@code <a.b>}, object {@code a} has no {@code b} property */
 public class STNoSuchPropertyException extends STException {
 	public Object o;
 	public String propertyName;

@@ -80,7 +80,7 @@ public class Compiler {
         }
     };
 
-	/** Name subtemplates _sub1, _sub2, ... */
+	/** Name subtemplates {@code _sub1}, {@code _sub2}, ... */
 	public static int subtemplateCount = 0;
 
 	public STGroup group;
@@ -94,14 +94,14 @@ public class Compiler {
 		return code;
 	}
 
-	/** Compile full template with unknown formal args. */
+	/** Compile full template with unknown formal arguments. */
 	public CompiledST compile(String name, String template) {
 		CompiledST code = compile(null, name, null, template, null);
 		code.hasFormalArgs = false;
 		return code;
 	}
 
-	/** Compile full template with respect to a list of formal args. */
+	/** Compile full template with respect to a list of formal arguments. */
 	public CompiledST compile(String srcName,
 							  String name,
 							  List<FormalArgument> args,

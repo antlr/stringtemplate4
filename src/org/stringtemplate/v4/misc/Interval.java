@@ -27,7 +27,7 @@
  */
 package org.stringtemplate.v4.misc;
 
-/** An inclusive interval a..b.  Used to track ranges in output and
+/** An inclusive interval {@code a..b}.  Used to track ranges in output and
  *  template patterns (for debugging).
  */
 public class Interval {

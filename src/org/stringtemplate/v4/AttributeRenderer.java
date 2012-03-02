@@ -34,9 +34,9 @@ import java.util.Locale;
  *  group for a given Java type.
  *
  *  If the format string passed to the renderer is not recognized then simply
- *  call toString().
+ *  call {@link Object#toString()}.
  *
- *  formatString can be null but locale will at least be Locale.getDefault()
+ *  {@code formatString} can be null but locale will at least be {@link Locale#getDefault()}
  */
 public interface AttributeRenderer {
     public String toString(Object o, String formatString, Locale locale);

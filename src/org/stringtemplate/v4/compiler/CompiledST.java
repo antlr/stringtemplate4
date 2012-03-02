@@ -67,7 +67,7 @@ public class CompiledST {
      */
     public String template;
 
-	/** The token that begins template definition; could be <@r> of region. */
+	/** The token that begins template definition; could be {@code <@r>} of region. */
 	public Token templateDefStartToken;
 
 	/** Overall token stream for template (debug only) */
@@ -86,19 +86,19 @@ public class CompiledST {
     public List<CompiledST> implicitlyDefinedTemplates;
 
     /** The group that physically defines this ST definition.  We use it to initiate
-     *  interpretation via ST.toString().  From there, it becomes field 'group'
+     *  interpretation via {@link ST#toString()}.  From there, it becomes field 'group'
      *  in interpreter and is fixed until rendering completes.
      */
     public STGroup nativeGroup = STGroup.defaultGroup;
 
-    /** Does this template come from a <@region>...<@end> embedded in
+    /** Does this template come from a {@code <@region>...<@end>} embedded in
      *  another template?
      */
     public boolean isRegion;
 
-    /** If someone refs <@r()> in template t, an implicit
+    /** If someone refs {@code <@r()>} in template t, an implicit
      *
-     *   @t.r() ::= ""
+     *   {@code @t.r() ::= ""}
      *
      *  is defined, but you can overwrite this def by defining your
      *  own.  We need to prevent more than one manual def though.  Between
@@ -161,7 +161,7 @@ public class CompiledST {
 		else for (FormalArgument a : args) addArg(a);
 	}
 
-	/** Used by ST.add() to add args one by one w/o turning on full formal args definition signal */
+	/** Used by {@link ST#add} to add args one by one w/o turning on full formal args definition signal */
 	public void addArg(FormalArgument a) {
 		if ( formalArguments==null ) {
 			formalArguments = Collections.synchronizedMap(new LinkedHashMap<String,FormalArgument>());
