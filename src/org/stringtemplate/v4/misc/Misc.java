@@ -35,6 +35,12 @@ import java.util.Iterator;
 public class Misc {
     public static final String newline = System.getProperty("line.separator");
 
+	/** Makes it clear when a comparison is intended as reference equality.
+	 */
+	public static boolean referenceEquals(Object x, Object y) {
+		return x == y;
+	}
+
     // Seriously: why isn't this built in to java?
     public static String join(Iterator iter, String separator) {
         StringBuilder buf = new StringBuilder();

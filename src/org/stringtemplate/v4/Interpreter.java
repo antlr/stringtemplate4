@@ -1330,7 +1330,7 @@ public class Interpreter {
 		StringBuilder buf = new StringBuilder();
 		dis.disassembleInstruction(buf,ip);
 		String name = self.impl.name+":";
-		if ( self.impl.name==ST.UNKNOWN_NAME ) name = "";
+		if ( Misc.referenceEquals(self.impl.name, ST.UNKNOWN_NAME) ) name = "";
 		tr.append(String.format("%-40s",name+buf));
 		tr.append("\tstack=[");
 		for (int i = 0; i <= sp; i++) {
