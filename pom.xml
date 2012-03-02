@@ -15,13 +15,13 @@
         SNAPSHOT replaced with the the data, time and unique number.
     -->
 
-    <version>4.0.4-SNAPSHOT</version>
+    <version>4.0.5</version>
 
     <!--
         The name of the project as seen by IDEs and release documentation etc.
     -->
 
-    <name>ANTLR ST4 4.0.4-SNAPSHOT</name>
+    <name>ANTLR ST4 4.0.5</name>
     <description>StringTemplate is a java template engine for generating source code,
 web pages, emails, or any other formatted text output.
 
@@ -119,7 +119,7 @@ There are currently about 600 StringTemplate source downloads a month.
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr-runtime</artifactId>
-            <version>3.3</version>
+            <version>3.4.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
             
