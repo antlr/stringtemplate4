@@ -229,7 +229,7 @@ public abstract class BaseTest {
 						delimiterStartChar,
 						delimiterStopChar);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("[");
 		int i = 1;
         Token t = tokens.LT(i);

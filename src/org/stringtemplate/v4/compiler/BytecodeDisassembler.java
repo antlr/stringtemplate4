@@ -110,7 +110,7 @@ public class BytecodeDisassembler {
     }
 
     private String showConstPoolOperand(int poolIndex) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("#");
         buf.append(poolIndex);
         String s = "<bad string index>";
@@ -137,7 +137,7 @@ public class BytecodeDisassembler {
     }
 
     public String strings() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		int addr = 0;
 		if ( code.strings!=null ) {
 			for (Object o : code.strings) {
@@ -156,7 +156,7 @@ public class BytecodeDisassembler {
     }
 
     public String sourceMap() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int addr = 0;
         for (Interval I : code.sourceMap) {
             if ( I!=null ) {
