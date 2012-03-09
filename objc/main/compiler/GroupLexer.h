@@ -1,4 +1,4 @@
-// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-02-22 16:19:26
+// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-03-08 11:25:55
 
 /* =============================================================================
  * Standard antlr OBJC runtime definitions

@@ -283,7 +283,7 @@ static NSString *SUBTEMPLATE_PREFIX = @"_sub";
 
 + (Compiler *) newCompiler
 {
-    return [[Compiler alloc] init];
+    return [[Compiler alloc] initWithSTGroup:STGroup.defaultGroup];
 }
 
 + (Compiler *) newCompiler:(STGroup *)aSTGroup
@@ -352,20 +352,22 @@ static NSString *SUBTEMPLATE_PREFIX = @"_sub";
 {
     BOOL mustRelease = NO;
     __strong FormalArgument *a;
-    if ( [args count] > 0 ) {
-        [args retain];
-        a = [args objectAtIndex:0];
-        [a retain];
-        mustRelease = YES;
+    if ( args != nil ) {
+            [args retain];
+        if ( [args count] > 0 ) {
+            a = [args objectAtIndex:0];
+            [a retain];
+            mustRelease = YES;
+        }
     }
-    if ( args == nil )
+    if ( args == nil ) {
         NSLog( @"args is nil" );
+    }
     ANTLRStringStream *is = [[ANTLRStringStream newANTLRStringStream:template] retain];
     is.name = (srcName != nil) ? srcName : name;
     STLexer *lexer = nil;
 	if ( aTemplateToken != nil &&
-		 aTemplateToken.type == GroupParser.TBIGSTRING_NO_NL )
-		{
+		 aTemplateToken.type == GroupParser.TBIGSTRING_NO_NL ) {
             lexer = [STLexer_NO_NL newSTLexer_NO_NL:group.errMgr input:is templateToken:aTemplateToken delimiterStartChar:group.delimiterStartChar delimiterStopChar:group.delimiterStopChar];
 		}
 	else {

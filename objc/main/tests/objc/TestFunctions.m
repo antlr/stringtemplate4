@@ -1,5 +1,4 @@
 #import "TestFunctions.h"
-#import "BaseTest.h"
 #import "STGroupFile.h"
 
 @implementation TestFunctions_Anon1
@@ -144,6 +143,7 @@
     NSString *expected = @"Ter";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test02Length
@@ -155,6 +155,7 @@
     NSString *expected = @"2";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test03LengthWithNullValues
@@ -166,6 +167,7 @@
     NSString *expected = @"4";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test04FirstOp
@@ -177,6 +179,7 @@
     NSString *expected = @"Ter";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test05TruncOp
@@ -188,6 +191,7 @@
     NSString *expected = @"Ter, Tom";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test06RestOp
@@ -199,6 +203,7 @@
     NSString *expected = @"Tom, Sriram";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test07RestOpEmptyList
@@ -208,6 +213,7 @@
     NSString *expected = @"";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test08ReUseOfRestResult
@@ -223,6 +229,7 @@
     NSString *expected = @"Tom, Tom";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test09LastOp
@@ -234,6 +241,7 @@
     NSString *expected = @"Sriram";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test10StripOp
@@ -248,6 +256,7 @@
     NSString *expected = @"TomSriram";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test11LengthStrip
@@ -262,6 +271,7 @@
     NSString *expected = @"2";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test12CombinedOp
@@ -275,6 +285,7 @@
     NSString *expected = @"1, b";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test13CatListAndSingleAttribute
@@ -287,6 +298,7 @@
     NSString *expected = @"1, 2, 3, a";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test14ReUseOfCat
@@ -305,6 +317,7 @@
     NSString *expected = @"TerTomFoo, TerTomFoo";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test15CatListAndEmptyAttributes
@@ -317,6 +330,7 @@
     NSString *expected = @"1, 2, 3, a";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test16NestedOp
@@ -328,6 +342,7 @@
     NSString *expected = @"Tom";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test17FirstWithOneAttributeOp
@@ -337,6 +352,7 @@
     NSString *expected = @"Ter";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test18LastWithOneAttributeOp
@@ -346,6 +362,7 @@
     NSString *expected = @"Ter";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test19LastWithLengthOneListAttributeOp
@@ -355,6 +372,7 @@
     NSString *expected = @"Ter";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test20RestWithOneAttributeOp
@@ -364,6 +382,7 @@
     NSString *expected = @"";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test21RestWithLengthOneListAttributeOp
@@ -373,6 +392,7 @@
     NSString *expected = @"";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test22RepeatedRestOp
@@ -383,6 +403,7 @@
     NSString *expected = @"Tom, Tom";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test23IncomingLists
@@ -393,6 +414,7 @@
     NSString *expected = @"Tom, Tom";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test24FirstWithCatAttribute
@@ -405,6 +427,7 @@
     NSString *expected = @"Ter";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test25FirstWithListOfMaps
@@ -424,6 +447,7 @@
     expected = @"x5707";
     result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test26FirstWithListOfMaps2
@@ -443,6 +467,7 @@
     expected = @"Ter!";
     result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test27Trim
@@ -452,6 +477,7 @@
     NSString *expected = @"Ter";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test28Strlen
@@ -461,6 +487,7 @@
     NSString *expected = @"6";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test29Reverse
@@ -472,6 +499,7 @@
     NSString *expected = @"Sriram, Tom, Ter";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 @end

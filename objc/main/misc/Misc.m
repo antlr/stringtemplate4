@@ -94,7 +94,7 @@ static NSString *const newline = @"\n";
 {
     if (f == nil)
         return nil;
-    f = [self getFileName:f];
+    f = [Misc getFileName:f];
     NSRange r;
     r = [f rangeOfString:@"." options:NSBackwardsSearch];
     if (r.location == NSNotFound) 
@@ -102,7 +102,6 @@ static NSString *const newline = @"\n";
     return [f substringWithRange:NSMakeRange(0, r.location)];
 }
 
-#ifdef DONTUSEYET
 + (NSString *) getFileName:(NSString *)fullFileName
 {
     if (fullFileName == nil)
@@ -110,8 +109,8 @@ static NSString *const newline = @"\n";
     NSString *f = [fullFileName lastPathComponent];
     return f;
 }
-#endif
 
+#ifdef DONTUSEYET
 + (NSString *) getFileName:(NSString *)fullFileName
 {
     NSError *anError;
@@ -119,15 +118,30 @@ static NSString *const newline = @"\n";
     NSFileWrapper *f = [[NSFileWrapper alloc] initWithURL:aURL options:NSFileWrapperReadingWithoutMapping error:&anError];
     return [f filename];
 }
+#endif
+
++ (NSString *) getParent:(NSString *)name
+{
+    //System.out.println("getParent("+name+")="+p);
+    if (name == nil) return nil;
+    int lastSlash = [Misc lastIndexOf:'/' inString:name];
+    if (lastSlash > 0) return [name substringWithRange:NSMakeRange(0, lastSlash)];
+    if (lastSlash==0) return @"/";
+    //System.out.println("getParent("+name+")="+p);
+    return @"";
+}
 
 + (NSString *) getPrefix:(NSString *)name
 {
+    NSInteger len;
     if (name == nil)
-        return nil;
-    name = [name stringByDeletingLastPathComponent];
-    if ([name length] > 1 )
-        return name;
-    return @"";
+        return @"/";
+    NSString *parent = [Misc getParent:name];
+    NSString *prefix = parent;
+    len = [parent length];
+    if ( [parent characterAtIndex:len-1] != '/' )
+        prefix = [NSString stringWithFormat:@"%@/", prefix];
+    return prefix;
 }
 
 + (NSString *) replaceEscapes:(NSString *)s
@@ -214,6 +228,18 @@ static NSString *const newline = @"\n";
         m = nil;
     }
     return m;
+}
+
++ (NSInteger) lastIndexOf:(char)aChar inString:(NSString *)aString
+{
+    int len;
+    for (len = [aString length]; len > 0; len-- ) {
+        if ([aString characterAtIndex:len-1] == aChar) {
+            len--;
+            return len;
+        }
+    }
+    return -1;
 }
 
 @end

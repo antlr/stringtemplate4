@@ -76,6 +76,7 @@
      * The list must be synchronized (see importTemplates).
      */
     __strong AMutableArray *imports;
+    __strong AMutableArray *importsToClearOnUnload;
     unichar delimiterStartChar;
     unichar delimiterStopChar;
     
@@ -185,6 +186,8 @@
 - (void) defineDictionary:(NSString *)name mapping:(AMutableDictionary *)mapping;
 - (void) importTemplates:(STGroup *)g;
 - (void) importTemplatesWithFileName:(CommonToken *)fileNameToken;
+- (void) importTemplates:(STGroup *)g ClearOnUnload:(BOOL)clearOnUnload;
+- (AMutableArray *) getImportedGroups;
 - (void) loadGroupFile:(NSString *)prefix fileName:(NSString *)fileName;
 - (CompiledST *) loadTemplateFile:(NSString *)prefix fileName:(NSString *)fileName stream:(id<CharStream>)templateStream;
 - (CompiledST *) loadAbsoluteTemplateFile:(NSString *) fileName;
@@ -192,6 +195,7 @@
 - (void) invalidateModelAdaptorCache:(Class)attributeType;
 - (id<ModelAdaptor>) getModelAdaptor:(Class)attributeType;
 - (void) registerRenderer:(Class)attributeType r:(id<AttributeRenderer>)r;
+- (void) registerRenderer:(Class)attributeType r:(id<AttributeRenderer>)r recurs:(BOOL)recursive;
 - (id<AttributeRenderer>) getAttributeRenderer:(Class)attributeType;
 - (ST *) createStringTemplate:(CompiledST *)anImpl;
 - (ST *) createStringTemplateInternally:(CompiledST *)anImpl;
@@ -208,6 +212,7 @@
 - (NSString *) getName;
 - (id<STErrorListener>) getListener;
 - (void) setListener:(id<STErrorListener>)aListener;
+- (AMutableArray *) getTemplateNames;
 
 @property (assign) NSStringEncoding encoding; 
 @property (retain) AMutableArray *imports;

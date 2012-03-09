@@ -29,6 +29,7 @@
 #import <ANTLR/ANTLR.h>
 #import "BaseTest.h"
 #import "TestCoreBasics.h"
+#import "ST.h"
 #import "STGroup.h"
 #import "STGroupString.h"
 #import "STGroupDir.h"
@@ -172,7 +173,7 @@
     NSString *expected = @"hi Ter!";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    [st release];
+    return;
 }
 
 - (void) test02aChainAttr
@@ -180,10 +181,12 @@
     NSString * template = @"<x>:<names>!";
     ST *st = [[ST newSTWithTemplate:template] retain];
     [[[st add:@"names" value:@"Ter"] add:@"names" value:@"Tom"] addInt:@"x" value:1];
+    NSLog( @"st.locals = %@", [st.locals description]);
     NSString * expected = @"1:TerTom!";
     NSString * result = [st render];
+    NSLog( @"st.locals = %@", [st.locals description]);
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    [st release];
+    return;
 }
 
 - (void) test03SetUnknownAttr
@@ -204,9 +207,7 @@
     }
     NSString *expected = @"no such attribute: name";
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    [errors release];
-    [st release];
-    [group release];
+    return;
 }
 
 - (void) test04MultiAttr
@@ -218,8 +219,7 @@
     NSString *expected = @"hi TerTom!";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    
-    [st release];
+    return;
 }
 
 - (void) test05AttrIsList
@@ -234,7 +234,7 @@
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
     STAssertTrue( (cnt = [names count] == 2), @"Expected [names count] == 2 but got %d)", cnt );
-    [st release];
+    return;
 }
 
 - (void) test06AttrIsArray
@@ -247,7 +247,7 @@
     NSString *expected = @"hi TerTomSumana!";  // ST sees 3 names
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    [st release];
+    return;
 }
 
 - (void) test07Prop
@@ -258,7 +258,7 @@
     NSString *expected = @"1: parrt";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    [st release];
+    return;
 }
 
 - (void) test08PropWithNoAttr
@@ -269,18 +269,19 @@
     NSString *expected = @"b: ";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    [st release];
+    return;
 }
 
 - (void) test08aMapAcrossDictionaryUsesKeys
 {
     NSString * template = @"<foo:{f | <f>}>"; // checks field and method getter
     ST * st = [[ST newSTWithTemplate:template] retain];
-    [st add:@"foo" value:[AMutableDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"b", @"d", nil] forKeys:[NSArray arrayWithObjects:@"a", @"c", nil]]];
+    //[st add:@"foo" value:[AMutableDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"b", @"d", nil] forKeys:[NSArray arrayWithObjects:@"a", @"c", nil]]];
+    [st add:@"foo" value:[AMutableDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"a", @"c", nil] forKeys:[NSArray arrayWithObjects:@"b", @"d", nil]]];
     NSString * expected = @"ac";
     NSString * result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    [st release];
+    return;
 }
 
 - (void) test09STProp
@@ -293,6 +294,7 @@
     NSString *expected = @"Ter";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test10BooleanISProp
@@ -303,6 +305,7 @@
     NSString *expected = @"true";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test11BooleanHASProp
@@ -313,6 +316,7 @@
     NSString *expected = @"true";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test12NullAttrProp
@@ -322,6 +326,7 @@
     NSString *expected = @": ";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test13NoSuchProp
@@ -346,6 +351,7 @@
     expected = @"User.qqq";
     result = e.propertyName;
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test14NullIndirectProp
@@ -369,6 +375,7 @@
     result = e.propertyName;
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
  */
+    return;
 }
 
 - (void) test15PropConvertsToString
@@ -391,6 +398,7 @@
     result = e.propertyName;
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
  */
+    return;
 }
 
 - (void) test16Include
@@ -401,6 +409,7 @@
     NSString *expected = @"load kewl\ndaddy;";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test17IncludeWithArg
@@ -413,6 +422,7 @@
     NSString *expected = @"load kewl arg daddy;";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test18IncludeWithArg2
@@ -425,10 +435,10 @@
     NSString *expected = @"load kewl arg blech daddy;";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    
+    return;
 }
 
-#ifdef DONTUSEYET
+//#ifdef DONTUSEYET
 - (void) test18aPassThruWithDefaultValue
 {
     // should not set y when it sees "no value" from above
@@ -439,6 +449,7 @@
     NSString *expected = @"x99";
     NSString *result = [a render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test18bPassThruWithDefaultValueThatLacksDefinitionAbove
@@ -451,6 +462,7 @@
     NSString *expected = @"x99";
     NSString *result = [a render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test18cPassThruPartialArgs
@@ -463,6 +475,7 @@
     NSString *expected = @"x99";
     NSString *result = [a render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test18dPassThruNoMissingArgs
@@ -475,8 +488,9 @@
     NSString *expected = @"199";
     NSString *result = [a render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
-#endif
+//#endif
 
 - (void) test19IncludeWithNestedArgs
 {
@@ -488,7 +502,7 @@
     NSString *expected = @"load kewl blech arg daddy;";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    
+    return;
 }
 
 - (void) test20DefineTemplate
@@ -503,7 +517,7 @@
     NSString *expected = @"hi TerTomSumana!";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    
+    return;
 }
 
 - (void) test21Map
@@ -518,7 +532,7 @@
     NSString *expected = @"hi [Ter][Tom][Sumana]!";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    
+    return;
 }
 
 - (void) test22IndirectMap
@@ -534,6 +548,7 @@
     NSString *expected = @"[Ter][Tom][Sumana]!";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test23MapWithExprAsTemplateName
@@ -552,6 +567,7 @@
     NSString *expected = @"*Ter**Tom**Sumana*";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test24ParallelMap
@@ -568,6 +584,7 @@
     NSString *expected = @"hi Ter:x5001;Tom:x5002;Sumana:x5003;";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test25ParallelMapWith3Versus2Elements
@@ -583,6 +600,7 @@
     NSString *expected = @"hi Ter:x5001;Tom:x5002;Sumana:;";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test26ParallelMapThenMap
@@ -599,6 +617,7 @@
     NSString *expected = @"hi [Ter:x5001;][Tom:x5002;][Sumana:;]";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test27MapThenParallelMap
@@ -615,6 +634,7 @@
     NSString *expected = @"hi [Ter]:x5001;[Tom]:x5002;[Sumana]:;";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test28MapIndexes
@@ -630,6 +650,7 @@
     NSString *expected = @"1:Ter, 2:Tom, 3:Sumana";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test29MapIndexes2
@@ -644,6 +665,7 @@
     NSString *expected = @"1:Ter, 2:Tom, 3:Sumana";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test30MapSingleValue
@@ -656,6 +678,7 @@
     NSString *expected = @"hi [Ter]!";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test31MapNullValue
@@ -667,6 +690,7 @@
     NSString *expected = @"hi !";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test32MapNullValueInList
@@ -681,6 +705,7 @@
     NSString *expected = @"Ter, Tom, Sumana";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test33RepeatedMap
@@ -696,6 +721,7 @@
     NSString *expected = @"hi ([Ter])([Tom])([Sumana])!";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test34RoundRobinMap
@@ -711,7 +737,7 @@
     NSString *expected = @"hi [Ter](Tom)[Sumana]!";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    
+    return;
 }
 
 - (void) test35TrueCond
@@ -722,6 +748,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test36EmptyIFTemplate
@@ -732,6 +759,7 @@
     NSString *expected = @"";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test37CondParens
@@ -741,6 +769,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test38FalseCond
@@ -750,6 +779,7 @@
     NSString *expected = @"";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test39FalseCond2
@@ -760,6 +790,7 @@
     NSString *expected = @"";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test40FalseCondWithFormalArgs
@@ -773,6 +804,7 @@
     NSString *expected = [NSString stringWithFormat:@"foo%@bar", newline];
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test41ElseIf2
@@ -783,6 +815,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test42ElseIf3
@@ -793,6 +826,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test43NotTrueCond
@@ -803,6 +837,7 @@
     NSString *expected = @"";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test44NotFalseCond
@@ -812,6 +847,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test45ParensInConditonal
@@ -825,6 +861,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test46ParensInConditonal2
@@ -838,6 +875,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test47TrueCondWithElse
@@ -848,6 +886,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test48FalseCondWithElse
@@ -857,6 +896,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test49ElseIf
@@ -867,6 +907,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test50ElseIfNoElseAllFalse
@@ -876,6 +917,7 @@
     NSString *expected = @"";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test51ElseIfAllExprFalse
@@ -885,6 +927,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test52Or
@@ -895,6 +938,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test53MapConditionAndEscapeInside
@@ -907,6 +951,7 @@
     NSString *expected = @"works \\";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test54And
@@ -917,6 +962,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test55AndNot
@@ -927,6 +973,7 @@
     NSString *expected = @"works";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test56CharLiterals
@@ -949,6 +996,7 @@
     result = [sw description];
     expected = @"Foo bar\n"; // forced \n
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 #ifdef DONTUSENOMO
@@ -966,6 +1014,7 @@
     expected = @"Foo bar\n";
     result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 #endif
 
@@ -976,6 +1025,7 @@
     NSString *expected = [@"name" stringByAppendingString:newline];
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test59Separator
@@ -988,6 +1038,7 @@
     NSString *expected = @"case Ter, case Tom";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test60SeparatorInList
@@ -999,6 +1050,7 @@
     NSString *expected = @"case Ter, case Tom";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 /**
@@ -1016,6 +1068,7 @@
     NSString *result = [st render];
     NSString *expected = @"  abc\n  abc\n    abc\n    abc";
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 /*
@@ -1034,6 +1087,7 @@
     NSString *result = [sw description];
     NSString *expected = @"abc\nabc\nabc\nabc";
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test63ArrayOfTemplates
@@ -1046,6 +1100,7 @@
     NSString *expected = @"himom!";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test64ArrayOfTemplatesInTemplate
@@ -1060,6 +1115,7 @@
     NSString *expected = @"himom!";
     NSString *result = [wrapper render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test65ListOfTemplates
@@ -1072,6 +1128,7 @@
     NSString *expected = @"himom!";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) test66ListOfTemplatesInTemplate
@@ -1086,6 +1143,7 @@
     NSString *expected = @"himom!";
     NSString *result = [wrapper render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
 }
 
 - (void) playing
@@ -1093,6 +1151,7 @@
     NSString *aTemplate = @"<a:t(x,y),u()>";
     ST *st = [ST newSTWithTemplate:aTemplate];
     [st.impl dump];
+    return;
 }
 
 @end

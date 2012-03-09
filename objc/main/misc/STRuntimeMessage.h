@@ -53,8 +53,11 @@
 + (id) newMessage:(Interpreter *)interp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e arg:(id)anArg;
 + (id) newMessage:(Interpreter *)interp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e arg:(id)anArg arg2:(id)anArg2;
 + (id) newMessage:(Interpreter *)interp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e arg:(id)anArg arg2:(id)anArg2 arg3:(id)anArg3;
++ (id) newMessage:(Interpreter *)interp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e argN:(NSInteger)anArg arg2:(id)anArg2 arg3:(id)anArg3;
 
 - (id) init:(Interpreter *)interp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e arg:(id)anArg arg2:(id)anArg2 arg3:(id)anArg3;
+
+- (id) init:(Interpreter *)interp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e argN:(NSInteger)anArg arg2:(id)anArg2 arg3:(id)anArg3;
 
 - (NSString *) getSourceLocation;
 - (NSString *) description;

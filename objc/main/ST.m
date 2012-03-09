@@ -121,9 +121,11 @@ NSString *RegionTypeDescription(RegionTypeEnum value)
 - (NSString *) description
 {
     NSInteger i;
+    id tmp;
     NSMutableString *buf = [NSMutableString stringWithCapacity:30];
     for (i = 0; i < count; i++) {
-        [buf appendString:[self objectAtIndex:i]];
+        tmp = [self objectAtIndex:i];
+        [buf appendString:((tmp == nil)? @"nil" : [tmp description])];
     }
     return buf;
 }
@@ -135,7 +137,8 @@ NSString *RegionTypeDescription(RegionTypeEnum value)
 
 - (NSString *) description:(NSInteger)idx
 {
-    return [NSString stringWithString:[self objectAtIndex:idx]];
+    id tmp = [self objectAtIndex:idx];
+    return [NSString stringWithString:((tmp == nil)? @"nil" : [tmp description])];
 }
 
 - (NSString *) toString:(NSInteger)idx
@@ -402,6 +405,8 @@ static DebugState *st_debugState = nil;
 {
     if ( aName == nil )
         return self;
+    //    NSLog( @"Entered add with aName = %@, value = %@\n", aName, value);
+    FormalArgument *arg = nil;
     NSRange aRange;
     aRange = [aName rangeOfString:@"."];
     if (aRange.location != NSNotFound) {
@@ -412,10 +417,8 @@ static DebugState *st_debugState = nil;
         if ( debugState==nil ) debugState = [DebugState newDebugState];
         [debugState.addAttrEvents setObject:(id)[AddAttributeEvent newAddAttributeEvent:aName value:value] forKey:aName];
     }
-    FormalArgument *arg = nil;
     if (impl.hasFormalArgs) {
-        if (impl.formalArguments != nil)
-            arg = [impl.formalArguments objectForKey:aName];
+        if (impl.formalArguments != nil) arg = [impl.formalArguments objectForKey:aName];
         if (arg == nil) {
             @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"no such attribute: %@", aName]];
         }
@@ -429,16 +432,20 @@ static DebugState *st_debugState = nil;
             [impl addArg:arg];
             if (locals == nil) locals = [[AMutableArray arrayWithCapacity:5] retain];
             else {
-                 AMutableArray *copy = [AMutableArray arrayWithCapacity:[impl.formalArguments count]];
-                 [copy addObjectsFromArray:impl.formalArguments];
-                 locals = copy;
+                NSArray *formalArgs = [impl.formalArguments allKeys];
+                AMutableArray *copy = [AMutableArray arrayWithCapacity:[impl.formalArguments count]];
+                [copy addObjectsFromArray:locals];
+                locals = copy;
             }
-            [locals insertObject:EMPTY_ATTR atIndex:arg.index];
+            if ( arg.index < [locals count] ) {
+                [locals replaceObjectAtIndex:arg.index withObject:EMPTY_ATTR];
+            }
+            else {
+                [locals addObject:EMPTY_ATTR];
+            }
         }
     }
     id curvalue;
-    if ([value isMemberOfClass:[ST class]])
-        ((ST *)value).enclosingInstance = self;
     curvalue = [locals objectAtIndex:arg.index];
     if (curvalue == EMPTY_ATTR) {
         [locals replaceObjectAtIndex:arg.index withObject:value];
@@ -449,8 +456,7 @@ static DebugState *st_debugState = nil;
     if ( [value isKindOfClass:[NSDictionary class]] ) {
         [multi addObjectsFromArray:(NSArray *)[value allValues]];
     }
-    else
-    if ( [value isKindOfClass:[NSArray class]] ) {
+    else if ( value != nil && [value isKindOfClass:[NSArray class]] ) {
         [multi addObjectsFromArray:(AMutableArray *)value];
     }
     else {
@@ -616,6 +622,7 @@ static DebugState *st_debugState = nil;
         multi = [AttributeList arrayWithCapacity:5]; // make list to hold multiple values
         [multi addObject:curvalue];                 // add previous single-valued attribute
     }
+    NSLog( @"%@", [multi description]);
     return multi;
 }
 

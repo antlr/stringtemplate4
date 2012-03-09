@@ -9,11 +9,8 @@
 #import "BaseTest.h"
 #import "Writer.h"
 
-@interface TestCompiler : GHTestCase {
+@interface TestCompiler : BaseTest {
 }
-
-- (void)setUp;
-- (void)tearDown;
 
 - (void) test01Attr;
 - (void) test02Include;

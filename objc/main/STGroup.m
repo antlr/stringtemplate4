@@ -225,7 +225,7 @@ static BOOL trackCreationEvents = NO;
 
 + (id) newSTGroup:(unichar)startChar delimiterStopChar:(unichar)stopChar
 {
-    return [[STGroup alloc] init:(unichar)startChar delimiterStopChar:(unichar)stopChar];
+    return [[STGroup alloc] init:startChar delimiterStopChar:stopChar];
 }
 
 - (id) init:(unichar)aDelimiterStartChar delimiterStopChar:(unichar)aDelimiterStopChar
@@ -235,6 +235,8 @@ static BOOL trackCreationEvents = NO;
         encoding = NSUTF8StringEncoding;
         delimiterStartChar = aDelimiterStartChar;
         delimiterStopChar = aDelimiterStopChar;
+        imports = [[AMutableDictionary dictionaryWithCapacity:16] retain];
+        importsToClearOnUnload = [[AMutableDictionary dictionaryWithCapacity:16] retain];
         templates = [[AMutableDictionary dictionaryWithCapacity:16] retain];
         dictionaries = [[AMutableDictionary dictionaryWithCapacity:16] retain];
         adaptors = [[[STGroup_Anon1 newSTGroup_Anon1] getDict] retain];
@@ -252,6 +254,7 @@ static BOOL trackCreationEvents = NO;
     NSLog( @"called dealloc in STGroup" );
 #endif
     if ( imports ) [imports release];
+    if ( importsToClearOnUnload ) [importsToClearOnUnload release];
     if ( templates ) [templates release];
     if ( dictionaries ) [dictionaries release];
     if ( renderers ) [renderers release];
@@ -269,11 +272,9 @@ static BOOL trackCreationEvents = NO;
  */
 - (ST *) getInstanceOf:(NSString *)aName
 {
-    if ( aName == nil )
-        return nil;
-    if ( verbose ) NSLog(@"getInstanceOf(%@) in group %@", aName, [self getName]);
-    if ( [aName characterAtIndex:0] != '/')
-        aName = [NSString stringWithFormat:@"/%@", aName];
+    if ( aName == nil ) return nil;
+    if ( verbose ) NSLog(@"[%@ getInstanceOf:%@]", [self getName], aName);
+    if ( [aName characterAtIndex:0] != '/') aName = [NSString stringWithFormat:@"/%@", aName];
     CompiledST *c = [self lookupTemplate:aName];
     if ( c != nil ) {
         return [self createStringTemplate:c];
@@ -286,13 +287,17 @@ static BOOL trackCreationEvents = NO;
                             ip:(NSInteger)ip
                           name:(NSString *)aName
 {
-    if ( verbose ) NSLog( @"getEmbeddedInstanceOf(%@)", aName);
-    ST *st = [self getInstanceOf:aName];
+    NSString *fullyQualifiedName = aName;
+    if ( [aName characterAtIndex:0] != '/' ) {
+        fullyQualifiedName = [NSString stringWithFormat:@"%@%@", enclosingInstance.impl.prefix, aName];
+    }
+    if ( verbose ) NSLog( @"[self getEmbeddedInstanceOf:%@]", fullyQualifiedName);
+    ST *st = [self getInstanceOf:fullyQualifiedName];
     if ( st == nil ) {
         [errMgr runTimeError:interp who:enclosingInstance
                           ip:ip
                        error:NO_SUCH_TEMPLATE
-                         arg:aName];
+                         arg:fullyQualifiedName];
         return [self createStringTemplateInternally:[CompiledST newCompiledST]];
     }
     // this is only called internally. whack any debug ST create events
@@ -333,19 +338,21 @@ static BOOL trackCreationEvents = NO;
 /** Look up a fully-qualified name */
 - (CompiledST *) lookupTemplate:(NSString *)aName
 {
+    if ( [aName characterAtIndex:0] != '/') aName = [NSString stringWithFormat:@"/%@", aName];
+    if ( verbose ) NSLog(@"[%@ lookupTemplate:%@]", [self getName], aName);
     CompiledST *code = [self rawGetTemplate:aName];
     if ( code == STGroup.NOT_FOUND_ST ) {
-        if ( verbose ) NSLog(@"%@ not found", aName);
+        if ( verbose ) NSLog(@"%@ previously seen as not found", aName);
         return nil;
     }
     // try to load from disk and look up again
     if ( code == nil ) code = [self load:aName];
     if ( code == nil ) code = [self lookupImportedTemplate:aName];
     if ( code == nil ) {
-        if ( verbose ) NSLog(@"%@ not found", aName);
+        if ( verbose ) NSLog(@"%@ recorded not found", aName);
         [templates setObject:NOT_FOUND_ST forKey:aName];
     }
-    if ( verbose && code != nil ) NSLog(@"found %@ in %@", aName, [self getName]);
+    if ( verbose && code != nil ) NSLog(@"[%@ lookupTemplate:%@] found", [self getName], aName);
     return code;
 }
 
@@ -357,6 +364,14 @@ static BOOL trackCreationEvents = NO;
 {
     [templates removeAllObjects];
     [dictionaries removeAllObjects];
+    STGroup *imp;
+    for ( imp in imports ) {
+        [imp unload];
+    }
+    for ( imp in importsToClearOnUnload ) {
+        [imports removeObject:imp];
+    }
+    [importsToClearOnUnload removeAllObjects];
 }
 
 /** Load st from disk if dir or load whole group file if .stg file (then
@@ -387,13 +402,14 @@ static BOOL trackCreationEvents = NO;
         g = (STGroup *)[it nextObject];
  */
     for ( g in imports ) {
+        if ( verbose ) NSLog(@"checking %@  for imported %@\n", [g getName], aName);
         CompiledST *code = [g lookupTemplate:aName];
         if ( code != nil ) {
-            if ( verbose ) NSLog(@"found %@ in %@", aName, [self getName]);
+            if ( verbose ) NSLog(@"[%@ lookupImportedTemplate:%@] found\n", [g getName], aName);
             return code;
         }
     }
-    if ( verbose ) NSLog(@"%@ not found in imports", aName);
+    if ( verbose ) NSLog(@"%@ not found in %@ imports", aName, [self getName]);
     return nil;
 }
 
@@ -414,14 +430,14 @@ static BOOL trackCreationEvents = NO;
 }
 
 // for testing
-- (CompiledST *) defineTemplate:(NSString *)aTemplateName template:(NSString *)aTemplate
+- (CompiledST *) defineTemplate:(NSString *)templateName template:(NSString *)aTemplate
 {
+    if ( [templateName characterAtIndex:0] != '/')
+        templateName = [NSString stringWithFormat:@"/%@", templateName];
     @try {
-        CompiledST *impl = [self defineTemplate:aTemplateName
-                                          nameT:[CommonToken newToken:ID Text:aTemplateName]
-                                           args:nil
-                                       template:aTemplate
-                                  templateToken:nil];
+        CompiledST *impl = [self defineTemplate:templateName
+                                          nameT:[CommonToken newToken:GroupParser.TID Text:templateName]
+                                           args:nil template:aTemplate templateToken:nil];
         return impl;
     }
     @catch (STException *se) {
@@ -434,6 +450,7 @@ static BOOL trackCreationEvents = NO;
 // for testing
 - (CompiledST *) defineTemplate:(NSString *)aName argsS:(NSString *)argsS template:(NSString *)template
 {
+    if ( [aName characterAtIndex:0] != '/' ) aName = [NSString stringWithFormat:@"/%@", aName];
     __strong NSArray *args = [[argsS componentsSeparatedByString:@","] retain];
     __strong AMutableArray *a = [[AMutableArray arrayWithCapacity:5] retain];
 
@@ -448,32 +465,32 @@ static BOOL trackCreationEvents = NO;
     }
     return [self defineTemplate:aName
                           nameT:[CommonToken newToken:GroupParser.TID Text:aName]
-                           args:a
-                       template:template
-                  templateToken:nil];
+                           args:a template:template templateToken:nil];
 }
 
-- (CompiledST *) defineTemplate:(NSString *)templateName
+- (CompiledST *) defineTemplate:(NSString *)fullyQualifiedTemplateName
                           nameT:(CommonToken *)nameT
                            args:(AMutableArray *)args
                        template:(NSString *)template
                   templateToken:(CommonToken *)templateToken
 {
-    if (templateName == nil || [templateName length] == 0) {
+    if ( verbose )
+        NSLog(@"[self defineTemplate:%@]", fullyQualifiedTemplateName);
+    if (fullyQualifiedTemplateName == nil || [fullyQualifiedTemplateName length] == 0) {
         @throw [IllegalArgumentException newException:@"empty template name"];
     }
     NSInteger i;
-    for (i = ([templateName length]-1); i >= 0; i-- ) {
-        if ( [templateName characterAtIndex:i] == '.' ) break;
+    for (i = ([fullyQualifiedTemplateName length]-1); i >= 0; i-- ) {
+        if ( [fullyQualifiedTemplateName characterAtIndex:i] == '.' ) break;
     }
     if (i >= 0) {
         @throw [IllegalArgumentException newException:@"cannot have '.' in template names"];
     }
     template = [Misc trimOneStartingNewline:template];
     template = [Misc trimOneTrailingNewline:template];
-    CompiledST *code = [[self compile:[self getFileName] name:templateName args:args template:template templateToken:templateToken] retain];
-    code.name = [templateName retain];
-    [self rawDefineTemplate:templateName code:code defT:nameT];
+    CompiledST *code = [[self compile:[self getFileName] name:fullyQualifiedTemplateName args:args template:template templateToken:templateToken] retain];
+    code.name = [fullyQualifiedTemplateName retain];
+    [self rawDefineTemplate:fullyQualifiedTemplateName code:code defT:nameT];
     [code defineArgDefaultValueTemplates:self];
     [code defineImplicitlyDefinedTemplates:self]; // define any anonymous subtemplates
 
@@ -485,12 +502,12 @@ static BOOL trackCreationEvents = NO;
 {
     NSString *alias = aliasT.text;
     NSString *target = targetT.text;
-    CompiledST *targetCode = [self rawGetTemplate:target];
+    CompiledST *targetCode = [self rawGetTemplate:[NSString stringWithFormat:@"/%@", target]];
     if ( targetCode == nil ) {
         [errMgr compileTimeError:ALIAS_TARGET_UNDEFINED templateToken:nil t:aliasT arg:alias arg2:target];
         return nil;
     }
-    [templates setObject:targetCode forKey:alias];
+    [self rawDefineTemplate:[NSString stringWithFormat:@"/%@", target] code:targetCode defT:aliasT];
     return targetCode;
 }
 
@@ -519,7 +536,7 @@ static BOOL trackCreationEvents = NO;
     return code;
 }
 
-- (void) defineTemplateOrRegion:(NSString *)templateName
+- (void) defineTemplateOrRegion:(NSString *)fullyQualifiedTemplateName
   regionSurroundingTemplateName:(NSString *)regionSurroundingTemplateName
                   templateToken:(CommonToken *)templateToken
                        template:(NSString *)template
@@ -531,7 +548,7 @@ static BOOL trackCreationEvents = NO;
             [self defineRegion:regionSurroundingTemplateName regionT:nameToken template:template templateToken:templateToken];
         }
         else {
-            [self defineTemplate:templateName nameT:nameToken args:args template:template templateToken:templateToken];
+            [self defineTemplate:fullyQualifiedTemplateName nameT:nameToken args:args template:template templateToken:templateToken];
         }
     }
     @catch (STException *e) {
@@ -588,6 +605,8 @@ static BOOL trackCreationEvents = NO;
 /** The "foo" of t() ::= "<@foo()>" is mangled to "region#t#foo" */
 + (NSString *) getMangledRegionName:(NSString *)anEnclosingTemplateName name:(NSString *)aName
 {
+    if ( [anEnclosingTemplateName characterAtIndex:0] != '/' )
+        anEnclosingTemplateName = [NSString stringWithFormat:@"/%@", aName];
     NSString *tmp = [NSString stringWithFormat:@"region__%@__%@", anEnclosingTemplateName, aName];
     return tmp;
 }
@@ -615,10 +634,7 @@ static BOOL trackCreationEvents = NO;
 
 - (void) importTemplates:(STGroup *)g
 {
-    if ( g == nil ) return;
-    if ( imports == nil )
-        imports = [[AMutableArray arrayWithCapacity:5] retain];
-    [imports addObject:g];
+    [self importTemplates:g ClearOnUnload:NO];
 }
 
 /** Import template files, directories, and group files.
@@ -641,6 +657,7 @@ static BOOL trackCreationEvents = NO;
  */
 - (void) importTemplatesWithFileName:(CommonToken *)fileNameToken
 {
+    if (verbose) NSLog(@"[self importTemplates:%@]", fileNameToken.text);
     NSError *error;
     NSString *aFileName = fileNameToken.text;
     if ( aFileName == nil || [aFileName isEqualToString:@"<missing STRING>"] )
@@ -653,7 +670,8 @@ static BOOL trackCreationEvents = NO;
     BOOL isGroupDir = !(isGroupFile || isTemplateFile);
     
     STGroup *g = nil;
-    
+
+#ifdef DONTUSENOMO
     if ( [aFileName isAbsolutePath] ) {
         if ( isTemplateFile ) {
             g = [STGroup newSTGroup];
@@ -671,6 +689,7 @@ static BOOL trackCreationEvents = NO;
         [self importTemplates:g];
         return;
     }
+#endif
     // it's a relative name; search path is working dir, g.stg's dir, CLASSPATH
     //NSURL *thisRoot = [self getRootDirURL];
     NSString *thisRoot = @"~/";
@@ -741,10 +760,28 @@ static BOOL trackCreationEvents = NO;
     }
 }
 
+- (void) importTemplates:(STGroup *)g ClearOnUnload:(BOOL)clearOnUnload
+{
+    if ( g == nil ) return;
+    [imports addObject:g];
+    if (clearOnUnload) {
+        [imports addObject:g];
+    }
+    
+}
+
+- (AMutableArray *) getImportedGroups
+{
+    return imports;
+}
 
 /** Load a group file with full path fileName; it's relative to root by prefix. */
 - (void) loadGroupFile:(NSString *)prefix fileName:(NSString *)aFileName
 {
+    if ( verbose )
+        NSLog(@"[%@.loadGroupFile:%@, fileName:%@]\n",
+              [NSString stringWithCString:object_getClassName(self) encoding:NSASCIIStringEncoding],
+              prefix, aFileName);
     GroupParser *aParser = nil;
     NSError *error;
     @try {
@@ -768,7 +805,7 @@ static BOOL trackCreationEvents = NO;
 {
     ANTLRFileStream *fs;
     @try {
-        fs = [NSInputStream inputStreamWithFileAtPath:aFileName];
+        fs = [ANTLRFileStream newANTLRFileStream:aFileName encoding:NSASCIIStringEncoding];
         fs.name = aFileName;
     }
     @catch (IOException *ioe) {
@@ -780,7 +817,7 @@ static BOOL trackCreationEvents = NO;
 }
 
 /** Load template stream into this group */
-- (CompiledST *) loadTemplateFile:(NSString *)prefix fileName:(NSString *)fileName stream:(id<CharStream>)templateStream
+- (CompiledST *) loadTemplateFile:(NSString *)prefix fileName:(NSString *)aFileName stream:(id<CharStream>)templateStream
 {
     GroupLexer *lexer = [GroupLexer newGroupLexerWithCharStream:templateStream];
     CommonTokenStream *tokens = [CommonTokenStream newCommonTokenStreamWithTokenSource:lexer];
@@ -791,12 +828,14 @@ static BOOL trackCreationEvents = NO;
         [parser templateDef:prefix];
     }
     @catch (RecognitionException *re) {
-        [errMgr groupSyntaxError:SYNTAX_ERROR srcName:fileName e:re msg:[re getMessage]];
+        [errMgr groupSyntaxError:SYNTAX_ERROR srcName:aFileName e:re msg:[re getMessage]];
     }
-    NSString *templateName = [Misc getFileNameNoSuffix:fileName];
+    NSString *templateName = [Misc getFileNameNoSuffix:aFileName];
     if ( prefix != nil && [prefix length] > 0 )
-        templateName = [NSString stringWithFormat:@"%@/%@", prefix, templateName];
-    return [self rawGetTemplate:templateName];
+        templateName = [NSString stringWithFormat:@"%@%@", prefix, templateName];
+    CompiledST *impl = [self rawGetTemplate:templateName];
+    impl.prefix = prefix;
+    return impl;
 }
 
 /** Add an adaptor for a kind of object so ST knows how to pull properties
@@ -860,6 +899,11 @@ static BOOL trackCreationEvents = NO;
  */
 - (void) registerRenderer:(id)attributeType r:(id<AttributeRenderer>)r
 {
+    [self registerRenderer:attributeType r:r recurs:YES];
+}
+
+- (void) registerRenderer:(Class)attributeType r:(id<AttributeRenderer>)r recurs:(BOOL)recursive
+{
     /*
      if ( attributeType.isPrimitive() ) {
         @throw [IllegalArgumentException newException:
@@ -872,13 +916,22 @@ static BOOL trackCreationEvents = NO;
         renderers = [[AMutableArray arrayWithCapacity:5] retain];
     }
     [renderers setObject:r forKey:[attributeType className]];
+    if ( recursive ) {
+        [self load];
+        STGroup *g;
+        for ( g in imports )
+            [g registerRenderer:attributeType r:r recurs:YES];
+    }
 }
 
 - (id<AttributeRenderer>) getAttributeRenderer:(id)attributeType
 {
     if ( renderers == nil )     return nil;
-    if ( attributeType == nil ) return nil;
-    id<AttributeRenderer> r;
+    id<AttributeRenderer> r = nil;
+    if ( typeToRendererCache != nil ) {
+        r = [typeToRendererCache objectForKey:attributeType];
+        if ( r != nil ) return r;
+    }
 /*
     if ( renderers==nil ) return nil;
     AttributeRenderer r = nil;
@@ -1005,7 +1058,7 @@ static BOOL trackCreationEvents = NO;
         [buf appendFormat:@"%@(", aName];
         if (c.formalArguments != nil)
             [buf appendString:[Misc join:(ArrayIterator *)[c.formalArguments objectEnumerator] separator:@","]];
-        [buf appendFormat:@") ::= <<\n%@%@>>%@", c.template, Misc.newline, Misc.newline];
+        [buf appendFormat:@") ::= <<%@%@%@>>%@", Misc.newline, c.template, Misc.newline, Misc.newline];
     }
     return [buf description];
 }
@@ -1018,6 +1071,25 @@ static BOOL trackCreationEvents = NO;
 - (void) setListener:(id<STErrorListener>)listener
 {
     errMgr = [[ErrorManager newErrorManagerWithListener:listener] retain];
+}
+
+- (AMutableArray *) getTemplateNames
+{
+    [self load];
+    AMutableArray *result = [AMutableArray arrayWithCapacity:16];
+#ifdef DONTUSEYET
+    for (Map.Entry<String, CompiledST> e: templates.entrySet()) {
+        if (e.getValue() != NOT_FOUND_ST) {
+            [result addObject:[e.getKey());
+        }
+    }
+#endif
+    for ( NSString *e in [templates allKeys] ) {
+        if ( [templates objectForKey:e] != NOT_FOUND_ST ) {
+            [result addObject:e];
+        }
+    }
+    return result;
 }
 
 @end

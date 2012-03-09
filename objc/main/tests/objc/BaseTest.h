@@ -57,12 +57,12 @@ extern NSString *const newline;
     NSString *randomDir;
 }
 
-+ (NSString *) randomDir;
 - (void) writeFile:(NSString *)dir fileName:(NSString *)fileName content:(NSString *)content;
 
 - (void) setUp;
 - (void) checkTokens:(NSString *)template expected:(NSString *)expected;
 - (void) checkTokens:(NSString *)template expected:(NSString *)expected delimiterStartChar:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimiterStopChar;
+- (NSString *)getRandomDir;
 
 @property(retain) NSString *randomDir;
 

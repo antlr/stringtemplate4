@@ -44,10 +44,10 @@
 }
 
 + (id) newSTGroupString:(NSString *)aTemplate;
++ (id) newSTGroupString:(NSString *)aSourceName text:(NSString *)aTemplate;
++ (id) newSTGroupString:(NSString *)aSourceName text:(NSString *)aTemplate delimiterStartChar:(unichar)aStartChar delimiterStopChar:(unichar)aStopChar;
 
-- (id) initWithText:(NSString *)text;
-- (id) init:(NSString *)sourceName text:(NSString *)text;
-- (id) init:(NSString *)sourceName text:(NSString *)text delimiterStartChar:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimiterStopChar;
+- (id) init:(NSString *)sourceName text:(NSString *)text delimiterStartChar:(unichar)aStartChar delimiterStopChar:(unichar)aStopChar;
 
 - (BOOL) isDictionary:(NSString *)name;
 - (BOOL) isDefined:(NSString *)name;

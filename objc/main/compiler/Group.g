@@ -30,7 +30,6 @@ grammar Group;
 options {
     language=ObjC;
     tokenVocab=Group1;
-    TokenLabelType=CommonToken;
 }
 
 tokens { ID; WS; STRING; ANONYMOUS_TEMPLATE; COMMENT; LINE_COMMENT; BIGSTRING; BIGSTRING_NO_NL;
@@ -157,8 +156,8 @@ STGroup *group;
 
 - (void) error:(NSString *)msg
 {
-    NoViableAltException *e = [NoViableAltException newException:0 state:0 stream:input];
-    [group.errMgr groupSyntaxError:SYNTAX_ERROR srcName:[self getSourceName] e:e msg:msg];
+    NoViableAltException *nvae = [NoViableAltException newException:0 state:0 stream:input];
+    [group.errMgr groupSyntaxError:SYNTAX_ERROR srcName:[self getSourceName] e:nvae msg:msg];
     [self recover:input Exception:nil];
 }
 
@@ -216,8 +215,8 @@ self.group = lexer.group = $aGroup;
     (   'import' STRING {[aGroup importTemplatesWithFileName:$STRING];}
     |   'import' // common error: name not in string
             {
-            MismatchedTokenException *e = [MismatchedTokenException newException:STRING Stream:input];
-            [self reportError:e];
+            MismatchedTokenException *mte = [MismatchedTokenException newException:STRING Stream:input];
+            [self reportError:mte];
             }
             ID ('.' ID)* // might be a.b.c.d
         )*
@@ -301,14 +300,14 @@ scope {
 
 formalArg[AMutableArray *args]
     :   ID
-        (   '=' a=(STRING|ANONYMOUS_TEMPLATE|'true'|'false') {$formalArgs::hasOptionalParameter = true;}
+        (   '=' a=(STRING|ANONYMOUS_TEMPLATE|'true'|'false') {$formalArgs::hasOptionalParameter = YES;}
         |   {
             if ( $formalArgs::hasOptionalParameter ) {
                 [group.errMgr compileTimeError:REQUIRED_PARAMETER_AFTER_OPTIONAL templateToken:nil t:$ID];
             }
             }
         )
-        {[$args addObject:[FormalArgument newFormalArgument:$ID.text]];}
+        {[$args addObject:[FormalArgument newFormalArgument:$ID.text token:$a]];}
     ;
 
 /*
@@ -394,12 +393,12 @@ STRING
     ;
 
 BIGSTRING_NO_NL // same as BIGSTRING but means ignore newlines later
-    :   '<%' (options {greedy=false;} : .)* '%>'
+    :   '<%' (options {greedy=NO;} : .)* '%>'
     ;
 
 BIGSTRING
     :   '<<'
-        (   options {greedy=false;}
+        (   options {greedy=NO;}
         :   '\\' '>'  // \> escape
         |   '\\' ~'>'
         |   ~'\\'
@@ -428,9 +427,9 @@ ANONYMOUS_TEMPLATE
         CommonToken *t = [lexer nextToken];
         while ( [lexer subtemplateDepth] >= 1 || t.type != STLexer.RCURLY ) {
             if ( t.type == STLexer.EOF_TYPE ) {
-                MismatchedTokenException *e = [MismatchedTokenException newException:'}' Stream:input];
+                MismatchedTokenException *mte = [MismatchedTokenException newException:'}' Stream:input];
                 NSString *msg = @"missing final '}' in {...} anonymous template";
-                [group.errMgr groupLexerError:SYNTAX_ERROR srcName:[self getSourceName] e:e msg:msg];
+                [group.errMgr groupLexerError:SYNTAX_ERROR srcName:[self getSourceName] e:mte msg:msg];
                 break;
             }
             t = [lexer nextToken];
@@ -441,7 +440,7 @@ ANONYMOUS_TEMPLATE
     ;
 
 COMMENT
-    :   '/*' ( options {greedy=false;} : . )* '*/' { [self skip]; }
+    :   '/*' ( options {greedy=NO;} : . )* '*/' { [self skip]; }
     ;
 
 LINE_COMMENT

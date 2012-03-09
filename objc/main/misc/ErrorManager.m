@@ -216,6 +216,11 @@ static ErrorManager *DEFAULT_ERR_MGR;
     [listener runTimeError:[STRuntimeMessage newMessage:interp error:anError ip:ip who:aWho cause:nil arg:arg arg2:arg2 arg3:arg3]];
 }
 
+- (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)anError argN:(NSInteger)arg arg2:(id)arg2 arg3:(id)arg3
+{
+    [listener runTimeError:[STRuntimeMessage newMessage:interp error:anError ip:ip who:aWho cause:nil argN:arg arg2:arg2 arg3:arg3]];
+}
+
 - (void) IOError:(ST *)aWho error:(ErrorTypeEnum)anError e:(NSException *)e
 {
     [listener IOError:[STMessage newMessage:anError who:aWho cause:e]];

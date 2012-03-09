@@ -957,7 +957,7 @@ static BOOL trace = NO;
                          who:aWho
                           ip:current_ip
                        error:ARGUMENT_COUNT_MISMATCH
-                         arg:(id)nargs
+                         argN:(id)nargs
                         arg2:st.impl.name
                         arg3:(id)nformalArgs];
     }
@@ -1307,7 +1307,7 @@ static BOOL trace = NO;
 - (void) setFirstArgument:(ST *)aWho st:(ST *)st attr:(id)attr
 {
     if (st.impl.formalArguments == nil) {
-        [errMgr runTimeError:self who:aWho ip:current_ip error:ARGUMENT_COUNT_MISMATCH arg:(id)1 arg2:(id)st.impl.name arg3:(id)0];
+        [errMgr runTimeError:self who:aWho ip:current_ip error:ARGUMENT_COUNT_MISMATCH argN:1 arg2:(id)st.impl.name arg3:nil];
         return;
     }
     [st.locals insertObject:attr atIndex:0];

@@ -1,23 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import "TestCompiler.h"
 
-#define STAssertTrue GHAssertTrue
-
 @implementation TestCompiler
-
-- (void)setUp
-{
-    [super setUp];
-    
-    // Set-up code here.
-}
-
-- (void)tearDown
-{
-    // Tear-down code here.
-    STGroup.resetDefaultGroup;
-    [super tearDown];
-}
 
 - (void) test01Attr
 {
@@ -34,7 +18,7 @@
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] description];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
     NSLog( @"end test01.Attr" );
-    [code release];
+    return;
 }
 
 - (void) test02Include
@@ -47,7 +31,7 @@
     NSString *stringsExpected = @"[hi , foo]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
-    [code release];
+    return;
 }
 
 - (void) test02aIncludeWithPassThrough
@@ -61,7 +45,7 @@
     NSString *stringsExpected = @"[hi , foo]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] description];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
-    [code release];
+    return;
 }
 
 - (void) test02bIncludeWithPartialPassThrough
@@ -75,7 +59,7 @@
     NSString *stringsExpected = @"[hi , y, x, foo]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] description];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
-    [code release];
+    return;
 }
 
 - (void) test03SuperInclude
@@ -89,7 +73,7 @@
     NSString *stringsExpected = @"[foo]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
-    [code release];
+    return;
 }
 
 - (void) test04SuperIncludeWithArgs
@@ -102,7 +86,7 @@
     NSString *stringsExpected = @"[a, _sub1, foo]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
-    [code release];
+    return;
 }
 
 - (void) test05SuperIncludeWithNamedArgs
@@ -115,7 +99,7 @@
     NSString *stringsExpected = @"[a, x, _sub1, y, foo]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
-    [code release];
+    return;
 }
 
 - (void) test06IncludeWithArgs
@@ -128,6 +112,7 @@
     NSString *stringsExpected = @"[hi , a, b, foo]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test07AnonIncludeArgs
@@ -140,7 +125,7 @@
     NSString *stringsExpected = @"[_sub1]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
-    [code release];
+    return;
 }
 
 - (void) test08AnonIncludeArgMismatch
@@ -156,6 +141,7 @@
     [code release];
     [g release];
     [errors release];
+    return;
 }
 
 - (void) test09AnonIncludeArgMismatch2
@@ -171,6 +157,7 @@
     [code release];
     [g release];
     [errors release];
+    return;
 }
 
 - (void) test10AnonIncludeArgMismatch3
@@ -185,6 +172,7 @@
     [code release];
     [g release];
     [errors release];
+    return;
 }
 
 - (void) test11IndirectIncludeWitArgs
@@ -197,7 +185,7 @@
     NSString *stringsExpected = @"[hi , foo, a, b]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult);
-    [code release];
+    return;
 }
 
 - (void) test12Prop
@@ -210,6 +198,7 @@
     NSString *stringsExpected = @"[hi , a, b]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test13Prop2
@@ -222,6 +211,7 @@
     NSString *stringsExpected = @"[u, id, : , name]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test14Map
@@ -234,6 +224,7 @@
     NSString *stringsExpected = @"[name, bold]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test15MapAsOption
@@ -246,6 +237,7 @@
     NSString *stringsExpected = @"[a, name, bold]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test16MapArg
@@ -258,6 +250,7 @@
     NSString *stringsExpected = @"[name, x, bold]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test17IndirectMapArg
@@ -270,6 +263,7 @@
     NSString *stringsExpected = @"[name, t, x]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test18RepeatedMap
@@ -282,6 +276,7 @@
     NSString *stringsExpected = @"[name, bold, italics]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test19RepeatedMapArg
@@ -294,6 +289,7 @@
     NSString *stringsExpected = @"[name, x, bold, y, italics]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test20RotMap
@@ -306,6 +302,7 @@
     NSString *stringsExpected = @"[name, bold, italics]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test21RotMapArg
@@ -318,6 +315,7 @@
     NSString *stringsExpected = @"[name, x, bold, italics]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test22ZipMap
@@ -330,6 +328,7 @@
     NSString *stringsExpected = @"[names, phones, bold]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test23ZipMapArg
@@ -342,6 +341,7 @@
     NSString *stringsExpected = @"[names, phones, x, bold]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test24AnonMap
@@ -354,6 +354,7 @@
     NSString *stringsExpected = @"[name, _sub1]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test25AnonZipMap
@@ -366,6 +367,7 @@
     NSString *stringsExpected = @"[a, b, _sub1]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test26If
@@ -378,6 +380,7 @@
     NSString *stringsExpected = @"[go: , name, hi, foo]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test27IfElse
@@ -390,6 +393,7 @@
     NSString *stringsExpected = @"[go: , name, hi, foo, bye]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test28ElseIf
@@ -402,6 +406,7 @@
     NSString *stringsExpected = @"[go: , name, hi, foo, user, a user]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test29ElseIfElse
@@ -414,6 +419,7 @@
     NSString *stringsExpected = @"[go: , name, hi, foo, user, a user, bye]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test30Option
@@ -426,6 +432,7 @@
     NSString *stringsExpected = @"[hi , name, x]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test31OptionAsTemplate
@@ -438,6 +445,7 @@
     NSString *stringsExpected = @"[hi , name, _sub1]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test32Options
@@ -450,6 +458,7 @@
     NSString *asmExpected = @"write_str 0, load_attr 1, options, load_str 2, store_option 0, new 3 0, store_option 4, load_str 4, store_option 3, write_opt";
     NSString *asmResult = [code dis_instrs];
     STAssertTrue( [asmExpected isEqualTo:asmResult], @"Expected \"%@\" but had \"%@\"", asmExpected, asmResult );
+    return;
 }
 
 - (void) test33EmptyList
@@ -462,6 +471,7 @@
     NSString *stringsExpected = @"[]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test34List
@@ -474,6 +484,7 @@
     NSString *stringsExpected = @"[a, b]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test35EmbeddedRegion
@@ -486,6 +497,7 @@
     NSString *stringsExpected = @"[region__a__r]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 - (void) test36Region
@@ -498,6 +510,7 @@
     NSString *stringsExpected = @"[x:, region__a__r]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] toString];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
+    return;
 }
 
 @end

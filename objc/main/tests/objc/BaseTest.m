@@ -119,16 +119,23 @@ NSString *const newline = @"\n"/* Misc.newline */;
 {
     NSString *path;
     NSFileHandle *fh;
-    // NSError *error;
+    NSError *error;
     NSString *str;
     NSArray *cs;
+    BOOL isDirectory;
+    BOOL dirExists;
     
     @try {
-        path = [[dir stringByAppendingPathComponent:fileName] stringByExpandingTildeInPath];
+        NSFileManager *nfm = [[NSFileManager alloc] init];
+        path = [dir stringByExpandingTildeInPath];
+        dirExists = [nfm fileExistsAtPath:path isDirectory:&isDirectory];
+        if ( !dirExists ) {
+            [nfm createDirectoryAtPath:(NSString *)path withIntermediateDirectories:YES attributes:nil error:&error];
+        }
+        path = [path stringByAppendingPathComponent:fileName];
         // NSFileHandle *f = [[File alloc] init:dir arg1:fileName];
         fh = [NSFileHandle fileHandleForWritingAtPath:path];
         if (fh == nil) {
-            NSFileManager *nfm = [[NSFileManager alloc] init];
             NSData *data = [NSData dataWithContentsOfFile:content];
             if ([nfm createFileAtPath:path contents:data attributes:nil]) {
                 fh = [NSFileHandle fileHandleForWritingAtPath:path];
@@ -183,15 +190,15 @@ NSString *const newline = @"\n"/* Misc.newline */;
     STAssertTrue( [expected isEqualToString:result], @"Expected %@, but got \"%@\"", expected, result );
 }
 
-+ (NSString *) randomDir
+- (NSString *) getRandomDir
 {
     BOOL isDir;
     NSError *error;
     NSFileManager *defaultManager;
-    NSString *randomDir = [NSString stringWithFormat:@"%@dir%d", tmpdir, (int)arc4random()];
+    randomDir = [NSString stringWithFormat:@"%@/tmpdir%d", [tmpdir stringByExpandingTildeInPath], (int)arc4random()];
     defaultManager = [NSFileManager defaultManager];
     if (![defaultManager fileExistsAtPath:randomDir isDirectory:&isDir]) {
-        if ([defaultManager createDirectoryAtPath:randomDir withIntermediateDirectories:NO attributes:nil error:&error] ) {
+        if ([defaultManager createDirectoryAtPath:randomDir withIntermediateDirectories:YES attributes:nil error:&error] ) {
             NSLog( @"Created \"%@\"", randomDir );
             return randomDir;
         }

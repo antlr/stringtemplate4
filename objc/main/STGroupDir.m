@@ -124,16 +124,18 @@
  */
 - (CompiledST *) load:(NSString *)aName
 {
-    NSString *parent = [Misc getPrefix:aName];
     NSURL *groupFileURL = nil;
     NSFileHandle *fh;
-    NSError *error;
+    NSError *error = nil;
     
+    if ( STGroup.verbose ) NSLog(@"STGroupDir.load(%@)", aName);
+    NSString *parent = [Misc getParent:aName];
+    NSString *prefix = [Misc getPrefix:aName];
+    NSLog( @"parent = \"%@\"\nprefix = \"%@\"\nroot = \"%@\"\n", parent, prefix, root );
     @try {
         // fileName = [NSString stringWithFormat:@"%@.stg", parent] stringByStandardizingPath];
         // groupFileURL = [NSURL fileURLWithPath:[[root URLByAppendingPathComponent:@"%@.stg", parent] stringByStandardizingPath]];
-        groupFileURL = [[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@.stg", parent]] URLByStandardizingPath];
-        fh = [NSFileHandle fileHandleForReadingFromURL:groupFileURL error:&error];
+        groupFileURL = [[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@%@.stg", [root path], parent]] URLByStandardizingPath];
     }
     @catch (MalformedURLException *e) {
         [errMgr internalError:nil msg:[NSString stringWithFormat:@"bad URL: %@%@.stg", root, parent] e:e];
@@ -142,10 +144,17 @@
     ANTLRInputStream *is = nil;
     @try {
         //is = [fh openStream];
+        fh = [NSFileHandle fileHandleForReadingFromURL:groupFileURL error:&error];
+        if (error != nil) {
+            NSLog( @"%@", [error localizedDescription] );
+            NSException *myException = [FileNotFoundException newException:@"File Not Found on System"];
+            @throw myException;
+        }
         is = [ANTLRInputStream newANTLRInputStream:fh];
     }
     @catch (FileNotFoundException *fnfe) {
-        return [self loadTemplateFile:parent fileName:[aName stringByAppendingString:@".st"]];
+        NSString *unqualifiedName = [Misc getFileName:aName];
+        return [self loadTemplateFile:prefix fileName:[NSString stringWithFormat:@"%@.st", unqualifiedName]];
     }
     @catch (IOException *ioe) {
         [errMgr internalError:nil msg:[@"can't load template file " stringByAppendingString:aName] e:ioe];
@@ -158,39 +167,51 @@
     @catch (IOException *ioe) {
         [errMgr internalError:nil msg:[@"can't close template file stream " stringByAppendingString:aName] e:ioe];
     }
-    [self loadGroupFile:parent fileName:[NSString stringWithFormat:@"%@.stg", parent]];
-    return [templates objectForKey:aName];
+    [self loadGroupFile:prefix fileName:[NSString stringWithFormat:@"%@%@.stg", root, parent]];
+    return [self rawGetTemplate:aName];
 }
 
 
 /**
  * Load full path name .st file relative to root by prefix
  */
-- (CompiledST *) loadTemplateFile:(NSString *)prefix fileName:(NSString *)aFileName {
-    NSString *templateName = [Misc getFileNameNoSuffix:aFileName];
+- (CompiledST *) loadTemplateFile:(NSString *)prefix fileName:(NSString *)unqualifiedFileName
+{
     NSFileHandle *fh = nil;
     NSURL *f = nil;
-    NSError *error;
-    ANTLRInputStream *fs;
+    NSError *error = nil;
     
+    if ( STGroup.verbose ) NSLog(@"loadTemplateFile(%@) in groupdir from %@ prefix=%@", unqualifiedFileName, root, prefix);
     @try {
         //f = [NSURL fileURLWithPath:[root URLByAppendingPathComponent:aFileName]];
-        f = [NSURL fileURLWithPath:[[root URLByAppendingPathComponent:aFileName] absoluteString]];
+        f = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@%@%@", [root path], prefix, unqualifiedFileName]];
+        if (![f isFileURL]) {
+            MalformedURLException *me = [MalformedURLException newException:@"Not a File URL"];
+            @throw me;
+        }
     }
     @catch (MalformedURLException *me) {
         [errMgr runTimeError:nil who:nil ip:0 error:INVALID_TEMPLATE_NAME e:me arg:[f absoluteString]];
         return nil;
     }
     
+    ANTLRInputStream *fs;
     @try {
         fh = [NSFileHandle fileHandleForReadingFromURL:f error:&error];
+        if (error != nil) {
+            NSLog(@"%@", [error localizedDescription] );
+            IOException *IOExcept = [IOException newException:@"Error opening file"];
+            @throw IOExcept;
+        }
         fs = [ANTLRInputStream newANTLRInputStream:fh encoding:encoding];
+        fs.name = unqualifiedFileName;
     }
     @catch (IOException *ioe) {
         return nil;
     }
+#ifdef DONTUSENOMO
     GroupLexer *lexer = [GroupLexer newGroupLexerWithCharStream:fs];
-    fs.name = aFileName;
+    fs.name = unqualifiedFileName;
     CommonTokenStream *tokens = [CommonTokenStream newCommonTokenStreamWithTokenSource:lexer];
     GroupParser *aParser = [GroupParser newGroupParser:tokens];
     aParser.group = self;
@@ -200,9 +221,11 @@
         [aParser templateDef:prefix];
     }
     @catch (RecognitionException *re) {
-        [errMgr groupSyntaxError:SYNTAX_ERROR srcName:[Misc getFileName:[f absoluteString]] e:re msg:[re reason]];
+        if ( STGroup.verbose ) NSLog(@"%@/%@ doesn't exist", root, unqualifiedFileName);
+        //[errMgr groupSyntaxError:SYNTAX_ERROR srcName:[Misc getFileName:[f absoluteString]] e:re msg:[re reason]];
     }
-    return [templates objectForKey:templateName];
+#endif
+    return [self loadTemplateFile:prefix fileName:unqualifiedFileName stream:fs];
 }
 
 - (NSString *) getName
@@ -213,7 +236,6 @@
 - (NSString *) getFileName
 {
     return [root lastPathComponent];
-    //return [root absoluteString];
 }
 
 - (NSString *) getRootDir

@@ -5,8 +5,6 @@
 #import "STGroup.h"
 #import "BaseTest.h"
 
-#define STAssertTrue GHAssertTrue
-
 @interface TestFunctions_Anon1 : AMutableArray {
 }
 
