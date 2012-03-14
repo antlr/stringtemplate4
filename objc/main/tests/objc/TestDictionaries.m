@@ -19,7 +19,7 @@
 
 - (void) test02DictValuesAreTemplates
 {
-    NSString *templates = @"typeInit ::= [\"int\":{0<w>}, \"float\":{0.0<w>}] \nvar(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\"";
+    NSString *templates = @"typeInit ::= [\"int\":{0<w>}, \"float\":{0.0<w>}] \nvar(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\"\n";
     [self writeFile:tmpdir fileName:@"test.stg" content:templates];
     STGroup *group = [STGroupFile newSTGroupFile:[NSString stringWithFormat:@"%@/test.stg", tmpdir]];
     ST *st = [group getInstanceOf:@"var"];
@@ -41,7 +41,7 @@
     STGroup *group = [STGroupFile newSTGroupFile:[tmpdir stringByAppendingString:@"/test.stg"]];
     ST *st = [group getInstanceOf:@"var"];
     [st add:@"w" value:@"L"];
-    [st add:@"type" value:[[[ST alloc] init:@"int"] autorelease]];
+    [st add:@"type" value:[ST newSTWithTemplate:@"int"]];
     [st add:@"name" value:@"x"];
     NSString *expected = @"int x = 0L;";
     NSString *result = [st render];

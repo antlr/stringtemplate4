@@ -181,8 +181,9 @@
     [self writeFile:[NSString stringWithFormat:@"%@/subdir", dir] fileName:@"a.st" content:a];
     STGroup *group = [STGroupDir newSTGroupDir:dir];
     ST *st = [group getInstanceOf:@"/subdir/a"];
-    //[st add:@"x" value:[AttributeList arrayWithObjects:@"a", @"b", nil]];
-    [[st add:@"x" value:@"a"] add:@"x" value:@"b"];
+    [st.impl dump];
+    [st add:@"x" value:[AMutableArray arrayWithObjects:@"a", @"b", nil]];
+//    [[st add:@"x" value:@"a"] add:@"x" value:@"b"];
     NSString *expected = @"ab";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );

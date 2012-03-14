@@ -53,7 +53,7 @@
 {
     self=[super init];
     if ( self != nil ) {
-        msg = aMsg;
+        msg = (aMsg !=nil) ? aMsg : @"msg=<nil>";
         if ( msg ) [msg retain];
     }
     return self;

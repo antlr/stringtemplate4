@@ -293,7 +293,7 @@ formalArgs returns[AMutableArray *args = [AMutableArray arrayWithCapacity:5\]]
 scope {
     BOOL hasOptionalParameter;
 }
-@init { $formalArgs::hasOptionalParameter = false;}
+@init { $formalArgs::hasOptionalParameter = NO;}
     :   formalArg[$args] (',' formalArg[$args])*
     |
     ;
@@ -307,7 +307,7 @@ formalArg[AMutableArray *args]
             }
             }
         )
-        {[$args addObject:[FormalArgument newFormalArgument:$ID.text token:$a]];}
+        {[$args addObject:[[FormalArgument newFormalArgument:$ID.text token:$a] retain]];}
     ;
 
 /*
@@ -398,7 +398,7 @@ BIGSTRING_NO_NL // same as BIGSTRING but means ignore newlines later
 
 BIGSTRING
     :   '<<'
-        (   options {greedy=NO;}
+        (   options {greedy=false;}
         :   '\\' '>'  // \> escape
         |   '\\' ~'>'
         |   ~'\\'

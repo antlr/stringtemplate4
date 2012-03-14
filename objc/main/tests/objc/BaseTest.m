@@ -103,8 +103,7 @@ NSString *const newline = @"\n"/* Misc.newline */;
 
 - (void)setUp
 {
-    [super setUp];
-    
+//     [super setUp];
     // Set-up code here.
 }
 
@@ -112,7 +111,7 @@ NSString *const newline = @"\n"/* Misc.newline */;
 {
     // Tear-down code here.
     
-    [super tearDown];
+//    [super tearDown];
 }
 
 - (void) writeFile:(NSString *)dir fileName:(NSString *)fileName content:(NSString *)content
@@ -258,9 +257,16 @@ NSString *const newline = @"\n"/* Misc.newline */;
         [str appendString:@"["];
         for (i=0; i < count; i++ ) {
             obj = [thisArray objectAtIndex:i];
-            if ([obj isKindOfClass:[NSString class]]) {
-                [str appendString:obj];
-                NSLog( @"String %d = %@\n", i, obj);
+            if ( obj != nil ) {
+                if ([obj isKindOfClass:[NSString class]]) {
+                    [str appendString:obj];
+                    NSLog( @"String %d = %@\n", i, obj);
+                } else {
+                    [str appendString:[obj description]];
+                }
+            }
+            else {
+                [str appendString:@"obj=<nil>"];
             }
             if ( i < count-1) {
                 [str appendString:@", "];

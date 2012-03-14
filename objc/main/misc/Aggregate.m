@@ -94,7 +94,9 @@
 
 - (NSString *)description
 {
-    return [props description];
+    NSString * desc = [props description];
+    if ( desc == nil ) desc = @"props=<nil>";
+    return desc;
 }
 
 @end

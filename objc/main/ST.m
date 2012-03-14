@@ -406,7 +406,6 @@ static DebugState *st_debugState = nil;
     if ( aName == nil )
         return self;
     //    NSLog( @"Entered add with aName = %@, value = %@\n", aName, value);
-    FormalArgument *arg = nil;
     NSRange aRange;
     aRange = [aName rangeOfString:@"."];
     if (aRange.location != NSNotFound) {
@@ -417,6 +416,7 @@ static DebugState *st_debugState = nil;
         if ( debugState==nil ) debugState = [DebugState newDebugState];
         [debugState.addAttrEvents setObject:(id)[AddAttributeEvent newAddAttributeEvent:aName value:value] forKey:aName];
     }
+    FormalArgument *arg = nil;
     if (impl.hasFormalArgs) {
         if (impl.formalArguments != nil) arg = [impl.formalArguments objectForKey:aName];
         if (arg == nil) {
@@ -432,7 +432,6 @@ static DebugState *st_debugState = nil;
             [impl addArg:arg];
             if (locals == nil) locals = [[AMutableArray arrayWithCapacity:5] retain];
             else {
-                NSArray *formalArgs = [impl.formalArguments allKeys];
                 AMutableArray *copy = [AMutableArray arrayWithCapacity:[impl.formalArguments count]];
                 [copy addObjectsFromArray:locals];
                 locals = copy;

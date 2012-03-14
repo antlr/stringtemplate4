@@ -27,15 +27,15 @@
  */
 #import <ANTLR/ANTLR.h>
 #import "STErrorListener.h"
-#import "DictModelAdaptor.h"
+#import "AggregateModelAdaptor.h"
 #import "Interpreter.h"
 #import "CompiledST.h"
 
-@implementation DictModelAdaptor
+@implementation AggregateModelAdaptor
 
-+ (id) newDictModelAdaptor
++ (id) newAggregateModelAdaptor
 {
-    return [[DictModelAdaptor alloc] init];
+    return [[AggregateModelAdaptor alloc] init];
 }
 
 - (id) init
@@ -47,24 +47,24 @@
 - (id) getProperty:(Interpreter *)interp who:(ST *)aWho obj:(id)obj property:(id)aProperty propertyName:(NSString *)aPropertyName
 {
     id value;
-    AMutableDictionary *dict = (AMutableDictionary *)obj;
+    Aggregate *aggr = (Aggregate *)obj;
     if ( aProperty == nil ) {
-        value = [dict objectForKey:STGroup.DEFAULT_KEY];
+        value = [aggr.props objectForKey:STGroup.DEFAULT_KEY];
     }
     else if ( [aProperty isEqualTo:@"keys"] ) {
-        value = [dict allKeys];
+        value = [aggr.props allKeys];
     }
     else if ( [aProperty isEqualTo:@"values"] ) {
-        value = [dict allValues];
+        value = [aggr.props allValues];
     }
-    else if ( [aProperty isKindOfClass:[NSString class]] && [dict objectForKey:aProperty] ) {
-        value = [dict objectForKey:aProperty];
+    else if ( [aProperty isKindOfClass:[NSString class]] && [aggr.props objectForKey:aProperty] ) {
+        value = [aggr.props objectForKey:aProperty];
     }
-    else if ( [dict objectForKey:aPropertyName] ) { // if can't find the key, try toString version
-        value = [dict objectForKey:aPropertyName];
+    else if ( [aggr.props objectForKey:aPropertyName] ) { // if can't find the key, try toString version
+        value = [aggr.props objectForKey:aPropertyName];
     }
     else {
-        value = [dict objectForKey:STGroup.DEFAULT_KEY]; // not found, use default
+        value = [aggr.props objectForKey:STGroup.DEFAULT_KEY]; // not found, use default
     }
     if ( value == STGroup.DICT_KEY ) {
         value = aProperty;

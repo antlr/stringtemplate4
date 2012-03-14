@@ -33,7 +33,7 @@
 @class ST;
 @class CompiledST;
 
-@implementation ErrorManager_Anon1
+@implementation ErrorManager_Anon1 // Default Listener
 
 + (id) newErrorManager_Anon1
 {
@@ -48,7 +48,11 @@
 
 - (void) compileTimeError:(STMessage *)aMsg
 {
-    NSLog(@"%@", [ErrorType ErrorNum:aMsg.error]);
+    if (aMsg.error == SYNTAX_ERROR) {
+        NSLog(@"%@", aMsg.arg );
+    }
+    else
+        NSLog(@"%@", [ErrorType ErrorNum:aMsg.error]);
 }
 
 - (void) runTimeError:(STMessage *)aMsg

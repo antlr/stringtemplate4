@@ -1192,12 +1192,7 @@ const static NSInteger *dfa8_transition[] =
             if ( (LA4_0=='>') ) {
                 NSInteger LA4_1 = [input LA:2];
                 if ( (LA4_1=='>') ) {
-                    NSInteger LA4_4 = [input LA:3];
-                    if ( ((LA4_4 >= 0x0000 && LA4_4 <= 0xFFFF)) ) {
-                        alt4=3;
-                    }
-
-
+                    alt4=4;
                 }
                 else if ( ((LA4_1 >= 0x0000 && LA4_1 <= '=')||(LA4_1 >= '?' && LA4_1 <= 0xFFFF)) ) {
                     alt4=3;

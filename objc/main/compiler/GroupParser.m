@@ -1239,7 +1239,7 @@ static formalArgs_Scope *formalArgs_scope;
     AMutableArray * args =  [AMutableArray arrayWithCapacity:5];
 
 
-     /* scopeSetAttributeRef */((formalArgs_Scope *)[formalArgs_stack peek]).hasOptionalParameter =  false;
+     /* scopeSetAttributeRef */((formalArgs_Scope *)[formalArgs_stack peek]).hasOptionalParameter =  NO;
     @try {
         /* ruleLabelDefs entry */
 
@@ -1421,7 +1421,7 @@ static formalArgs_Scope *formalArgs_scope;
 
          
 
-        [args addObject:[FormalArgument newFormalArgument:(ID6!=nil?ID6.text:nil) token:a]];
+        [args addObject:[[FormalArgument newFormalArgument:(ID6!=nil?ID6.text:nil) token:a] retain]];
 
          
         }

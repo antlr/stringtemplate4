@@ -389,7 +389,7 @@ static NSString *ErrorType_Data[NUM_OF_ERRORENUMS] = {
 
 - (NSString *) description
 {
-    return message;
+    return (message != nil) ? message : @"message=<nil>";
 }
 
 - (NSString *) toString

@@ -25,59 +25,17 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#import <ANTLR/ANTLR.h>
-#import "STErrorListener.h"
-#import "DictModelAdaptor.h"
+#import "ModelAdaptor.h"
+#import "ST.h"
+#import "STGroup.h"
 #import "Interpreter.h"
-#import "CompiledST.h"
+#import "Aggregate.h"
 
-@implementation DictModelAdaptor
-
-+ (id) newDictModelAdaptor
-{
-    return [[DictModelAdaptor alloc] init];
+@interface AggregateModelAdaptor : NSObject <ModelAdaptor> {
 }
 
-- (id) init
-{
-    self = [super init];
-    return self;
-}
++ (id) newAggregateModelAdaptor;
 
-- (id) getProperty:(Interpreter *)interp who:(ST *)aWho obj:(id)obj property:(id)aProperty propertyName:(NSString *)aPropertyName
-{
-    id value;
-    AMutableDictionary *dict = (AMutableDictionary *)obj;
-    if ( aProperty == nil ) {
-        value = [dict objectForKey:STGroup.DEFAULT_KEY];
-    }
-    else if ( [aProperty isEqualTo:@"keys"] ) {
-        value = [dict allKeys];
-    }
-    else if ( [aProperty isEqualTo:@"values"] ) {
-        value = [dict allValues];
-    }
-    else if ( [aProperty isKindOfClass:[NSString class]] && [dict objectForKey:aProperty] ) {
-        value = [dict objectForKey:aProperty];
-    }
-    else if ( [dict objectForKey:aPropertyName] ) { // if can't find the key, try toString version
-        value = [dict objectForKey:aPropertyName];
-    }
-    else {
-        value = [dict objectForKey:STGroup.DEFAULT_KEY]; // not found, use default
-    }
-    if ( value == STGroup.DICT_KEY ) {
-        value = aProperty;
-    }
-/*
-    if ( [value isKindOfClass:[ST class]] ) {
-        ST *st = (ST *)value;
-        st = [st.groupThatCreatedThisInstance createStringTemplateInternally:[CompiledST newCompiledST]];
-        st.enclosingInstance = aWho;
-        value = st;
-    }
- */
-    return value;
-}
-
+- (id) init;
+- (id) getProperty:(Interpreter *)interp who:(ST *)who obj:(id)obj property:(id)property propertyName:(NSString *)propertyName;
 @end

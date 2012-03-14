@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
+//#import <SenTestingKit/SenTestCase.h>
 #import <GHUnit/GHTestCase.h>
 #import "STGroup.h"
 #import "Compiler.h"
@@ -17,6 +18,7 @@
 #import "Assert.h"
 
 #define STAssertTrue GHAssertTrue
+#define SenTestCase GHTestCase
 
 extern NSString *const tmpdir;
 extern NSString *const newline;
@@ -53,7 +55,7 @@ extern NSString *const newline;
 extern NSString *const tmpdir;
 extern NSString *const newline;
 
-@interface BaseTest : GHTestCase {
+@interface BaseTest : SenTestCase {
     NSString *randomDir;
 }
 

@@ -153,15 +153,30 @@ static NSString *const newline = @"\n";
 }
 
 
++ (BOOL) fileExists:(NSString *)aPath
+{
+    BOOL isDir;
+    BOOL fExists;
+    NSString *path;
+    
+    NSFileManager *fm;
+    fm = [NSFileManager defaultManager];
+    if ( [aPath characterAtIndex:0] == '~' )
+        path = [aPath stringByExpandingTildeInPath];
+    fExists = [fm fileExistsAtPath:path isDirectory:&isDir];
+    return fExists;
+}
+
 + (BOOL) urlExists:(NSURL *)url
 {
-    @try {
-		NSInputStream *is = [NSInputStream inputStreamWithURL:url];
-		return [is hasBytesAvailable];
-	}
-	@catch (IOException *ioe) {
-		return NO;
-	}
+    BOOL isDir;
+    BOOL fExists;
+
+    NSString *aPath = [url path];
+    if ( [aPath characterAtIndex:0] == '~' )
+        aPath = [aPath stringByExpandingTildeInPath];
+    fExists = [[NSFileManager defaultManager] fileExistsAtPath:aPath isDirectory:&isDir];
+    return fExists;
 }
 
 /** Given index into string, compute the line and char position in line */

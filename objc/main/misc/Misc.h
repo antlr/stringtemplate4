@@ -47,6 +47,7 @@
 + (NSString *) getPrefix:(NSString *)name;
 + (NSString *) replaceEscapes:(NSString *)s;
 + (Coordinate *) getLineCharPosition:(NSString *)s index:(NSInteger)index;
++ (BOOL) fileExists:(NSString *)aPath;
 + (BOOL) urlExists:(NSURL *)url;
 #pragma mark error fix accessField
 + (id) accessField:(Ivar)f obj:(id)obj value:(id)value;
