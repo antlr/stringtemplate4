@@ -238,7 +238,7 @@
 - (NSString *) description
 {
     if ( ptr == nil ) {
-        return @"";
+        return @"<nilFromWriter>";
     }
     //NSLog( @"%@", [NSString stringWithCString:(const char *)ptr encoding:NSASCIIStringEncoding] );
     return [NSString stringWithCString:ptr encoding:NSASCIIStringEncoding];
