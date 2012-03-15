@@ -90,7 +90,7 @@
         //[buf appendFormat:@"%@%@", [m toString], Misc.newline];
         return [m description];
     }
-    return buf;
+    return (([buf length] > 0) ? buf : @"buf=<nil>");
 }
 
 - (NSString *) toString

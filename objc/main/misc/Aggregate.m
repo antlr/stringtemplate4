@@ -74,6 +74,7 @@
 
 - (void)dealloc
 {
+    if ( props ) [props release];
     [super dealloc];
 }
 
@@ -94,7 +95,7 @@
 
 - (NSString *)description
 {
-    NSString * desc = [props description];
+    NSString *desc = [props description];
     if ( desc == nil ) desc = @"props=<nil>";
     return desc;
 }

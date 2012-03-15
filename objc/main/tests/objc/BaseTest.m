@@ -250,11 +250,10 @@ NSString *const newline = @"\n"/* Misc.newline */;
     NSMutableString *str = nil;
 
     if (thisArray != nil) {
-        str = [NSMutableString stringWithCapacity:16];
         NSInteger count;
         count = [thisArray count];
         id obj;
-        [str appendString:@"["];
+        str = [NSMutableString stringWithString:@"["];
         for (i=0; i < count; i++ ) {
             obj = [thisArray objectAtIndex:i];
             if ( obj != nil ) {

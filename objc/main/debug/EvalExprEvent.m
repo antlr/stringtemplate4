@@ -59,6 +59,7 @@
 
 - (NSString *) description
 {
+    if ( expr == nil ) expr = @"expr=<nil>";
     return [NSString stringWithFormat:@"{self=%@, expr=%@, exprStartChar=%d, exprStopChar=%d start=%d, stop=%d}", [self className], expr, exprStartChar, exprStopChar, outputStartChar, outputStopChar];
 }
 

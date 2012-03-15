@@ -156,7 +156,7 @@ static DateRenderer_Anon1 *formatToInt;
             dateStr = [NSDateFormatter localizedStringFromDate:d dateStyle:styleI timeStyle:styleI];
         }
     }
-    return dateStr;
+    return ((dateStr != nil) ? dateStr : @"dateStr=<nil>");
 }
 
 - (NSString *) toString:(NSDate *)d formatString:(NSString *)formatString locale:(NSLocale *)locale

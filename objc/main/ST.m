@@ -813,11 +813,14 @@ static DebugState *st_debugState = nil;
 {
     if (impl == nil)
         return @"bad-template()";
-    NSString *name = [NSString stringWithFormat:@"%@()", impl.name];
-    if ( impl.isRegion ) {
-        name = [NSString stringWithFormat:@"@%@", [STGroup getUnMangledTemplateName:name]];
+    NSString *name = nil;
+    if ( impl.name != nil ) {
+        name = [NSString stringWithFormat:@"%@()", impl.name];
+        if ( impl.isRegion ) {
+            name = [NSString stringWithFormat:@"@%@", [STGroup getUnMangledTemplateName:name]];
+        }
     }
-    return name;
+    return ((name!= nil)? name : @"impl.name=<nil>");
 }
 
 - (NSString *) toString

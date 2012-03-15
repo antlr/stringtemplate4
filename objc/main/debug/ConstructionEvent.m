@@ -53,7 +53,7 @@
 {
     self=[super init];
     if ( self != nil ) {
-        msg = (aMsg !=nil) ? aMsg : @"msg=<nil>";
+        msg = (aMsg != nil) ? aMsg : @"msg=<nil>";
         if ( msg ) [msg retain];
     }
     return self;
@@ -70,7 +70,7 @@
 
 - (NSString *) description
 {
-    return msg;
+    return ((msg != nil) ? msg : @"msg=<nil>");
 }
 
 - (NSString *) toString

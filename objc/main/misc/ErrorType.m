@@ -470,7 +470,7 @@ static NSString *ErrorType_Data[NUM_OF_ERRORENUMS] = {
         case NUM_OF_ERRORENUMS:
             return @"INVALID_ERROR_NUMBER!!!";
     }
-    return nil;
+    return @"YOU SHOULD NEVER SEE THIS MESSAGE";
 }
 
 // getters and setters

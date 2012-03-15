@@ -158,7 +158,7 @@
 - (void) dealloc
 {
 #ifdef DEBUG_DEALLOC
-    NSLog( @"called dealloc in ObjectModelAdaptor" );
+    NSLog( @"called dealloc in OBJCMethod" );
 #endif
     if ( name ) [name release];
     if ( selString ) [selString release];

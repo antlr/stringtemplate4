@@ -89,7 +89,7 @@
             ip += Bytecode.OPND_SIZE_IN_BYTES;
         }
     }
-    return [buf description];
+    return (([buf length] > 0) ? buf : @"buf=<nil>");
 }
 
 - (NSString *) disassemble
@@ -100,7 +100,7 @@
         i = [self disassembleInstruction:buf ip:i];
         [buf appendString:@"\n"];
     }
-    return [buf description];
+    return (([buf length] > 0) ? buf : @"buf=<nil>");
 }
 
 - (NSInteger) disassembleInstruction:(NSMutableString *)buf ip:(NSInteger)ip
@@ -164,7 +164,7 @@
         }
     }
     [buf appendFormat:@":%@", s];
-    return [buf description];
+    return (([buf length] > 0) ? buf : @"ConstPoolOperand=<nil>");
 }
 
 - (NSString *) strings
@@ -190,7 +190,7 @@
             addr++;
         }
     }
-    return [buf description];
+    return (([buf length] > 0) ? buf : @"strings=<nil>");
 }
 
 - (NSString *) sourceMap
@@ -208,7 +208,7 @@
         }
         addr++;
     }
-    return [buf description];
+    return (([buf length] > 0) ? buf : @"sourceMap=<nil>");
 }
 
 @synthesize code;
