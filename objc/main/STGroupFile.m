@@ -116,7 +116,7 @@
                     @throw [MalformedURLException newException:fileName];
                 }
                 if ( STGroup.verbose )
-                    NSLog(@"STGroupFile(%@) == file %@", aFileName, fileName);
+                    NSLog(@"STGroupFile(%@) == file %@\n", aFileName, fileName);
             }
             else {
 #ifdef DONTUSEYET
@@ -206,9 +206,9 @@
     alreadyLoaded = YES; // do before actual load to say we're doing it
         // no prefix since this group file is the entire group, nothing lives
         // beneath it.
-    if ( STGroup.verbose ) NSLog(@"loading group file %@", [URL description]);
+    if ( STGroup.verbose ) NSLog(@"loading group file %@\n", [URL description]);
     [self loadGroupFile:@"/" fileName:fileName];
-    if ( STGroup.verbose ) NSLog(@"found %d templates in %@ = %@", [templates count], [URL description], [templates allKeys]);
+    if ( STGroup.verbose ) NSLog(@"found %d templates in %@ = %@\n", [templates count], [URL description], [templates allKeys]);
  }
 
 - (NSString *) show
