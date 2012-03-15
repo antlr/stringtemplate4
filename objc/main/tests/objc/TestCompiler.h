@@ -24,7 +24,7 @@
 - (void) test08AnonIncludeArgMismatch;
 - (void) test09AnonIncludeArgMismatch2;
 - (void) test10AnonIncludeArgMismatch3;
-- (void) test11IndirectIncludeWitArgs;
+- (void) test11IndirectIncludeWithArgs;
 - (void) test12Prop;
 - (void) test13Prop2;
 - (void) test14Map;

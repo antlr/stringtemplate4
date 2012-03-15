@@ -175,7 +175,7 @@
     return;
 }
 
-- (void) test11IndirectIncludeWitArgs
+- (void) test11IndirectIncludeWithArgs
 {
     NSString *aTemplate = @"hi <(foo)(a,b)>";
     CompiledST *code = [[[Compiler newCompiler] compile:aTemplate] retain];
