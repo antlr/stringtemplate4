@@ -62,12 +62,13 @@
 
 - (NSString *) toString
 {
-  return [self description];
+    return [self description];
 }
 
 - (void) dealloc
 {
-  [super dealloc];
+    if ( scope ) [scope release];
+    [super dealloc];
 }
 
 @synthesize scope;

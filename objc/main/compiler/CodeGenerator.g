@@ -172,6 +172,7 @@ options {
 #ifdef DEBUG_DEALLOC
     NSLog( @"called dealloc in CodeGenerator" );
 #endif
+    if ( template_scope ) [template_scope release];
     if ( outermostTemplateName ) [outermostTemplateName release];
     if ( outermostImpl ) [outermostImpl release];
     if ( templateToken ) [templateToken release];

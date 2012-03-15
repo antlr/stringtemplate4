@@ -60,6 +60,7 @@
 - (id) initWithCapacity:(NSInteger)sz;
 - (id) initWithWriter:(Writer *)aWriter;
 - (id) init:(Writer *)aWriter newline:(NSString *)newline;
+- (void) dealloc;
 - (NSInteger) writeStr:(NSString *)str;
 
 @end

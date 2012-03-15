@@ -8,7 +8,7 @@
     NSLog( @"Start test01.Attr" );
     NSString *aTemplate = @"hi <name>";
     NSLog( @"aTemplate = %@", aTemplate );
-    CompiledST *code = [[[Compiler newCompiler] compile:aTemplate] retain];
+    CompiledST *code = [[Compiler newCompiler] compile:aTemplate];
     NSLog( @"returned from newCompiler" );
     NSString *asmExpected = @"write_str 0, load_attr 1, write";
     NSString *asmResult = [code dis_instrs];
@@ -24,7 +24,7 @@
 - (void) test02Include
 {
     NSString *aTemplate = @"hi <foo()>";
-    CompiledST *code = [[[Compiler newCompiler] compile:aTemplate] retain];
+    CompiledST *code = [[Compiler newCompiler] compile:aTemplate];
     NSString *asmExpected = @"write_str 0, new 1 0, write";
     NSString *asmResult = [code dis_instrs];
     STAssertTrue( [asmExpected isEqualTo:asmResult], @"Expected \"%@\" but had \"%@\"", asmExpected, asmResult );
@@ -37,7 +37,7 @@
 - (void) test02aIncludeWithPassThrough
 {
     NSString *template = @"hi <foo(...)>";
-    CompiledST *code = [[[Compiler newCompiler] compile:template] retain];
+    CompiledST *code = [[Compiler newCompiler] compile:template];
     NSString *asmExpected =
         @"write_str 0, args, passthru 1, new_box_args 1, write";
     NSString *asmResult = [code dis_instrs];
@@ -51,7 +51,7 @@
 - (void) test02bIncludeWithPartialPassThrough
 {
     NSString *template = @"hi <foo(x=y,...)>";
-    CompiledST *code = [[[Compiler newCompiler] compile:template] retain];
+    CompiledST *code = [[Compiler newCompiler] compile:template];
     NSString *asmExpected =
         @"write_str 0, args, load_attr 1, store_arg 2, passthru 3, new_box_args 3, write";
     NSString *asmResult = [code dis_instrs];
@@ -65,7 +65,7 @@
 - (void) test03SuperInclude
 {
     NSString *aTemplate = @"<super.foo()>";
-    CompiledST *code = [[[Compiler newCompiler] compile:aTemplate] retain];
+    CompiledST *code = [[Compiler newCompiler] compile:aTemplate];
     NSString *asmExpected = @"super_new 0 0, write";
     [code dump];
     NSString *asmResult = [code dis_instrs];
@@ -79,7 +79,7 @@
 - (void) test04SuperIncludeWithArgs
 {
     NSString *aTemplate = @"<super.foo(a,{b})>";
-    CompiledST *code = [[[Compiler newCompiler] compile:aTemplate] retain];
+    CompiledST *code = [[Compiler newCompiler] compile:aTemplate];
     NSString *asmExpected = @"load_attr 0, new 1 0, super_new 2 2, write";
     NSString *asmResult = [code dis_instrs];
     STAssertTrue( [asmExpected isEqualTo:asmResult], @"Expected \"%@\" but had \"%@\"", asmExpected, asmResult );
@@ -92,7 +92,7 @@
 - (void) test05SuperIncludeWithNamedArgs
 {
     NSString *aTemplate = @"<super.foo(x=a,y={b})>";
-    CompiledST *code = [[[Compiler newCompiler] compile:aTemplate] retain];
+    CompiledST *code = [[Compiler newCompiler] compile:aTemplate];
     NSString *asmExpected = @"args, load_attr 0, store_arg 1, new 2 0, store_arg 3, super_new_box_args 4, write";
     NSString *asmResult = [code dis_instrs];
     STAssertTrue( [asmExpected isEqualTo:asmResult], @"Expected \"%@\" but had \"%@\"", asmExpected, asmResult );
@@ -105,7 +105,7 @@
 - (void) test06IncludeWithArgs
 {
     NSString *aTemplate = @"hi <foo(a,b)>";
-    CompiledST *code = [[[Compiler newCompiler] compile:aTemplate] retain];
+    CompiledST *code = [[Compiler newCompiler] compile:aTemplate];
     NSString *asmExpected = @"write_str 0, load_attr 1, load_attr 2, new 3 2, write";
     NSString *asmResult = [code dis_instrs];
     STAssertTrue( [asmExpected isEqualTo:asmResult], @"Expected \"%@\" but had \"%@\"", asmExpected, asmResult );
@@ -118,7 +118,7 @@
 - (void) test07AnonIncludeArgs
 {
     NSString *aTemplate = @"<({ a, b | <a><b>})>";
-    CompiledST *code = [[[Compiler newCompiler] compile:aTemplate] retain];
+    CompiledST *code = [[Compiler newCompiler] compile:aTemplate];
     NSString *asmExpected = @"new 0 0, tostr, write";
     NSString *asmResult = [code dis_instrs];
     STAssertTrue( [asmExpected isEqualTo:asmResult], @"Expected \"%@\" but had \"%@\"", asmExpected, asmResult );
@@ -130,55 +130,46 @@
 
 - (void) test08AnonIncludeArgMismatch
 {
-    ErrorBuffer *errors = [[ErrorBuffer newErrorBuffer] retain];
+    ErrorBuffer *errors = [ErrorBuffer newErrorBuffer];
     NSString *aTemplate = @"<a:{foo}>";
-    STGroup *g = [[STGroup newSTGroup] retain];
+    STGroup *g = [STGroup newSTGroup];
     g.errMgr = [ErrorManager newErrorManagerWithListener:errors];
-    CompiledST *code = [[[Compiler newCompiler:g] compile:aTemplate] retain];
+    CompiledST *code = [[Compiler newCompiler:g] compile:aTemplate];
     NSString *expected = @"1:3: anonymous template has 0 arg(s) but mapped across 1 value(s)";
     NSString *result = [errors toString];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
-    [code release];
-    [g release];
-    [errors release];
     return;
 }
 
 - (void) test09AnonIncludeArgMismatch2
 {
-    ErrorBuffer *errors = [[ErrorBuffer newErrorBuffer] retain];
+    ErrorBuffer *errors = [ErrorBuffer newErrorBuffer];
     NSString *aTemplate = @"<a,b:{x|foo}>";
-    STGroup *g = [[STGroup newSTGroup] retain];
+    STGroup *g = [STGroup newSTGroup];
     g.errMgr = [ErrorManager newErrorManagerWithListener:errors];
-    CompiledST *code = [[[Compiler newCompiler:g] compile:aTemplate] retain];
+    CompiledST *code = [[Compiler newCompiler:g] compile:aTemplate];
     NSString *expected = @"1:5: anonymous template has 1 arg(s) but mapped across 2 value(s)";
     NSString *result = [errors toString];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
-    [code release];
-    [g release];
-    [errors release];
     return;
 }
 
 - (void) test10AnonIncludeArgMismatch3
 {
-    ErrorBuffer *errors = [[ErrorBuffer newErrorBuffer] retain];
+    ErrorBuffer *errors = [ErrorBuffer newErrorBuffer];
     NSString *aTemplate = @"<a:{x|foo},{bar}>";
-    STGroup *g = [[STGroup newSTGroup] retain];
+    STGroup *g = [STGroup newSTGroup];
     g.errMgr = [ErrorManager newErrorManagerWithListener:errors];
-    CompiledST *code = [[[Compiler newCompiler:g] compile:aTemplate] retain];
+    CompiledST *code = [[Compiler newCompiler:g] compile:aTemplate];
     NSString *expected = @"1:11: anonymous template has 0 arg(s) but mapped across 1 value(s)";
     STAssertTrue( [expected isEqualTo:[errors toString]], @"Expected \"%@\" but had \"%@\"", expected, [errors toString] );
-    [code release];
-    [g release];
-    [errors release];
     return;
 }
 
 - (void) test11IndirectIncludeWithArgs
 {
     NSString *aTemplate = @"hi <(foo)(a,b)>";
-    CompiledST *code = [[[Compiler newCompiler] compile:aTemplate] retain];
+    CompiledST *code = [[Compiler newCompiler] compile:aTemplate];
     NSString *asmExpected = @"write_str 0, load_attr 1, tostr, load_attr 2, load_attr 3, new_ind 2, write";
     NSString *asmResult = [code dis_instrs];
     STAssertTrue( [asmExpected isEqualTo:asmResult], @"Expected \"%@\" but had \"%@\"", asmExpected, asmResult );

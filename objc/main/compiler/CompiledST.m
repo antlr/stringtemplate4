@@ -85,8 +85,10 @@
 #ifdef DEBUG_DEALLOC
     NSLog( @"called dealloc in CompiledST" );
 #endif
+    if ( prefix ) [prefix release];
     if ( name ) [name release];
     if ( template ) [template release];
+    if ( templateDefStartToken ) [templateDefStartToken release];
     if ( tokens ) [tokens release];
     if ( ast ) [ast release];
     if ( formalArguments ) [formalArguments release];

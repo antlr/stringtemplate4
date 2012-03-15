@@ -333,6 +333,7 @@ static formalArgs_Scope *formalArgs_scope;
 
 - (void) dealloc
 {
+    if ( group ) [group release];
     [super dealloc];
 }
 
