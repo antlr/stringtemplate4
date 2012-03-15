@@ -459,8 +459,8 @@ mapTemplateRef[NSInteger num_exprs]
             [errMgr compileTimeError:ANON_ARGUMENT_MISMATCH
                        templateToken:templateToken
                                    t:$subtemplate.start.token
-                                 arg:$subtemplate.nargs
-                                arg2:$num_exprs];
+                                argN:$subtemplate.nargs
+                               arg2N:$num_exprs];
 		}
 		for (NSInteger i=1; i<=$num_exprs; i++) [self emit:$subtemplate.start opcode:Bytecode.INSTR_NULL];
         [self emit2:$subtemplate.start

@@ -44,30 +44,6 @@
     return [[STGroupCompiletimeMessage alloc] init:anError srcName:aSrcName t:t cause:aCause arg:anArg arg2:anArg2];
 }
 
-#ifdef DONTUSENOMO
-- (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName t:(CommonToken *)t cause:(NSException *)aCause
-{
-    self=[super init:anError who:nil cause:aCause arg:nil arg2:nil arg3:nil];
-    if ( self != nil ) {
-        token = t;
-        srcName = srcName;
-    }
-    return self;
-}
-
-- (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName t:(CommonToken *)t cause:(NSException *)aCause arg:(id)anArg
-{
-    self=[super init:anError who:nil cause:aCause arg:nil arg2:nil arg3:nil];
-    if ( self != nil ) {
-        token = t;
-        if ( token ) [token retain];
-        srcName = srcName;
-        if ( srcName ) [srcName retain];
-    }
-    return self;
-}
-#endif
-
 - (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName t:(CommonToken *)t cause:(NSException *)aCause arg:(id)anArg arg2:(id)anArg2
 {
     self=[super init:anError who:nil cause:aCause arg:anArg arg2:anArg2 arg3:nil];

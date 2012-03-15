@@ -73,6 +73,7 @@
 - (void) compileTimeError:(ErrorTypeEnum)error templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t;
 - (void) compileTimeError:(ErrorTypeEnum)error templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t arg:(id)arg;
 - (void) compileTimeError:(ErrorTypeEnum)error templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t arg:(id)arg arg2:(id)arg2;
+- (void) compileTimeError:(ErrorTypeEnum)error templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t argN:(NSInteger)arg arg2N:(NSInteger)arg2;
 - (void) lexerError:(NSString *)srcName msg:(NSString *)msg templateToken:(CommonToken *)aTemplateToken e:(RecognitionException *)e;
 - (void) groupSyntaxError:(ErrorTypeEnum)error srcName:(NSString *)srcName e:(RecognitionException *)e msg:(NSString *)msg;
 - (void) groupLexerError:(ErrorTypeEnum)error srcName:(NSString *)srcName e:(RecognitionException *)e msg:(NSString *)msg;

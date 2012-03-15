@@ -180,6 +180,14 @@ static ErrorManager *DEFAULT_ERR_MGR;
     [listener compileTimeError:[STCompiletimeMessage newMessage:anError srcName:srcName templateToken:aTemplateToken t:t cause:nil arg:arg arg2:arg2]];
 }
 
+- (void) compileTimeError:(ErrorTypeEnum)anError templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t argN:(NSInteger)arg arg2N:(NSInteger)arg2
+{
+    NSString *srcName = [t.input getSourceName];
+    if (srcName != nil)
+        srcName = [Misc getFileName:srcName];
+    [listener compileTimeError:[STCompiletimeMessage newMessage:anError srcName:srcName templateToken:aTemplateToken t:t cause:nil argN:arg arg2N:arg2]];
+}
+
 - (void) lexerError:(NSString *)srcName msg:(NSString *)aMsg templateToken:(CommonToken *)aTemplateToken e:(RecognitionException *)e
 {
     [listener compileTimeError:[STLexerMessage newMessage:srcName msg:aMsg templateToken:aTemplateToken cause:e]];
