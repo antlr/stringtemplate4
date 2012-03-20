@@ -75,7 +75,7 @@
 
 + (NSInteger) NO_WRAP;
 + (id) newWriter;
-+ (id) newWriterWithWriter:(id)aWriter;
++ (id) newWriter:(id)aWriter;
 + (id) newWriterWithCapacity:(NSUInteger)len;
 + (id) stringWithCapacity:(NSUInteger)len;
 
@@ -133,8 +133,8 @@
 }
 
 + (id) newWriter;
-+ (id) newWriter:(NSInteger)len;
-+ (id) newWriterWithWriter:(Writer *)op;
++ (id) newWriter:(Writer *)op;
++ (id) newWriterWithCapacity:(NSInteger)len;
 
 - (id) initWithCapacity:(NSInteger)sz;
 - (id) initWithWriter:(Writer *)op;

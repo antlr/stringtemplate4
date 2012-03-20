@@ -1,4 +1,4 @@
-// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-03-08 11:25:55
+// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-03-19 17:03:10
 
 /* =============================================================================
  * Standard antlr OBJC runtime definitions
@@ -133,6 +133,8 @@ STGroup *group;
 - (void) mT__27 ; 
 - (void) mT__28 ; 
 - (void) mT__29 ; 
+- (void) mT_TRUE ; 
+- (void) mT_FALSE ; 
 - (void) mID ; 
 - (void) mSTRING ; 
 - (void) mBIGSTRING_NO_NL ; 

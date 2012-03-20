@@ -172,7 +172,6 @@ typedef enum {
 + (ST *) newST:(NSString *)template delimiterStartChar:(unichar)delimiterStartChar delimiterStopChar:(unichar)delimiterStopChar;
 + (ST *) newST:(STGroup *)aGroup template:(NSString *)template;
 + (ST *) newSTWithProto:(ST *)proto;
-- (id) init;
 - (id) init:(STGroup *)aGroup template:(NSString *)template;
 - (id) initWithProto:(ST *)proto;
 - (void)dealloc;

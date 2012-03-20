@@ -4,6 +4,8 @@
 #import "STGroupFile.h"
 
 @implementation Field_anon1
+@synthesize name;
+@synthesize n;
 
 - (id) init
 {
@@ -12,6 +14,16 @@
         n = 0;
     }
     return self;
+}
+
+- (NSString *) getName
+{
+    return name;
+}
+
+- (NSInteger) getN
+{
+    return n;
 }
 
 - (NSString *) description
@@ -33,6 +45,8 @@
 @end
 
 @implementation Field_anon2
+@synthesize name;
+@synthesize n;
 
 - (id) init
 {
@@ -62,6 +76,8 @@
 @end
 
 @implementation Field_anon3
+@synthesize name;
+@synthesize n;
 
 - (id) init
 {
@@ -91,6 +107,7 @@
 @end
 
 @implementation Counter
+@synthesize n;
 
 - (id) init
 {
@@ -182,8 +199,8 @@
     STGroup *group = [STGroupDir newSTGroupDir:dir];
     ST *st = [group getInstanceOf:@"/subdir/a"];
     [st.impl dump];
-    [st add:@"x" value:[AMutableArray arrayWithObjects:@"a", @"b", nil]];
-//    [[st add:@"x" value:@"a"] add:@"x" value:@"b"];
+//    [st add:@"x" value:[AMutableArray arrayWithObjects:@"a", @"b", nil]];
+    [[st add:@"x" value:@"a"] add:@"x" value:@"b"];
     NSString *expected = @"ab";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
@@ -212,7 +229,7 @@
     NSString *a = @"a(x) ::= <<\nfoo\n>>\n";
     [self writeFile:dir fileName:@"a.st" content:a];
     NSString *b = @"b() ::= \"bar\"\n";
-    [self writeFile:[dir stringByAppendingString:@"/sub1/sub2"] fileName:@"b.st" content:b];
+    [self writeFile:[NSString stringWithFormat:@"%@/sub1/sub2", dir] fileName:@"b.st" content:b];
     STGroup *group = [STGroupDir newSTGroupDir:dir];
     ST *st1 = [group getInstanceOf:@"a"];
     ST *st2 = [group getInstanceOf:@"sub1/sub2/b"];
@@ -228,7 +245,7 @@
     NSString *a = @"a(x) ::= <<\nfoo\n>>\n";
     [self writeFile:dir fileName:@"a.st" content:a];
     NSString *groupFile = [@"b() ::= \"bar\"\n" stringByAppendingString:@"c() ::= \"duh\"\n"];
-    [self writeFile:dir fileName:@"subdir/group.stg" content:groupFile];
+    [self writeFile:[NSString stringWithFormat:@"%@/subdir", dir] fileName:@"group.stg" content:groupFile];
     STGroup *group = [STGroupDir newSTGroupDir:dir];
     ST *st1 = [group getInstanceOf:@"a"];
     ST *st2 = [group getInstanceOf:@"subdir/group/b"];
@@ -239,7 +256,8 @@
     return;
 }
 
-- (void) test09RefToAnotherTemplateInSameGroup
+#ifdef DONTUSENOMO
+- (void) test08aRefToAnotherTemplateInSameGroup
 {
     NSString *dir = [self getRandomDir];
     NSString *a = @"a() ::= << <b()> >>\n";
@@ -254,13 +272,13 @@
     return;
 }
 
-- (void) test10RefToAnotherTemplateInSameSubdir
+- (void) test08bRefToAnotherTemplateInSameSubdir
 {
     NSString *dir = [self getRandomDir];
     NSString *a = @"a() ::= << <subdir/b()> >>\n";
     NSString *b = @"b() ::= <<bar>>\n";
-    [self writeFile:[dir stringByAppendingString:@"/subdir"] fileName:@"a.st" content:a];
-    [self writeFile:[dir stringByAppendingString:@"/subdir"] fileName:@"b.st" content:b];
+    [self writeFile:[NSString stringWithFormat:@"%@/subdir", dir] fileName:@"a.st" content:a];
+    [self writeFile:[NSString stringWithFormat:@"%@/subdir", dir] fileName:@"b.st" content:b];
     STGroup *group = [STGroupDir newSTGroupDir:dir];
     ST *st = [group getInstanceOf:@"subdir/a"];
     [st.impl dump];
@@ -269,14 +287,15 @@
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
     return;
 }
+#endif
 
-- (void) test11DupDef
+- (void) test09DupDef
 {
     NSString *dir = [self getRandomDir];
     NSString *groupFile = @"b() ::= \"bar\"\nb() ::= \"duh\"\n";
     [self writeFile:dir fileName:@"group.stg" content:groupFile];
     id<STErrorListener>errors = [ErrorBuffer newErrorBuffer];
-    STGroupFile *group = [[STGroupFile alloc] init:[dir stringByAppendingString:@"/group.stg"]];
+    STGroupFile *group = [STGroupFile newSTGroupFile:[NSString stringWithFormat:@"%@/group.stg", dir]];
     [group setListener:errors];
     [group load];
     NSString *expected = @"group.stg 2:0: redefinition of template b\n";
@@ -285,12 +304,12 @@
     return;
 }
 
-- (void) test12Alias
+- (void) test10Alias
 {
     NSString *dir = [self getRandomDir];
     NSString *groupFile = @"a() ::= \"bar\"\nb ::= a\n";
     [self writeFile:dir fileName:@"group.stg" content:groupFile];
-    STGroupFile *group = [STGroupFile newSTGroupFile:[dir stringByAppendingString:@"/group.stg"]];
+    STGroupFile *group = [STGroupFile newSTGroupFile:[NSString stringWithFormat:@"%@/group.stg", dir]];
     ST *st = [group getInstanceOf:@"b"];
     NSString *expected = @"bar";
     NSString *result = [st render];
@@ -298,12 +317,12 @@
     return;
 }
 
-- (void) test13AliasWithArgs
+- (void) test11AliasWithArgs
 {
     NSString *dir = [self getRandomDir];
     NSString *groupFile = @"a(x,y) ::= \"<x><y>\"\nb ::= a\n";
     [self writeFile:dir fileName:@"group.stg" content:groupFile];
-    STGroupFile *group = [STGroupFile newSTGroupFile:[dir stringByAppendingString:@"/group.stg"]];
+    STGroupFile *group = [STGroupFile newSTGroupFile:[NSString stringWithFormat:@"%@/group.stg", dir]];
     ST *st = [group getInstanceOf:@"b"];
     [st addInt:@"x" value:1];
     [st addInt:@"y" value:2];
@@ -313,7 +332,7 @@
     return;
 }
 
-- (void) test14SimpleDefaultArg
+- (void) test12SimpleDefaultArg
 {
     NSString *dir = [self getRandomDir];
     NSString *a = @"a() ::= << <b()> >>\n";
@@ -322,13 +341,14 @@
     [self writeFile:dir fileName:@"b.st" content:b];
     STGroup *group = [STGroupDir newSTGroupDir:dir];
     ST *st = [group getInstanceOf:@"a"];
+    [st.impl dump];
     NSString *expected = @" foo ";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
     return;
 }
 
-- (void) test15DefaultArgument
+- (void) test13DefaultArgument
 {
     NSString *templates = @"method(name) ::= <<\n<stat(name)>\n>>\nstat(name,value=\"99\") ::= \"x=<value>; // <name>\"\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
@@ -341,20 +361,21 @@
     return;
 }
 
-- (void) test16BooleanDefaultArguments
+- (void) test14BooleanDefaultArguments
 {
     NSString *templates = @"method(name) ::= <<\n<stat(name)>\n>>\nstat(name,x=true,y=false) ::= \"<name>; <x> <y>\"\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
     STGroup *group = [STGroupFile newSTGroupFile:[NSString stringWithFormat:@"%@/group.stg", tmpdir]];
     ST *st = [group getInstanceOf:@"method"];
     [st add:@"name" value:@"foo"];
+    [st.impl dump];
     NSString *expected = @"foo; true false";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
     return;
 }
 
-- (void) test17DefaultArgument2
+- (void) test15DefaultArgument2
 {
     NSString *templates = @"stat(name,value=\"99\") ::= \"x=<value>; // <name>\"\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
@@ -367,7 +388,7 @@
     return;
 }
 
-- (void) test18SubtemplateAsDefaultArgSeesOtherArgs
+- (void) test16SubtemplateAsDefaultArgSeesOtherArgs
 {
     NSString *templates =@"t(x,y={<x:{s|<s><z>}>},z=\"foo\") ::= <<\nx: <x>\ny: <y>\n>>\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
@@ -380,7 +401,18 @@
     return;
 }
 
-- (void) test19DefaultArgumentAsSimpleTemplate
+- (void) test17EarlyEvalOfDefaultArgs
+{
+    NSString *templates = @"s(x,y={<(x)>}) ::= \"<x><y>\"\n"; // should see x in def arg
+    STGroup *group = [STGroupString newSTGroupString:templates];
+    ST *st = [group getInstanceOf:@"s"];
+    [st add:@"x" value:@"a"];
+    NSString *expected = @"aa";
+    NSString *result = [st render];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+}
+
+- (void) test18DefaultArgumentAsSimpleTemplate
 {
     NSString *templates = @"stat(name,value={99}) ::= \"x=<value>; // <name>\"\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
@@ -393,20 +425,21 @@
     return;
 }
 
-- (void) test20DefaultArgumentManuallySet
+- (void) test19DefaultArgumentManuallySet
 {
     NSString *templates = @"method(fields) ::= <<\n<fields:{f | <stat(f)>}>\n>>\nstat(f,value={<f.name>}) ::= \"x=<value>; // <f.name>\"\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
     STGroup *group = [STGroupFile newSTGroupFile:[NSString stringWithFormat:@"%@/group.stg", tmpdir]];
     ST *st = [group getInstanceOf:@"method"];
-    [st add:@"fields" value:[[[Field_anon1 alloc] init] autorelease]];
+    [st add:@"fields" value:[[Field_anon1 alloc] init]];
+    [st.impl dump];
     NSString *expected = @"x=parrt; // parrt";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
     return;
 }
 
-- (void) test21DefaultArgumentSeesVarFromDynamicScoping
+- (void) test20DefaultArgumentSeesVarFromDynamicScoping
 {
     NSString *templates = @"method(fields) ::= <<\n<fields:{f | <stat()>}>\n>>\nstat(value={<f.name>}) ::= \"x=<value>; // <f.name>\"\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
@@ -419,7 +452,7 @@
     return;
 }
 
-- (void) test22DefaultArgumentImplicitlySet2
+- (void) test21DefaultArgumentImplicitlySet2
 {
     NSString *templates = @"method(fields) ::= <<\n<fields:{f | <f:stat()>}>\n>>\nstat(f,value={<f.name>}) ::= \"x=<value>; // <f.name>\"\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
@@ -432,7 +465,7 @@
     return;
 }
 
-- (void) test23DefaultArgumentAsTemplate
+- (void) test22DefaultArgumentAsTemplate
 {
     NSString *templates = @"method(name,size) ::= <<\n<stat(name)>\n>>\nstat(name,value={<name>}) ::= \"x=<value>; // <name>\"\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
@@ -446,7 +479,7 @@
     return;
 }
 
-- (void) test24DefaultArgumentAsTemplate2
+- (void) test23DefaultArgumentAsTemplate2
 {
     NSString *templates = @"method(name,size) ::= <<\n<stat(name)>\n>>\nstat(name,value={ [<name>] }) ::= \"x=<value>; // <name>\"\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
@@ -460,7 +493,7 @@
     return;
 }
 
-- (void) test25DoNotUseDefaultArgument
+- (void) test24DoNotUseDefaultArgument
 {
     NSString *templates = @"method(name) ::= <<\n<stat(name,\"34\")>\n>>\nstat(name,value=\"99\") ::= \"x=<value>; // <name>\"\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
@@ -473,7 +506,7 @@
     return;
 }
 
-- (void) test26DefaultArgumentInParensToEvalEarly
+- (void) test25DefaultArgumentInParensToEvalEarly
 {
     NSString *templates = @"A(x) ::= \"<B()>\"\nB(y={<(x)>}) ::= \"<y> <x> <x> <y>\"\n";
     [self writeFile:tmpdir fileName:@"group.stg" content:templates];
@@ -486,12 +519,12 @@
     return;
 }
 
-- (void) test27TrueFalseArgs
+- (void) test26TrueFalseArgs
 {
     NSString *dir = [self getRandomDir];
     NSString *groupFile = @"f(x,y) ::= \"<x><y>\"\ng() ::= \"<f(true,{a})>\"";
     [self writeFile:dir fileName:@"group.stg" content:groupFile];
-    STGroupFile *group = [[STGroupFile alloc] init:[dir stringByAppendingString:@"/group.stg"]];
+    STGroupFile *group = [STGroupFile newSTGroupFile:[dir stringByAppendingString:@"/group.stg"]];
     ST *st = [group getInstanceOf:@"g"];
     NSString *expected = @"truea";
     NSString *result = [st render];
@@ -499,12 +532,12 @@
     return;
 }
 
-- (void) test28NamedArgsInOrder
+- (void) test27NamedArgsInOrder
 {
     NSString *dir = [self getRandomDir];
     NSString *groupFile = @"f(x,y) ::= \"<x><y>\"\ng() ::= \"<f(x={a},y={b})>\"";
     [self writeFile:dir fileName:@"group.stg" content:groupFile];
-    STGroupFile *group = [[STGroupFile alloc] init:[dir stringByAppendingString:@"/group.stg"]];
+    STGroupFile *group = [STGroupFile newSTGroupFile:[dir stringByAppendingString:@"/group.stg"]];
     ST *st = [group getInstanceOf:@"g"];
     NSString *expected = @"ab";
     NSString *result = [st render];
@@ -512,12 +545,12 @@
     return;
 }
 
-- (void) test29NamedArgsOutOfOrder
+- (void) test28NamedArgsOutOfOrder
 {
     NSString *dir = [self getRandomDir];
     NSString *groupFile = @"f(x,y) ::= \"<x><y>\"\ng() ::= \"<f(y={b},x={a})>\"";
     [self writeFile:dir fileName:@"group.stg" content:groupFile];
-    STGroupFile *group = [[STGroupFile alloc] init:[dir stringByAppendingString:@"/group.stg"]];
+    STGroupFile *group = [STGroupFile newSTGroupFile:[dir stringByAppendingString:@"/group.stg"]];
     ST *st = [group getInstanceOf:@"g"];
     NSString *expected = @"ab";
     NSString *result = [st render];
@@ -525,12 +558,12 @@
     return;
 }
 
-- (void) test30UnknownNamedArg
+- (void) test29UnknownNamedArg
 {
     NSString *dir = [self getRandomDir];
     NSString *groupFile = @"f(x,y) ::= \"<x><y>\"\ng() ::= \"<f(x={a},z={b})>\"";
     [self writeFile:dir fileName:@"group.stg" content:groupFile];
-    STGroupFile *group = [[STGroupFile alloc] init:[dir stringByAppendingString:@"/group.stg"]];
+    STGroupFile *group = [STGroupFile newSTGroupFile:[dir stringByAppendingString:@"/group.stg"]];
     ErrorBuffer *errors = [ErrorBuffer newErrorBuffer];
     [group setListener:errors];
     ST *st = [group getInstanceOf:@"g"];
@@ -541,12 +574,12 @@
     return;
 }
 
-- (void) test31MissingNamedArg
+- (void) test30MissingNamedArg
 {
     NSString *dir = [self getRandomDir];
     NSString *groupFile = @"f(x,y) ::= \"<x><y>\"\ng() ::= \"<f(x={a},{b})>\"";
     [self writeFile:dir fileName:@"group.stg" content:groupFile];
-    STGroupFile *group = [[STGroupFile alloc] init:[dir stringByAppendingString:@"/group.stg"]];
+    STGroupFile *group = [STGroupFile newSTGroupFile:[dir stringByAppendingString:@"/group.stg"]];
     ErrorBuffer *errors = [ErrorBuffer newErrorBuffer];
     [group setListener:errors];
     [group load];
@@ -556,12 +589,12 @@
     return;
 }
 
-- (void) test32NamedArgsNotAllowInIndirectInclude
+- (void) test31NamedArgsNotAllowInIndirectInclude
 {
     NSString *dir = [self getRandomDir];
     NSString *groupFile = @"f(x,y) ::= \"<x><y>\"\ng(name) ::= \"<(name)(x={a},y={b})>\"";
     [self writeFile:dir fileName:@"group.stg" content:groupFile];
-    STGroupFile *group = [[[STGroupFile alloc] init:[dir stringByAppendingString:@"/group.stg"]] autorelease];
+    STGroupFile *group = [STGroupFile newSTGroupFile:[dir stringByAppendingString:@"/group.stg"]];
     ErrorBuffer *errors = [ErrorBuffer newErrorBuffer];
     [group setListener:errors];
     [group load];
@@ -571,20 +604,20 @@
     return;
 }
 
-- (void) test33CantSeeGroupDirIfGroupFileOfSameName
+- (void) test32CantSeeGroupDirIfGroupFileOfSameName
 {
     NSString *dir = [self getRandomDir];
     NSString *a = @"a() ::= <<dir1 a>>\n";
     [self writeFile:dir fileName:@"group/a.st" content:a];
     NSString *groupFile = @"b() ::= \"group file b\"\n";
     [self writeFile:dir fileName:@"group.stg" content:groupFile];
-    STGroup *group1 = [[STGroupDir alloc] init:dir];
+    STGroup *group1 = [STGroupDir newSTGroupDir:dir];
     ST *st = [group1 getInstanceOf:@"group/a"];
     STAssertTrue( (st == nil), @"Expected nil BUT GOT \"%@\"", [st description] );
     return;
 }
 
-- (void) test34FullyQualifiedGetInstanceOf
+- (void) test33FullyQualifiedGetInstanceOf
 {
     NSString *dir = [self getRandomDir];
     NSString *a = @"a(x) ::= <<\nfoo\n>>\n";
@@ -597,13 +630,13 @@
     return;
 }
 
-- (void) test35FullyQualifiedTemplateRef
+- (void) test34FullyQualifiedTemplateRef
 {
     NSString *dir = [self getRandomDir];
     NSString *a = @"a() ::= << <subdir/b()> >>\n";
     NSString *b = @"b() ::= <<bar>>\n";
-    [self writeFile:[dir stringByAppendingString:@"/subdir"] fileName:@"a.st" content:a];
-    [self writeFile:[dir stringByAppendingString:@"/subdir"] fileName:@"b.st" content:b];
+    [self writeFile:[NSString stringWithFormat:@"%@/subdir", dir] fileName:@"a.st" content:a];
+    [self writeFile:[NSString stringWithFormat:@"%@/subdir", dir] fileName:@"b.st" content:b];
     STGroup *group = [STGroupDir newSTGroupDir:dir];
     ST *st = [group getInstanceOf:@"subdir/a"];
     NSString *expected = @" bar ";
@@ -612,7 +645,7 @@
     return;
 }
 
-- (void) test36FullyQualifiedTemplateRef2
+- (void) test35FullyQualifiedTemplateRef2
 {
     NSString *dir = [self getRandomDir];
     NSString *a = @"a(x) ::= << <group/b()> >>\n";
@@ -628,7 +661,7 @@
     return;
 }
 
-- (void) test37UnloadingSimpleGroup
+- (void) test36UnloadingSimpleGroup
 {
     NSString *dir = [self getRandomDir];
     NSString *a = @"a(x) ::= <<foo>>\n";
@@ -653,12 +686,12 @@
     return;
 }
 
-- (void) test38UnloadingGroupFile
+- (void) test37UnloadingGroupFile
 {
     NSString *dir = [self getRandomDir];
     NSString *a = @"a(x) ::= <<foo>>\nb() ::= <<bar>>\n";
     [self writeFile:dir fileName:@"a.stg" content:a];
-    STGroup *group = [[[STGroupFile alloc] init:[dir stringByAppendingString:@"/a.stg"]] autorelease];
+    STGroup *group = [STGroupFile newSTGroupFile:[dir stringByAppendingString:@"/a.stg"]];
     [group load];
     ST *st = [group getInstanceOf:@"a"];
     NSInteger originalHashCode = (NSInteger) st;

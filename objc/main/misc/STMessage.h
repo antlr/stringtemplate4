@@ -73,8 +73,8 @@
 @property (retain) ST *who;
 @property (assign) ErrorTypeEnum error;
 @property (assign) id arg;
-@property (retain) id arg2;
-@property (retain) id arg3;
+@property (assign) id arg2;
+@property (assign) id arg3;
 @property (retain) NSException *cause;
 
 @end

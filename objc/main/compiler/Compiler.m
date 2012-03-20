@@ -445,7 +445,7 @@ static NSString *SUBTEMPLATE_PREFIX = @"_sub";
         [group.errMgr compileTimeError:SYNTAX_ERROR templateToken:templateToken t:re.token arg:msg];
     }
     else if (tokens.index == 0) {
-        msg = [NSString stringWithFormat:@"this doesn't look like a template: \"%@\"", [tokens toString]];
+        msg = [NSString stringWithFormat:@"this doesn't look like a template: \"%@\"", [tokens description]];
         [group.errMgr compileTimeError:SYNTAX_ERROR templateToken:templateToken t:re.token arg:msg];
     }
     else if ([tokens LA:1] == STLexer.LDELIM) {

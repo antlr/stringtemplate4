@@ -509,7 +509,7 @@ static BOOL trackCreationEvents = NO;
         [errMgr compileTimeError:ALIAS_TARGET_UNDEFINED templateToken:nil t:aliasT arg:alias arg2:target];
         return nil;
     }
-    [self rawDefineTemplate:[NSString stringWithFormat:@"/%@", target] code:targetCode defT:aliasT];
+    [self rawDefineTemplate:[NSString stringWithFormat:@"/%@", alias] code:targetCode defT:aliasT];
     return targetCode;
 }
 
@@ -608,7 +608,7 @@ static BOOL trackCreationEvents = NO;
 + (NSString *) getMangledRegionName:(NSString *)anEnclosingTemplateName name:(NSString *)aName
 {
     if ( [anEnclosingTemplateName characterAtIndex:0] != '/' )
-        anEnclosingTemplateName = [NSString stringWithFormat:@"/%@", aName];
+        anEnclosingTemplateName = [NSString stringWithFormat:@"/%@", anEnclosingTemplateName];
     NSString *tmp = [NSString stringWithFormat:@"region__%@__%@", anEnclosingTemplateName, aName];
     return tmp;
 }
@@ -660,7 +660,6 @@ static BOOL trackCreationEvents = NO;
 - (void) importTemplatesWithFileName:(CommonToken *)fileNameToken
 {
     if (verbose) NSLog(@"[self importTemplates:%@]\n", fileNameToken.text);
-    NSError *error;
     NSString *aFileName = fileNameToken.text;
     if ( aFileName == nil || [aFileName isEqualToString:@"<missing STRING>"] )
         return;

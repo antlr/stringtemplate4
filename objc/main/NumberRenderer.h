@@ -26,6 +26,7 @@
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #import "AttributeRenderer.h"
+#import "ACNumber.h"
 /**
  * Works with Byte, Short, Integer, Long, and BigInteger as well as
  * Float, Double, and BigDecimal.  You pass in a format string suitable

@@ -229,8 +229,13 @@ static STNoSuchPropertyException *cachedException;
     id member = [classAndPropertyToMemberCache objectForKey1:NSStringFromClass(c) forKey2:aPropertyName];
     if (member != nil) {
         @try {
-            if ([member getClass] == [OBJCMethod class]) return [((OBJCMethod *)member) invoke:anObj];
-            if ([member getClass] == [Field class]) return [(Field *)member getObj];
+            SEL aSEL = NSSelectorFromString(member);
+            return [anObj performSelector:aSEL];
+            OBJCMethod *aMeth = [OBJCMethod newOBJCMethod:member obj:anObj sel:aSEL];
+            if ([member getClass] == [OBJCMethod class])
+                return [aMeth invoke:anObj];
+            if ([member getClass] == [Field class])
+                return [(Field *)member getObj];
         }
         @catch (NSException *e) {
             [self throwNoSuchProperty:[NSString stringWithFormat:@"%@.%@", NSStringFromClass(c), aPropertyName]];

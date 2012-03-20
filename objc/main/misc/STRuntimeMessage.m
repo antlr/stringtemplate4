@@ -65,19 +65,36 @@
     return [[STRuntimeMessage alloc] init:anInterp error:anError ip:anIp who:aWho cause:e arg:anArg arg2:anArg2 arg3:@""];
 }
 
++ (id) newMessage:(Interpreter *)anInterp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e argN:(NSInteger)anArg arg2N:(NSInteger)anArg2;
+{
+    return [[STRuntimeMessage alloc] init:anInterp error:anError ip:anIp who:aWho cause:e argN:anArg arg2N:anArg2];
+}
+
 + (id) newMessage:(Interpreter *)anInterp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e arg:(id)anArg arg2:(id)anArg2 arg3:(id)anArg3;
 {
     return [[STRuntimeMessage alloc] init:anInterp error:anError ip:anIp who:aWho cause:e arg:anArg arg2:anArg2 arg3:anArg3];
 }
 
-+ (id) newMessage:(Interpreter *)anInterp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e argN:(NSInteger)anArg arg2:(id)anArg2 arg3:(id)anArg3;
++ (id) newMessage:(Interpreter *)anInterp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e argN:(NSInteger)anArg arg2:(id)anArg2 arg3N:(NSInteger)anArg3;
 {
-    return [[STRuntimeMessage alloc] init:anInterp error:anError ip:anIp who:aWho cause:e argN:anArg arg2:anArg2 arg3:anArg3];
+    return [[STRuntimeMessage alloc] init:anInterp error:anError ip:anIp who:aWho cause:e argN:anArg arg2:anArg2 arg3N:anArg3];
 }
 
 - (id) init:(Interpreter *)anInterp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e arg:(id)anArg arg2:(id)anArg2
 {
     self=[super init:anError who:aWho cause:e arg:anArg arg2:anArg2 arg3:@""];
+    if ( self !=nil ) {
+        interp = anInterp;
+        if ( interp ) [interp retain];
+        ip = anIp;
+        scope = nil;
+    }
+    return self;
+}
+
+- (id) init:(Interpreter *)anInterp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e argN:(NSInteger)anArg arg2N:(NSInteger)anArg2
+{
+    self=[super init:anError who:aWho cause:e argN:anArg arg2N:anArg2 arg3:@""];
     if ( self !=nil ) {
         interp = anInterp;
         if ( interp ) [interp retain];
@@ -99,9 +116,9 @@
     return self;
 }
 
-- (id) init:(Interpreter *)anInterp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e argN:(NSInteger)anArg arg2:(id)anArg2 arg3:(id)anArg3
+- (id) init:(Interpreter *)anInterp error:(ErrorTypeEnum)anError ip:(NSInteger)anIp who:(ST *)aWho cause:(NSException *)e argN:(NSInteger)anArg arg2:(id)anArg2 arg3N:(NSInteger)anArg3
 {
-    self=[super init:anError who:aWho cause:e argN:anArg arg2:anArg2 arg3:anArg3];
+    self=[super init:anError who:aWho cause:e argN:anArg arg2N:(NSInteger)anArg2 arg3:(id)anArg3];
     if ( self !=nil ) {
         interp = anInterp;
         if ( interp ) [interp retain];

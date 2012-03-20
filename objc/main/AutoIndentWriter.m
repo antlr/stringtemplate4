@@ -86,7 +86,7 @@
 {
     self=[super initWithCapacity:(NSUInteger)sz];
     if ( self != nil ) {
-        writer = nil;
+        writer = self;
     }
     return self;
 }
@@ -113,10 +113,8 @@
         if (c == '\n') {
             atStartOfLine = YES;
             charPosition = -1;
-            if ( writer != nil )
-                [writer writeStr:newline];
-            else
-                [super writeStr:newline];
+            for (NSInteger j=0; j < [newline length]; j++ )
+                 [writer write:[newline characterAtIndex:j]];
             n += [newline length];
             charIndex += [newline length];
             charPosition += n;

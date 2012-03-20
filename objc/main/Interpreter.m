@@ -64,6 +64,7 @@
 #import "PrintWriter.h"
 #import "NoIndentWriter.h"
 #import "GroupParser.h"
+#import "ACNumber.h"
 
 @implementation Interpreter_Anon1
 
@@ -459,34 +460,31 @@ static BOOL trace = NO;
 /** Execute template self and return how many characters it wrote to out */
 - (NSInteger) exec:(Writer *)anSTWriter who:(ST *)aWho
 {
+    if ( debug ) NSLog( @"[self exec:[aWho getName]]\n" );
     [self pushScope:aWho];
-    currentScope = [InstanceScope newInstanceScope:currentScope who:aWho]; // push scope
-    if ( debug ) {
-        currentScope.events = [[AMutableArray arrayWithCapacity:5] retain];
-        currentScope.childEvalTemplateEvents = [[AMutableArray arrayWithCapacity:5] retain];
-    }
-    currentScope.ret_ip = current_ip;
     @try {
+        [self setDefaultArguments:anSTWriter who:aWho];
         NSInteger n = [self _exec:anSTWriter who:aWho];
         return n;
     }
     @catch (NSException *e) {
         StringWriter *sw = [[StringWriter newWriter] retain];
 #ifdef DONTUSEYET
-        PrintWriter *pw = [[PrintWriter newWriterWithWriter:sw] retain];
+        PrintWriter *pw = [[PrintWriter newWriter:sw] retain];
         [e printStackTrace:pw];
+        [pw flush];
 #endif
         [errMgr runTimeError:self
                          who:aWho
                           ip:current_ip
                        error:INTERNAL_ERROR
-                         arg:[NSString stringWithFormat:@"internal error caused by: %@", [sw toString]]];
+                         arg:[NSString stringWithFormat:@"internal error caused by: %@", [sw description]]];
         return 0;
     }
     @finally {
         [self popScope]; // pop scope
     }
-    return current_ip;
+//    return current_ip;
 }
 /**
  * Execute template self and return how many characters it wrote to out
@@ -596,6 +594,7 @@ static BOOL trace = NO;
                 [self storeArgs:aWho attrs:attrs st:st];
                  operands[++sp] = st;
                 break;
+// start here checking
             case  DEF_INSTR_SUPER_NEW:
                 nameIndex = [code shortAtIndex:ip];
                 ip += Bytecode.OPND_SIZE_IN_BYTES;
@@ -759,7 +758,8 @@ static BOOL trace = NO;
             case  DEF_INSTR_INDENT:
                 idx = [code shortAtIndex:ip];
                 ip += Bytecode.OPND_SIZE_IN_BYTES;
-                [anSTWriter pushIndentation:[aWho.impl.strings objectAtIndex:idx]];
+                [self indent:anSTWriter who:aWho index:idx];
+//                [anSTWriter pushIndentation:[aWho.impl.strings objectAtIndex:idx]];
                 break;
             case  DEF_INSTR_DEDENT:
                 [anSTWriter popIndentation];
@@ -787,10 +787,10 @@ static BOOL trace = NO;
                  operands[++sp] = nil;
                 break;
             case DEF_INSTR_TRUE:
-                operands[++sp] = (id) YES;
+                operands[++sp] = [ACNumber numberWithBool:YES];
                 break;
             case DEF_INSTR_FALSE :
-                operands[++sp] = NO;
+                operands[++sp] = [ACNumber numberWithBool:NO];
                 break;
             case DEF_INSTR_WRITE_STR :
                 idx = [code shortAtIndex:ip];
@@ -872,6 +872,7 @@ static BOOL trace = NO;
 {
     CompiledST *c = [group lookupTemplate:templateName];
     if ( c == nil ) return; // will get error later
+    if ( c.formalArguments == nil ) return;
     id obj;
 //    for (FormalArgument *arg in [c.formalArguments allValues]) {
     FormalArgument *arg;
@@ -915,9 +916,9 @@ static BOOL trace = NO;
                          who:aWho
                           ip:current_ip
                        error:ARGUMENT_COUNT_MISMATCH
-                         arg:(id)nargs
+                        argN:nargs
                         arg2:st.impl.name
-                        arg3:(id)nformalArgs];
+                       arg3N:nformalArgs];
     }
     NSString *argName;
 /*
@@ -957,9 +958,9 @@ static BOOL trace = NO;
                          who:aWho
                           ip:current_ip
                        error:ARGUMENT_COUNT_MISMATCH
-                         argN:(id)nargs
+                        argN:nargs
                         arg2:st.impl.name
-                        arg3:(id)nformalArgs];
+                       arg3N:nformalArgs];
     }
     if ( st.impl.formalArguments == nil ) return;
 
@@ -1188,8 +1189,8 @@ static BOOL trace = NO;
 
 - (AMutableArray *) rot_map_iterator:(ST *)aWho iter:(id)attr proto:(AMutableArray *)prototypes
 {
-    ArrayIterator *iter = (ArrayIterator *)attr;
     AMutableArray *mapped = [[AMutableArray arrayWithCapacity:5] retain];
+    ArrayIterator *iter = (ArrayIterator *)attr;
     NSInteger i0 = 0;
     NSInteger i = 1;
     NSInteger ti = 0;
@@ -1245,7 +1246,7 @@ static BOOL trace = NO;
     // todo: track formal args not names for efficient filling of locals
     NSArray *formalArg_array = [formalArguments allValues];
     FormalArgument *formalArg;
-    cnt = [formalArguments count];
+    cnt = [formalArg_array count];
     AMutableDictionary *fAIndexes = [[AMutableDictionary dictionaryWithCapacity:cnt] retain];
     for ( i = 0; i < cnt; i++ ) {
         formalArg = [formalArg_array objectAtIndex:i];
@@ -1263,8 +1264,8 @@ static BOOL trace = NO;
                          who:aWho
                           ip:current_ip
                        error:MAP_ARGUMENT_COUNT_MISMATCH
-                         arg:(id)numExprs
-                        arg2:(id)nformalArgs];
+                        argN:numExprs
+                       arg2N:nformalArgs];
         // TODO just fill first n
         // truncate arg list to match smaller size
         NSInteger cnt = [formalArgumentNames count];
@@ -1307,10 +1308,13 @@ static BOOL trace = NO;
 - (void) setFirstArgument:(ST *)aWho st:(ST *)st attr:(id)attr
 {
     if (st.impl.formalArguments == nil) {
-        [errMgr runTimeError:self who:aWho ip:current_ip error:ARGUMENT_COUNT_MISMATCH argN:1 arg2:(id)st.impl.name arg3:nil];
+        [errMgr runTimeError:self who:aWho ip:current_ip error:ARGUMENT_COUNT_MISMATCH argN:1 arg2:(id)st.impl.name arg3N:0];
         return;
     }
-    [st.locals insertObject:attr atIndex:0];
+    if ( [st.locals count] == 0 )
+        [st.locals addObject:attr];
+    else
+        [st.locals replaceObjectAtIndex:0 withObject:attr];
 }
 
 - (void) addToList:(AMutableArray *)list obj:(id)obj
@@ -1512,22 +1516,24 @@ static BOOL trace = NO;
     Class writerClass;
     Writer *stw;
     if ( value != nil ) {
+        if ([value isKindOfClass:[ACNumber class]])
+            return [value description];
         if ([value isKindOfClass:[NSString class]])
             return (NSString *)value;
-        if ([value isKindOfClass:[ST class]])
-            ((ST *)value).enclosingInstance = aWho;
+//        if ([value isKindOfClass:[ST class]])
+//            ((ST *)value).enclosingInstance = aWho;
         StringWriter *sw = [StringWriter newWriter];
+        stw = nil;
         @try {
             if ( wr1 == nil ) @throw [IllegalArgumentException newException:@"Writer wr1 is nil"];
             writerClass = [wr1 class];
-            // Constructor *ctor = [writerClass  getConstructor:@"newWriter"];
-            stw = [[wr1 class] newWriterWithWriter:sw];
+            stw = [[wr1 class] newWriter:(Writer *)sw];
         }
         @catch (NSException *e) {
-            stw = [[wr1 class] newWriterWithWriter:sw];
+            stw = [AutoIndentWriter newWriter:sw];
             [errMgr runTimeError:self who:aWho ip:current_ip error:WRITER_CTOR_ISSUE arg:NSStringFromClass([wr1 class])];
         }
-        [self writeObjectNoOptions:[NoIndentWriter newNoIdentWriter:sw] who:aWho obj:value];
+        [self writeObjectNoOptions:stw who:aWho obj:value];
         return [sw description];
     }
     return nil;
@@ -1576,8 +1582,10 @@ static BOOL trace = NO;
 
 - (BOOL) testAttributeTrue:(id)a
 {
-    if (a == nil)
+    if (a < 100)
         return NO;
+    if ([a isKindOfClass:[ACNumber class]])
+        return [(NSNumber *)a boolValue];
     if ([a isKindOfClass:[NSNumber class]])
         return [(NSNumber *)a boolValue];
     if ([a isKindOfClass:[NSString class]])

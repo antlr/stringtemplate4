@@ -130,7 +130,7 @@ NSInteger compare(NSString *s1, NSString *s2, void *context);
     value = [Interpreter convertAnythingIteratableToIterator:value];
     if ([value isKindOfClass:[ST class]]) {
         STDump *d = [STDump newSTDumpWithWho:(ST *)value];
-        [buf appendString:[d toString:n]];
+        [buf appendString:[d description:n]];
     }
     else if ([value isKindOfClass:[ArrayIterator class]]) {
         ArrayIterator *it = (ArrayIterator *)value;

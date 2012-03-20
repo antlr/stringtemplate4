@@ -27,7 +27,6 @@
 */
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
-#import "BaseTest.h"
 #import "TestCoreBasics.h"
 #import "ST.h"
 #import "STGroup.h"
@@ -158,7 +157,7 @@
 - (void) test01NullAttr
 {
     NSString *aTemplate = @"hi <name>!";
-    ST *st = [[ST newSTWithTemplate:aTemplate] retain];
+    ST *st = [ST newSTWithTemplate:aTemplate];
     NSString *expected = @"hi !";
     NSString *result = [st render];
     [st release];
@@ -168,7 +167,7 @@
 - (void) test02Attr
 {
     NSString *aTemplate = @"hi <name>!";
-    ST *st = [[ST newSTWithTemplate:aTemplate] retain];
+    ST *st = [ST newSTWithTemplate:aTemplate];
     [st add:@"name" value:@"Ter"];
     NSString *expected = @"hi Ter!";
     NSString *result = [st render];
@@ -179,7 +178,7 @@
 - (void) test02aChainAttr
 {
     NSString * template = @"<x>:<names>!";
-    ST *st = [[ST newSTWithTemplate:template] retain];
+    ST *st = [ST newSTWithTemplate:template];
     [[[st add:@"names" value:@"Ter"] add:@"names" value:@"Tom"] addInt:@"x" value:1];
     NSLog( @"st.locals = %@", [st.locals description]);
     NSString * expected = @"1:TerTom!";
@@ -192,11 +191,11 @@
 - (void) test03SetUnknownAttr
 {
     NSString *aTemplate = @"t() ::= <<hi <name>!>>\n";
-    ErrorBuffer *errors = [[ErrorBuffer newErrorBuffer] retain];
+    ErrorBuffer *errors = [ErrorBuffer newErrorBuffer];
     [self writeFile:tmpdir fileName:@"t.stg" content:aTemplate];
-    STGroupFile *group = [[STGroupFile newSTGroupFile:[tmpdir stringByAppendingPathComponent:@"t.stg"]] retain];
+    STGroupFile *group = [STGroupFile newSTGroupFile:[tmpdir stringByAppendingPathComponent:@"t.stg"]];
     group.errMgr = [ErrorManager newErrorManagerWithListener:errors];
-    ST *st = [[group getInstanceOf:@"t"] retain];
+    ST *st = [group getInstanceOf:@"t"];
     NSString *result = nil;
     
     @try {
@@ -213,7 +212,7 @@
 - (void) test04MultiAttr
 {
     NSString *aTemplate = @"hi <name>!";
-    ST *st = [[ST newSTWithTemplate:aTemplate] retain];
+    ST *st = [ST newSTWithTemplate:aTemplate];
     [st add:@"name" value:@"Ter"];
     [st add:@"name" value:@"Tom"];
     NSString *expected = @"hi TerTom!";
@@ -226,7 +225,7 @@
 {
     NSInteger cnt;
     NSString *aTemplate = @"hi <name>!";
-    ST *st = [[ST newSTWithTemplate:aTemplate] retain];
+    ST *st = [ST newSTWithTemplate:aTemplate];
     AMutableArray *names = [TestCoreBasics_Anon1 newAnon];
     [st add:@"name" value:names];
     [st add:@"name" value:@"Sumana"]; // shouldn't alter my version of names list!
@@ -240,7 +239,7 @@
 - (void) test06AttrIsArray
 {
     NSString *aTemplate = @"hi <name>!";
-    ST *st = [[ST newSTWithTemplate:aTemplate] retain];
+    ST *st = [ST newSTWithTemplate:aTemplate];
     NSArray *names = [NSArray arrayWithObjects:@"Ter", @"Tom", nil];
     [st add:@"name" value:names];
     [st add:@"name" value:@"Sumana"]; // shouldn't alter my version of names list!
@@ -253,7 +252,7 @@
 - (void) test07Prop
 {
     NSString *aTemplate = @"<u.num>: <u.name>"; // checks field and method getter
-    ST *st = [[ST newSTWithTemplate:aTemplate] retain];
+    ST *st = [ST newSTWithTemplate:aTemplate];
     [st add:@"u" value:[User newUser:1 name:@"parrt"]];
     NSString *expected = @"1: parrt";
     NSString *result = [st render];
@@ -264,7 +263,7 @@
 - (void) test08PropWithNoAttr
 {
     NSString *aTemplate = @"<foo.a>: <ick>";
-    ST *st = [[ST newSTWithTemplate:aTemplate] retain];
+    ST *st = [ST newSTWithTemplate:aTemplate];
     [st add:@"foo" value:[AMutableDictionary dictionaryWithObject:@"b" forKey:@"a"]];
     NSString *expected = @"b: ";
     NSString *result = [st render];
@@ -275,7 +274,7 @@
 - (void) test08aMapAcrossDictionaryUsesKeys
 {
     NSString * template = @"<foo:{f | <f>}>"; // checks field and method getter
-    ST * st = [[ST newSTWithTemplate:template] retain];
+    ST * st = [ST newSTWithTemplate:template];
     //[st add:@"foo" value:[AMutableDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"b", @"d", nil] forKeys:[NSArray arrayWithObjects:@"a", @"c", nil]]];
     [st add:@"foo" value:[AMutableDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"a", @"c", nil] forKeys:[NSArray arrayWithObjects:@"b", @"d", nil]]];
     NSString * expected = @"ac";
@@ -795,7 +794,7 @@
 
 - (void) test40FalseCondWithFormalArgs
 {
-    NSString *dir = [BaseTest randomDir];
+    NSString *dir = [self getRandomDir];
     NSString *groupFile = [NSString stringWithFormat:@"a(scope) ::= <<%@foo%@    <if(scope)>oops<endif>%@bar%@>>", newline, newline, newline, newline];
     [self writeFile:dir fileName:@"group.stg" content:groupFile];
     STGroupFile *group = [STGroupFile newSTGroupFile:[dir stringByAppendingPathComponent:@"group.stg"]];

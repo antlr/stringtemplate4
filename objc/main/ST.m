@@ -311,24 +311,6 @@ static DebugState *st_debugState = nil;
     return [[ST alloc] initWithProto:(ST *)aProto];
 }
 
-- (id) init
-{
-    self=[super init];
-    if ( self != nil ) {
-        if (EMPTY_ATTR == nil) {
-            EMPTY_ATTR = @"";
-            [EMPTY_ATTR retain];
-        }
-        if ( STGroup.trackCreationEvents ) {
-            if ( st_debugState==nil )
-                st_debugState = [[DebugState newDebugState] retain];
-            debugState = st_debugState;
-            st_debugState.newSTEvent = [[ConstructionEvent newEvent] retain];
-        }
-    }
-    return self;
-}
-
 - (id) init:(STGroup *)aGroup template:(NSString *)template
 {
     self=[super init];
@@ -696,7 +678,7 @@ static DebugState *st_debugState = nil;
         //NSFileHandle *fh = [NSFileHandle fileHandleForWritingToURL:f error:&error];
         //FileOutputStream *fos = [FileOutputStream newFileOutputStream:outputFile];
         OutputStreamWriter *osw = [OutputStreamWriter newWriter:nil encoding:encoding];
-        bw = [BufferedWriter newWriterWithWriter:osw];
+        bw = [BufferedWriter newWriter:osw];
         AutoIndentWriter *w = [AutoIndentWriter newWriter:bw];
         [w setLineWidth:lineWidth];
         n = [self write:w locale:locale listener:listener];
@@ -727,11 +709,9 @@ static DebugState *st_debugState = nil;
 
 - (NSString *) render:(NSLocale *)locale lineWidth:(NSInteger)aLineWidth
 {
-//    StringWriter *wr1 = [StringWriter stringWithCapacity:16];
     AutoIndentWriter *wr = [AutoIndentWriter newWriter];
     wr.lineWidth = aLineWidth;
     [self write:wr locale:locale];
-//    return [wr1 description];
     return [wr description];
 }
 
@@ -771,7 +751,7 @@ static DebugState *st_debugState = nil;
             [(EvalTemplateEvent *)events get([events size]-1];
         STViz *viz = [STViz newSTViz:errMgr
                                 root:overallTemplateEval
-                              output:[wr1 toString]
+                              output:[wr1 description]
                          interpreter:interp
                                trace:[interp getExecutionTrace]
                               errors:errors.errors];

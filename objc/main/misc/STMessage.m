@@ -120,7 +120,7 @@
 - (NSString *) description
 {
     StringWriter *sw = [StringWriter stringWithCapacity:16];
-    PrintWriter  *pw = [PrintWriter newWriterWithWriter:sw];
+    PrintWriter  *pw = [PrintWriter newWriter:sw];
     NSMutableString *msg = [NSMutableString stringWithFormat:@"%@%@%@%@", [ErrorType ErrorNum:error], arg, arg2, arg3];
     [pw print:msg];
     if (cause != nil) {

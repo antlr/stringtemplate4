@@ -119,9 +119,9 @@
     NSString *fmtMsg = [ErrorType ErrorNum:error];
     NSString *result = [NSString stringWithFormat:fmtMsg, arg, arg2];
     if (srcName != nil) {
-        return [NSString stringWithFormat:@"%@ %@: %@", srcName, filepos, result];
+        return [NSString stringWithFormat:@"%@ %@: %@\n", srcName, filepos, result];
     }
-    return [NSString stringWithFormat:@"%@: %@", filepos, result ];
+    return [NSString stringWithFormat:@"%@: %@\n", filepos, result ];
 }
 
 - (NSString *) toString

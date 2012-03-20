@@ -2690,8 +2690,7 @@ static SymbolStack *template_stack;
                  )
                 			[self emit1:INCLUDE17 opcode:Bytecode.INSTR_NEW_BOX_ARGS s:(ID19!=nil?ID19.text:nil)];
                 		else
-                			[self emit2:INCLUDE17 opcode:Bytecode.INSTR_NEW s:(ID19!=nil?ID19.text:nil) arg2:((args18!=nil?args18.n:nil )
-                +num_exprs)];
+                			[self emit2:INCLUDE17 opcode:Bytecode.INSTR_NEW s:(ID19!=nil?ID19.text:nil) arg2:(((args18!=nil)?args18.n:0 )+num_exprs)];
                 		
 
                  
@@ -2711,20 +2710,17 @@ static SymbolStack *template_stack;
                  
 
 
-                		if ( (subtemplate20!=nil?subtemplate20.nargs:nil )
-                 != num_exprs ) {
+                		if ( (subtemplate20!=nil?subtemplate20.nargs:0 ) != num_exprs ) {
                             [errMgr compileTimeError:ANON_ARGUMENT_MISMATCH
                                        templateToken:templateToken
                                                    t:(subtemplate20!=nil?((CommonTree *)subtemplate20.start):nil).token
-                                                argN:(subtemplate20!=nil?subtemplate20.nargs:nil )
+                                                argN:(subtemplate20!=nil?subtemplate20.nargs:0 )
                                                arg2N:num_exprs];
                 		}
                 		for (NSInteger i=1; i<=num_exprs; i++) [self emit:(subtemplate20!=nil?((CommonTree *)subtemplate20.start):nil) opcode:Bytecode.INSTR_NULL];
                         [self emit2:(subtemplate20!=nil?((CommonTree *)subtemplate20.start):nil)
                              opcode:Bytecode.INSTR_NEW
-                                  s:
-                (subtemplate20!=nil?subtemplate20.name:nil )
-
+                                  s:(subtemplate20!=nil?subtemplate20.name:nil )
                                arg2:num_exprs];
                 		
 
@@ -2765,9 +2761,7 @@ static SymbolStack *template_stack;
                      
 
 
-                    			[self emit1:INCLUDE_IND21 opcode:Bytecode.INSTR_NEW_IND arg:(
-                    (args22!=nil?args22.n:nil )
-                    +num_exprs)];
+                    			[self emit1:INCLUDE_IND21 opcode:Bytecode.INSTR_NEW_IND arg:(((args22!=nil)?args22.n:0)+num_exprs)];
                     			
 
                      
@@ -2950,9 +2944,7 @@ static SymbolStack *template_stack;
                 		if ( 
                 (args24!=nil?args24.namedArgs:NO )
                  ) [self emit1:INCLUDE26 opcode:Bytecode.INSTR_NEW_BOX_ARGS s:(ID25!=nil?ID25.text:nil)];
-                		else [self emit2:INCLUDE26 opcode:Bytecode.INSTR_NEW s:(ID25!=nil?ID25.text:nil) arg2:
-                (args24!=nil?args24.n:nil )
-                ];
+                		else [self emit2:INCLUDE26 opcode:Bytecode.INSTR_NEW s:(ID25!=nil?ID25.text:nil) arg2: ((args24!=nil)?args24.n:0) ];
                 		
 
                  
@@ -2987,12 +2979,9 @@ static SymbolStack *template_stack;
                 		if ( 
                 (args27!=nil?args27.namedArgs:NO )
                  ) [self emit1:INCLUDE_SUPER29 opcode:Bytecode.INSTR_SUPER_NEW_BOX_ARGS s:(ID28!=nil?ID28.text:nil)];
-                		else [self emit2:INCLUDE_SUPER29 opcode:Bytecode.INSTR_SUPER_NEW s:(ID28!=nil?ID28.text:nil) arg2:
-                (args27!=nil?args27.n:nil )
-                ];
-                		
-
-                 
+                		else [self emit2:INCLUDE_SUPER29
+                                  opcode:Bytecode.INSTR_SUPER_NEW s:(ID28!=nil?ID28.text:nil)
+                                    arg2: (args27!=nil?args27.n:0 ) ];
                 }
                 break;
             case 4 : ;
@@ -3270,7 +3259,7 @@ static SymbolStack *template_stack;
                      
 
                     [self emit1:INCLUDE_IND39 opcode:Bytecode.INSTR_NEW_IND arg:
-                    (args40!=nil?args40.n:nil )
+                    (args40!=nil?args40.n:0 )
                     ];
 
                      

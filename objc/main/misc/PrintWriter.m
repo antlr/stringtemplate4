@@ -37,7 +37,7 @@
     return [[PrintWriter alloc] initWithCapacity:16];
 }
 
-+ (id) newWriterWithWriter:(StringWriter *)sw
++ (id) newWriter:(StringWriter *)sw
 {
     return [[PrintWriter alloc] initWithWriter:sw];
 }

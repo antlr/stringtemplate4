@@ -32,7 +32,6 @@
 
 static NSString *ErrorType_Data[NUM_OF_ERRORENUMS] = {
 @"no such template: %@",
-@"can't set attribute %@; template %@ has no such attribute",
 @"no such template: super.%@",
 @"attribute %@ isn't defined",
 @"implicitly-defined attribute %s not visible",
@@ -68,11 +67,6 @@ static NSString *ErrorType_Data[NUM_OF_ERRORENUMS] = {
     return ErrorType_Data[NO_SUCH_TEMPLATE];
 }
 
-+ (NSString *) CANT_SET_ATTRIBUTE
-{
-//    return @"can't set attribute %@; template %@ has no such attribute";
-    return ErrorType_Data[CANT_SET_ATTRIBUTE];
-}
 + (NSString *) NO_IMPORTED_TEMPLATE
 {
 //    return @"no such template: super.%@";
@@ -325,14 +319,12 @@ static NSString *ErrorType_Data[NUM_OF_ERRORENUMS] = {
     if (text) {
         if ([text isEqualToString:@"NO_SUCH_TEMPLATE"])
             return NO_SUCH_TEMPLATE;
-        else if ([text isEqualToString:@"CANT_SET_ATTRIBUTE"])
-            return CANT_SET_ATTRIBUTE;
         else if ([text isEqualToString:@"NO_IMPORTED_TEMPLATE"])
             return NO_IMPORTED_TEMPLATE;
         else if ([text isEqualToString:@"NO_SUCH_ATTRIBUTE"])
             return NO_SUCH_ATTRIBUTE;
         else if ([text isEqualToString:@"REF_TO_IMPLICIT_ATTRIBUTE_OUT_OF_SCOPE"])
-            return NO_SUCH_ATTRIBUTE;
+            return REF_TO_IMPLICIT_ATTRIBUTE_OUT_OF_SCOPE;
         else if ([text isEqualToString:@"MISSING_FORMAL_ARGUMENTS"])
             return MISSING_FORMAL_ARGUMENTS;
         else if ([text isEqualToString:@"NO_SUCH_PROPERTY"])
@@ -409,8 +401,6 @@ static NSString *ErrorType_Data[NUM_OF_ERRORENUMS] = {
     switch (value) {
         case NO_SUCH_TEMPLATE:
             return @"NO_SUCH_TEMPLATE";
-        case CANT_SET_ATTRIBUTE:
-            return @"CANT_SET_ATTRIBUTE";
         case NO_IMPORTED_TEMPLATE:
             return @"NO_IMPORTED_TEMPLATE";
         case NO_SUCH_ATTRIBUTE:

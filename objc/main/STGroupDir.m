@@ -129,8 +129,6 @@
  */
 - (CompiledST *) load:(NSString *)aName
 {
-    NSError *error = nil;
-    
     if ( STGroup.verbose ) NSLog(@"[STGroupDir load:%@]\n", aName);
     NSString *parent = [Misc getParent:aName];
     NSString *prefix = [Misc getPrefix:aName];
@@ -146,11 +144,11 @@
         groupFileURL = [[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@%@.stg", [root path], parent]] URLByStandardizingPath];
     }
     @catch (MalformedURLException *e) {
-        [errMgr internalError:nil msg:[NSString stringWithFormat:@"bad URL: %@%@.stg", root, parent] e:e];
+        [errMgr internalError:nil msg:[NSString stringWithFormat:@"bad URL: %@%@.stg", [root path], parent] e:e];
         return nil;
     }
     if ( [Misc urlExists:groupFileURL] ) {
-        [self loadGroupFile:prefix fileName:[NSString stringWithFormat:@"%@%@.stg", root, parent]];
+        [self loadGroupFile:prefix fileName:[NSString stringWithFormat:@"%@%@.stg", [root path], parent]];
         return [self rawGetTemplate:aName];
     }
     else {
@@ -181,7 +179,6 @@
     NSURL *f = nil;
     @try {
         //f = [NSURL fileURLWithPath:[root URLByAppendingPathComponent:aFileName]];
-        NSString *rp = [root path];
         f = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@%@%@", [root path], prefix, unqualifiedFileName]];
         if (![f isFileURL]) {
             @throw [MalformedURLException newException:@"Not a File URL"];

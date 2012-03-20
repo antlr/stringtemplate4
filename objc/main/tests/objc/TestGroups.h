@@ -5,33 +5,41 @@
 
 @interface Field_anon1 : NSObject {
   NSString *name;
-  int n;
+  NSInteger n;
 }
 
 - (id) init;
 - (NSString *) description;
 - (NSString *) toString;
 
+@property (retain) NSString *name;
+@property (assign) NSInteger n;
 @end
 
 @interface Field_anon2 : NSObject {
   NSString *name;
-  int n;
+  NSInteger n;
 }
 
 - (id) init;
 - (NSString *) description;
 - (NSString *) toString;
+
+@property (retain) NSString *name;
+@property (assign) NSInteger n;
 @end
 
 @interface Field_anon3 : NSObject {
   NSString *name;
-  int n;
+  NSInteger n;
 }
 
 - (id) init;
 - (NSString *) description;
 - (NSString *) toString;
+
+@property (retain) NSString *name;
+@property (assign) NSInteger n;
 @end
 
 @interface Counter : NSObject {
@@ -41,6 +49,8 @@
 - (id) init;
 - (NSString *) description;
 - (NSString *) toString;
+
+@property (assign) NSInteger n;
 @end
 
 @interface TestGroups : BaseTest {
@@ -54,35 +64,38 @@
 - (void) test06GroupFileInDir;
 - (void) test07SubSubdir;
 - (void) test08GroupFileInSubDir;
-- (void) test09RefToAnotherTemplateInSameGroup;
-- (void) test10RefToAnotherTemplateInSameSubdir;
-- (void) test11DupDef;
-- (void) test12Alias;
-- (void) test13AliasWithArgs;
-- (void) test14SimpleDefaultArg;
-- (void) test15DefaultArgument;
-- (void) test16BooleanDefaultArguments;
-- (void) test17DefaultArgument2;
-- (void) test18SubtemplateAsDefaultArgSeesOtherArgs;
-- (void) test19DefaultArgumentAsSimpleTemplate;
-- (void) test20DefaultArgumentManuallySet;
-- (void) test21DefaultArgumentSeesVarFromDynamicScoping;
-- (void) test22DefaultArgumentImplicitlySet2;
-- (void) test23DefaultArgumentAsTemplate;
-- (void) test24DefaultArgumentAsTemplate2;
-- (void) test25DoNotUseDefaultArgument;
-- (void) test26DefaultArgumentInParensToEvalEarly;
-- (void) test27TrueFalseArgs;
-- (void) test28NamedArgsInOrder;
-- (void) test29NamedArgsOutOfOrder;
-- (void) test30UnknownNamedArg;
-- (void) test31MissingNamedArg;
-- (void) test32NamedArgsNotAllowInIndirectInclude;
-- (void) test33CantSeeGroupDirIfGroupFileOfSameName;
-- (void) test34FullyQualifiedGetInstanceOf;
-- (void) test35FullyQualifiedTemplateRef;
-- (void) test36FullyQualifiedTemplateRef2;
-- (void) test37UnloadingSimpleGroup;
-- (void) test38UnloadingGroupFile;
+#ifdef DONTUSENOMO
+- (void) test08aRefToAnotherTemplateInSameGroup;
+- (void) test08bRefToAnotherTemplateInSameSubdir;
+#endif
+- (void) test09DupDef;
+- (void) test10Alias;
+- (void) test11AliasWithArgs;
+- (void) test12SimpleDefaultArg;
+- (void) test13DefaultArgument;
+- (void) test14BooleanDefaultArguments;
+- (void) test15DefaultArgument2;
+- (void) test16SubtemplateAsDefaultArgSeesOtherArgs;
+- (void) test17EarlyEvalOfDefaultArgs;
+- (void) test18DefaultArgumentAsSimpleTemplate;
+- (void) test19DefaultArgumentManuallySet;
+- (void) test20DefaultArgumentSeesVarFromDynamicScoping;
+- (void) test21DefaultArgumentImplicitlySet2;
+- (void) test22DefaultArgumentAsTemplate;
+- (void) test23DefaultArgumentAsTemplate2;
+- (void) test24DoNotUseDefaultArgument;
+- (void) test25DefaultArgumentInParensToEvalEarly;
+- (void) test26TrueFalseArgs;
+- (void) test27NamedArgsInOrder;
+- (void) test28NamedArgsOutOfOrder;
+- (void) test29UnknownNamedArg;
+- (void) test30MissingNamedArg;
+- (void) test31NamedArgsNotAllowInIndirectInclude;
+- (void) test32CantSeeGroupDirIfGroupFileOfSameName;
+- (void) test33FullyQualifiedGetInstanceOf;
+- (void) test34FullyQualifiedTemplateRef;
+- (void) test35FullyQualifiedTemplateRef2;
+- (void) test36UnloadingSimpleGroup;
+- (void) test37UnloadingGroupFile;
 
 @end

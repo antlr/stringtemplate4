@@ -43,7 +43,8 @@
     return [[Writer alloc] initWithCapacity:16];
 }
 
-+ (id) newWriterWithWriter:(id)aWriter{
++ (id) newWriter:(id)aWriter
+{
     return [[Writer alloc] initWithWriter:aWriter];
 }
 
@@ -61,6 +62,7 @@
 {
     self=[super init];
     if ( self != nil ) {
+        writer = self;
         capacity = 16;
         data = [[NSMutableData dataWithCapacity:capacity] retain];
         ptr = [data mutableBytes];
@@ -86,6 +88,7 @@
 {
     self=[super init];
     if ( self != nil ) {
+        writer = self;
         capacity = len;
         data = [[NSMutableData dataWithCapacity:capacity] retain];
         ptr = [data mutableBytes];
@@ -112,6 +115,7 @@
     self=[super init];
     if ( self != nil ) {
         if (aWriter == nil) {
+            writer = self;
             self.capacity = 16;
             data = [[NSMutableData dataWithCapacity:capacity] retain];
             ptr = [data mutableBytes];
@@ -276,11 +280,13 @@
 - (void) pushIndentation:(NSString *)anIndent
 {
     [indents addObject:anIndent];
+    NSLog( @"pushIndentation of \"%@\"\n", anIndent );
 }
 
 - (NSString *) popIndentation
 {
     NSString *ret = [indents objectAtIndex:[indents count]-1];
+    NSLog( @"popIndentation of \"%@\"\n", ret );
     [indents removeLastObject];
     return ret;
 }
@@ -344,7 +350,7 @@
         // check to see if we are at the start of a line; need indent if so
         if ( atStartOfLine ) {
             n += [self indent];
-            [writer write:c];
+            [self write:c];
             atStartOfLine = NO;
         }
         n++;
@@ -365,7 +371,8 @@
         ind = (NSString *)[it nextObject];
         if (ind != nil) {
             n += [ind length];
-            [writer writeStr:ind];
+            for ( int i = 0; i < [ind length]; i++ )
+                [writer write:[ind characterAtIndex:i]];
         }
     }
     
@@ -418,12 +425,12 @@
     return [[BufferedWriter alloc] initWithCapacity:30];
 }
 
-+ (id) newWriter:(NSInteger)len
++ (id) newWriterWithCapacity:(NSInteger)len
 {
     return [[BufferedWriter alloc] initWithCapacity:len];
 }
 
-+ (id) newWriterWithWriter:(Writer *)op
++ (id) newWriter:(Writer *)op
 {
     return [[BufferedWriter alloc] initWithWriter:op];
 }

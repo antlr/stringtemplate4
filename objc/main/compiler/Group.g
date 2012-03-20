@@ -33,7 +33,7 @@ options {
 }
 
 tokens { ID; WS; STRING; ANONYMOUS_TEMPLATE; COMMENT; LINE_COMMENT; BIGSTRING; BIGSTRING_NO_NL;
-            T_TRUE='true'; T_FALSE='false'; }
+            T_TRUE; T_FALSE; }
 
 @header {
 /*
@@ -69,6 +69,7 @@ tokens { ID; WS; STRING; ANONYMOUS_TEMPLATE; COMMENT; LINE_COMMENT; BIGSTRING; B
 #import "Misc.h"
 #import "GroupLexer.h"
 #import "FormalArgument.h"
+#import "ACNumber.h"
 }
 
 @lexer::header {
@@ -300,7 +301,7 @@ scope {
 
 formalArg[AMutableArray *args]
     :   ID
-        (   '=' a=(STRING|ANONYMOUS_TEMPLATE|'true'|'false') {$formalArgs::hasOptionalParameter = YES;}
+        (   '=' a=(STRING|ANONYMOUS_TEMPLATE|T_TRUE|T_FALSE) {$formalArgs::hasOptionalParameter = YES;}
         |   {
             if ( $formalArgs::hasOptionalParameter ) {
                 [group.errMgr compileTimeError:REQUIRED_PARAMETER_AFTER_OPTIONAL templateToken:nil t:$ID];
@@ -361,14 +362,18 @@ keyValue returns [id value]
     |   BIGSTRING_NO_NL     {$value = [group createSingleton:$BIGSTRING_NO_NL];}
     |   ANONYMOUS_TEMPLATE  {$value = [group createSingleton:$ANONYMOUS_TEMPLATE];}
     |   STRING              {$value = [Misc replaceEscapes:[Misc strip:$STRING.text n:1]];}
-    |   T_TRUE              {$value = YES;}
-    |   T_FALSE             {$value = NO;}
+    |   T_TRUE              {$value = [ACNumber numberWithBool:YES];}
+    |   T_FALSE             {$value = [ACNumber numberWithBool:NO];}
     |   {[[[input LT:1] text] isEqualToString:@"key"]}?=> ID
                             {$value = STGroup.DICT_KEY;}
     ;
     catch[RecognitionException *re] {
         [self error:[NSString stringWithFormat:@"missing value for key at '\%@'", [[input LT:1] text]]];
     }
+
+T_TRUE : 'true' ;
+
+T_FALSE : 'false' ;
 
 ID  :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'-'|'_')*
     ;
@@ -393,7 +398,7 @@ STRING
     ;
 
 BIGSTRING_NO_NL // same as BIGSTRING but means ignore newlines later
-    :   '<%' (options {greedy=NO;} : .)* '%>'
+    :   '<%' (options {greedy=false;} : .)* '%>'
     ;
 
 BIGSTRING

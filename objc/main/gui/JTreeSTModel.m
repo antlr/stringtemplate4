@@ -31,7 +31,7 @@
 {
     if ([st anonSubtemplate])
         return @"{...}";
-    return [NSString stringWithFormat:@"%@ %@:%@", [st toString], [st.newSTEvent fileName], [st.newSTEvent line]];
+    return [NSString stringWithFormat:@"%@ %@:%@", [st description], [st.newSTEvent fileName], [st.newSTEvent line]];
 }
 
 - (NSString *) toString

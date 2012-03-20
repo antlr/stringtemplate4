@@ -179,7 +179,7 @@ NSString *const newline = @"\n"/* Misc.newline */;
     while (t.type != TokenTypeEOF) {
         if (i > 1)
             [buf appendString:@", "];
-        [buf appendString:[t toString]];
+        [buf appendString:[t description]];
         i++;
         t = [tokens LT:i];
     }

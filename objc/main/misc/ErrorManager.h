@@ -81,8 +81,9 @@
 - (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)error arg:(id)arg;
 - (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)error e:(NSException *)e arg:(id)arg;
 - (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)error arg:(id)arg arg2:(id)arg2;
+- (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)error argN:(NSInteger)arg arg2N:(NSInteger)arg2;
 - (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)error arg:(id)arg arg2:(id)arg2 arg3:(id)arg3;
-- (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)error argN:(NSInteger)arg arg2:(id)arg2 arg3:(id)arg3;
+- (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)error argN:(NSInteger)arg arg2:(id)arg2 arg3N:(NSInteger)arg3;
 - (void) IOError:(ST *)who error:(ErrorTypeEnum)error e:(NSException *)e;
 - (void) IOError:(ST *)who error:(ErrorTypeEnum)error e:(NSException *)e arg:(id)arg;
 - (void) internalError:(ST *)who msg:(NSString *)msg e:(NSException *)e;

@@ -52,7 +52,7 @@
         NSLog(@"%@", aMsg.arg );
     }
     else
-        NSLog(@"%@", [ErrorType ErrorNum:aMsg.error]);
+        NSLog([ErrorType ErrorNum:aMsg.error], aMsg.arg);
 }
 
 - (void) runTimeError:(STMessage *)aMsg
@@ -64,7 +64,12 @@
 
 - (void) IOError:(STMessage *)aMsg
 {
-    NSLog(@"%@", [ErrorType ErrorNum:aMsg.error]);
+    if (aMsg.error != CANT_LOAD_GROUP_FILE) {
+        NSLog(@"%@", [ErrorType ErrorNum:aMsg.error]);
+    }
+    else {
+        NSLog([ErrorType ErrorNum:aMsg.error], aMsg.arg);
+    }
 }
 
 - (void) internalError:(STMessage *)aMsg
@@ -223,14 +228,19 @@ static ErrorManager *DEFAULT_ERR_MGR;
     [listener runTimeError:[STRuntimeMessage newMessage:interp error:anError ip:ip who:aWho cause:nil arg:arg arg2:arg2]];
 }
 
+- (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)anError argN:(NSInteger)arg arg2N:(NSInteger)arg2
+{
+    [listener runTimeError:[STRuntimeMessage newMessage:interp error:anError ip:ip who:aWho cause:nil argN:arg arg2N:arg2]];
+}
+
 - (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)anError arg:(id)arg arg2:(id)arg2 arg3:(id)arg3
 {
     [listener runTimeError:[STRuntimeMessage newMessage:interp error:anError ip:ip who:aWho cause:nil arg:arg arg2:arg2 arg3:arg3]];
 }
 
-- (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)anError argN:(NSInteger)arg arg2:(id)arg2 arg3:(id)arg3
+- (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)anError argN:(NSInteger)arg arg2:(id)arg2 arg3N:(NSInteger)arg3
 {
-    [listener runTimeError:[STRuntimeMessage newMessage:interp error:anError ip:ip who:aWho cause:nil argN:arg arg2:arg2 arg3:arg3]];
+    [listener runTimeError:[STRuntimeMessage newMessage:interp error:anError ip:ip who:aWho cause:nil argN:arg arg2:arg2 arg3N:arg3]];
 }
 
 - (void) IOError:(ST *)aWho error:(ErrorTypeEnum)anError e:(NSException *)e
