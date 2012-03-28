@@ -58,5 +58,5 @@
 - (CompiledST *) loadTemplateFile:(NSString *)prefix fileName:(NSString *)fileName;
 - (NSString *) getName;
 - (NSString *) getFileName;
-- (NSString *) getRootDir;
+- (NSURL *) getRootDirURL;
 @end

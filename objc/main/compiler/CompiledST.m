@@ -125,7 +125,7 @@
 {
     sub.prefix = self.prefix;
     if ( [sub.name characterAtIndex:0] != '/' ) {
-        sub.name = [NSString stringWithFormat:@"/%@", sub.name];
+        sub.name = [NSString stringWithFormat:@"%@%@", sub.prefix, sub.name];
     }
     if ( implicitlyDefinedTemplates == nil ) {
         implicitlyDefinedTemplates = [[AMutableArray arrayWithCapacity:5] retain];

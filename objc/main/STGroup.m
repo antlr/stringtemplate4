@@ -275,7 +275,7 @@ static BOOL trackCreationEvents = NO;
 - (ST *) getInstanceOf:(NSString *)aName
 {
     if ( aName == nil ) return nil;
-    if ( verbose ) NSLog(@"[%@ getInstanceOf:%@]\n", [self getName], aName);
+    if ( verbose ) NSLog(@"[%@ getInstanceOf:%@]\n", [self className], aName);
     if ( [aName characterAtIndex:0] != '/') aName = [NSString stringWithFormat:@"/%@", aName];
     CompiledST *c = [self lookupTemplate:aName];
     if ( c != nil ) {
@@ -341,7 +341,7 @@ static BOOL trackCreationEvents = NO;
 - (CompiledST *) lookupTemplate:(NSString *)aName
 {
     if ( [aName characterAtIndex:0] != '/') aName = [NSString stringWithFormat:@"/%@", aName];
-    if ( verbose ) NSLog(@"[%@ lookupTemplate:%@]\n", [self getName], aName);
+    if ( verbose ) NSLog(@"[%@ lookupTemplate:%@]\n", [self className], aName);
     CompiledST *code = [self rawGetTemplate:aName];
     if ( code == STGroup.NOT_FOUND_ST ) {
         if ( verbose ) NSLog(@"%@ previously seen as not found\n", aName);
@@ -354,7 +354,7 @@ static BOOL trackCreationEvents = NO;
         if ( verbose ) NSLog(@"%@ recorded not found\n", aName);
         [templates setObject:NOT_FOUND_ST forKey:aName];
     }
-    if ( verbose && code != nil ) NSLog(@"[%@ lookupTemplate:%@] found\n", [self getName], aName);
+    if ( verbose && code != nil ) NSLog(@"[%@ lookupTemplate:%@] found\n", [self className], aName);
     return code;
 }
 
@@ -477,7 +477,7 @@ static BOOL trackCreationEvents = NO;
                   templateToken:(CommonToken *)templateToken
 {
     if ( verbose )
-        NSLog(@"[self defineTemplate:%@]\n", fullyQualifiedTemplateName);
+        NSLog(@"[%@ defineTemplate:%@]\n", [self className], fullyQualifiedTemplateName);
     if (fullyQualifiedTemplateName == nil || [fullyQualifiedTemplateName length] == 0) {
         @throw [IllegalArgumentException newException:@"empty template name"];
     }

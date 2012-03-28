@@ -75,12 +75,12 @@
             aDirName = [NSString stringWithFormat:@"%@", [aDirName stringByExpandingTildeInPath]];
         }
         fExists = [fm fileExistsAtPath:aDirName isDirectory:&isDir];
-        if (fExists && isDir) {
+        if ( fExists && isDir ) {
             root = [NSURL fileURLWithPath:aDirName];
-            if ( STGroup.verbose ) NSLog( @"%@", [NSString stringWithFormat:@"STGroupDir(%@) found at %@\n", aDirName, root]);
+            if ( STGroup.verbose )
+                NSLog( @"%@", [NSString stringWithFormat:@"[%@ %@] found at %@\n", [self className], aDirName, [root path]]);
         }
         else {
-            root = nil;
 #ifdef DONTUSEYET
             [NSThread currentThread];
             ClassLoader *cl = [[NSThread currentThread] contextClassLoader];
@@ -90,14 +90,12 @@
                 root = [cl getResource:aDirName];
             }
 #endif
-            @try {
-                if (root == nil) {
+            //root = [NSURL fileURLWithPath:[aDirName stringByDeletingLastPathComponent]];
+            root = [NSURL fileURLWithPath:aDirName];
+            //groupDirName = [aDirName lastPathComponent];
+            if ( STGroup.verbose ) NSLog(@"[STGroupDir %@] found via CLASSPATH at %@", aDirName, [root path]);
+            if (root == nil) 
                     @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"No such directory: %@", aDirName]];
-                }
-            }
-            @catch (NSException *e) {
-                [errMgr internalError:nil msg:[NSString stringWithFormat:@"can't load group dir %@", aDirName] e:e];
-            }
         }
     }
     return self;
@@ -132,7 +130,7 @@
     if ( STGroup.verbose ) NSLog(@"[STGroupDir load:%@]\n", aName);
     NSString *parent = [Misc getParent:aName];
     NSString *prefix = [Misc getPrefix:aName];
-    NSLog( @"parent = \"%@\"\nprefix = \"%@\"\nroot = \"%@\"\n", parent, prefix, root );
+    //NSLog( @"parent = \"%@\"\nprefix = \"%@\"\nroot = \"%@\"\n", parent, prefix, root );
     //    if ( [parent length] == 0 )
     //        no need to check for a group file as name has no parent
     //        return [self loadTemplateFile:@"/" fileName:[NSString stringWithFormat:@"%@.st", aName]];
@@ -215,9 +213,9 @@
     return [root lastPathComponent];
 }
 
-- (NSString *) getRootDir
+- (NSURL *) getRootDirURL
 {
-    return groupDirName;
+    return root;
 }
 
 @end
