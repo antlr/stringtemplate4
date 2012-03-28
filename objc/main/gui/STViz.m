@@ -135,7 +135,7 @@
     [m.bytecode setText:[currentST.impl disasm]];
     JTreeASTModel *astModel = [[JTreeASTModel alloc] init:[[CommonTreeAdaptor alloc] init] param1:currentST.impl.ast];
     [m.ast setModel:astModel];
-    AMutableArray *pathST = [currentST getEnclosingInstanceStack:YES];
+    AMutableArray *pathST = [Interpreter getEnclosingInstanceStack:currentScope topDown:YES];
     NSArray *path = [NSArray array];
     NSInteger j = 0;
     
@@ -208,7 +208,7 @@
 }
 
 - (void) updateStack:(DebugST *)st m:(STViewFrame *)m {
-    AMutableArray *stack = [st getEnclosingInstanceStack:YES];
+    AMutableArray *stack = [Interpreter getEnclosingInstanceStack:currentScope topDown:YES];
     [m setTitle:[[@"STViz - [" stringByAppendingString:[Misc join:[stack objectEnumerator] param1:@" "]] stringByAppendingString:@"]"]];
 }
 
