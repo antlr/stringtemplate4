@@ -30,11 +30,11 @@
 parser grammar STParser;
 
 options {
+    language=ObjC;
     tokenVocab=STLexer;
     TokenLabelType=CommonToken;
     output=AST;
     ASTLabelType=CommonTree;
-    language=ObjC;
 }
 
 tokens {

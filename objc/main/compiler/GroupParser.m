@@ -1185,13 +1185,8 @@ static formalArgs_Scope *formalArgs_scope;
                                             templateToken:templateToken
                                                  template:template
                                                 nameToken:name
-                                                     args:
-                formalArgs5
-                ];
+                                                     args:formalArgs5];
                         }
-                        
-
-                 
                 }
                 break;
             case 2 : ;
