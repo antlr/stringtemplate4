@@ -31,11 +31,6 @@
 
 @implementation StringWriter
 
-+ (id) newWriter:(Writer *)aWriter
-{
-    return [[StringWriter alloc] initWithWriter:(Writer *)aWriter];
-}
-
 + (id) newWriter
 {
     return [[StringWriter alloc] initWithCapacity:16];
@@ -52,10 +47,59 @@
     return self;
 }
 
-- (id) initWithWriter:(Writer *)aWriter
+- (void) append:(NSInteger)c
 {
-    self=[super initWithWriter:aWriter];
-    return self;
+    [self write:c];
+}
+
+/**
+ * Write a single character.
+ */
+- (void) write:(NSInteger) c
+{
+    char c1[8] = { c, '\0' };
+    [data appendBytes:c1 length:1];
+    ptr = [data mutableBytes];
+    ip++;
+}
+
+/**
+ * Write a portion of an array of characters.
+ *
+ * @param  cbuf  Array of characters
+ * @param  off   Offset from which to start writing characters
+ * @param  len   Number of characters to write
+ */
+- (void) write:(NSData *)cbuf offset:(NSInteger) off len:(NSInteger) len
+{
+    if ((off < 0) || (off > cbuf.length) || (len < 0) ||
+        ((off + len) > [cbuf length]) || ((off + len) < 0)) {
+        @throw [NSException exceptionWithName:@"IndexOutOfBounds" reason:nil userInfo:nil]; //IndexOutOfBoundsException;
+    } else if (len == 0) {
+        return;
+    }
+    [data appendBytes:[cbuf bytes] length:len];
+}
+
+/**
+ * Write a string.
+ */
+- (void) writeStr:(NSString *)str
+{
+    [data appendBytes:[[str dataUsingEncoding:NSASCIIStringEncoding] bytes] length:[str length]];
+}
+
+- (NSString *)description
+{
+    NSMutableString *oStr;
+    
+    oStr = [[NSMutableString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+    return oStr;
+}
+
+- (NSString *) toString
+{
+    [self description];
 }
 
 @end

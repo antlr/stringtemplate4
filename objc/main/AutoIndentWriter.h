@@ -51,6 +51,41 @@
 #import "Writer.h"
 
 @interface AutoIndentWriter : Writer {
+    /**
+     * stack of indents; use List as it's much faster than Stack. Grows
+     * from 0..n-1.
+     */
+    AMutableArray *indents;
+    
+    /**
+     * Stack of integer anchors (char positions in line); avoid Integer
+     * creation overhead.
+     */
+    IntArray *anchors;
+    NSInteger anchors_sp;
+    
+    /**
+     * \n or \r\n?
+     */
+    NSString *newline;
+
+    Writer *writer;
+    BOOL atStartOfLine;
+    
+    /**
+     * Track char position in the line (later we can think about tabs).
+     * Indexed from 0.  We want to keep charPosition <= lineWidth.
+     * This is the position we are *about* to write not the position
+     * last written to.
+     */
+    NSInteger charPosition;
+    
+    /**
+     * The absolute char index into the output of the next char to be written.
+     */
+    NSInteger charIndex;
+    NSInteger lineWidth;
+    
 }
 
 + (id) newWriter;
@@ -58,9 +93,27 @@
 + (id) newWriter:(Writer *)aWriter newLine:(NSString *)aStr;
 
 - (id) initWithCapacity:(NSInteger)sz;
-- (id) initWithWriter:(Writer *)aWriter;
 - (id) init:(Writer *)aWriter newline:(NSString *)newline;
+- (id) copyWithZone:(NSZone *)aZone;
 - (void) dealloc;
+- (NSInteger) index;
+- (void) pushAnchorPoint;
+- (NSInteger) popAnchorPoint;
+- (void) pushIndentation:(NSString *)indent;
+- (NSString *) popIndentation;
 - (NSInteger) writeStr:(NSString *)str;
+- (NSInteger) writeSeparator:(NSString *)str;
+- (NSInteger) write:(NSString *)str wrap:(NSString *)wrap;
+- (NSInteger) writeWrap:(NSString *)wrap;
+- (NSInteger) indent;
 
+@property (retain) AMutableArray *indents;
+@property (retain) IntArray *anchors;
+@property (assign) NSInteger anchors_sp;
+@property (retain) NSString *newline;
+@property (assign) BOOL atStartOfLine;
+@property (assign) NSInteger charPosition;
+@property (assign) NSInteger charIndex;
+@property (assign) NSInteger lineWidth;
+@property (retain) Writer *writer;
 @end

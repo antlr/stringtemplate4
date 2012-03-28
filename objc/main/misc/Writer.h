@@ -37,40 +37,6 @@
     NSInteger ip;
     id lock;
 
-    /**
-     * stack of indents; use List as it's much faster than Stack. Grows
-     * from 0..n-1.
-     */
-    AMutableArray *indents;
-    
-    /**
-     * Stack of integer anchors (char positions in line); avoid Integer
-     * creation overhead.
-     */
-    IntArray *anchors;
-    NSInteger anchors_sp;
-    
-    /**
-     * \n or \r\n?
-     */
-    NSString *newline;
-    Writer *writer;
-    BOOL atStartOfLine;
-    
-    /**
-     * Track char position in the line (later we can think about tabs).
-     * Indexed from 0.  We want to keep charPosition <= lineWidth.
-     * This is the position we are *about* to write not the position
-     * last written to.
-     */
-    NSInteger charPosition;
-    
-    /**
-     * The absolute char index into the output of the next char to be written.
-     */
-    NSInteger charIndex;
-    NSInteger lineWidth;
-    
 }
 
 + (NSInteger) NO_WRAP;
@@ -88,7 +54,9 @@
 - (NSUInteger) length;
 - (unichar) characterAtIndex:(NSUInteger)index;
 - (void) appendString:(NSString *)aString;
+- (void) append:(NSInteger) c;
 - (void) write:(NSInteger)aChar;
+- (void) write:(NSData *)cbuf offset:(NSInteger)off len:(NSInteger)len;
 - (NSInteger) writeStr:(NSString *)str;
 //- (void) writeChunk:(char *)cbuf offset:(NSInteger)off len:(NSInteger)len;
 - (void) replaceCharactersInRange:(NSRange)range withString:(NSString *)aString;
@@ -97,18 +65,9 @@
 - (NSString *) description;
 - (NSString *) toString;
 
-- (void) pushIndentation:(NSString *)indent;
-- (NSString *) popIndentation;
-- (void) pushAnchorPoint;
-- (NSInteger) popAnchorPoint;
-- (NSInteger) index;
-- (NSInteger) writeSeparator:(NSString *)str;
-- (NSInteger) write:(NSString *)str wrap:(NSString *)wrap;
-- (NSInteger) writeWrap:(NSString *)wrap;
-- (NSInteger) indent;
 - (void) print:(id)msg;
 - (void) println:(id)msg;
-
+- (void) getChars:(NSString *)orig offset:(NSInteger)offset srcLen:(NSInteger)sLen dest:(char *)buf dstLen:(NSInteger)dLen;
 
 @property (assign) NSInteger capacity;
 @property (retain) NSMutableData *data;
@@ -116,48 +75,41 @@
 @property (assign) NSInteger ip;
 @property (retain) id lock;
 
-@property (retain) AMutableArray *indents;
-@property (retain) IntArray *anchors;
-@property (assign) NSInteger anchors_sp;
-@property (retain) NSString *newline;
-@property (retain) Writer *writer;
-@property (assign) BOOL atStartOfLine;
-@property (assign) NSInteger charPosition;
-@property (assign) NSInteger charIndex;
-@property (assign, setter=setLineWidth:) NSInteger lineWidth;
-
-
 @end
 
 @interface BufferedWriter : Writer {
+    Writer *writer;
+    NSInteger nChars;
+    NSInteger nextChar;
 }
 
-+ (id) newWriter;
 + (id) newWriter:(Writer *)op;
-+ (id) newWriterWithCapacity:(NSInteger)len;
++ (id) newWriter:(Writer *)op len:(NSInteger)len;
 
-- (id) initWithCapacity:(NSInteger)sz;
 - (id) initWithWriter:(Writer *)op;
+- (id) initWithWriter:(Writer *)op len:(NSInteger)sz;
 - (void) close;
-- (void) flush;
+- (void) flushBuffer;
 //- (void) newline;
 //- (void) write:(char)c;
 //- (void) writeChunk:(char *)cbuf offset:(NSInteger)off len:(NSInteger)len;
 //- (void) writeStr:(NSString *)str offset:(NSInteger)off len:(NSInteger)len;
 
+@property (retain) Writer *writer;
+@property (assign) NSInteger nChars;
+@property (assign) NSInteger nextChar;
 @end
 
 @interface OutputStreamWriter : Writer {
-
+    NSOutputStream *os;
 }
 
-+ (id) newWriter:(id)writer;
-+ (id) newWriter:(id)writer charSet:(NSCharacterSet *)charSet;
-+ (id) newWriter:(id)writer encoding:(NSStringEncoding)encoding;
-+ (id) newWriter:(id)writer charSetName:(NSString *)charSetName;
++ (id) newWriter:(NSOutputStream *)anOS;
++ (id) newWriter:(NSOutputStream *)anOS charSet:(NSCharacterSet *)charSet;
++ (id) newWriter:(NSOutputStream *)anOS encoding:(NSStringEncoding)encoding;
++ (id) newWriter:(NSOutputStream *)anOS charSetName:(NSString *)charSetName;
 
-- (id) init:(id)writer charSet:(NSCharacterSet *)charSet encoding:(NSStringEncoding)encoding;
-- (id) initWithWriter:(id)writer;
+- (id) init:(NSOutputStream *)anOS charSet:(NSCharacterSet *)charSet encoding:(NSStringEncoding)encoding;
 //- (void) write:(char)c;
 //- (void) write:(char *)cbuf offset:(NSInteger)off len:(NSInteger)len;
 //- (void) writeStr:(NSString *)str offset:(NSInteger)off len:(NSInteger)len;
@@ -181,6 +133,7 @@
 - (id) initWithFH:(NSFileHandle *)file append:(BOOL)append;
 - (id) initWithFN:(NSString *)filename append:(BOOL)append;
 - (void) dealloc;
+- (void) write:(NSData *)cbuf offset:(NSInteger)off len:(NSInteger)len;
 - (NSInteger) writeStr:(NSString *)str;
 
 - (void) close;

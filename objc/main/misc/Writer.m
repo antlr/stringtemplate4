@@ -40,46 +40,20 @@
 
 + (id) newWriter
 {
-    return [[Writer alloc] initWithCapacity:16];
-}
-
-+ (id) newWriter:(id)aWriter
-{
-    return [[Writer alloc] initWithWriter:aWriter];
-}
-
-+ (id) newWriterWithCapacity:(NSUInteger)len
-{
-    return [[Writer alloc] initWithCapacity:len];
-}
-
-+ (id) stringWithCapacity:(NSUInteger)len
-{
-    return [[Writer alloc] initWithCapacity:len];
+    return [[Writer alloc] init];
 }
 
 - (id) init
 {
     self=[super init];
     if ( self != nil ) {
-        writer = self;
-        capacity = 16;
+        capacity = 1024;
         data = [[NSMutableData dataWithCapacity:capacity] retain];
         ptr = [data mutableBytes];
         for (int i = 0; i < capacity; i++) {
             ptr[i] = '\0';
         }
         ip = 0;
-        indents = [[AMutableArray arrayWithCapacity:5] retain];
-        anchors = [[IntArray newArrayWithLen:5] retain];
-        anchors_sp = -1;
-        atStartOfLine = YES;
-        charPosition = 0;
-        charIndex = 0;
-        lineWidth = ST.NO_WRAP;
-        [indents addObject:@""];
-        newline = @"\n";
-        [newline retain];
     }
     return self;
 }
@@ -88,7 +62,6 @@
 {
     self=[super init];
     if ( self != nil ) {
-        writer = self;
         capacity = len;
         data = [[NSMutableData dataWithCapacity:capacity] retain];
         ptr = [data mutableBytes];
@@ -96,51 +69,6 @@
             ptr[i] = '\0';
         }
         ip = 0;
-        indents = [[AMutableArray arrayWithCapacity:5] retain];
-        anchors = [[IntArray newArrayWithLen:5] retain];
-        anchors_sp = -1;
-        atStartOfLine = YES;
-        charPosition = 0;
-        charIndex = 0;
-        lineWidth = ST.NO_WRAP;
-        [indents addObject:@""];
-        newline = @"\n";
-        [newline retain];
-    }
-    return self;
-}
-
-- (id) initWithWriter:(Writer *)aWriter
-{
-    self=[super init];
-    if ( self != nil ) {
-        if (aWriter == nil) {
-            writer = self;
-            self.capacity = 16;
-            data = [[NSMutableData dataWithCapacity:capacity] retain];
-            ptr = [data mutableBytes];
-            for (int i = 0; i < capacity; i++) {
-                ptr[i] = '\0';
-            }
-            ip = 0;
-        }
-        else {
-            writer = aWriter;
-            self.capacity = writer.capacity;
-            self.data = writer.data;
-            self.ptr = writer.ptr;
-            self.ip = writer.ip;
-        }
-        indents = [[AMutableArray arrayWithCapacity:5] retain];
-        anchors = [[IntArray newArrayWithLen:5] retain];
-        anchors_sp = -1;
-        atStartOfLine = YES;
-        charPosition = 0;
-        charIndex = 0;
-        lineWidth = ST.NO_WRAP;
-        [indents addObject:@""];
-        newline = @"\n";
-        [newline retain];
     }
     return self;
 }
@@ -150,11 +78,6 @@
 #ifdef DEBUG_DEALLOC
     NSLog( @"called dealloc in Writer" );
 #endif
-    if ( anchors ) [anchors release];
-    if ( data )    [data release];
-    if ( indents ) [indents release];
-    if ( newline ) [newline release];
-    if ( writer ) [writer release];
     [super dealloc];
 }
 
@@ -170,15 +93,6 @@
     copy.ptr = [copy.data mutableBytes];
     copy.ip = ip;
     copy.lock = lock;
-    copy.indents = indents;
-    copy.anchors = anchors;
-    copy.anchors_sp = anchors_sp;
-    copy.newline = newline;
-    copy.writer = writer;
-    copy.atStartOfLine = atStartOfLine;
-    copy.charPosition = charPosition;
-    copy.charIndex = charIndex;
-    copy.lineWidth = lineWidth;
     return copy;
 }
 
@@ -203,6 +117,14 @@
     return (unichar) '\0';
 }
 
+- (void) append:(NSInteger)c
+{
+    char c1[8] = { c, '\0' };
+    [data appendBytes:c1 length:1];
+    ptr = [data mutableBytes];
+    ip++;
+}
+
 - (void) appendString:(NSString *)aString
 {
     NSInteger i, len, len2;
@@ -215,28 +137,42 @@
     ip = len+i;
 }
 
+- (void) write:(NSMutableData *)d offset:(NSInteger)off len:(NSInteger)len
+{
+    char *buf;
+    buf = [d mutableBytes];
+    for (NSInteger i=0; i<len; i++) {
+        [self write:buf[i+off]];
+    }
+}
+
 - (void) write:(NSInteger)aChar
 {
     if ( ptr[ip] != '\0') [self length];
     ptr[ip++] = aChar;
     ptr[ip] = '\0';
-    //[self appendFormat:@"%c", aChar];
+    putchar(aChar);
+}
+
+- (void) writeStr:(NSString *)str pos:(NSInteger)offset len:(NSInteger)len
+{
+    [self ensureCapacity:len+2];
+//    [self getChars:str offset:offset srcLen:len dest:ptr];
+    NSRange aRange = NSMakeRange(offset, len);
+    [self appendString:[str substringWithRange:aRange]];
+    [self write:data offset:0 len:len];
 }
 
 - (NSInteger) writeStr:(NSString *)str
 {
     NSInteger len;
+    [self setString:@""];
     len = [str length];
     [self appendString:str];
     //ip += len;
     if ( ptr[ip] != '\0') ptr[ip] = '\0';
+    [self write:data offset:0 len:[str length]];
     return len;
-}
-
-- (void) writeStr:(NSString *)str pos:(NSInteger)offset len:(NSInteger)len
-{
-    NSRange aRange = NSMakeRange(offset, len);
-    [self appendString:[str substringWithRange:aRange]];
 }
 
 - (NSString *) description
@@ -273,121 +209,19 @@
     }
 }
 
+- (void) getChars:(NSString *)orig offset:(NSInteger)offset srcLen:(NSInteger)sLen dest:(char *)buf dstLen:(NSInteger)dLen
+{
+    NSString *src;
+    if (offset >= 0 && (offset + sLen) < [orig length]) {
+        src = [orig substringWithRange:NSMakeRange(offset, sLen)];
+        for (NSInteger i=0; i<sLen; i++) {
+            buf[i] = [src characterAtIndex:i];
+        }
+    }
+}
+
 - (void) close
 {
-}
-
-- (void) pushIndentation:(NSString *)anIndent
-{
-    [indents addObject:anIndent];
-    NSLog( @"pushIndentation of \"%@\"\n", anIndent );
-}
-
-- (NSString *) popIndentation
-{
-    NSString *ret = [indents objectAtIndex:[indents count]-1];
-    NSLog( @"popIndentation of \"%@\"\n", ret );
-    [indents removeLastObject];
-    return ret;
-}
-
-- (void) pushAnchorPoint
-{
-    anchors_sp++;
-    [anchors push:charPosition];
-}
-
-- (NSInteger) popAnchorPoint
-{
-    anchors_sp--;
-    return [anchors pop];
-}
-
-- (NSInteger) index
-{
-    return charIndex;
-}
-
-- (NSInteger) writeSeparator:(NSString *)str
-{
-    NSInteger len = [str length];
-    [self writeStr:str];
-    return len;
-}
-
-
-/**
- * Write out a string literal or attribute expression or expression element.
- * 
- * If doing line wrap, then check wrap before emitting this str.  If
- * at or beyond desired line width then emit a \n and any indentation
- * before spitting out this str.
- */
-- (NSInteger) write:(NSString *)str wrap:(NSString *)wrap
-{
-    NSInteger n = [self writeWrap:wrap];
-    return n + [self writeStr:str];
-}
-
-- (NSInteger) writeWrap:(NSString *)wrap
-{
-    NSInteger n = 0;
-    NSInteger nll = [newline length];
-    NSInteger sl = [self length];
-    for (NSInteger i = 0; i < sl; i++) {
-        unichar c = [wrap characterAtIndex:i];
-        if (c == '\n') {
-            atStartOfLine = YES;
-            n += [newline length];
-            charPosition = -nll;
-            [self writeStr:newline];
-            n += nll;
-            charIndex += nll;
-            n += n;
-            continue;
-        }
-        // normal character
-        // check to see if we are at the start of a line; need indent if so
-        if ( atStartOfLine ) {
-            n += [self indent];
-            [self write:c];
-            atStartOfLine = NO;
-        }
-        n++;
-        charPosition++;
-        charIndex++;
-    }
-    return n;
-}
-
-- (NSInteger) indent
-{
-    NSInteger n = 0;
-
-//    for (NSString *ind in indents) {
-    NSString *ind;
-    ArrayIterator *it = [ArrayIterator newIterator:indents];
-    while ( [it hasNext] ) {
-        ind = (NSString *)[it nextObject];
-        if (ind != nil) {
-            n += [ind length];
-            for ( int i = 0; i < [ind length]; i++ )
-                [writer write:[ind characterAtIndex:i]];
-        }
-    }
-    
-    NSInteger indentWidth = n;
-    if (anchors_sp >= 0 && [anchors integerAtIndex:anchors_sp] > indentWidth) {
-        NSInteger remainder = [anchors integerAtIndex:anchors_sp] - indentWidth;
-        
-        for (NSInteger i = 1; i <= remainder; i++)
-            [writer write:' '];
-        
-        n += remainder;
-    }
-    charPosition += n;
-    charIndex += n;
-    return n;
 }
 
 - (void) print:(id)msg
@@ -406,52 +240,152 @@
 @synthesize ip;
 @synthesize lock;
 
-@synthesize indents;
-@synthesize anchors;
-@synthesize anchors_sp;
-@synthesize newline;
-@synthesize writer;
-@synthesize atStartOfLine;
-@synthesize charPosition;
-@synthesize charIndex;
-@synthesize lineWidth;
-
 @end
 
 @implementation BufferedWriter
-
-+ (id) newWriter
-{
-    return [[BufferedWriter alloc] initWithCapacity:30];
-}
-
-+ (id) newWriterWithCapacity:(NSInteger)len
-{
-    return [[BufferedWriter alloc] initWithCapacity:len];
-}
+@synthesize writer;
+@synthesize nChars;
+@synthesize nextChar;
 
 + (id) newWriter:(Writer *)op
 {
-    return [[BufferedWriter alloc] initWithWriter:op];
+    return [[BufferedWriter alloc] initWithWriter:op len:8192];
 }
 
-- (id) initWithWriter:(Writer *)op
++ (id) newWriter:(Writer *)op withLen:(NSInteger)len
 {
-    self=[super initWithWriter:op];
+    return [[BufferedWriter alloc] initWithWriter:op len:len];
+}
+
+- (id) initWithWriter:(Writer *)op len:(NSInteger)len
+{
+    self=[super initWithCapacity:len];
+    if ( self != nil ) {
+        writer = op;
+    }
     return self;
 }
 
-- (id) initWithCapacity:(NSInteger)sz
+/**
+ * Flushes the output buffer to the underlying character stream, without
+ * flushing the stream itself.  This method is non-private only so that it
+ * may be invoked by PrintStream.
+ */
+- (void) flushBuffer
 {
-    self=[super initWithCapacity:sz];
-    return self;
+//    synchronized (lock) {
+//    ensureOpen();
+    if (nextChar == 0)
+        return;
+    [self ensureCapacity:nextChar+2];
+    [writer write:ptr offset:0 len:nextChar];
+    nextChar = 0;
+//    }
+}
+
+
+/**
+ * Writes a single character.
+ *
+ * @exception  IOException  If an I/O error occurs
+ */
+- (void) write:(int) c
+{
+//    synchronized (lock) {
+//        ensureOpen();
+    if (nextChar >= nChars)
+        [self flushBuffer];
+    ptr[nextChar++] = (char) c;
+    ptr[nextChar] = '\0';
+//    }
+}
+
+- (void) write:(NSData *)cbuf offset:(NSInteger)off len:(NSInteger)len
+{
+    char *src;
+    [self ensureCapacity:len];
+    src = [cbuf mutableBytes];
+//    synchronized (lock) {
+//        ensureOpen();
+        if ((off < 0) || (off > [data length]) || (len < 0) ||
+            ((off + len) > [data length]) || ((off + len) < 0)) {
+//            @throw [IndexOutOfBoundsException newException];
+            @throw [RuntimeException newException:@"IndexOutOfBounds" ];
+        } else if (len == 0) {
+            return;
+        } 
+        
+        if (len >= nChars) {
+            /* If the request length exceeds the size of the output buffer,
+             flush the buffer and then write the data directly.  In this
+             way buffered streams will cascade harmlessly. */
+            [self flushBuffer];
+            [self write:cbuf offset:off len:len];
+            return;
+        }
+        
+        int b = off, t = off + len;
+        while (nextChar < t) {
+            int d = (nChars - nextChar) < (t - b) ? (nChars - nextChar) : (t - b);
+//            System.arraycopy(cbuf, b, cb, nextChar, d);
+            for ( NSInteger i = 0; i < len; i++ ) {
+                ptr[nextChar++] = src[i];
+            }
+            ptr[nextChar] = '\0';
+            if (nextChar >= nChars)
+                [self flushBuffer];
+        }
+//    }
+}
+
+/**
+ * Writes a portion of a String.
+ *
+ * <p> If the value of the <tt>len</tt> parameter is negative then no
+ * characters are written.  This is contrary to the specification of this
+ * method in the {@linkplain java.io.Writer#write(java.lang.String,int,int)
+ * superclass}, which requires that an {@link IndexOutOfBoundsException} be
+ * thrown.
+ *
+ * @param  s     String to be written
+ * @param  off   Offset from which to start reading characters
+ * @param  len   Number of characters to be written
+ *
+ * @exception  IOException  If an I/O error occurs
+ */
+- (void) writeStr:(NSString *)s pos:(NSInteger)off len:(NSInteger)len
+{
+//    synchronized (lock) {
+//        ensureOpen();
+    NSString *dest;
+        NSInteger b = off, t = off + len;
+        while (b < t) {
+            int d = (nChars - nextChar) < (t - b) ? (nChars - nextChar) : (t - b);
+//            s.getChars(b, b + d, cb, nextChar);
+            [s substringWithRange:NSMakeRange(b, b + d)];
+            b += d;
+            nextChar += d;
+            if (nextChar >= nChars)
+                [self flushBuffer];
+        }
+//    }
+}
+
+- (NSInteger) writeStr:(NSString *)str
+{
+    NSInteger len;
+    [self setString:@""];
+    len = [str length];
+    [data setLength:len];
+    [self appendString:str];
+    //ip += len;
+    if ( ptr[ip] != '\0') ptr[ip] = '\0';
+//    [writer writeStr:str pos:0 len:[str length]];
+    [writer write:data offset:0 len:[str length]];
+    return len;
 }
 
 - (void) close
-{
-}
-
-- (void) flush
 {
 }
 
@@ -459,41 +393,32 @@
 
 @implementation OutputStreamWriter
 
-+ (id) newWriter:(id)writer
++ (id) newWriter:(NSOutputStream *)anOS
 {
-    return [[OutputStreamWriter alloc] init:writer charSet:nil encoding:NSASCIIStringEncoding];
+    return [[OutputStreamWriter alloc] init:anOS charSet:nil encoding:NSASCIIStringEncoding];
 }
 
-+ (id) newWriter:(id)writer charSet:(NSCharacterSet *)charSet
++ (id) newWriter:(NSOutputStream *)anOS charSet:(NSCharacterSet *)charSet
 {
-    return [[OutputStreamWriter alloc] init:(id)writer charSet:charSet encoding:NSASCIIStringEncoding];
+    return [[OutputStreamWriter alloc] init:anOS charSet:charSet encoding:NSASCIIStringEncoding];
 }
 
-+ (id) newWriter:(id)writer encoding:(NSStringEncoding)encoding
++ (id) newWriter:(NSOutputStream *)anOS encoding:(NSStringEncoding)encoding
 {
-    return [[OutputStreamWriter alloc] init:(id)writer charSet:nil encoding:(NSStringEncoding)encoding];
+    return [[OutputStreamWriter alloc] init:anOS charSet:nil encoding:(NSStringEncoding)encoding];
 }
 
-+ (id) newWriter:(id)writer charSetName:(NSString *)charSetName
++ (id) newWriter:(NSOutputStream *)anOS charSetName:(NSString *)charSetName
 {
-    return [[OutputStreamWriter alloc] init];
+    return [[OutputStreamWriter alloc] init:anOS charSet:nil encoding:NSASCIIStringEncoding];
 }
 
-- (id) init
+- (id) init:(NSOutputStream *)anOS charSet:(NSCharacterSet *)charSet encoding:(NSStringEncoding)encoding
 {
     self=[super init];
-    return self;
-}
-
-- (id) init:(id)aWriter charSet:(NSCharacterSet *)charSet encoding:(NSStringEncoding)encoding
-{
-    self=[super initWithWriter:aWriter];
-    return self;
-}
-
-- (id) initWithWriter:(id)aWriter
-{
-    self=[super initWithWriter:aWriter];
+    if ( self != nil ) {
+        os = anOS;
+    }
     return self;
 }
 
@@ -586,15 +511,48 @@
     [super dealloc];
 }
 
-- (NSInteger) writeStr:(NSString *)str
+
+
+- (void) write:(NSData *)cbuf offset:(NSInteger)off len:(NSInteger)len
+{
+    //    synchronized (lock) {
+    //        ensureOpen();
+    if ((off < 0) || (off > [cbuf length]) || (len < 0) ||
+        ((off + len) > [cbuf length]) || ((off + len) < 0)) {
+        //            @throw [IndexOutOfBoundsException newException];
+        @throw [RuntimeException newException:@"IndexOutOfBounds" ];
+    } else if (len == 0) {
+        return;
+    } 
+    [fh truncateFileAtOffset:0];
+    [fh writeData:cbuf];
+    return;
+}
+
+- (void) writeStr:(NSString *)str pos:(NSInteger)off len:(NSInteger)len
 {
     NSMutableData *d;
-    //- (BOOL)writeToFile:(NSString *)path atomically:(BOOL)useAuxiliaryFile encoding:(NSStringEncoding)enc error:(NSError **)error;
-    [super writeStr:str];
-    d = [NSMutableData dataWithBytes:ptr length:[self length]];
+    //    synchronized (lock) {
+    //        ensureOpen();
+    if ((off < 0) || (off > [str length]) || (len < 0) ||
+        ((off + len) > [str length]) || ((off + len) < 0)) {
+        //            @throw [IndexOutOfBoundsException newException];
+        @throw [RuntimeException newException:@"IndexOutOfBounds" ];
+    } else if (len == 0) {
+        return;
+    } 
+    d = [NSMutableData dataWithContentsOfFile:str];
     [fh truncateFileAtOffset:0];
     [fh writeData:d];
-    return [d length];
+    return;
+}
+
+- (NSInteger) writeStr:(NSString *)str
+{
+    NSInteger len;
+    len = [str length];
+    [self writeStr:str pos:0 len:len];
+    return len;
 }
 
 - (void) close

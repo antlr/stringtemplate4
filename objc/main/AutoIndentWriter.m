@@ -33,10 +33,19 @@
 #import "ST.h"
 
 @implementation AutoIndentWriter
+@synthesize indents;
+@synthesize anchors;
+@synthesize anchors_sp;
+@synthesize newline;
+@synthesize atStartOfLine;
+@synthesize charPosition;
+@synthesize charIndex;
+@synthesize lineWidth;
+@synthesize writer;
 
 + (id) newWriter
 {
-    return [[AutoIndentWriter alloc] init];
+    return [[AutoIndentWriter alloc] initWithCapacity:1024];
 }
 
 + (id) newWriter:(Writer *)aWriter
@@ -51,18 +60,41 @@
 
 - (id) init
 {
-    self=[super init];
-    if ( self != nil ) {
+    self = [super init];
+    if (self != nil) {
+        writer = self;
     }
     return self;
 }
 
 - (id) init:(Writer *)aWriter newline:(NSString *)aNewline
 {
-    self=[super initWithWriter:aWriter];
+    self=[super init];
     if ( self != nil ) {
-        writer = aWriter;
-        if ( writer ) [writer retain];
+        indents = [[AMutableArray arrayWithCapacity:5] retain];
+        anchors = [[IntArray newArrayWithLen:5] retain];
+        anchors_sp = -1;
+        atStartOfLine = YES;
+        charPosition = 0;
+        charIndex = 0;
+        lineWidth = ST.NO_WRAP;
+        [indents addObject:@""];
+        newline = @"\n";
+        [newline retain];
+        ip = 0;
+        if (aWriter == nil) {
+            writer = self;
+        }
+        else {
+            writer = aWriter;
+/*
+            self.capacity = writer.capacity;
+            self.data = writer.data;
+            self.ptr = writer.ptr;
+            self.ip = writer.ip;
+ */
+        }
+        if ( writer != self) [writer retain];
         if ( newline != aNewline ) {
             if ( newline ) [newline release];
             if ( aNewline ) [aNewline retain];
@@ -72,21 +104,22 @@
     return self;
 }
 
-- (id) initWithWriter:(Writer *)aWriter
-{
-    self=[super initWithWriter:aWriter];
-    if ( self != nil ) {
-        writer = aWriter;
-        if ( writer ) [writer retain];
-    }
-    return self;
-}
-
 - (id) initWithCapacity:(NSInteger)sz
 {
     self=[super initWithCapacity:(NSUInteger)sz];
     if ( self != nil ) {
+        indents = [[AMutableArray arrayWithCapacity:5] retain];
+        anchors = [[IntArray newArrayWithLen:5] retain];
+        anchors_sp = -1;
+        atStartOfLine = YES;
+        charPosition = 0;
+        charIndex = 0;
+        lineWidth = ST.NO_WRAP;
+        [indents addObject:@""];
+        newline = @"\n";
+        [newline retain];
         writer = self;
+        ip = 0;
     }
     return self;
 }
@@ -96,7 +129,80 @@
 #ifdef DEBUG_DEALLOC
     NSLog( @"called dealloc in AutoIndentWriter" );
 #endif
+    if ( anchors ) [anchors release];
+    if ( data )    [data release];
+    if ( indents ) [indents release];
+    if ( newline ) [newline release];
+    if ( writer ) [writer release];
     [super dealloc];
+}
+
+- (id) copyWithZone:(NSZone *)aZone
+{
+    AutoIndentWriter *copy;
+    
+    copy = [[[self class] allocWithZone:aZone] init];
+    copy.capacity = capacity;
+    if ( data ) {
+        copy.data = [data copyWithZone:aZone];
+    }
+    copy.ptr = [copy.data mutableBytes];
+    copy.ip = ip;
+    copy.lock = lock;
+    copy.indents = indents;
+    copy.anchors = anchors;
+    copy.anchors_sp = anchors_sp;
+    copy.newline = newline;
+    copy.writer = writer;
+    copy.atStartOfLine = atStartOfLine;
+    copy.charPosition = charPosition;
+    copy.charIndex = charIndex;
+    copy.lineWidth = lineWidth;
+    return copy;
+}
+
+- (NSInteger) index
+{
+    return charIndex;
+}
+
+- (void) pushIndentation:(NSString *)anIndent
+{
+    [indents addObject:anIndent];
+    //    NSLog( @"pushIndentation of \"%@\"\n", anIndent );
+}
+
+- (NSString *) popIndentation
+{
+    NSString *ret = [indents objectAtIndex:[indents count]-1];
+    //    NSLog( @"popIndentation of \"%@\"\n", ret );
+    [indents removeLastObject];
+    return ret;
+}
+
+- (void) pushAnchorPoint
+{
+    anchors_sp++;
+    [anchors push:charPosition];
+}
+
+- (NSInteger) popAnchorPoint
+{
+    anchors_sp--;
+    return [anchors pop];
+}
+
+/**
+ * Write out a string literal or attribute expression or expression element.
+ * 
+ * If doing line wrap, then check wrap before emitting this str.  If
+ * at or beyond desired line width then emit a \n and any indentation
+ * before spitting out this str.
+ */
+- (NSInteger) write:(NSString *)str wrap:(NSString *)wrap
+{
+    NSInteger n = [self writeWrap:wrap];
+    return n + [self writeStr:str];
 }
 
 /**
@@ -125,10 +231,79 @@
             atStartOfLine = NO;
         }
         n++;
-        [self write:c];
+        [writer write:c];
         charPosition++;
         charIndex++;
     }
+    return n;
+}
+
+- (NSInteger) writeSeparator:(NSString *)str
+{
+    NSInteger len = [str length];
+    [self writeStr:str];
+    return len;
+}
+
+
+- (NSInteger) writeWrap:(NSString *)wrap
+{
+    NSInteger n = 0;
+    NSInteger nll = [newline length];
+    NSInteger sl = [self length];
+    for (NSInteger i = 0; i < sl; i++) {
+        unichar c = [wrap characterAtIndex:i];
+        if (c == '\n') {
+            atStartOfLine = YES;
+            n += [newline length];
+            charPosition = -nll;
+            [writer writeStr:newline];
+            n += nll;
+            charIndex += nll;
+            n += n;
+            continue;
+        }
+        // normal character
+        // check to see if we are at the start of a line; need indent if so
+        if ( atStartOfLine ) {
+            n += [self indent];
+            [writer write:c];
+            atStartOfLine = NO;
+        }
+        n++;
+        charPosition++;
+        charIndex++;
+    }
+    return n;
+}
+
+- (NSInteger) indent
+{
+    NSInteger n = 0;
+    
+    //    for (NSString *ind in indents) {
+    NSString *ind;
+    ArrayIterator *it = [ArrayIterator newIterator:indents];
+    while ( [it hasNext] ) {
+        ind = (NSString *)[it nextObject];
+        if (ind != nil) {
+            n += [ind length];
+            for ( int i = 0; i < [ind length]; i++ )
+                [writer write:[ind characterAtIndex:i]];
+        }
+    }
+    
+    NSInteger indentWidth = n;
+    if (anchors_sp >= 0 && [anchors integerAtIndex:anchors_sp] > indentWidth) {
+        NSInteger remainder = [anchors integerAtIndex:anchors_sp] - indentWidth;
+        
+        for (NSInteger i = 1; i <= remainder; i++)
+            [writer write:' '];
+        
+        n += remainder;
+    }
+    charPosition += n;
+    charIndex += n;
     return n;
 }
 

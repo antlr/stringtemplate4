@@ -18,5 +18,10 @@
 
 - (id) initWithCapacity:(NSUInteger)aLen;
 - (id) initWithWriter:(Writer *)aWriter;
+- (void) write:(NSInteger) c;
+- (void) write:(NSData *)cbuf offset:(NSInteger) off len:(NSInteger) len;
+- (void) writeStr:(NSString *)str;
+- (NSString *)description;
+- (NSString *) toString;
 
 @end
