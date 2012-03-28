@@ -202,7 +202,7 @@
     ArrayIterator *it = [code.sourceMap objectEnumerator];
     while ( [it hasNext] ) {
         I = (Interval *)[it nextObject];
-        if (I != nil) {
+        if (I != nil && I != [NSNull null]) {
             NSString *chunk = [code.template substringWithRange:NSMakeRange(I.a, (I.b + 1)-I.a)];
             [buf appendString:[NSString stringWithFormat:@"%04d: %@\t\"%@\"\n", addr, I, chunk]];
         }
