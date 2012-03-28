@@ -427,12 +427,19 @@ static DebugState *st_debugState = nil;
         }
     }
     id curvalue;
+    AttributeList *multi;
     curvalue = [locals objectAtIndex:arg.index];
     if (curvalue == EMPTY_ATTR) {
-        [locals replaceObjectAtIndex:arg.index withObject:value];
+        if ( [value isKindOfClass:[NSArray class]] ) {
+            multi = [ST convertToAttributeList:value];
+            [locals replaceObjectAtIndex:arg.index withObject:multi];
+        }
+        else {
+            [locals replaceObjectAtIndex:arg.index withObject:value];
+        }
         return self;
     }
-    AttributeList *multi = [ST convertToAttributeList:curvalue];
+    multi = [ST convertToAttributeList:curvalue];
     [locals replaceObjectAtIndex:arg.index withObject:multi];
     if ( [value isKindOfClass:[NSDictionary class]] ) {
         [multi addObjectsFromArray:(NSArray *)[value allValues]];
@@ -533,8 +540,6 @@ static DebugState *st_debugState = nil;
     }
     if ( arg.index < [locals count] ) {
         [locals replaceObjectAtIndex:arg.index withObject:value];
-    } else if ( arg.index == [locals count] ) {
-        [locals insertObject:value atIndex:arg.index];
     } else {
         [locals addObject:value];
     }
@@ -603,7 +608,7 @@ static DebugState *st_debugState = nil;
         multi = [AttributeList arrayWithCapacity:5]; // make list to hold multiple values
         [multi addObject:curvalue];                 // add previous single-valued attribute
     }
-    NSLog( @"%@", [multi description]);
+    //NSLog( @"%@", [multi description]);
     return multi;
 }
 
@@ -680,7 +685,7 @@ static DebugState *st_debugState = nil;
         OutputStreamWriter *osw = [OutputStreamWriter newWriter:nil encoding:encoding];
         bw = [BufferedWriter newWriter:osw];
         AutoIndentWriter *w = [AutoIndentWriter newWriter:bw];
-        [w setLineWidth:lineWidth];
+        w.lineWidth =lineWidth;
         n = [self write:w locale:locale listener:listener];
         [bw close];
         bw = nil;
@@ -709,10 +714,11 @@ static DebugState *st_debugState = nil;
 
 - (NSString *) render:(NSLocale *)locale lineWidth:(NSInteger)aLineWidth
 {
-    AutoIndentWriter *wr = [AutoIndentWriter newWriter];
+    StringWriter *wr1 = [StringWriter newWriter];
+    AutoIndentWriter *wr = [AutoIndentWriter newWriter:wr1];
     wr.lineWidth = aLineWidth;
     [self write:wr locale:locale];
-    return [wr description];
+    return [wr1 description];
 }
 
 #pragma mark fix this sometime
@@ -738,25 +744,25 @@ static DebugState *st_debugState = nil;
             locale:(NSLocale *)locale
          lineWidth:(NSInteger)lineWidth
 {
-        ErrorBuffer *errors = [ErrorBuffer newErrorBuffer];
-        [impl.nativeGroup setListener:errors];
-        StringWriter *wr1 = [StringWriter newStringWriter];
-        id<STWriter>wr = [AutoIndentWriter newAutoIndentWriter:wr1];
-        [wr setLineWidth:lineWidth];
-        Interpreter *interp =
-            [Interpreter newInterpreter:groupThatCreatedThisInstance locale:locale debug:YES];
-        [interp exec:wr  who:self]; // render and track events
-        AMutableArray *events = [interp getEvents];
-        EvalTemplateEvent *overallTemplateEval =
-            [(EvalTemplateEvent *)events get([events size]-1];
-        STViz *viz = [STViz newSTViz:errMgr
-                                root:overallTemplateEval
-                              output:[wr1 description]
-                         interpreter:interp
-                               trace:[interp getExecutionTrace]
-                              errors:errors.errors];
-        viz.open();
-        return viz;
+    ErrorBuffer *errors = [ErrorBuffer newErrorBuffer];
+    [impl.nativeGroup setListener:errors];
+    StringWriter *wr1 = [StringWriter newStringWriter];
+    AutoIndentWriter *wr = [AutoIndentWriter newAutoIndentWriter:wr1];
+    wr.lineWidth = lineWidth;
+    Interpreter *interp =
+    [Interpreter newInterpreter:groupThatCreatedThisInstance locale:locale debug:YES];
+    [interp exec:wr  who:self]; // render and track events
+    AMutableArray *events = [interp getEvents];
+    EvalTemplateEvent *overallTemplateEval =
+    [(EvalTemplateEvent *)events get([events size]-1];
+     STViz *viz = [STViz newSTViz:errMgr
+                             root:overallTemplateEval
+                           output:[wr1 description]
+                      interpreter:interp
+                            trace:[interp getExecutionTrace]
+                           errors:errors.errors];
+     viz.open();
+     return viz;
 }
 
 #endif
@@ -781,8 +787,8 @@ static DebugState *st_debugState = nil;
 - (AMutableArray *)getEvents:(NSLocale *)locale lineWidth:(NSInteger)lineWidth
 {
     StringWriter *wr1 = [StringWriter newWriter];
-    id<STWriter>wr = [AutoIndentWriter newWriter:wr1];
-    [wr setLineWidth:lineWidth];
+    AutoIndentWriter *wr = [AutoIndentWriter newWriter:wr1];
+    wr.lineWidth =lineWidth;
     Interpreter *interp =
             [Interpreter newInterpreter:groupThatCreatedThisInstance locale:locale debug:YES];
     [interp exec:wr who:self]; // render and track events
@@ -827,7 +833,7 @@ static DebugState *st_debugState = nil;
             [aTemplate stringByReplacingCharactersInRange:aRange withString:[NSString stringWithFormat:@"arg%d", idx++]];
         }
     } while (aRange.location != NSNotFound );
-    NSLog( @"Template = %@", aTemplate );
+    //NSLog( @"Template = %@", aTemplate );
     ST *st = [ST newSTWithTemplate:aTemplate];
     NSInteger i = 1;
 
