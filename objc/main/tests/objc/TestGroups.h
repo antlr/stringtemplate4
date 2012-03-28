@@ -92,10 +92,17 @@
 - (void) test30MissingNamedArg;
 - (void) test31NamedArgsNotAllowInIndirectInclude;
 - (void) test32CantSeeGroupDirIfGroupFileOfSameName;
+- (void) test33UnloadingSimpleGroup;
+- (void) test34UnloadingGroupFile;
+- (void) test35GroupFileImport;
+#ifdef DONTUSEYET
+- (void) test36GetTemplateNames;
+- (void) test37UnloadWithImports;
+#endif
+#ifdef DONTUSENOMO
 - (void) test33FullyQualifiedGetInstanceOf;
 - (void) test34FullyQualifiedTemplateRef;
 - (void) test35FullyQualifiedTemplateRef2;
-- (void) test36UnloadingSimpleGroup;
-- (void) test37UnloadingGroupFile;
+#endif
 
 @end

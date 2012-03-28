@@ -140,25 +140,25 @@ NSString *const newline = @"\n"/* Misc.newline */;
                 fh = [NSFileHandle fileHandleForWritingAtPath:path];
             }
         }
-#ifdef DONTUSENOMo
+#ifdef DONTUSENOMO
         if (![[f parentFile] exists])
             [[f parentFile] mkdirs];
 #endif
         FileWriter *fw = [[FileWriter newWriterWithFH:fh] retain];
-        BufferedWriter *bw = [[BufferedWriter newWriter] retain];
+        BufferedWriter *bw = [[BufferedWriter newWriter:fw] retain];
         [bw writeStr:content];
-        [fw writeStr:content];
+//        [fw writeStr:content];
         [bw close];
         [fw close];
     }
     @catch (IOException *ioe) {
         //[System.err println:@"can't write file"];
-        NSLog( @"can't write file" );
+        //NSLog( @"can't write file" );
         //[ioe printStackTrace:System.err];
         cs = [ioe callStackSymbols];
         for (int i=0; i < [cs count]; i++ ) {
             str = [cs objectAtIndex:i];
-            NSLog( @"CallStack = %@\n", str );
+            //NSLog( @"CallStack = %@\n", str );
         }
     }
 }
@@ -198,7 +198,7 @@ NSString *const newline = @"\n"/* Misc.newline */;
     defaultManager = [NSFileManager defaultManager];
     if (![defaultManager fileExistsAtPath:randomDir isDirectory:&isDir]) {
         if ([defaultManager createDirectoryAtPath:randomDir withIntermediateDirectories:YES attributes:nil error:&error] ) {
-            NSLog( @"Created \"%@\"", randomDir );
+            //NSLog( @"Created \"%@\"", randomDir );
             return randomDir;
         }
     }
@@ -259,7 +259,7 @@ NSString *const newline = @"\n"/* Misc.newline */;
             if ( obj != nil ) {
                 if ([obj isKindOfClass:[NSString class]]) {
                     [str appendString:obj];
-                    NSLog( @"String %d = %@\n", i, obj);
+                    //NSLog( @"String %d = %@\n", i, obj);
                 } else {
                     [str appendString:[obj description]];
                 }

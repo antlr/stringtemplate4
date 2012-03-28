@@ -134,7 +134,7 @@
 - (void) test01SimpleGroup
 {
     NSString *dir = [self getRandomDir];
-    NSString *a = @"a(x) ::= <<\nfoo\n>>\n";
+    NSString *a = @"a(x) ::= <<foo>>";
     [self writeFile:dir fileName:@"a.st" content:a];
     STGroup *group = [STGroupDir newSTGroupDir:dir];
     ST *st = [group getInstanceOf:@"a"];
@@ -158,9 +158,9 @@
 - (void) test03GroupWithTwoTemplates
 {
     NSString *dir = [self getRandomDir];
-    NSString *a = @"a(x) ::= <<\nfoo\n>>\n";
+    NSString *a = @"a(x) ::= <<foo>>";
     [self writeFile:dir fileName:@"a.st" content:a];
-    NSString *b = @"b() ::= \"bar\"\n";
+    NSString *b = @"b() ::= \"bar\"";
     [self writeFile:dir fileName:@"b.st" content:b];
     STGroup *group = [STGroupDir newSTGroupDir:dir];
     ST *st1 = [group getInstanceOf:@"a"];
@@ -174,19 +174,19 @@
 - (void) test04Subdir
 {
     NSString *dir = [self getRandomDir];
-    NSString *a = @"a(x) ::= <<\nfoo\n>>\n";
-    [self writeFile:dir fileName:@"a.st" content:a];
-    NSString *b = @"b() ::= \"bar\"\n";
-    [self writeFile:[NSString stringWithFormat:@"%@/subdir", dir] fileName:@"b.st" content:b];
+    [self writeFile:dir fileName:@"a.st" content:@"a(x) ::= <<foo>>"];
+    [self writeFile:[NSString stringWithFormat:@"%@/subdir", dir] fileName:@"b.st" content:@"b() ::= \"bar\""];
     STGroup *group = [STGroupDir newSTGroupDir:dir];
     ST *st1 = [group getInstanceOf:@"a"];
-    ST *st2 = [group getInstanceOf:@"subdir/b"];
-    NSString *expected = @"foobar";
-    NSString *result = [NSString stringWithFormat:@"%@%@", [st1 render], [st2 render]];
+    NSString *expected = @"foo";
+    NSString *result = [st1 render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
-    st2 = [group getInstanceOf:@"subdir/b"];
     expected = @"bar";
+    ST *st2 = [group getInstanceOf:@"subdir/b"];
     result = [st2 render];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    ST *st3 = [group getInstanceOf:@"/subdir/b"];
+    result = [st3 render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
     return;
 }
@@ -199,8 +199,8 @@
     STGroup *group = [STGroupDir newSTGroupDir:dir];
     ST *st = [group getInstanceOf:@"/subdir/a"];
     [st.impl dump];
-//    [st add:@"x" value:[AMutableArray arrayWithObjects:@"a", @"b", nil]];
-    [[st add:@"x" value:@"a"] add:@"x" value:@"b"];
+    [st add:@"x" value:[AMutableArray arrayWithObjects:@"a", @"b", nil]];
+//    [[st add:@"x" value:@"a"] add:@"x" value:@"b"];
     NSString *expected = @"ab";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
@@ -568,7 +568,7 @@
     [group setListener:errors];
     ST *st = [group getInstanceOf:@"g"];
     [st render];
-    NSString *expected = @"context [g] 1:1 attribute z isn't defined\n";
+    NSString *expected = @"context [/g] 1:1 attribute z isn't defined\n";
     NSString *result = [errors description];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
     return;
@@ -583,7 +583,7 @@
     ErrorBuffer *errors = [ErrorBuffer newErrorBuffer];
     [group setListener:errors];
     [group load];
-    NSString *expected = @"group.stg 2:28: mismatched input '{' expecting ID\n";
+    NSString *expected = @"group.stg 2:18: mismatched input '{' expecting ELLIPSIS\n";
     NSString *result = [errors description];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
     return;
@@ -598,7 +598,7 @@
     ErrorBuffer *errors = [ErrorBuffer newErrorBuffer];
     [group setListener:errors];
     [group load];
-    NSString *expected = @"group.stg 2:22: '=' came as a complete surprise to me\n";
+    NSString *expected = @"group.stg 2:21: 'x' came as a complete surprise to me\n";
     NSString *result = [errors description];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
     return;
@@ -617,6 +617,94 @@
     return;
 }
 
+- (void) test33UnloadingSimpleGroup
+{
+    NSString *dir = [self getRandomDir];
+    NSString *a = @"a(x) ::= <<foo>>\n";
+    NSString *b = @"b() ::= <<bar>>\n";
+    [self writeFile:dir fileName:@"a.st" content:a];
+    [self writeFile:dir fileName:@"b.st" content:b];
+    STGroup *group = [STGroupDir newSTGroupDir:dir];
+    [group load];
+    ST *st = [group getInstanceOf:@"a"];
+    NSUInteger originalHashCode = [st hash];
+    [group unload];
+    st = [group getInstanceOf:@"a"];
+    NSUInteger newHashCode = [st hash];
+    STAssertTrue( (originalHashCode == newHashCode), @"Expected \"YES\" BUT GOT \"NO\"" );
+    NSString *expected = @"foo";
+    NSString *result = [st render];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    st = [group getInstanceOf:@"b"];
+    expected = @"bar";
+    result = [st render];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    return;
+}
+
+- (void) test34UnloadingGroupFile
+{
+    NSString *dir = [self getRandomDir];
+    NSString *a = @"a(x) ::= <<foo>>\nb() ::= <<bar>>\n";
+    [self writeFile:dir fileName:@"a.stg" content:a];
+    STGroup *group = [STGroupFile newSTGroupFile:[dir stringByAppendingString:@"/a.stg"]];
+    [group load];
+    ST *st = [group getInstanceOf:@"a"];
+    NSInteger originalHashCode = (NSInteger) st;
+    [group unload];
+    st = [group getInstanceOf:@"a"];
+    NSInteger newHashCode = (NSInteger) st;
+    STAssertTrue( (originalHashCode == newHashCode), @"Expected \"YES\" BUT GOT \"NO\"" );
+    NSString *expected = @"foo";
+    NSString *result = [st render];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    st = [group getInstanceOf:@"b"];
+    expected = @"bar";
+    result = [st render];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    return;
+}
+
+- (void) test35GroupFileImport
+{
+    // /randomdir/group1.stg (a template) and /randomdir/group2.stg with b.
+    // group1 imports group2, a includes b
+    NSString *dir = [self getRandomDir];
+    NSString *groupFile1 = @"import \"group2.stg\"\na(x) ::= <<\nfoo<b()>\n>>\n";
+    [self writeFile:dir fileName:@"group1.stg" content:groupFile1];
+    NSString *groupFile2 = @"b() ::= \"bar\"\n";
+    [self writeFile:dir fileName:@"group2.stg" content:groupFile2];
+    STGroup *group1 = [STGroupDir newSTGroupDir:[NSString stringWithFormat:@"%@/group1.stg", dir]];
+    
+    // Is the imported template b found?
+    ST *stb = [group1 getInstanceOf:@"b"];
+    NSString *expected = @"bar";
+    NSString *result = [stb render];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    
+    // Is the include of b() resolved?
+    ST *sta = [group1 getInstanceOf:@"a"];
+    expected = @"foobar";
+    result = [sta render];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    
+    // Are the correct "ThatCreatedThisInstance" groups assigned
+    expected = @"group1";
+    result = [[sta groupThatCreatedThisInstance] getName];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    result = [[stb groupThatCreatedThisInstance] getName];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    
+    // Are the correct (native) groups assigned for the templates
+    expected = @"group1";
+    result = [sta.impl.nativeGroup getName];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    expected = @"group2";
+    result = [stb.impl.nativeGroup getName];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+}
+
+#ifdef DONTUSENOMO
 - (void) test33FullyQualifiedGetInstanceOf
 {
     NSString *dir = [self getRandomDir];
@@ -660,53 +748,47 @@
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
     return;
 }
+#endif
 
-- (void) test36UnloadingSimpleGroup
+#ifdef DONTUSEYET
+- (void) test36GetTemplateNames
 {
-    NSString *dir = [self getRandomDir];
-    NSString *a = @"a(x) ::= <<foo>>\n";
-    NSString *b = @"b() ::= <<bar>>\n";
-    [self writeFile:dir fileName:@"a.st" content:a];
-    [self writeFile:dir fileName:@"b.st" content:b];
-    STGroup *group = [STGroupDir newSTGroupDir:dir];
-    [group load];
-    ST *st = [group getInstanceOf:@"a"];
-    NSInteger originalHashCode = (NSInteger)st;
-    [group unload];
-    st = [group getInstanceOf:@"a"];
-    NSInteger newHashCode = (NSInteger)st;
-    STAssertTrue( (originalHashCode == newHashCode), @"Expected \"YES\" BUT GOT \"NO\"" );
-    NSString *expected = @"foo";
-    NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
-    st = [group getInstanceOf:@"b"];
-    expected = @"bar";
-    result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
-    return;
+    String templates =
+    "t() ::= \"foo\"\n" +
+    "main() ::= \"<t()>\"";
+    writeFile(tmpdir, "t.stg", templates);
+    
+    STGroup group = new STGroupFile(tmpdir + "/t.stg");
+    // try to get an undefined template.
+    // This will add an entry to the "templates" field in STGroup, however
+    // this should not be returned.
+    group.lookupTemplate("t2");
+    
+    Set<String> names = group.getTemplateNames();
+    
+    // Should only contain "t" and "main" (not "t2")
+    Assert.assertEquals(2, names.size());
+    Assert.assertTrue(names.contains("/t"));
+    Assert.assertTrue(names.contains("/main"));
 }
 
-- (void) test37UnloadingGroupFile
+- (void) test37UnloadWithImports
 {
-    NSString *dir = [self getRandomDir];
-    NSString *a = @"a(x) ::= <<foo>>\nb() ::= <<bar>>\n";
-    [self writeFile:dir fileName:@"a.stg" content:a];
-    STGroup *group = [STGroupFile newSTGroupFile:[dir stringByAppendingString:@"/a.stg"]];
-    [group load];
-    ST *st = [group getInstanceOf:@"a"];
-    NSInteger originalHashCode = (NSInteger) st;
-    [group unload];
-    st = [group getInstanceOf:@"a"];
-    NSInteger newHashCode = (NSInteger) st;
-    STAssertTrue( (originalHashCode == newHashCode), @"Expected \"YES\" BUT GOT \"NO\"" );
-    NSString *expected = @"foo";
-    NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
-    st = [group getInstanceOf:@"b"];
-    expected = @"bar";
-    result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
-    return;
+    writeFile(tmpdir, "t.stg",
+              "import \"g1.stg\"\n\nmain() ::= <<\nv1-<f()>\n>>");
+    writeFile(tmpdir, "g1.stg", "f() ::= \"g1\"");
+    writeFile(tmpdir, "g2.stg", "f() ::= \"g2\"\nf2() ::= \"f2\"\n");
+    STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir + "/t.stg");
+    ST st = group.getInstanceOf("main");
+    Assert.assertEquals("v1-g1", st.render());
+    
+    // Change the text of group t, including the imports.
+    writeFile(tmpdir, "t.stg",
+              "import \"g2.stg\"\n\nmain() ::= <<\nv2-<f()>;<f2()>\n>>");
+    group.unload();
+    st = group.getInstanceOf("main");
+    Assert.assertEquals("v2-g2;f2", st.render());
 }
+#endif
 
 @end
