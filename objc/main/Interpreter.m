@@ -353,6 +353,7 @@ static BOOL trace = NO;
 @synthesize sp;
 @synthesize current_ip;
 @synthesize nwline;
+@synthesize currentScope;
 @synthesize group;
 @synthesize locale;
 @synthesize errMgr;
@@ -458,7 +459,7 @@ static BOOL trace = NO;
 #endif
 
 /** Execute template self and return how many characters it wrote to out */
-- (NSInteger) exec:(Writer *)anSTWriter who:(ST *)aWho
+- (NSInteger) exec:(id<STWriter>)anSTWriter who:(ST *)aWho
 {
     if ( debug ) NSLog( @"[self exec:[aWho getName]]\n" );
     [self pushScope:aWho];
@@ -469,11 +470,9 @@ static BOOL trace = NO;
     }
     @catch (NSException *e) {
         StringWriter *sw = [[StringWriter newWriter] retain];
-#ifdef DONTUSEYET
         PrintWriter *pw = [[PrintWriter newWriter:sw] retain];
         [e printStackTrace:pw];
         [pw flush];
-#endif
         [errMgr runTimeError:self
                          who:aWho
                           ip:current_ip
@@ -489,7 +488,7 @@ static BOOL trace = NO;
 /**
  * Execute template self and return how many characters it wrote to out
  */
-- (NSInteger) _exec:(Writer *)anSTWriter who:(ST *)aWho
+- (NSInteger) _exec:(id<STWriter>)anSTWriter who:(ST *)aWho
 {
     NSInteger start = [anSTWriter index];
     NSInteger prevOpcode = 0;
@@ -859,7 +858,7 @@ static BOOL trace = NO;
         st = [aWho.groupThatCreatedThisInstance createStringTemplateInternally:[CompiledST newCompiledST]];
     }
     else {
-        st = [imported.nativeGroup createStringTemplateInternally:[CompiledST newCompiledST]];
+        st = [imported.nativeGroup createStringTemplateInternally:imported];
         st.groupThatCreatedThisInstance = group;
     }
 
@@ -991,7 +990,7 @@ static BOOL trace = NO;
 /** Write out an expression result that doesn't use expression options.
  *  E.g., <name>
  */
-- (NSInteger) writeObjectNoOptions:(Writer *)wr1 who:(ST *)aWho obj:(id)obj
+- (NSInteger) writeObjectNoOptions:(id<STWriter>)wr1 who:(ST *)aWho obj:(id)obj
 {
     if ( wr1 == nil ) @throw [NSException exceptionWithName:@"Cant send msg to nil" reason:@"wr1 is nil" userInfo:nil];
     int aStart = [wr1 index]; // track char we're about to write
@@ -1010,7 +1009,7 @@ static BOOL trace = NO;
 /** Write out an expression result that uses expression options.
  *  E.g., <names; separator=", ">
  */
-- (NSInteger) writeObjectWithOptions:(Writer *)anSTWriter who:(ST *)aWho obj:(id)obj options:(AMutableArray *)options
+- (NSInteger) writeObjectWithOptions:(id<STWriter>)anSTWriter who:(ST *)aWho obj:(id)obj options:(AMutableArray *)options
 {
     NSInteger start = [anSTWriter index];
     // precompute all option values (render all the way to strings)
@@ -1044,7 +1043,7 @@ static BOOL trace = NO;
 /** Generic method to emit text for an object. It differentiates
  *  between templates, iterable objects, and plain old Java objects (POJOs)
  */
-- (NSInteger) writeObject:(Writer *)anSTWriter who:(ST *)aWho obj:(id)obj options:(AMutableArray *)options
+- (NSInteger) writeObject:(id<STWriter>)anSTWriter who:(ST *)aWho obj:(id)obj options:(AMutableArray *)options
 {
     NSInteger n = 0;
     if ( obj == nil ) {
@@ -1085,7 +1084,7 @@ static BOOL trace = NO;
     return n;
 }
 
-- (NSInteger) writeIterator:(Writer *)anSTWriter who:(ST *)aWho obj:(id)obj options:(AMutableArray *)options
+- (NSInteger) writeIterator:(id<STWriter>)anSTWriter who:(ST *)aWho obj:(id)obj options:(AMutableArray *)options
 {
     if ( obj == nil ) return 0;
     NSInteger n = 0;
@@ -1113,7 +1112,7 @@ static BOOL trace = NO;
     return n;
 }
 
-- (NSInteger) writePOJO:(Writer *)anSTWriter obj:(id)obj options:(AMutableArray *)options {
+- (NSInteger) writePOJO:(id<STWriter>)anSTWriter obj:(id)obj options:(AMutableArray *)options {
     NSString *formatString = nil;
     NSString *v;
     id<AttributeRenderer> r = nil;
@@ -1527,7 +1526,7 @@ static BOOL trace = NO;
         @try {
             if ( wr1 == nil ) @throw [IllegalArgumentException newException:@"Writer wr1 is nil"];
             writerClass = [wr1 class];
-            stw = [[wr1 class] newWriter:(Writer *)sw];
+            stw = [[wr1 class] newWriter:(id<STWriter>)sw];
         }
         @catch (NSException *e) {
             stw = [AutoIndentWriter newWriter:sw];
@@ -1701,7 +1700,7 @@ static BOOL trace = NO;
             // rather than setting x to the template for later
             // eval.
 #pragma mark remove debugging print statements
-            NSLog( @"setting def arg %@ to %@", arg.name, defaultArgST );
+            // NSLog( @"setting def arg %@ to %@", arg.name, defaultArgST );
             NSString *defArgTemplate = arg.defaultValueToken.text;
             if ( [defArgTemplate hasPrefix:[NSString stringWithFormat:@"{%c(", group.delimiterStartChar]] &&
                 [defArgTemplate hasSuffix:[NSString stringWithFormat:@")%c}", group.delimiterStopChar]] ) {
@@ -1737,7 +1736,7 @@ static BOOL trace = NO;
  *  a String of these instance names in order from topmost to lowest;
  *  here that would be "[z y x]".
  */
-+ (NSString *)getEnclosingInstanceStackString:(InstanceScope *)scope
+- (NSString *)getEnclosingInstanceStackString:(InstanceScope *)scope
 {
     AMutableArray *templates = [Interpreter getEnclosingInstanceStack:scope topdown:YES];
     NSMutableString *buf = [NSMutableString stringWithCapacity:16];
@@ -1809,7 +1808,7 @@ static BOOL trace = NO;
         [self printForTrace:tr obj:obj];
     }
     
-    [tr appendFormat:@" ], calls=%@, sp=%d, nw=%d", [Interpreter getEnclosingInstanceStackString:currentScope], sp, nwline];
+    [tr appendFormat:@" ], calls=%@, sp=%d, nw=%d", [self getEnclosingInstanceStackString:currentScope], sp, nwline];
     NSString *s = [NSString stringWithString:tr];
     if (debug)
         [executeTrace addObject:s];

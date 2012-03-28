@@ -87,7 +87,7 @@
         interp = anInterp;
         if ( interp ) [interp retain];
         ip = anIp;
-        scope = nil;
+        scope = [anInterp.currentScope retain];
     }
     return self;
 }
@@ -99,7 +99,7 @@
         interp = anInterp;
         if ( interp ) [interp retain];
         ip = anIp;
-        scope = nil;
+        scope = [anInterp.currentScope retain];
     }
     return self;
 }
@@ -111,7 +111,7 @@
         interp = anInterp;
         if ( interp ) [interp retain];
         ip = anIp;
-        scope = nil;
+        scope = [anInterp.currentScope retain];
     }
     return self;
 }
@@ -123,7 +123,7 @@
         interp = anInterp;
         if ( interp ) [interp retain];
         ip = anIp;
-        scope = nil;
+        scope = [anInterp.currentScope retain];
     }
     return self;
 }
@@ -141,12 +141,23 @@
  */
 - (NSString *) getSourceLocation
 {
-    if (ip < 0)
+    if (ip < 0 || who.impl == nil)
         return nil;
-    Interval *I = [((ST *)who).impl.sourceMap objectAtIndex:ip];
-    if (I == nil)
+    NSInteger i, j;
+    Interval *intv;
+    j = [((ST *)who).impl.sourceMap count];
+    if ( ip < j ) {
+        intv = [((ST *)who).impl.sourceMap objectAtIndex:ip];
+    }
+    else {
+        for (i = 0; i < j; i++ ) {
+            intv = [((ST *)who).impl.sourceMap objectAtIndex:i];
+            if ( ip >= intv.a && ip <= intv.b ) break;
+        }
+    }
+    if (intv == nil)
         return nil;
-    NSInteger i = I.a;
+    i = intv.a;
     Coordinate *loc = [Misc getLineCharPosition:((ST *)who).impl.template index:i];
     return [loc description];
 }
@@ -156,12 +167,15 @@
     NSMutableString *buf = [NSMutableString stringWithCapacity:16];
     NSString *loc = [self getSourceLocation];
     if (who != nil) {
-        [buf appendFormat:@"context [%@]", ((interp != nil)?[Interpreter getEnclosingInstanceStackString:scope]:@"")];
+        [buf appendString:@"context ["];
+        if (interp != nil )
+            [buf appendString:[interp getEnclosingInstanceStackString:scope]];
+        [buf appendString:@"]"];
     }
     if (loc != nil) {
         [buf appendFormat:@" %@", loc];
     }
-    [buf appendFormat:@" %@", [super description]];
+    [buf appendFormat:@" %@\n", [super description]];
     return [buf description];
 }
 

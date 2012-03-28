@@ -121,7 +121,7 @@
 {
     StringWriter *sw = [StringWriter stringWithCapacity:16];
     PrintWriter  *pw = [PrintWriter newWriter:sw];
-    NSMutableString *msg = [NSMutableString stringWithFormat:@"%@%@%@%@", [ErrorType ErrorNum:error], arg, arg2, arg3];
+    NSMutableString *msg = [NSMutableString stringWithFormat:[ErrorType ErrorNum:error], arg, arg2, arg3];
     [pw print:msg];
     if (cause != nil) {
         [pw print:@"\nCaused by: "];
