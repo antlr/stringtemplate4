@@ -69,7 +69,6 @@ tokens { ID; WS; STRING; ANONYMOUS_TEMPLATE; COMMENT; LINE_COMMENT; BIGSTRING; B
 #import "Misc.h"
 #import "GroupLexer.h"
 #import "FormalArgument.h"
-#import "ACNumber.h"
 }
 
 @lexer::header {
