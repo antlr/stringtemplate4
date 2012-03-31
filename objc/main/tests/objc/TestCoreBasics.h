@@ -62,6 +62,7 @@
 - (void) test06AttrIsArray;
 - (void) test07Prop;
 - (void) test08PropWithNoAttr;
+- (void) test08aMapAcrossDictionaryUsesKeys;
 - (void) test09STProp;
 - (void) test10BooleanISProp;
 - (void) test11BooleanHASProp;

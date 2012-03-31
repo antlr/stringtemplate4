@@ -135,7 +135,7 @@
     STGroup *g = [STGroup newSTGroup];
     g.errMgr = [ErrorManager newErrorManagerWithListener:errors];
     CompiledST *code = [[Compiler newCompiler:g] compile:aTemplate];
-    NSString *expected = @"1:3: anonymous template has 0 arg(s) but mapped across 1 value(s)";
+    NSString *expected = @"1:3: anonymous template has 0 arg(s) but mapped across 1 value(s)\n";
     NSString *result = [errors description];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
     return;
@@ -148,7 +148,7 @@
     STGroup *g = [STGroup newSTGroup];
     g.errMgr = [ErrorManager newErrorManagerWithListener:errors];
     CompiledST *code = [[Compiler newCompiler:g] compile:aTemplate];
-    NSString *expected = @"1:5: anonymous template has 1 arg(s) but mapped across 2 value(s)";
+    NSString *expected = @"1:5: anonymous template has 1 arg(s) but mapped across 2 value(s)\n";
     NSString *result = [errors description];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
     return;
@@ -161,7 +161,7 @@
     STGroup *g = [STGroup newSTGroup];
     g.errMgr = [ErrorManager newErrorManagerWithListener:errors];
     CompiledST *code = [[Compiler newCompiler:g] compile:aTemplate];
-    NSString *expected = @"1:11: anonymous template has 0 arg(s) but mapped across 1 value(s)";
+    NSString *expected = @"1:11: anonymous template has 0 arg(s) but mapped across 1 value(s)\n";
     STAssertTrue( [expected isEqualTo:[errors description]], @"Expected \"%@\" but had \"%@\"", expected, [errors description] );
     return;
 }
@@ -498,7 +498,7 @@
     NSString *asmExpected = @"write_str 0, new 1 0, write";
     NSString *asmResult = [code dis_instrs];
     STAssertTrue( [asmExpected isEqualTo:asmResult], @"Expected \"%@\" but had \"%@\"", asmExpected, asmResult );
-    NSString *stringsExpected = @"[x:, region__/a__r]";
+    NSString *stringsExpected = @"[x:, /region__/a__r]";
     NSString *stringsResult = [[Strings newStringsWithArray:code.strings] description];
     STAssertTrue( [stringsExpected isEqualTo:stringsResult], @"Expected \"%@\" but had \"%@\"", stringsExpected, stringsResult );
     return;

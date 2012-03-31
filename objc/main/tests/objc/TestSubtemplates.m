@@ -38,9 +38,9 @@
     [group defineTemplate:@"test" argsS:@"emails" template:@"<emails:{n|<n>}>!"];
     ST *st = [group getInstanceOf:@"test"];
     AMutableDictionary *emails = [AMutableDictionary dictionaryWithCapacity:10];
-    [emails setObject:@"parrt" forKey:@"Ter"];
-    [emails setObject:@"tombu" forKey:@"Tom"];
-    [emails setObject:@"dmose" forKey:@"Dan"];
+    [emails setObject:@"Ter" forKey:@"parrt"];
+    [emails setObject:@"Tom" forKey:@"tombu"];
+    [emails setObject:@"Dan" forKey:@"dmose"];
     [st add:@"emails" value:emails];
     NSString *expected = @"parrttombudmose!";
     NSString *result = [st render];
@@ -178,7 +178,7 @@
     [innerGroup defineTemplate:@"test" argsS:@"m" template:@"<m:samegroup()>"];
     [innerGroup defineTemplate:@"samegroup" argsS:@"x" template:@"hi "];
     ST *st = [innerGroup getInstanceOf:@"test"];
-    [st add:@"m" value:[AMutableArray arrayWithObjects:1, 2, 3, nil]];
+    [st add:@"m" value:[AMutableArray arrayWithObjects:[ACNumber numberWithInteger:1], [ACNumber numberWithInteger:2], [ACNumber numberWithInteger:3], nil]];
     STGroup *outerGroup = [STGroup newSTGroup];
     [outerGroup defineTemplate:@"errorMessage" argsS:@"x" template:@"<x>"];
     ST *outerST = [outerGroup getInstanceOf:@"errorMessage"];

@@ -979,19 +979,19 @@
 - (void) test56CharLiterals
 {
     ST *st = [ST newSTWithTemplate:@"Foo <\\n><\\n><\\t> bar\n"];
-    StringWriter *sw = [StringWriter newStringWriter];
+    StringWriter *sw = [StringWriter newWriter];
     [st write:[[AutoIndentWriter alloc] init:sw newline:@"\n"]]; // force \n as newline
     NSString *result = [sw description];
     NSString *expected = @"Foo \n\n\t bar\n";     // expect \n in output
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
     st = [ST newSTWithTemplate:[NSString stringWithFormat:@"Foo <\\n><\\t> bar%@", newline]];
-    sw = [StringWriter newStringWriter];
+    sw = [StringWriter newWriter];
     [st write:[[AutoIndentWriter alloc] init:sw newline:@"\n"]]; // force \n as newline
     expected = @"Foo \n\t bar\n";     // expect \n in output
     result = [sw description];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
     st = [ST newSTWithTemplate:@"Foo<\\ >bar<\\n>"];
-    sw = [StringWriter newStringWriter];
+    sw = [StringWriter newWriter];
     [st write:[[AutoIndentWriter alloc] init:sw newline:@"\n"]]; // force \n as newline
     result = [sw description];
     expected = @"Foo bar\n"; // forced \n

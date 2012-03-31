@@ -52,7 +52,7 @@
 - (void) testWriterWithCapacity
 {
     Writer *aWriter;
-    aWriter = [Writer newWriterWithCapacity:16];
+    aWriter = [Writer newWriter];
     NSInteger len = [aWriter count];
     STAssertTrue( (len == 0), @"Expected len = 0, got len = %d", len);
     STAssertTrue( (len == 0), @"Expected len = 0, got len = %d", len);
