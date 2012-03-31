@@ -55,28 +55,9 @@
     return [[STCompiletimeMessage alloc] init:anError srcName:aSrcName templateToken:aTemplateToken t:t cause:aCause arg:anArg arg2:anArg2];
 }
 
-+ (id) newMessage:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause argN:(NSInteger)anArg arg2N:(NSInteger)anArg2
-{
-    return [[STCompiletimeMessage alloc] init:anError srcName:aSrcName templateToken:aTemplateToken t:t cause:aCause argN:anArg arg2N:anArg2];
-}
-
 - (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause arg:(id)anArg arg2:(id)anArg2
 {
     self=[super init:anError who:nil cause:aCause arg:anArg arg2:anArg2 arg3:nil];
-    if ( self != nil ) {
-        templateToken = aTemplateToken;
-        if ( templateToken ) [templateToken retain];
-        token = t;
-        if ( token ) [token retain];
-        srcName = aSrcName;
-        if ( srcName ) [srcName retain];
-    }
-    return self;
-}
-
-- (id) init:(ErrorTypeEnum)anError srcName:(NSString *)aSrcName templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t cause:(NSException *)aCause argN:(NSInteger)anArg arg2N:(NSInteger)anArg2
-{
-    self=[super init:anError who:nil cause:aCause argN:anArg arg2N:anArg2 arg3:nil];
     if ( self != nil ) {
         templateToken = aTemplateToken;
         if ( templateToken ) [templateToken retain];

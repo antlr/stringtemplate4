@@ -26,6 +26,7 @@
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #import "NumberRenderer.h"
+#import <ANTLR/ACNumber.h>
 
 @implementation NumberRenderer
 

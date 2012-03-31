@@ -64,7 +64,6 @@
 #import "PrintWriter.h"
 #import "NoIndentWriter.h"
 #import "GroupParser.h"
-#import "ACNumber.h"
 
 @implementation Interpreter_Anon1
 
@@ -915,9 +914,9 @@ static BOOL trace = NO;
                          who:aWho
                           ip:current_ip
                        error:ARGUMENT_COUNT_MISMATCH
-                        argN:nargs
+                        arg:[ACNumber numberWithInteger:nargs]
                         arg2:st.impl.name
-                       arg3N:nformalArgs];
+                       arg3:[ACNumber numberWithInteger:nformalArgs]];
     }
     NSString *argName;
 /*
@@ -946,6 +945,7 @@ static BOOL trace = NO;
     NSInteger nformalArgs = 0;
     if ( st.impl.formalArguments != nil )
         nformalArgs = [st.impl.formalArguments count];
+    //    NSInteger firstArg = sp - nargs;
     NSInteger firstArg = sp - (nargs - 1);
     NSInteger numToStore = (nargs < nformalArgs)?nargs:nformalArgs;
     if ( st.impl.isAnonSubtemplate )
@@ -957,9 +957,9 @@ static BOOL trace = NO;
                          who:aWho
                           ip:current_ip
                        error:ARGUMENT_COUNT_MISMATCH
-                        argN:nargs
+                        arg:[ACNumber numberWithInteger:nargs]
                         arg2:st.impl.name
-                       arg3N:nformalArgs];
+                       arg3:[ACNumber numberWithInteger:nformalArgs]];
     }
     if ( st.impl.formalArguments == nil ) return;
 
@@ -1263,8 +1263,8 @@ static BOOL trace = NO;
                          who:aWho
                           ip:current_ip
                        error:MAP_ARGUMENT_COUNT_MISMATCH
-                        argN:numExprs
-                       arg2N:nformalArgs];
+                        arg:[ACNumber numberWithInteger:numExprs]
+                       arg2:[ACNumber numberWithInteger:nformalArgs]];
         // TODO just fill first n
         // truncate arg list to match smaller size
         NSInteger cnt = [formalArgumentNames count];
@@ -1307,7 +1307,7 @@ static BOOL trace = NO;
 - (void) setFirstArgument:(ST *)aWho st:(ST *)st attr:(id)attr
 {
     if (st.impl.formalArguments == nil) {
-        [errMgr runTimeError:self who:aWho ip:current_ip error:ARGUMENT_COUNT_MISMATCH argN:1 arg2:(id)st.impl.name arg3N:0];
+        [errMgr runTimeError:self who:aWho ip:current_ip error:ARGUMENT_COUNT_MISMATCH arg:[ACNumber numberWithInteger:1] arg2:(id)st.impl.name arg3:[ACNumber numberWithInteger:0]];
         return;
     }
     if ( [st.locals count] == 0 )

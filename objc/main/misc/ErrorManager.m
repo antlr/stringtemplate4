@@ -65,7 +65,8 @@
 - (void) IOError:(STMessage *)aMsg
 {
     if (aMsg.error != CANT_LOAD_GROUP_FILE) {
-        NSLog(@"%@", [ErrorType ErrorNum:aMsg.error]);
+        //   NSLog(@"%@", [ErrorType ErrorNum:aMsg.error]);
+        NSLog([ErrorType ErrorNum:aMsg.error], aMsg.arg, aMsg.arg2, aMsg.arg3);
     }
     else {
         NSLog([ErrorType ErrorNum:aMsg.error], aMsg.arg);
@@ -74,7 +75,7 @@
 
 - (void) internalError:(STMessage *)aMsg
 {
-    NSLog(@"%@", [ErrorType ErrorNum:aMsg.error]);
+    NSLog([ErrorType ErrorNum:aMsg.error], aMsg.arg );
 }
 
 - (void) error:(NSString *)s
@@ -185,14 +186,6 @@ static ErrorManager *DEFAULT_ERR_MGR;
     [listener compileTimeError:[STCompiletimeMessage newMessage:anError srcName:srcName templateToken:aTemplateToken t:t cause:nil arg:arg arg2:arg2]];
 }
 
-- (void) compileTimeError:(ErrorTypeEnum)anError templateToken:(CommonToken *)aTemplateToken t:(CommonToken *)t argN:(NSInteger)arg arg2N:(NSInteger)arg2
-{
-    NSString *srcName = [t.input getSourceName];
-    if (srcName != nil)
-        srcName = [Misc getFileName:srcName];
-    [listener compileTimeError:[STCompiletimeMessage newMessage:anError srcName:srcName templateToken:aTemplateToken t:t cause:nil argN:arg arg2N:arg2]];
-}
-
 - (void) lexerError:(NSString *)srcName msg:(NSString *)aMsg templateToken:(CommonToken *)aTemplateToken e:(RecognitionException *)e
 {
     [listener compileTimeError:[STLexerMessage newMessage:srcName msg:aMsg templateToken:aTemplateToken cause:e]];
@@ -228,19 +221,9 @@ static ErrorManager *DEFAULT_ERR_MGR;
     [listener runTimeError:[STRuntimeMessage newMessage:interp error:anError ip:ip who:aWho cause:nil arg:arg arg2:arg2]];
 }
 
-- (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)anError argN:(NSInteger)arg arg2N:(NSInteger)arg2
-{
-    [listener runTimeError:[STRuntimeMessage newMessage:interp error:anError ip:ip who:aWho cause:nil argN:arg arg2N:arg2]];
-}
-
 - (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)anError arg:(id)arg arg2:(id)arg2 arg3:(id)arg3
 {
     [listener runTimeError:[STRuntimeMessage newMessage:interp error:anError ip:ip who:aWho cause:nil arg:arg arg2:arg2 arg3:arg3]];
-}
-
-- (void) runTimeError:(Interpreter *)interp who:(ST *)aWho ip:(NSInteger)ip error:(ErrorTypeEnum)anError argN:(NSInteger)arg arg2:(id)arg2 arg3N:(NSInteger)arg3
-{
-    [listener runTimeError:[STRuntimeMessage newMessage:interp error:anError ip:ip who:aWho cause:nil argN:arg arg2:arg2 arg3N:arg3]];
 }
 
 - (void) IOError:(ST *)aWho error:(ErrorTypeEnum)anError e:(NSException *)e

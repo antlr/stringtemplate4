@@ -70,11 +70,6 @@
     return [[STMessage alloc] init:anError who:aWho cause:aCause arg:arg arg2:arg2 arg3:arg3];
 }
 
-+ (id) newMessage:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause argN:(NSInteger)arg arg2N:(NSInteger)arg2 arg3:(id)arg3
-{
-    return [[STMessage alloc] init:anError who:aWho cause:aCause argN:arg arg2N:arg2 arg3:arg3];
-}
-
 - (id) init:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause arg:(id)anArg arg2:(id)anArg2 arg3:(id)anArg3
 {
     self=[super init];
@@ -86,22 +81,6 @@
         if ( cause ) [cause retain];
         arg = anArg;
         arg2 = anArg2;
-        arg3 = anArg3;
-    }
-    return self;
-}
-
-- (id) init:(ErrorTypeEnum)anError who:(ST *)aWho cause:(NSException *)aCause argN:(NSInteger)anArg arg2N:(NSInteger)anArg2 arg3:(id)anArg3
-{
-    self=[super init];
-    if ( self != nil ) {
-        error = anError;
-        who = aWho;
-        if ( who ) [who retain];
-        cause = aCause;
-        if ( cause ) [cause retain];
-        arg = (id) anArg;
-        arg2 = (id) anArg2;
         arg3 = anArg3;
     }
     return self;
