@@ -142,6 +142,7 @@ static BOOL trackCreationEvents = NO;
 
 @synthesize encoding; 
 @synthesize imports;
+@synthesize importsToClearOnUnload;
 @synthesize delimiterStartChar;
 @synthesize delimiterStopChar;
 @synthesize templates;
@@ -237,8 +238,8 @@ static BOOL trackCreationEvents = NO;
         encoding = NSUTF8StringEncoding;
         delimiterStartChar = aDelimiterStartChar;
         delimiterStopChar = aDelimiterStopChar;
-        imports = [[AMutableDictionary dictionaryWithCapacity:16] retain];
-        importsToClearOnUnload = [[AMutableDictionary dictionaryWithCapacity:16] retain];
+        imports = [[AMutableArray arrayWithCapacity:16] retain];
+        importsToClearOnUnload = [[AMutableArray arrayWithCapacity:16] retain];
         templates = [[AMutableDictionary dictionaryWithCapacity:16] retain];
         dictionaries = [[AMutableDictionary dictionaryWithCapacity:16] retain];
         adaptors = [[[STGroup_Anon1 newSTGroup_Anon1] getDict] retain];
@@ -370,10 +371,8 @@ static BOOL trackCreationEvents = NO;
     for ( imp in imports ) {
         [imp unload];
     }
-    for ( imp in importsToClearOnUnload ) {
-        [imports removeObject:imp];
-    }
-    [importsToClearOnUnload removeAllObjects];
+    if ( [imports count] > 0) [imports removeAllObjects];
+    if ( [importsToClearOnUnload count] > 0) [importsToClearOnUnload removeAllObjects];
 }
 
 /** Load st from disk if dir or load whole group file if .stg file (then
@@ -672,11 +671,12 @@ static BOOL trackCreationEvents = NO;
     
     STGroup *g = nil;
     // it's a relative name; search path is working dir, g.stg's dir, CLASSPATH
-    //NSURL *thisRoot = [self getRootDirURL];
-    NSString *thisRoot = @"~/";
-    NSString *fileUnderRoot = nil;
-    //System.out.println("thisRoot="+thisRoot);
-    fileUnderRoot = [thisRoot stringByAppendingPathComponent:aFileName];
+    NSString *rootPath = [[self getRootDirURL] path];
+    NSString *fileUnderRoot = [[self getRootDirURL] path];
+    if ( [fileUnderRoot hasSuffix:@".stg"] ) {
+        fileUnderRoot = [Misc getParent:fileUnderRoot];
+    }
+    fileUnderRoot = [fileUnderRoot stringByAppendingPathComponent:aFileName];
     fileUnderRoot = [fileUnderRoot stringByStandardizingPath];
     if ( isTemplateFile ) {
         g = [STGroup newSTGroup];
@@ -751,7 +751,7 @@ static BOOL trackCreationEvents = NO;
     if ( g == nil ) return;
     [imports addObject:g];
     if (clearOnUnload) {
-        [imports addObject:g];
+        [importsToClearOnUnload addObject:g];
     }
     
 }

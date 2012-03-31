@@ -216,6 +216,7 @@
 
 @property (assign) NSStringEncoding encoding; 
 @property (retain) AMutableArray *imports;
+@property (retain) AMutableArray *importsToClearOnUnload;
 @property (assign) unichar delimiterStartChar;
 @property (assign) unichar delimiterStopChar;
 @property (retain) AMutableDictionary *templates;
