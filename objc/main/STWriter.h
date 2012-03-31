@@ -40,7 +40,8 @@
 - (NSString *) popIndentation;
 - (void) pushAnchorPoint;
 - (void) popAnchorPoint;
-- (NSInteger) write:(NSString *)str;
+- (NSInteger) write:(char)c;
+- (NSInteger) writeStr:(NSString *)str;
 - (NSInteger) write:(NSString *)str wrap:(NSString *)wrap;
 - (NSInteger) writeWrap:(NSString *)wrap;
 - (NSInteger) writeSeparator:(NSString *)str;

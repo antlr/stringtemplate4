@@ -99,7 +99,7 @@
 
 - (NSString *) toString
 {
-    [self description];
+    return [self description];
 }
 
 @end
