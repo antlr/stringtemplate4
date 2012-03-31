@@ -32,6 +32,11 @@
 #import "GroupLexer.h"
 #import "GroupParser.h"
 
+/** A directory or directory tree full of templates and/or group files.
+ *  We load files on-demand. Dir search path: current working dir then
+ *  CLASSPATH (as a resource).  Do not look for templates outside of this dir
+ *  subtree (except via imports).
+ */
 @implementation STGroupDir
 
 @synthesize groupDirName;
@@ -65,6 +70,7 @@
 - (id) init:(NSString *)aDirName encoding:(NSStringEncoding)theEncoding delimiterStartChar:(unichar)aDelimiterStartChar delimiterStopChar:(unichar)aDelimiterStopChar
 {
     BOOL fExists, isDir;
+    NSString *dir;
     self=[super init:aDelimiterStartChar delimiterStopChar:aDelimiterStopChar];
     if ( self != nil ) {
         groupDirName = aDirName;
@@ -90,10 +96,17 @@
                 root = [cl getResource:aDirName];
             }
 #endif
-            //root = [NSURL fileURLWithPath:[aDirName stringByDeletingLastPathComponent]];
-            root = [NSURL fileURLWithPath:aDirName];
-            //groupDirName = [aDirName lastPathComponent];
-            if ( STGroup.verbose ) NSLog(@"[STGroupDir %@] found via CLASSPATH at %@", aDirName, [root path]);
+            if ( fExists ) {
+                if ( [aDirName hasSuffix:@".stg"] ) {
+                    //groupDirName = [aDirName lastPathComponent];
+                    root = [NSURL fileURLWithPath:[Misc getParent:aDirName]];
+                }
+                else {
+                    root = [NSURL fileURLWithPath:aDirName];
+                }
+                if ( STGroup.verbose )
+                    NSLog(@"[STGroupDir %@] found via CLASSPATH at %@", aDirName, [root path]);
+            }
             if (root == nil) 
                     @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"No such directory: %@", aDirName]];
         }
@@ -130,23 +143,34 @@
     if ( STGroup.verbose ) NSLog(@"[STGroupDir load:%@]\n", aName);
     NSString *parent = [Misc getParent:aName];
     NSString *prefix = [Misc getPrefix:aName];
-    //NSLog( @"parent = \"%@\"\nprefix = \"%@\"\nroot = \"%@\"\n", parent, prefix, root );
+    if ( STGroup.verbose )
+        NSLog( @"parent = \"%@\"\nprefix = \"%@\"\nroot = \"%@\"\n", parent, prefix, root );
     //    if ( [parent length] == 0 )
     //        no need to check for a group file as name has no parent
     //        return [self loadTemplateFile:@"/" fileName:[NSString stringWithFormat:@"%@.st", aName]];
     //    }
     NSURL *groupFileURL = nil;
+    NSString *groupFile = nil;
     @try {
         // fileName = [NSString stringWithFormat:@"%@.stg", parent] stringByStandardizingPath];
         // groupFileURL = [NSURL fileURLWithPath:[[root URLByAppendingPathComponent:@"%@.stg", parent] stringByStandardizingPath]];
-        groupFileURL = [[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@%@.stg", [root path], parent]] URLByStandardizingPath];
+        groupFile = [NSString stringWithString:groupDirName];
+        if ( [groupFile hasSuffix:@".stg"] ) {
+            groupFileURL = [[NSURL fileURLWithPath:groupFile] URLByStandardizingPath];
+        }
+        else {
+            groupFileURL = [[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@%@.stg", [root path], parent]] URLByStandardizingPath];
+        }
+        NSLog( @"groupFileURL = %@\n", [groupFileURL path] );
     }
     @catch (MalformedURLException *e) {
         [errMgr internalError:nil msg:[NSString stringWithFormat:@"bad URL: %@%@.stg", [root path], parent] e:e];
         return nil;
     }
     if ( [Misc urlExists:groupFileURL] ) {
-        [self loadGroupFile:prefix fileName:[NSString stringWithFormat:@"%@%@.stg", [root path], parent]];
+        NSLog( @"groupFileURL = %@\nroot+parent = %@%@\n", groupFileURL, [root path], parent );
+        //        [self loadGroupFile:prefix fileName:[NSString stringWithFormat:@"%@%@.stg", [root path], parent]];
+        [self loadGroupFile:prefix fileName:[groupFileURL path]];
         return [self rawGetTemplate:aName];
     }
     else {
@@ -210,7 +234,7 @@
 
 - (NSString *) getFileName
 {
-    return [root lastPathComponent];
+    return [groupDirName lastPathComponent];
 }
 
 - (NSURL *) getRootDirURL
