@@ -78,8 +78,8 @@
     self=[super init];
     if ( self != nil ) {
         dict = [[AMutableDictionary dictionaryWithCapacity:16] retain];
-        [dict setObject:@"0" forKey:@"i0"];
-        [dict setObject:@"1"  forKey:@"i"];
+        [dict setObject:[ACNumber numberWithInteger:0] forKey:@"i0"];
+        [dict setObject:[ACNumber numberWithInteger:1]  forKey:@"i"];
     }
     return self;
 }
@@ -343,6 +343,7 @@ static NSInteger count[DEF_MAX_BYTECODE+1];
 #endif
 static AMutableDictionary *predefinedAnonSubtemplateAttributes;
 static Interpreter_Anon3 *Option;
+//static OptionEnum Option;
 static NSInteger DEFAULT_OPERAND_STACK_SIZE;
 /** Dump bytecode instructions as we execute them? mainly for parrt */
 static BOOL trace = NO;
@@ -1197,7 +1198,7 @@ static BOOL trace = NO;
     
     while ( [iter hasNext] ) {
         iterValue = [iter nextObject];
-        if ( iterValue == nil ) {
+        if ( iterValue == nil || iterValue == [NSNull null] ) {
             [mapped addObject:nil];
             continue;
         }
@@ -1207,8 +1208,8 @@ static BOOL trace = NO;
         ST *st = [group createStringTemplateInternallyWithProto:proto];
         [self setFirstArgument:aWho st:st attr:iterValue];
         if ( st.impl.isAnonSubtemplate ) {
-            [st rawSetAttribute:@"i0" value:[NSString stringWithFormat:@"%d", i0]];
-            [st rawSetAttribute:@"i" value:[NSString stringWithFormat:@"%d", i]];
+            [st rawSetAttribute:@"i0" value:[ACNumber numberWithInteger:i0]];
+            [st rawSetAttribute:@"i" value:[ACNumber numberWithInteger:i]];
         }
         [mapped addObject:st];
         i0++;
@@ -1283,8 +1284,8 @@ static BOOL trace = NO;
     while (YES) {
         NSInteger numEmpty = 0;
         ST *embedded = [group createStringTemplateInternallyWithProto:prototype];
-        [embedded rawSetAttribute:@"i0" value:[NSString stringWithFormat:@"%d", i]];
-        [embedded rawSetAttribute:@"i"  value:[NSString stringWithFormat:@"%d", i + 1]];
+        [embedded rawSetAttribute:@"i0" value:[ACNumber numberWithInteger:i]];
+        [embedded rawSetAttribute:@"i"  value:[ACNumber numberWithInteger:i + 1]];
         for (NSInteger a = 0; a < numExprs; a++) {
             ArrayIterator *it = (ArrayIterator *)[exprs objectAtIndex:a];
             if ( it != nil && [it hasNext] ) {
