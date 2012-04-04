@@ -276,8 +276,8 @@
 {
     NSString * template = @"<foo:{f | <f>}>"; // checks field and method getter
     ST * st = [ST newSTWithTemplate:template];
-    //[st add:@"foo" value:[AMutableDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"b", @"d", nil] forKeys:[NSArray arrayWithObjects:@"a", @"c", nil]]];
-    [st add:@"foo" value:[AMutableDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"a", @"c", nil] forKeys:[NSArray arrayWithObjects:@"b", @"d", nil]]];
+    [st add:@"foo" value:[AMutableDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"b", @"d", nil] forKeys:[NSArray arrayWithObjects:@"a", @"c", nil]]];
+    //[st add:@"foo" value:[AMutableDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"a", @"c", nil] forKeys:[NSArray arrayWithObjects:@"b", @"d", nil]]];
     NSString * expected = @"ac";
     NSString * result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
@@ -438,16 +438,42 @@
     return;
 }
 
+- (void) test19IncludeWithNestedArgs
+{
+    NSString *aTemplate = @"load <box(foo(\"arg\"))>;";
+    ST *st = [ST newSTWithTemplate:aTemplate];
+    [st.impl.nativeGroup defineTemplate:@"box" argsS:@"y" template:@"kewl <y> daddy"];
+    [st.impl.nativeGroup defineTemplate:@"foo" argsS:@"x" template:@"blech <x>"];
+    [st add:@"name" value:@"Ter"];
+    NSString *expected = @"load kewl blech arg daddy;";
+    NSString *result = [st render];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    return;
+}
+
 //#ifdef DONTUSEYET
+- (void) testPassThru
+{
+    NSString *templates = @"a(x,y) ::= \"<b(...)>\"\nb(x,y) ::= \"<x><y>\"\n";
+    STGroupString *group = [STGroupString newSTGroupString:templates];
+    ST *st = [group getInstanceOf:@"a"];
+    [st add:@"x" value:@"x"];
+    [st add:@"y" value:@"y"];
+    NSString *expected = @"xy";
+    NSString *result = [st render];
+    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+}
+//#endif
+
 - (void) test18aPassThruWithDefaultValue
 {
     // should not set y when it sees "no value" from above
     NSString *templates = @"a(x,y) ::= \"<b(...)>\"\nb(x,y={99}) ::= \"<x><y>\"\n";
     STGroupString *group = [STGroupString newSTGroupString:templates];
-    ST *a = [group getInstanceOf:@"a"];
-    [a add:@"x" value:@"x"];
+    ST *st = [group getInstanceOf:@"a"];
+    [st add:@"x" value:@"x"];
     NSString *expected = @"x99";
-    NSString *result = [a render];
+    NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
     return;
 }
@@ -457,10 +483,10 @@
     // should not set y when it sees "no definition" from above
     NSString *templates = @"a(x) ::= \"<b(...)>\"\nb(x,y={99}) ::= \"<x><y>\"\n";
     STGroupString *group = [STGroupString newSTGroupString:templates];
-    ST *a = [group getInstanceOf:@"a"];
-    [a add:@"x" value:@"x"];
+    ST *st = [group getInstanceOf:@"a"];
+    [st add:@"x" value:@"x"];
     NSString *expected = @"x99";
-    NSString *result = [a render];
+    NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
     return;
 }
@@ -487,20 +513,6 @@
     [a add:@"y" value:@"y"];
     NSString *expected = @"199";
     NSString *result = [a render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
-    return;
-}
-//#endif
-
-- (void) test19IncludeWithNestedArgs
-{
-    NSString *aTemplate = @"load <box(foo(\"arg\"))>;";
-    ST *st = [ST newSTWithTemplate:aTemplate];
-    [st.impl.nativeGroup defineTemplate:@"box" argsS:@"y" template:@"kewl <y> daddy"];
-    [st.impl.nativeGroup defineTemplate:@"foo" argsS:@"x" template:@"blech <x>"];
-    [st add:@"name" value:@"Ter"];
-    NSString *expected = @"load kewl blech arg daddy;";
-    NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
     return;
 }
@@ -563,7 +575,7 @@
     [st add:@"name" value:@"Ter"];
     [st add:@"name" value:@"Tom"];
     [st add:@"name" value:@"Sumana"];
-    //    [st.impl dump];
+//    [st.impl dump];
     NSString *expected = @"*Ter**Tom**Sumana*";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
@@ -647,6 +659,7 @@
     [st add:@"name" value:@"Tom"];
     [st add:@"name" value:nil];
     [st add:@"name" value:@"Sumana"];
+    [st.impl dump];
     NSString *expected = @"1:Ter, 2:Tom, 3:Sumana";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
