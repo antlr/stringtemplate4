@@ -244,13 +244,11 @@ static Instruction *instructions[INSTR_ARRAY_SIZE];
     instructions[INSTR_BRF]                 = [[Instruction newInstruction:@"brf" a:T_ADDR] retain];
     instructions[INSTR_OPTIONS]             = [[Instruction newInstruction:@"options"] retain];
     instructions[INSTR_ARGS]                = [[Instruction newInstruction:@"args"] retain];
-    instructions[INSTR_PASSTHRU]            = [[Instruction newInstruction:@"passthru"] retain];
-    instructions[INSTR_PASSTHRU_IND]        = nil; //[[Instruction newInstruction:@"passthru_ind"] retain];
+    instructions[INSTR_PASSTHRU]            = [[Instruction newInstruction:@"passthru" a:T_ADDR] retain];
+    instructions[INSTR_PASSTHRU_IND]        = nil; //[[Instruction newInstruction:@"passthru_ind" a:T_INT] retain];
     instructions[INSTR_LIST]                = [[Instruction newInstruction:@"list"] retain];
     instructions[INSTR_ADD]                 = [[Instruction newInstruction:@"add"] retain];
     instructions[INSTR_TOSTR]               = [[Instruction newInstruction:@"tostr"] retain];
-    instructions[INSTR_PASSTHRU]            = [[Instruction newInstruction:@"passthru" a:T_STRING] retain];
-    instructions[INSTR_PASSTHRU_IND]        = nil;//[Instruction newInstruction:@"passthru_ind" a:T_INT] retain];
     
     // Predefined functions
     instructions[INSTR_FIRST]               = [[Instruction newInstruction:@"first"] retain];
