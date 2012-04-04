@@ -777,21 +777,17 @@ static SymbolStack *template_stack;
 
 
 
-     	/* scopeSetAttributeRef */((template_Scope *)[template_stack peek]).cstate =  [[CompilationState newCompilationState:errMgr name:name stream:[input getTokenStream]] retain];
-    	impl =  ((template_Scope *)[template_stack peek]).cstate.impl;
-
-     	if ( [template_stack count] == 1 ) outermostImpl = impl
-    ;
-    	[impl
-     defineFormalArgs:args]; // make sure args are defined prior to compilation
-    	if ( name != nil && [name hasPrefix:Compiler.SUBTEMPLATE_PREFIX] ) {
-    	    [impl
-     addArg:[FormalArgument newFormalArgument:@"i"]];
-    	    [impl
-     addArg:[FormalArgument newFormalArgument:@"i0"]];
-        }
-    	impl
-    .template = template; // always forget the entire template; char indexes are relative to it
+     	/* scopeSetAttributeRef */
+    ((template_Scope *)[template_stack peek]).cstate =  [[CompilationState newCompilationState:errMgr name:name stream:[input getTokenStream]] retain];
+    impl =  ((template_Scope *)[template_stack peek]).cstate.impl;
+    if ( [template_stack count] == 1 )
+        outermostImpl = impl;
+    [impl defineFormalArgs:args]; // make sure args are defined prior to compilation
+    if ( name != nil && [name hasPrefix:Compiler.SUBTEMPLATE_PREFIX] ) {
+        [impl addArg:[FormalArgument newFormalArgument:@"i"]];
+        [impl addArg:[FormalArgument newFormalArgument:@"i0"]];
+    }
+    impl.template = template; // always forget the entire template; char indexes are relative to it
 
     @try {
         /* ruleLabelDefs entry */
@@ -811,13 +807,10 @@ static SymbolStack *template_stack;
         [self popFollow];
 
 
-         
-
          // finish off the CompiledST result
-                if ( ((template_Scope *)[template_stack peek]).cstate.stringtable != nil ) impl
-        .strings = [((template_Scope *)[template_stack peek]).cstate.stringtable toArray];
-                impl
-        .codeSize = ((template_Scope *)[template_stack peek]).cstate.ip;
+        if ( ((template_Scope *)[template_stack peek]).cstate.stringtable != nil )
+            impl.strings = [((template_Scope *)[template_stack peek]).cstate.stringtable toArray];
+        impl.codeSize = ((template_Scope *)[template_stack peek]).cstate.ip;
         		
 
          
@@ -1420,16 +1413,14 @@ static SymbolStack *template_stack;
              
 
 
-            			CompiledST *sub = template6
-            ;
-            	        sub.isRegion = true;
-            	        sub.regionDefType = /* ST.RegionType. */ EMBEDDED;
-            	        sub.templateDefStartToken = ID5.token;
-            			//sub.dump();
-            			[outermostImpl addImplicitlyDefinedTemplate:sub];
-                        [self emit2:((CommonTree *)retval.start) opcode:Bytecode.INSTR_NEW s:retval.name  /* added to returnAttributeRef */
-             arg2:0];
-                        [self emit:((CommonTree *)retval.start) opcode:Bytecode.INSTR_WRITE];
+            CompiledST *sub = template6;
+            sub.isRegion = true;
+            sub.regionDefType = /* ST.RegionType. */ EMBEDDED;
+            sub.templateDefStartToken = ID5.token;
+            //sub.dump();
+            [outermostImpl addImplicitlyDefinedTemplate:sub];
+            [self emit2:((CommonTree *)retval.start) opcode:Bytecode.INSTR_NEW s:retval.name  /* added to returnAttributeRef */arg2:0];
+            [self emit:((CommonTree *)retval.start) opcode:Bytecode.INSTR_WRITE];
             			
 
              
@@ -1599,8 +1590,7 @@ static SymbolStack *template_stack;
                      
                     /* ruleRef */
                     [self pushFollow:FOLLOW_template_in_subtemplate347];
-                    template8 = [self template:retval.name  /* added to returnAttributeRef */
-                     arg1:args];
+                    template8 = [self template:retval.name arg1:args]; /* added to returnAttributeRef */
 
                     [self popFollow];
 
@@ -1608,15 +1598,14 @@ static SymbolStack *template_stack;
                      
 
 
-                    			CompiledST *sub = template8
-                    ;
-                    			sub.isAnonSubtemplate = YES;
-                    	        sub.templateDefStartToken = SUBTEMPLATE9.token;
-                    			sub.ast = SUBTEMPLATE9;
-                    			[sub.ast setUnknownTokenBoundaries];
-                    			sub.tokens = [input getTokenStream];
-                    			//sub.dump();
-                    			[outermostImpl addImplicitlyDefinedTemplate:sub];
+                    CompiledST *sub = template8;
+                    sub.isAnonSubtemplate = YES;
+                    sub.templateDefStartToken = SUBTEMPLATE9.token;
+                    sub.ast = SUBTEMPLATE9;
+                    [sub.ast setUnknownTokenBoundaries];
+                    sub.tokens = [input getTokenStream];
+                    //sub.dump();
+                    [outermostImpl addImplicitlyDefinedTemplate:sub];
                     			
 
                      
@@ -1634,19 +1623,18 @@ static SymbolStack *template_stack;
                  
 
 
-                			CompiledST *sub = [CompiledST newCompiledST];
-                			sub.name = retval.name  /* added to returnAttributeRef */
-                ;
-                			sub.template = @"";
-                			[sub addArg:[FormalArgument newFormalArgument:@"i"]];
-                			[sub addArg:[FormalArgument newFormalArgument:@"i0"]];
-                			sub.isAnonSubtemplate = YES;
-                	        sub.templateDefStartToken = SUBTEMPLATE10.token;
-                            sub.ast = SUBTEMPLATE10;
-                            [sub.ast setUnknownTokenBoundaries];
-                            sub.tokens = [input getTokenStream];
-                			//sub.dump();
-                			[outermostImpl addImplicitlyDefinedTemplate:sub];
+                CompiledST *sub = [CompiledST newCompiledST];
+                sub.name = retval.name;  /* added to returnAttributeRef */
+                sub.template = @"";
+                [sub addArg:[FormalArgument newFormalArgument:@"i"]];
+                [sub addArg:[FormalArgument newFormalArgument:@"i0"]];
+                sub.isAnonSubtemplate = YES;
+                sub.templateDefStartToken = SUBTEMPLATE10.token;
+                sub.ast = SUBTEMPLATE10;
+                [sub.ast setUnknownTokenBoundaries];
+                sub.tokens = [input getTokenStream];
+                //sub.dump();
+                [outermostImpl addImplicitlyDefinedTemplate:sub];
                 			
 
                  
