@@ -63,7 +63,7 @@
 	if ( self != nil) {
         BuffSize  = BUFFSIZE;
         ptr = 0;
-        buffer = [[NSMutableData dataWithLength:(NSUInteger)BuffSize * sizeof(id)] retain];
+        buffer = [[NSMutableData dataWithLength:(NSUInteger)BuffSize] retain];
         ptrBuffer = (char *)[buffer mutableBytes];
         for( idx = 0; idx < BuffSize; idx++ ) {
             ptrBuffer[idx] = 0;
@@ -80,7 +80,7 @@
 	if ( self != nil) {
         BuffSize  = cnt;
         ptr = 0;
-        buffer = [[NSMutableData dataWithLength:(NSUInteger)BuffSize * sizeof(id)] retain];
+        buffer = [[NSMutableData dataWithLength:(NSUInteger)BuffSize] retain];
         ptrBuffer = (char *)[buffer mutableBytes];
         for( idx = 0; idx < BuffSize; idx++ ) {
             ptrBuffer[idx] = 0;
@@ -242,14 +242,23 @@
 			newSize = index + 1;
 		}
         BuffSize = newSize;
-		[buffer setLength:(BuffSize * sizeof(char))];
+		[buffer setLength:BuffSize];
         ptrBuffer = [buffer mutableBytes];
 	}
 }
 
 - (NSString *) description
 {
-    NSString *str = @"Compiled Instructions -- use BytecodeDisassembler to view\n";
+    NSInteger i;
+    NSMutableString *str;
+    str = [NSMutableString stringWithCapacity:100];
+    [str appendString:@"\n" ];
+    for ( i = 0; i < 48;  ) {
+        [str appendFormat:@"%02x%02x ", ptrBuffer[i+1], ptrBuffer[i]];
+        i += 2;
+        if ( !(i%16) ) [str appendString:@"\n" ];
+    }
+    [str appendString:@"Compiled Instructions -- use BytecodeDisassembler to view\n"];
     return str;
 }
 
