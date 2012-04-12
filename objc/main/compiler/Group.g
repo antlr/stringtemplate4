@@ -151,7 +151,7 @@ STGroup *group;
     NSFileWrapper *f = [[NSFileWrapper alloc] initWithURL:fullFileName options:NSFileWrapperReadingImmediate error:outError]; // strip to simple name
     return [f filename];
 #endif
-    return [super getSourceName];
+    return [group getFileName];
 }
 
 - (void) error:(NSString *)msg

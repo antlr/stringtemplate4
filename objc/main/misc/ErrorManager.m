@@ -49,7 +49,8 @@
 - (void) compileTimeError:(STMessage *)aMsg
 {
     if (aMsg.error == SYNTAX_ERROR) {
-        NSLog(@"%@", aMsg.arg );
+        NSLog([ErrorType ErrorNum:aMsg.error], aMsg.arg);
+//        NSLog(@"%@", aMsg.arg );
     }
     else
         NSLog([ErrorType ErrorNum:aMsg.error], aMsg.arg);
