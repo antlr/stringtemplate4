@@ -252,7 +252,8 @@ static STNoSuchPropertyException *cachedException;
                               [aPropertyName substringWithRange:NSMakeRange(1, [aPropertyName length]-1)]];
     SEL m = [Misc getMethod:aPropertyName];
     if ( m == nil || ![anObj respondsToSelector:m] ) {
-        m = [Misc getMethod:[NSString stringWithFormat:@"get%@", methodSuffix]];;
+        m = [Misc getMethod:[NSString stringWithFormat:@"get%@", methodSuffix]];
+        if ( m ) return [anObj performSelector:m];
         if ( m == nil || ![anObj respondsToSelector:m] ) {
             m = [Misc getMethod:[NSString stringWithFormat:@"is%@", methodSuffix]];
             if ( m == nil || ![anObj respondsToSelector:m] ) {
