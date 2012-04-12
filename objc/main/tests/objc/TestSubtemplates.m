@@ -63,7 +63,8 @@
 - (void) test04NestedIterationWithArg
 {
     STGroup *group = [STGroup newSTGroup];
-    [group defineTemplate:@"test" argsS:@"users" template:@"<users:{u | <u.id:{id | <id>=}><u.name>}>!"];
+    //    [group defineTemplate:@"test" argsS:@"users" template:@"<users:{u | <u.id:{id | <id>=}><u.name>}>!"];
+    [group defineTemplate:@"test" argsS:@"users" template:@"<users:{u | <u.num:{num | <num>=}><u.name>}>!"];
     ST *st = [group getInstanceOf:@"test"];
     [st add:@"users" value:[User newUser:1 name:@"parrt"]];
     [st add:@"users" value:[User newUser:2 name:@"tombu"]];

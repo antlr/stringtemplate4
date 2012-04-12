@@ -37,7 +37,7 @@ NSString *const newline = @"\n"/* Misc.newline */;
 - (id) init
 {
     if ( (self=[super init]) != nil ) {
-        num = 0;
+        num = [ACNumber numberWithInteger:0];
         name = @"";
         manager = YES;
         parkingSpot = YES;
@@ -45,15 +45,25 @@ NSString *const newline = @"\n"/* Misc.newline */;
     return self;
 }
 
-- (id) init:(int)aNum name:(NSString *)aName
+- (id) init:(NSInteger)aNum name:(NSString *)aName
 {
     if ( (self=[super init]) != nil ) {
-        num = aNum;
+        num = [ACNumber numberWithInteger:aNum];
         name = aName;
         manager = YES;
         parkingSpot = YES;
     }
     return self;
+}
+
+- (ACNumber *)getNum
+{
+    return num;
+}
+
+- (void) setNum:(ACNumber *)aNum
+{
+    num = aNum;
 }
 
 - (BOOL) hasParkingSpot
@@ -74,23 +84,23 @@ NSString *const newline = @"\n"/* Misc.newline */;
 
 @implementation HashableUser
 
-- (id) init:(int)aNum name:(NSString *)aName
+- (id) init:(NSInteger)aNum name:(NSString *)aName
 {
     if ( (self=[super init:aNum name:aName]) != nil ) {
     }
     return self;
 }
 
-- (int) hash
+- (NSInteger) hash
 {
-    return num;
+    return [num integerValue];
 }
 
 - (BOOL) isEqualTo:(NSObject *)obj
 {
     if ([obj isKindOfClass:[HashableUser class]]) {
         HashableUser *hu = (HashableUser *)obj;
-        return num == hu.num && [name isEqualTo:hu.name];
+        return [num integerValue] == [hu.num integerValue] && [name isEqualTo:hu.name];
     }
     return NO;
 }

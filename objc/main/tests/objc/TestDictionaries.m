@@ -56,10 +56,10 @@
     [self writeFile:tmpdir fileName:@"test.stg" content:templates];
     STGroup *group = [STGroupFile newSTGroupFile:[tmpdir stringByAppendingString:@"/test.stg"]];
     ST *st = [group getInstanceOf:@"foo"];
-    AMutableDictionary *m = [[AMutableDictionary dictionaryWithCapacity:5] autorelease];
-    [m setObject:[[[HashableUser alloc] init:99 name:@"parrt"] autorelease] forKey:@"first"];
-    [m setObject:[[[HashableUser alloc] init:172036 name:@"tombu"] autorelease] forKey:@"second"];
-    [m setObject:[[[HashableUser alloc] init:391 name:@"sriram"] autorelease] forKey:@"third"];
+    AMutableDictionary *m = [AMutableDictionary dictionaryWithCapacity:5];
+    [m setObject:[[HashableUser alloc] init:99 name:@"parrt"] forKey:@"first"];
+    [m setObject:[[HashableUser alloc] init:172036 name:@"tombu"] forKey:@"second"];
+    [m setObject:[[HashableUser alloc] init:391 name:@"sriram"] forKey:@"third"];
     [st add:@"m" value:m];
     [st add:@"k" value:[[HashableUser alloc] init:172036 name:@"tombu"]];
     NSString *expected = @"second";
