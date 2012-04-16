@@ -60,7 +60,7 @@
     __strong CommonTree *ast;
     
     /** Must be non null map if !noFormalArgs */
-    __strong AMutableDictionary *formalArguments;
+    __strong LinkedHashMap *formalArguments;
     BOOL hasFormalArgs;
     NSInteger numberOfArgsWithDefaultValues;
 
@@ -100,7 +100,7 @@
 @property (retain) CommonToken *templateDefStartToken;
 @property (retain) CommonTokenStream *tokens;
 @property (retain) CommonTree *ast;
-@property (retain) AMutableDictionary *formalArguments;
+@property (retain) LinkedHashMap *formalArguments;
 @property (assign) BOOL hasFormalArgs;
 @property (assign) NSInteger numberOfArgsWithDefaultValues;
 @property (retain) AMutableArray *implicitlyDefinedTemplates;

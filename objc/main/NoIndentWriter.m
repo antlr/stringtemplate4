@@ -29,12 +29,12 @@
 
 @implementation NoIndentWriter
 
-+ (id) newNoIdentWriter
++ (id) newWriter
 {
     return [[NoIndentWriter alloc] init];
 }
 
-+ (id) newNoIdentWriter:(Writer *)aWriter
++ (id) newWriter:(Writer *)aWriter
 {
     return [[NoIndentWriter alloc] initWithWriter:(Writer *)aWriter];
 }
@@ -53,13 +53,13 @@
 
 - (id) initWithWriter:(Writer *)aWriter
 {
-    self=[super initWithWriter:aWriter];
+    self=[super init:aWriter newline:@"\n"];
     return self;
 }
 
 - (NSInteger) writeStr:(NSString *)str
 {
-  [super writeStr:str];
+  [writer writeStr:str];
   return [str length];
 }
 

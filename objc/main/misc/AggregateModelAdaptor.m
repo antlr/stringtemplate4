@@ -33,7 +33,7 @@
 
 @implementation AggregateModelAdaptor
 
-+ (id) newAggregateModelAdaptor
++ (id) newModelAdaptor
 {
     return [[AggregateModelAdaptor alloc] init];
 }

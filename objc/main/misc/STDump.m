@@ -156,11 +156,11 @@ NSInteger compare(NSString *s1, NSString *s2, void *context);
     NSMutableString *buf = [NSMutableString stringWithCapacity:150];
     [buf appendFormat:@"<%@(", [who getName]];
     if (((CompiledST *)who.impl).formalArguments != nil) {
-        ArrayIterator *it = [ArrayIterator newIteratorForDictKey:(NSDictionary *)who.impl.formalArguments];
+        LHMKeyIterator *it = [who.impl.formalArguments newKeyIterator];
         id obj;
         NSInteger na = 0;
         while ([it hasNext]) {
-            obj = [it nextObject];
+            obj = [it next];
             if ( na > 0 )
                 [buf appendString:@", "];
             [buf appendString:obj];

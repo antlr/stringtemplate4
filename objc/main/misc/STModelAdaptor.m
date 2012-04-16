@@ -32,7 +32,7 @@
 
 @implementation STModelAdaptor
 
-+ (id) newSTModelAdaptor
++ (id) newModelAdaptor
 {
     return [[STModelAdaptor alloc] init];
 }

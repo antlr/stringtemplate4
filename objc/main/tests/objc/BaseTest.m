@@ -86,7 +86,8 @@ NSString *const newline = @"\n"/* Misc.newline */;
 
 - (id) init:(NSInteger)aNum name:(NSString *)aName
 {
-    if ( (self=[super init:aNum name:aName]) != nil ) {
+    self=[super init:aNum name:aName];
+    if ( self ) {
     }
     return self;
 }

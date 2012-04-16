@@ -400,14 +400,14 @@ static DebugState *st_debugState = nil;
     }
     FormalArgument *arg = nil;
     if (impl.hasFormalArgs) {
-        if (impl.formalArguments != nil) arg = [impl.formalArguments objectForKey:aName];
+        if (impl.formalArguments != nil) arg = [impl.formalArguments get:aName];
         if (arg == nil) {
             @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"no such attribute: %@", aName]];
         }
     }
     else {
         if (impl.formalArguments != nil) {
-            arg = [impl.formalArguments objectForKey:aName];
+            arg = [impl.formalArguments get:aName];
         }
         if (arg == nil) {
             arg = [FormalArgument newFormalArgument:aName];
@@ -513,7 +513,7 @@ static DebugState *st_debugState = nil;
         }
         return;
     }
-    FormalArgument *arg = [impl.formalArguments objectForKey:name];
+    FormalArgument *arg = [impl.formalArguments get:name];
     if ( arg == nil ) {
         @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"no such attribute: %@", name]];
     }
@@ -534,7 +534,7 @@ static DebugState *st_debugState = nil;
     if ( impl.formalArguments == nil ) {
         @throw [IllegalArgumentException newException:[NSString stringWithFormat:@"no such attribute: %@", name]];
     }
-    FormalArgument *arg = [impl.formalArguments objectForKey:name];
+    FormalArgument *arg = [impl.formalArguments get:name];
     if ( arg == nil ) {
         @throw [IllegalArgumentException  newException:[NSString stringWithFormat:@"no such attribute: %@", name]];
     }
@@ -551,7 +551,7 @@ static DebugState *st_debugState = nil;
     ST *p = self;
     FormalArgument *localArg = nil;
     if ( p.impl.formalArguments != nil )
-        localArg = [p.impl.formalArguments objectForKey:name];
+        localArg = [p.impl.formalArguments get:name];
     if ( localArg != nil ) {
         id obj = [p.locals objectAtIndex:localArg.index];
         if ( obj == EMPTY_ATTR )
@@ -566,11 +566,9 @@ static DebugState *st_debugState = nil;
     if ( impl.formalArguments == nil )
         return nil;
     AMutableDictionary *attributes = [AMutableDictionary dictionaryWithCapacity:16];
-    ArrayIterator *it = [ArrayIterator newIteratorForDictObj:impl.formalArguments];
-    FormalArgument *arg;
-//    for (FormalArgument *arg in [impl.formalArguments allValues]) {
+    LHMValueIterator *it = [impl.formalArguments newValueIterator];
     while ( [it hasNext] ) {
-        arg = [it nextObject];
+        FormalArgument *arg = [it next];
         id  obj = [locals objectAtIndex:arg.index];
         if ( obj == ST.EMPTY_ATTR ) {
             continue;
@@ -589,6 +587,13 @@ static DebugState *st_debugState = nil;
     }
     else if ( [curvalue isKindOfClass:[AttributeList class]]) { // already a list made by ST
         multi = (AttributeList *)curvalue;
+    }
+    else if ( [curvalue isKindOfClass:[HashMap class]]) { // existing attribute is non-ST List
+                                                                // must copy to an ST-managed list before adding new attribute
+                                                                // (can't alter incoming attributes)
+        HashMap *hm = (HashMap *)curvalue;
+        multi = [AttributeList arrayWithCapacity:[hm count]];
+        [multi addObjectsFromArray:[[hm values] toArray]];
     }
     else if ( [curvalue isKindOfClass:[AMutableArray class]]) { // existing attribute is non-ST List
         // must copy to an ST-managed list before adding new attribute

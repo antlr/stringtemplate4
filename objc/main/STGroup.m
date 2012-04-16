@@ -28,6 +28,7 @@
 #import <Cocoa/Cocoa.h>
 #import <ANTLR/ANTLR.h>
 #import <ANTLR/RuntimeException.h>
+#import <ANTLR/LinkedHashMap.h>
 #import "STErrorListener.h"
 #import "ST.h"
 #import "STGroup.h"
@@ -56,6 +57,7 @@
 #import "STMessage.h"
 #import "STRuntimeMessage.h"
 #import "ModelAdaptor.h"
+#import "MapModelAdaptor.h"
 #import "STModelAdaptor.h"
 #import "AggregateModelAdaptor.h"
 #import "DictModelAdaptor.h"
@@ -76,11 +78,19 @@
 {
     self=[super init];
     if ( self != nil ) {
+/*
         dict = [[AMutableDictionary dictionaryWithCapacity:16] retain];
         [dict setObject:[AggregateModelAdaptor newAggregateModelAdaptor] forKey:[NSString stringWithFormat:@"%02d%@", [dict count]+1, [Aggregate className]]];
         [dict setObject:[DictModelAdaptor newDictModelAdaptor] forKey:[NSString stringWithFormat:@"%02d%@", [dict count]+1, [NSDictionary className]]];
         [dict setObject:[STModelAdaptor newSTModelAdaptor] forKey:[NSString stringWithFormat:@"%02d%@", [dict count]+1, [ST className]]];
         [dict setObject:[ObjectModelAdaptor newObjectModelAdaptor] forKey:[NSString stringWithFormat:@"%02d%@", [dict count]+1, [NSObject className]]];
+ */
+        dict = [[LinkedHashMap newLinkedHashMap:16] retain];
+        [dict put:[NSObject className] value:[ObjectModelAdaptor newModelAdaptor]];
+        [dict put:[HashMap className] value:[MapModelAdaptor newModelAdaptor]];
+        [dict put:[ST className] value:[STModelAdaptor newModelAdaptor]];
+        [dict put:[NSDictionary className] value:[DictModelAdaptor newModelAdaptor]];
+        [dict put:[Aggregate className] value:[AggregateModelAdaptor newModelAdaptor]];
     }
     return self;
 }
@@ -101,12 +111,14 @@
 
 - (id) objectForKey:(id)aKey
 {
-    return [dict objectForKey:aKey];
+    //    return [dict objectForKey:aKey];
+    return [dict get:aKey];
 }
 
 - (void) setObject:(id)anObject forKey:(id)aKey
 {
-    [dict setObject:anObject forKey:aKey];
+    //    [dict setObject:anObject forKey:aKey];
+    [dict put:aKey value:anObject];
 }
 
 - (NSInteger) count
@@ -243,7 +255,7 @@ static BOOL trackCreationEvents = NO;
         templates = [[AMutableDictionary dictionaryWithCapacity:16] retain];
         dictionaries = [[AMutableDictionary dictionaryWithCapacity:16] retain];
         adaptors = [[[STGroup_Anon1 newSTGroup_Anon1] getDict] retain];
-        typeToAdaptorCache = [[AMutableDictionary dictionaryWithCapacity:16] retain];
+        typeToAdaptorCache = [[LinkedHashMap newLinkedHashMap:16] retain];
         iterateAcrossValues = NO;
         errMgr = STGroup.DEFAULT_ERR_MGR;
         [errMgr retain];
@@ -628,7 +640,7 @@ static BOOL trackCreationEvents = NO;
 /** Define a map for this group; not thread safe...do not keep adding
  *  these while you reference them.
  */
-- (void) defineDictionary:(NSString *)aName mapping:(AMutableDictionary *)mapping
+- (void) defineDictionary:(NSString *)aName mapping:(LinkedHashMap *)mapping
 {
     [dictionaries setObject:mapping forKey:aName];
 }
@@ -848,19 +860,19 @@ static BOOL trackCreationEvents = NO;
                 [NSString stringWithFormat:@"can't register ModelAdaptor for primitive type %@",
                  NSStringFromClass(attributeType)]];
     }
-    [adaptors setObject:adaptor forKey:[NSString stringWithFormat:@"%02d%@", [adaptors count]+1, NSStringFromClass(attributeType)]];
+    [adaptors put:NSStringFromClass(attributeType) value:adaptor];
     [self invalidateModelAdaptorCache:attributeType];
 }
 
 /** remove at least all types in cache that are subclasses or implement attributeType */
 - (void) invalidateModelAdaptorCache:(Class)attributeType
 {
-    [typeToAdaptorCache removeAllObjects]; // be safe, not clever; whack all values
+    [typeToAdaptorCache clear]; // be safe, not clever; whack all values
 }
 
 - (id<ModelAdaptor>) getModelAdaptor:(Class)attributeType
 {
-    id<ModelAdaptor> a = [typeToAdaptorCache objectForKey:NSStringFromClass(attributeType)];
+    id<ModelAdaptor> a = [typeToAdaptorCache get:NSStringFromClass(attributeType)];
     if ( a != nil )
         return a;
 
@@ -870,17 +882,15 @@ static BOOL trackCreationEvents = NO;
     NSString *t;
 //    for ( t in [adaptors keyEnumerator] ) {
     NSString *tmp;
-    ArrayIterator *it = [adaptors keyEnumerator];
+    LHMKeyIterator *it = [adaptors newKeyIterator];
     while ( [it hasNext] ) {
-        t = (NSString *)[it nextObject];
-        tmp = [t substringFromIndex:2];
-        Class cls = objc_getClass([tmp UTF8String]);
+        t = (NSString *)[it next];
+        Class cls = objc_getClass([t UTF8String]);
         if ([attributeType isSubclassOfClass:cls]) {
-            a = [adaptors objectForKey:t];
-            break;
+            a = [adaptors get:t];
         }
     }
-    [typeToAdaptorCache setObject:a forKey:[NSString stringWithFormat:@"%02d%@", [typeToAdaptorCache count]+1, NSStringFromClass(attributeType)]];
+    [typeToAdaptorCache put:NSStringFromClass(attributeType) value:a];
     return a;
 }
 
@@ -902,7 +912,8 @@ static BOOL trackCreationEvents = NO;
             [NSString stringWithFormat:@"can't register ModelAdaptor for primitive type %@",
             [attributeType getSimpleName]];
      }
-     [typeToAdaptorCache removeAllObjects]; // be safe, not clever; whack all values
+//     [typeToAdaptorCache removeAllObjects]; // be safe, not clever; whack all values
+     [typeToAdaptorCache clear]; // be safe, not clever; whack all values
      */
     if (renderers == nil) {
         renderers = [[AMutableArray arrayWithCapacity:5] retain];
@@ -921,7 +932,7 @@ static BOOL trackCreationEvents = NO;
     if ( renderers == nil )     return nil;
     id<AttributeRenderer> r = nil;
     if ( typeToRendererCache != nil ) {
-        r = [typeToRendererCache objectForKey:attributeType];
+        r = [typeToRendererCache get:attributeType];
         if ( r != nil ) return r;
     }
 /*
@@ -946,9 +957,9 @@ static BOOL trackCreationEvents = NO;
         id rendererClass = objc_getClass([t UTF8String]);
         r = [renderers objectForKey:t];
         if ( typeToRendererCache == nil ) {
-            typeToRendererCache = [AMutableDictionary dictionaryWithCapacity:5];
+            typeToRendererCache = [[LinkedHashMap newLinkedHashMap:16] retain];
         }
-        [typeToRendererCache setObject:r forKey:[attributeType class]];
+        [typeToRendererCache put:[attributeType class] value:r];
         if ( [[attributeType class] isSubclassOfClass:rendererClass] )
             return [renderers objectForKey:t];
     }
@@ -1049,7 +1060,7 @@ static BOOL trackCreationEvents = NO;
         aName = [aName lastPathComponent];
         [buf appendFormat:@"%@(", aName];
         if (c.formalArguments != nil)
-            [buf appendString:[Misc join:(ArrayIterator *)[c.formalArguments objectEnumerator] separator:@","]];
+            [buf appendString:[Misc join:[[[c.formalArguments newValueIterator] toArray] objectEnumerator] separator:@","]];
         [buf appendFormat:@") ::= <<%@%@%@>>%@", Misc.newline, c.template, Misc.newline, Misc.newline];
     }
     return [buf description];

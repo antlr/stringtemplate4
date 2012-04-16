@@ -87,13 +87,13 @@
     if ( aTree == nil )
         @throw [STNoSuchAttributeException newException:@"nil tree in refAttr()"];
     NSString *name = aTree.text;
-    if ( (impl.formalArguments != nil) && ([impl.formalArguments objectForKey:name] != nil) ) {
-        FormalArgument *arg = [impl.formalArguments objectForKey:name];
+    if ( (impl.formalArguments != nil) && ([impl.formalArguments get:name] != nil) ) {
+        FormalArgument *arg = [impl.formalArguments get:name];
         NSInteger index = (([arg isKindOfClass:[FormalArgument class]])? arg.index:0);
         [self emit1:aTree opcode:Bytecode.INSTR_LOAD_LOCAL arg:index];
     }
     else {
-        if ( [[Interpreter predefinedAnonSubtemplateAttributes] objectForKey:name] != nil ) {
+        if ( [[Interpreter predefinedAnonSubtemplateAttributes] get:name] != nil ) {
             [errMgr compileTimeError:REF_TO_IMPLICIT_ATTRIBUTE_OUT_OF_SCOPE templateToken:templateToken t:(CommonToken *)aTree.token];
             [self emit:aTree opcode:Bytecode.INSTR_NULL];
         }

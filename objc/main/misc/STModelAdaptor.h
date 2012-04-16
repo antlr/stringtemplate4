@@ -33,7 +33,7 @@
 @interface STModelAdaptor : NSObject <ModelAdaptor> {
 }
 
-+ (id) newSTModelAdaptor;
++ (id) newModelAdaptor;
 
 - (id) init;
 

@@ -35,8 +35,8 @@
 @interface NoIndentWriter : AutoIndentWriter {
 }
 
-+ (id) newNoIdentWriter;
-+ (id) newNoIdentWriter:(Writer *)aWriter;
++ (id) newWriter;
++ (id) newWriter:(Writer *)aWriter;
 - (id) init;
 - (id) initWithCapacity:(NSInteger)sz;
 - (id) initWithWriter:(Writer *)aWriter;

@@ -195,7 +195,7 @@
  */
 static STNoSuchPropertyException *cachedException;
 
-+ (id) newObjectModelAdaptor
++ (id) newModelAdaptor
 {
     return [[ObjectModelAdaptor alloc] init];
 }
@@ -253,7 +253,8 @@ static STNoSuchPropertyException *cachedException;
     SEL m = [Misc getMethod:aPropertyName];
     if ( m == nil || ![anObj respondsToSelector:m] ) {
         m = [Misc getMethod:[NSString stringWithFormat:@"get%@", methodSuffix]];
-        if ( m ) return [anObj performSelector:m];
+        if ( m && [anObj respondsToSelector:m] )
+            return [anObj performSelector:m];
         if ( m == nil || ![anObj respondsToSelector:m] ) {
             m = [Misc getMethod:[NSString stringWithFormat:@"is%@", methodSuffix]];
             if ( m == nil || ![anObj respondsToSelector:m] ) {

@@ -33,27 +33,43 @@
 
 @implementation MapModelAdaptor
 
+@synthesize classAndPropertyToMemberCache;
+
++ (MapModelAdaptor *) newModelAdaptor
+{
+    return [[MapModelAdaptor alloc] init];
+}
+
+- (id) init
+{
+    self = [super init];
+    if ( self ) {
+        classAndPropertyToMemberCache = [[DoubleKeyMap alloc] init];
+    }
+    return self;
+}
+
 - (id) getProperty:(Interpreter *)interp who:(ST *)aWho obj:(id)obj property:(id)aProperty propertyName:(NSString *)aPropertyName
 {
     id value;
-    AMutableDictionary *map = (AMutableDictionary *)obj;
+    HashMap *map = (HashMap *)obj;
     if ( aProperty == nil ) {
-        value = [map objectForKey:STGroup.DEFAULT_KEY];
+        value = [map get:STGroup.DEFAULT_KEY];
     }
     else if ( [aProperty isEqualTo:@"keys"] ) {
-        value = [map allKeys];
+        value = [[map keySet] toArray];
     }
     else if ( [aProperty isEqualTo:@"values"] ) {
-        value = [map allValues];
+        value = [[map values] toArray];
     }
-    else if ( [map objectForKey:aProperty] ) {
-        value = [map objectForKey:aProperty];
+    else if ( [map get:aProperty] ) {
+        value = [map get:aProperty];
     }
-    else if ( [map objectForKey:aPropertyName] ) { // if can't find the key, try toString version
-        value = [map objectForKey:aPropertyName];
+    else if ( [map get:aPropertyName] ) { // if can't find the key, try toString version
+        value = [map get:aPropertyName];
     }
     else {
-        value = [map objectForKey:STGroup.DEFAULT_KEY]; // not found, use default
+        value = [map get:STGroup.DEFAULT_KEY]; // not found, use default
     }
     if ( value == STGroup.DICT_KEY ) {
         value = aProperty;
@@ -65,6 +81,15 @@
         value = st;
     }
     return value;
+}
+
+- (void) dealloc
+{
+#ifdef DEBUG_DEALLOC
+    NSLog( @"called dealloc in MapModelAdaptor" );
+#endif
+    if ( classAndPropertyToMemberCache ) [classAndPropertyToMemberCache release];
+    [super dealloc];
 }
 
 @end

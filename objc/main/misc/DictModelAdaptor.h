@@ -33,7 +33,7 @@
 @interface DictModelAdaptor : NSObject <ModelAdaptor> {
 }
 
-+ (id) newDictModelAdaptor;
++ (id) newModelAdaptor;
 
 - (id) init;
 - (id) getProperty:(Interpreter *)interp who:(ST *)who obj:(id)obj property:(id)property propertyName:(NSString *)propertyName;

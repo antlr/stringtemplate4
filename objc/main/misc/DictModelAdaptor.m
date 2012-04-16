@@ -33,7 +33,7 @@
 
 @implementation DictModelAdaptor
 
-+ (id) newDictModelAdaptor
++ (id) newModelAdaptor
 {
     return [[DictModelAdaptor alloc] init];
 }

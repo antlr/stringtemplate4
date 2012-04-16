@@ -138,10 +138,10 @@
         return;
 //    for (NSString *s in [formalArguments allKeys]) {
     NSString *a;
-    ArrayIterator *it = (ArrayIterator *)[formalArguments keyEnumerator];
+    LHMKeyIterator *it = [formalArguments newKeyIterator];
     while ( [it hasNext] ) {
-        a = (NSString *)[it nextObject];
-        FormalArgument *fa = [formalArguments objectForKey:a];
+        a = (NSString *)[it next];
+        FormalArgument *fa = [formalArguments get:a];
         if (fa.defaultValueToken != nil) {
             numberOfArgsWithDefaultValues++;
             if ( fa.defaultValueToken.type == ANONYMOUS_TEMPLATE ) {
@@ -187,10 +187,10 @@
 - (void) addArg:(FormalArgument *)a
 {
     if (formalArguments == nil) {
-        formalArguments = [[AMutableDictionary dictionaryWithCapacity:16] retain];
+        formalArguments = [[LinkedHashMap newLinkedHashMap:16] retain];
     }
     a.index = [formalArguments count];
-    [formalArguments setObject:a forKey:a.name];
+    [formalArguments put:a.name value:a];
 }
 
 - (void) defineImplicitlyDefinedTemplates:(STGroup *)group

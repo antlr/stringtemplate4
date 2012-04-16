@@ -87,8 +87,8 @@
     ArrayIterator *it = [ArrayIterator newIterator:errors];
     while ( [it hasNext] ) {
         m = [it nextObject];
-        //[buf appendFormat:@"%@%@", [m description], Misc.newline];
-        return [m description];
+        [buf appendFormat:@"%@%@", [m description], Misc.newline];
+        //        return [m description];
     }
     return (([buf length] > 0) ? buf : @"buf=<nil>");
 }

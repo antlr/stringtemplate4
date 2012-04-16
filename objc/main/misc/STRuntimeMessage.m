@@ -129,7 +129,7 @@
     if (loc != nil) {
         [buf appendFormat:@" %@", loc];
     }
-    [buf appendFormat:@" %@\n", [super description]];
+    [buf appendFormat:@" %@", [super description]];
     return [buf description];
 }
 

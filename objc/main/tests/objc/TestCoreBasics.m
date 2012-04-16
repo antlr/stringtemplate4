@@ -565,10 +565,7 @@
 
 - (void) test23MapWithExprAsTemplateName
 {
-    NSString *aTemplate = [NSString stringWithFormat:@"%@%@%@",
-                           @"d ::= [\"foo\":\"bold\"]\n",
-                           @"test(name) ::= \"<name:(d.foo)()>\"\n",
-                           @"bold(x) ::= <<*<x>*>>\n"];
+    NSString *aTemplate = @"d ::= [\"foo\":\"bold\"]\ntest(name) ::= \"<name:(d.foo)()>\"\nbold(x) ::= <<*<x>*>>\n";
     [self writeFile:tmpdir fileName:@"t.stg" content:aTemplate];
     STGroupFile *group = [STGroupFile newSTGroupFile:[tmpdir stringByAppendingPathComponent:@"t.stg"]];
     ST *st = [group getInstanceOf:@"test"];
@@ -959,7 +956,7 @@
     NSString *aTemplate = @"<if(m.name)>works \\\\<endif>";
     ST *st = [ST newSTWithTemplate:aTemplate];
     AMutableDictionary *m = [AMutableDictionary dictionaryWithCapacity:16];
-    [m setObject:@"name" forKey:@"Ter"];
+    [m setObject:@"Ter" forKey:@"name"];
     [st add:@"m" value:m];
     NSString *expected = @"works \\";
     NSString *result = [st render];
@@ -1059,7 +1056,7 @@
     STGroupFile *group = [STGroupFile newSTGroupFile];
     [group defineTemplate:@"test" argsS:@"names" template:@"<names:{n | case <n>}; separator=\", \">"];
     ST *st = [group getInstanceOf:@"test"];
-    [st add:@"names" value:[TestCoreBasics_Anon3 newAnon]];
+    [st add:@"names" value:[NSArray arrayWithObjects:@"Ter", @"Tom", nil]];
     NSString *expected = @"case Ter, case Tom";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
@@ -1093,9 +1090,8 @@
     [self writeFile:tmpdir fileName:@"t.stg" content:aTemplate];
     STGroupFile *group = [STGroupFile newSTGroupFile:[tmpdir stringByAppendingPathComponent:@"t.stg"]];
     ST *st = [group getInstanceOf:@"main"];
-    StringWriter *sw = [StringWriter new];
-    // NoIndentWriter *w = [NoIndentWriter newNoIdentWriterWithWriter:sw];
-    NoIndentWriter *w = [NoIndentWriter newNoIdentWriter];
+    StringWriter *sw = [StringWriter newWriter];
+    NoIndentWriter *w = [NoIndentWriter newWriter:sw];
     [st write:w];
     NSString *result = [sw description];
     NSString *expected = @"abc\nabc\nabc\nabc";

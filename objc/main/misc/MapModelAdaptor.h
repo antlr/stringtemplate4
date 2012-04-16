@@ -31,7 +31,15 @@
 #import "Interpreter.h"
 
 @interface MapModelAdaptor : NSObject <ModelAdaptor> {
+    /**
+     * Cache exact attribute type and property name reflection Member object
+     */
+    DoubleKeyMap *classAndPropertyToMemberCache;
 }
+@property (retain) DoubleKeyMap *classAndPropertyToMemberCache;
 
++ (MapModelAdaptor *) newModelAdaptor;
+
+- (id) init;
 - (id) getProperty:(Interpreter *)interp who:(ST *)who obj:(id)obj property:(id)property propertyName:(NSString *)propertyName;
 @end

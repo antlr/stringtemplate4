@@ -84,6 +84,9 @@ CommonToken *templateToken;
 {
     self = [super initWithTokenStream:(id<TokenStream>)anInput];
     if ( self != nil ) {
+        /* ruleAttributeScopeInit */
+        conditional_scope = [conditional_Scope newconditional_Scope];
+        conditional_stack = [SymbolStack newSymbolStackWithLen:30];
         [self setTreeAdaptor:[[CommonTreeAdaptor newTreeAdaptor] retain]];
         errMgr = anErrMgr;
         if ( errMgr ) [errMgr retain];
@@ -273,8 +276,8 @@ primary
     |   T_FALSE
     |   subtemplate
     |   list
-    |   {[$conditional size]>0}?=>  '('! conditional ')'!
-    |   {[$conditional size]==0}?=> lp='(' expr ')'
+    |   {[$conditional count]>0}?=>  '('! conditional ')'!
+    |   {[$conditional count]==0}?=> lp='(' expr ')'
         (   '(' argExprList? ')'                -> ^(INCLUDE_IND[$lp] expr argExprList?)
         |                                       -> ^(TO_STR[$lp] expr)
         )

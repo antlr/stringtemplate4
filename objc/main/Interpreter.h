@@ -40,7 +40,7 @@
 
 
 @interface Interpreter_Anon1 : NSObject {
-    AMutableDictionary *dict;
+    LinkedHashMap *dict;
 }
 
 + (id) newInterpreter_Anon1;
@@ -53,7 +53,7 @@
 - (NSEnumerator *) keyEnumerator;
 - (NSArray *) objectEnumerator;
 
-@property (retain) AMutableDictionary *dict;
+@property (retain) LinkedHashMap *dict;
 
 @end
 
@@ -160,7 +160,7 @@ NSString *OptionDescription(OptionEnum value);
 }
 
 + (NSInteger) DEFAULT_OPERAND_STACK_SIZE;
-+ (AMutableDictionary *) predefinedAnonSubtemplateAttributes;
++ (LinkedHashMap *) predefinedAnonSubtemplateAttributes;
 + (Interpreter_Anon3 *) Option;
 
 + (id) newInterpreter:(STGroup *)aGroup locale:(NSLocale *)aLocale debug:(BOOL)aDebug;

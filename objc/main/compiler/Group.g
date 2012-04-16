@@ -334,12 +334,12 @@ dictDef
         }
     ;
 
-dict returns [AMutableDictionary *mapping]
-@init {mapping=[AMutableDictionary dictionaryWithCapacity:16];}
+dict returns [LinkedHashMap *mapping]
+@init {mapping=[LinkedHashMap newLinkedHashMap:16];}
     :   '[' dictPairs[mapping] ']'
     ;
 
-dictPairs[AMutableDictionary *mapping]
+dictPairs[LinkedHashMap *mapping]
     :   keyValuePair[mapping]
         (',' keyValuePair[mapping])* (',' defaultValuePair[mapping])?
     |   defaultValuePair[mapping]
@@ -348,12 +348,12 @@ dictPairs[AMutableDictionary *mapping]
         [self error:[NSString stringWithFormat:@"missing dictionary entry at '\%@'", [input LT:1].text]];
     }
 
-defaultValuePair[AMutableDictionary *mapping]
-    :   'default' ':' keyValue {[mapping setObject:$keyValue.value forKey:STGroup.DEFAULT_KEY];}
+defaultValuePair[LinkedHashMap *mapping]
+    :   'default' ':' keyValue {[mapping put:STGroup.DEFAULT_KEY value:$keyValue.value];}
     ;
 
-keyValuePair[AMutableDictionary *mapping]
-    :   STRING ':' keyValue {[mapping setObject:$keyValue.value forKey:[Misc replaceEscapes:[Misc strip:$STRING.text n:1]]];}
+keyValuePair[LinkedHashMap *mapping]
+    :   STRING ':' keyValue {[mapping put:[Misc replaceEscapes:[Misc strip:$STRING.text n:1]] value:$keyValue.value];}
     ;
 
 keyValue returns [id value]

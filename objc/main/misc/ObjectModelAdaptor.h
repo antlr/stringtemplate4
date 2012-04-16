@@ -96,7 +96,7 @@ typedef enum {
     DoubleKeyMap *classAndPropertyToMemberCache;
 }
 
-+ (id) newObjectModelAdaptor;
++ (id) newModelAdaptor;
 
 - (id) init;
 

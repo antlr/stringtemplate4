@@ -79,7 +79,7 @@
         charIndex = 0;
         lineWidth = ST.NO_WRAP;
         [indents addObject:@""];
-        newline = @"\n";
+        newline = aNewline;
         [newline retain];
         ip = 0;
         if (aWriter == nil) {

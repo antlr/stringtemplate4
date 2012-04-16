@@ -34,7 +34,7 @@
 @interface AggregateModelAdaptor : NSObject <ModelAdaptor> {
 }
 
-+ (id) newAggregateModelAdaptor;
++ (id) newModelAdaptor;
 
 - (id) init;
 - (id) getProperty:(Interpreter *)interp who:(ST *)who obj:(id)obj property:(id)property propertyName:(NSString *)propertyName;

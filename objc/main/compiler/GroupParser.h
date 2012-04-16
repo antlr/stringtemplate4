@@ -1,4 +1,4 @@
-// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-03-19 17:03:10
+// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g 2012-04-14 14:22:10
 
 /* =============================================================================
  * Standard antlr OBJC runtime definitions
@@ -172,10 +172,10 @@ STGroup *group;
 - (AMutableArray *)formalArgs; 
 - (void)formalArg:(AMutableArray *)args ; 
 - (void)dictDef; 
-- (AMutableDictionary *)dict; 
-- (void)dictPairs:(AMutableDictionary *)mapping ; 
-- (void)defaultValuePair:(AMutableDictionary *)mapping ; 
-- (void)keyValuePair:(AMutableDictionary *)mapping ; 
+- (LinkedHashMap *)dict; 
+- (void)dictPairs:(LinkedHashMap *)mapping ; 
+- (void)defaultValuePair:(LinkedHashMap *)mapping ; 
+- (void)keyValuePair:(LinkedHashMap *)mapping ; 
 - (id)keyValue; 
 
 
