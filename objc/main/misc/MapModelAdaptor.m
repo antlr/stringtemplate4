@@ -74,12 +74,14 @@
     if ( value == STGroup.DICT_KEY ) {
         value = aProperty;
     }
+/*
     if ( [value isKindOfClass:[ST class]] ) {
         ST *st = (ST *)value;
         st = [st.groupThatCreatedThisInstance createStringTemplateInternally:[CompiledST newCompiledST]];
         st.enclosingInstance = aWho;
         value = st;
     }
+ */
     return value;
 }
 

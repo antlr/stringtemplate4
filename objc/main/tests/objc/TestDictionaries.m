@@ -124,6 +124,7 @@
     ST *st = [group getInstanceOf:@"var"];
     [st add:@"type" value:@"float"];
     [st add:@"name" value:@"x"];
+    [st.impl dump];
     NSString *expected = @"float x = ;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );

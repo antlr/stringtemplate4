@@ -195,8 +195,8 @@ exprOptions : option ( ',' option )* -> ^(OPTIONS option*) ;
 option
 @init {
     NSString *IDstr = [input LT:1].text;
-    NSString *defVal = [[Compiler defaultOptionValues] objectForKey:IDstr];
-    BOOL validOption = ([[Compiler getSupportedOptions] objectForKey:IDstr] != nil);
+    NSString *defVal = [[Compiler defaultOptionValues] get:IDstr];
+    BOOL validOption = ([[Compiler getSupportedOptions] get:IDstr] != nil);
 }
     :   ID
         {
@@ -212,7 +212,7 @@ option
             }
             }
                                                 -> {validOption&&defVal!=nil}?
-                                                   ^(EQUALS[EQUALS, @"="] ID STRING[$ID, defVal])
+                                                   ^(EQUALS[@"="] ID STRING[$ID, defVal])
                                                 ->
         )
     ;
@@ -260,7 +260,7 @@ memberExpr
 
 includeExpr
 options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
-    :   {[[Compiler funcs] instrForKey:[input LT:1].text]}? // predefined function
+    :   {[[Compiler funcs] getInstr:[input LT:1].text]}? // predefined function
         ID '(' expr? ')'                        -> ^(EXEC_FUNC ID expr?)
     |   'super' '.' ID '(' args ')'             -> ^(INCLUDE_SUPER ID args?)
     |   ID '(' args ')'                         -> ^(INCLUDE ID args?)

@@ -50,12 +50,12 @@
 - (id) init
 {
     if ( (self=[super init]) != nil ) {
-        dict = [[AMutableDictionary dictionaryWithCapacity:16] retain];
-        [dict setObject:[NSString stringWithFormat:@"%d", ANCHOR] forKey:@"anchor"];
-        [dict setObject:[NSString stringWithFormat:@"%d", FORMAT] forKey:@"format"];
-        [dict setObject:[NSString stringWithFormat:@"%d", _NULL] forKey:@"null"];
-        [dict setObject:[NSString stringWithFormat:@"%d", SEPARATOR] forKey:@"separator"];
-        [dict setObject:[NSString stringWithFormat:@"%d", WRAP] forKey:@"wrap"];
+        dict = [[LinkedHashMap newLinkedHashMap:16] retain];
+        [dict put:@"anchor"    value:[NSString stringWithFormat:@"%d", ANCHOR]];
+        [dict put:@"format"    value:[NSString stringWithFormat:@"%d", FORMAT]];
+        [dict put:@"null"      value:[NSString stringWithFormat:@"%d", _NULL]];
+        [dict put:@"separator" value:[NSString stringWithFormat:@"%d", SEPARATOR]];
+        [dict put:@"wrap"      value:[NSString stringWithFormat:@"%d", WRAP]];
     }
     return self;
 }
@@ -74,14 +74,14 @@
     return dict;
 }
 
-- (id) objectForKey:(id)aKey
+- (id) get:(id)aKey
 {
-    return [dict objectForKey:aKey];
+    return [dict get:aKey];
 }
 
-- (void) setObject:(id)anObject forKey:(id)aKey
+- (void) put:(id)aKey value:(id)anObject
 {
-    [dict setObject:anObject forKey:aKey];
+    [dict put:aKey value:anObject];
 }
 
 - (NSInteger) count
@@ -102,9 +102,9 @@
 - (id) init
 {
     if ( (self=[super init]) != nil ) {
-        dict = [[AMutableDictionary dictionaryWithCapacity:16] retain];
-        [dict setObject:@"\"true\"" forKey:@"anchor"];
-        [dict setObject:@"\"\n\"" forKey:@"wrap"];
+        dict = [[LinkedHashMap newLinkedHashMap:16] retain];
+        [dict put:@"anchor" value:@"\"true\""];
+        [dict put:@"wrap" value:@"\"\n\""];
     }
     return self;
 }
@@ -136,14 +136,14 @@
     return dict;
 }
 
-- (id) objectForKey:(id)aKey
+- (id) get:(id)aKey
 {
-    return [dict objectForKey:aKey];
+    return [dict get:aKey];
 }
 
-- (void) setObject:(id)anObject forKey:(id)aKey
+- (void) put:(id)aKey value:(id)anObject
 {
-    [dict setObject:anObject forKey:aKey];
+    [dict put:aKey value:anObject];
 }
 
 - (NSInteger) count
@@ -164,16 +164,16 @@
 - (id) init
 {
     if ( (self=[super init]) != nil ) {
-        dict = [[AMutableDictionary dictionaryWithCapacity:16] retain];
-        [dict setObject:[NSString stringWithFormat:@"%d", Bytecode.INSTR_FIRST]   forKey:@"first"];
-        [dict setObject:[NSString stringWithFormat:@"%d", Bytecode.INSTR_LAST]    forKey:@"last"];
-        [dict setObject:[NSString stringWithFormat:@"%d", Bytecode.INSTR_REST]    forKey:@"rest"];
-        [dict setObject:[NSString stringWithFormat:@"%d", Bytecode.INSTR_TRUNC]   forKey:@"trunc"];
-        [dict setObject:[NSString stringWithFormat:@"%d", Bytecode.INSTR_STRIP]   forKey:@"strip"];
-        [dict setObject:[NSString stringWithFormat:@"%d", Bytecode.INSTR_TRIM]    forKey:@"trim"];
-        [dict setObject:[NSString stringWithFormat:@"%d", Bytecode.INSTR_LENGTH]  forKey:@"length"];
-        [dict setObject:[NSString stringWithFormat:@"%d", Bytecode.INSTR_STRLEN]  forKey:@"strlen"];
-        [dict setObject:[NSString stringWithFormat:@"%d", Bytecode.INSTR_REVERSE] forKey:@"reverse"];
+        dict = [[LinkedHashMap newLinkedHashMap:16] retain];
+        [dict put:@"first"   value:[NSString stringWithFormat:@"%d", Bytecode.INSTR_FIRST]];
+        [dict put:@"last"    value:[NSString stringWithFormat:@"%d", Bytecode.INSTR_LAST]];
+        [dict put:@"rest"    value:[NSString stringWithFormat:@"%d", Bytecode.INSTR_REST]];
+        [dict put:@"trunc"   value:[NSString stringWithFormat:@"%d", Bytecode.INSTR_TRUNC]];
+        [dict put:@"strip"   value:[NSString stringWithFormat:@"%d", Bytecode.INSTR_STRIP]];
+        [dict put:@"trim"    value:[NSString stringWithFormat:@"%d", Bytecode.INSTR_TRIM]];
+        [dict put:@"length"  value:[NSString stringWithFormat:@"%d", Bytecode.INSTR_LENGTH]];
+        [dict put:@"strlen"  value:[NSString stringWithFormat:@"%d", Bytecode.INSTR_STRLEN]];
+        [dict put:@"reverse" value:[NSString stringWithFormat:@"%d", Bytecode.INSTR_REVERSE]];
     }
     return self;
 }
@@ -205,14 +205,14 @@
     return dict;
 }
 
-- (short) instrForKey:(NSString *)aKey
+- (short) getInstr:(NSString *)aKey
 {
-    return (short)[(NSString *)[dict objectForKey:aKey] intValue];
+    return (short)[(NSString *)[dict get:aKey] intValue];
 }
 
-- (void) setInstr:(short)anInstr forKey:(id)aKey
+- (void) put:(id)aKey setInstr:(short)anInstr
 {
-    [dict setObject:[NSString stringWithFormat:@"%d", anInstr] forKey:aKey];
+    [dict put:aKey value:[NSString stringWithFormat:@"%d", anInstr]];
 }
 
 - (NSInteger) count
@@ -350,6 +350,7 @@ static NSString *SUBTEMPLATE_PREFIX = @"_sub";
                 template:(NSString *)template
            templateToken:(CommonToken *)aTemplateToken
 {
+    CompiledST *impl = nil;
     BOOL mustRelease = NO;
     __strong FormalArgument *a;
     if ( args != nil ) {
@@ -386,7 +387,7 @@ static NSString *SUBTEMPLATE_PREFIX = @"_sub";
         return nil;
     }
     if ([p getNumberOfSyntaxErrors] > 0 || r == nil || r.tree == nil) {
-        CompiledST *impl = [CompiledST newCompiledST];
+        impl = [CompiledST newCompiledST];
         [impl defineFormalArgs:args];
         return impl;
     }
@@ -394,7 +395,6 @@ static NSString *SUBTEMPLATE_PREFIX = @"_sub";
     [nodes setTokenStream:tokens];
     CodeGenerator *gen = [CodeGenerator newCodeGenerator:nodes errMgr:group.errMgr name:name template:template token:aTemplateToken];
 
-    CompiledST *impl = nil;
     @try {
         impl = [[gen template:name arg1:args] retain];
 		impl.nativeGroup = group;

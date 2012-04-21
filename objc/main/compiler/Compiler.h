@@ -25,6 +25,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#import <ANTLR/LinkedHashMap.h>
 #import "Interpreter.h"
 #import "ST.h"
 #import "STGroup.h"
@@ -32,7 +33,7 @@
 #import "ErrorType.h"
 
 @interface Compiler_Anon1 : NSObject {
-    __strong AMutableDictionary *dict;
+    __strong LinkedHashMap *dict;
 }
 
 + (id) newCompiler_Anon1;
@@ -40,15 +41,15 @@
 
 - (void) dealloc;
 - (id) getDict;
-- (id) objectForKey:(id)aKey;
-- (void) setObject:(id)anObject forKey:(id)aKey;
+- (id) get:(id)aKey;
+- (void) put:(id)aKey value:(id)anObject;
 - (NSInteger) count;
 
-@property (retain) AMutableDictionary *dict;
+@property (retain) LinkedHashMap *dict;
 @end
 
 @interface Compiler_Anon2 : NSObject {
-    __strong AMutableDictionary *dict;
+    __strong LinkedHashMap *dict;
 }
 
 + (id) newCompiler_Anon2;
@@ -57,15 +58,15 @@
 - (void) dealloc;
 - (id) copyWithZone:(NSZone *)aZone;
 - (id) getDict;
-- (id) objectForKey:(id)aKey;
-- (void) setObject:(id)anObject forKey:(id)aKey;
+- (id) get:(id)aKey;
+- (void) put:(id)aKey value:(id)anObject;
 - (NSInteger) count;
 
-@property (retain) AMutableDictionary *dict;
+@property (retain) LinkedHashMap *dict;
 @end
 
 @interface Compiler_Anon3 : NSObject {
-    __strong AMutableDictionary *dict;
+    __strong LinkedHashMap *dict;
 }
 
 + (id) newCompiler_Anon3;
@@ -74,11 +75,11 @@
 - (void) dealloc;
 - (id) copyWithZone:(NSZone *)aZone;
 - (id) getDict;
-- (short) instrForKey:(NSString *)aKey;
-- (void) setInstr:(short)anInstr forKey:(NSString *)aKey;
+- (short) getInstr:(id)aKey;
+- (void) put:(id)aKey setInstr:(short)anInstr;
 - (NSInteger) count;
 
-@property (retain) AMutableDictionary *dict;
+@property (retain) LinkedHashMap *dict;
 @end
 
 @interface Compiler : NSObject {

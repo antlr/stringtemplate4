@@ -33,15 +33,15 @@
  */
 
 @interface StringTable : NSObject {
-  __strong AMutableDictionary *table;
+  __strong LinkedHashMap *table;
   NSInteger i;
 }
 
 - (id) init;
 - (NSInteger) addObject:(NSString *)s;
 - (AMutableArray *) toArray;
-- (void) setObject:(id)obj forKey:(id)aKey;
+- (void) put:(id)aKey value:(id)obj;
 
-@property (retain) AMutableDictionary *table;
+@property (retain) LinkedHashMap *table;
 @property NSInteger i;
 @end

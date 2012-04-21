@@ -29,17 +29,17 @@
 #import "AttributeRenderer.h"
 
 @interface DateRenderer_Anon1 : NSObject {
-    AMutableDictionary *aDict;
+    LinkedHashMap *aDict;
 }
-+ (id) newDictionary;
-+ (id) DictionaryWithCapacity:(NSInteger)len;
++ (id) newDateRenderer_Anon1;
++ (id) newDateRenderer_Anon1:(NSInteger)len;
 
 - (id) init;
 - (id) initWithCapacity:(NSInteger)len;
-- (void) setObject:(id)anObject forKey:(id)aKey;
-- (id) objectForKey:(id)aKey;
+- (void) put:(id)aKey value:(id)anObject;
+- (id) get:(id)aKey;
 
-@property (retain) AMutableDictionary *aDict;
+@property (retain) LinkedHashMap *aDict;
 @end
 
 /**
@@ -52,7 +52,7 @@
 @interface DateRenderer : NSObject <AttributeRenderer> {
 }
 
-+ (id) newDateRenderer;
++ (id) newRenderer;
 
 - (id) init;
 - (NSString *) description:(id)obj formatString:(NSString *)formatString locale:(NSLocale *)locale;

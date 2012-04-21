@@ -4946,8 +4946,8 @@ static SymbolStack *conditional_stack;
 
 
         NSString *IDstr = [input LT:1].text;
-        NSString *defVal = [[Compiler defaultOptionValues] objectForKey:IDstr];
-        BOOL validOption = ([[Compiler getSupportedOptions] objectForKey:IDstr] != nil);
+        NSString *defVal = [[Compiler defaultOptionValues] get:IDstr];
+        BOOL validOption = ([[Compiler getSupportedOptions] get:IDstr] != nil);
 
     @try {
         /* AST ruleLabelDefs */
@@ -6506,7 +6506,7 @@ static SymbolStack *conditional_stack;
             if ( (LA35_1==LPAREN) ) {
                 NSInteger LA35_10 = [input LA:3];
 
-                if ( (([[Compiler funcs] instrForKey:[input LT:1].text])) ) {
+                if ( (([[Compiler funcs] getInstr:[input LT:1].text])) ) {
                     alt35=1;
                 }
                 else if ( (YES) ) {
@@ -6565,8 +6565,8 @@ static SymbolStack *conditional_stack;
                 // /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/STParser.g:260:9: {...}? ID '(' ( expr )? ')' // alt
                 {
 
-                if ( !(([[Compiler funcs] instrForKey:[input LT:1].text])) ) {
-                    @throw [FailedPredicateException newException:@"includeExpr" predicate:@"[[Compiler funcs] instrForKey:[input LT:1].text]" stream:input];
+                if ( !(([[Compiler funcs] getInstr:[input LT:1].text])) ) {
+                    @throw [FailedPredicateException newException:@"includeExpr" predicate:@"[[Compiler funcs] getInstr:[input LT:1].text]" stream:input];
                 }
                  
                 ID96=(CommonToken *)[self match:input TokenType:ID Follow:FOLLOW_ID_in_includeExpr2245];  

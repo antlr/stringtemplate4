@@ -178,7 +178,8 @@
     if ( idx >= BuffSize ) {
         [self ensureCapacity:idx];
     }
-     ptrBuffer[idx] = (char)(aChar & 0xff);
+    if (idx >= count) count = idx+1;
+    ptrBuffer[idx] = (char)(aChar & 0xff);
 }
 
 - (char) charAtIndex:(NSInteger)idx
@@ -231,6 +232,7 @@
         [self ensureCapacity:idx+1];
     ptrBuffer[idx] = (char)((value >> 8) & 0xFF);
     ptrBuffer[idx + 1] = (char)(value & 0xFF);
+    if (idx >= count) count = idx+2;
 }
 
 - (void) ensureCapacity:(NSInteger) index

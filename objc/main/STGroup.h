@@ -45,8 +45,8 @@
 
 - (id) init;
 - (id) getDict;
-- (id) objectForKey:(id)aKey;
-- (void) setObject:(id)anObject forKey:(id)aKey;
+- (id) get:(id)aKey;
+- (void) put:(id)aKey value:(id)anObject;
 - (NSInteger) count;
 
 @property (retain) LinkedHashMap *dict;
@@ -83,13 +83,13 @@
     /**
      * Maps template name to StringTemplate object. synchronized.
      */
-    __strong AMutableDictionary *templates;
+    __strong LinkedHashMap *templates;
     
     /**
      * Maps dict names to HashMap objects.  This is the list of dictionaries
      * defined by the user like typeInitMap ::= ["int":"0"]
      */
-    __strong AMutableDictionary *dictionaries;
+    __strong LinkedHashMap *dictionaries;
     
     /**
      * A dictionary that allows people to register a renderer for
@@ -111,7 +111,7 @@
      * 
      * This structure is synchronized.
      */
-    __strong AMutableDictionary *renderers;
+    __strong LinkedHashMap *renderers;
     
     /**
      * A dictionary that allows people to register a model adaptor for
@@ -171,7 +171,7 @@
 - (void) load;
 - (CompiledST *) lookupImportedTemplate:(NSString *)name;
 - (CompiledST *) rawGetTemplate:(NSString *)name;
-- (AMutableDictionary *) rawGetDictionary:(NSString *)name;
+- (LinkedHashMap *) rawGetDictionary:(NSString *)name;
 - (BOOL) isDictionary:(NSString *)name;
 - (CompiledST *) defineTemplate:(NSString *)templateName template:(NSString *)template;
 
@@ -219,9 +219,9 @@
 @property (retain) AMutableArray *importsToClearOnUnload;
 @property (assign) unichar delimiterStartChar;
 @property (assign) unichar delimiterStopChar;
-@property (retain) AMutableDictionary *templates;
-@property (retain) AMutableDictionary *dictionaries;
-@property (retain) AMutableDictionary *renderers;
+@property (retain) LinkedHashMap *templates;
+@property (retain) LinkedHashMap *dictionaries;
+@property (retain) LinkedHashMap *renderers;
 @property (retain) LinkedHashMap *adaptors;
 @property (retain) LinkedHashMap *typeToAdaptorCache;
 @property (retain) LinkedHashMap *typeToRendererCache;

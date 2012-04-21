@@ -34,7 +34,7 @@
 {
     self=[super init];
     if ( self != nil ) {
-        table = [[AMutableDictionary dictionaryWithCapacity:10] retain];
+        table = [[LinkedHashMap newLinkedHashMap:8] retain];
         i = -1;
     }
     return self;
@@ -51,38 +51,30 @@
 
 - (NSInteger) addObject:(NSString *)s
 {
-    NSString *I = [table objectForKey:s];
+    NSString *I = [table get:s];
     
     if (I != nil)
-        return [I intValue];
+        return [I integerValue];
     i++;
-    [table setObject:[NSString stringWithFormat:@"%d", i] forKey:s];
+    [table put:s value:[ACNumber numberWithInteger:i]];
     return i;
 }
 
 - (AMutableArray *) toArray
 {
-    AMutableArray *a = [AMutableArray arrayWithCapacity:5];
-    NSInteger count = [table count];
-    for (int idx = 0; idx < count; idx++) {
-        [a addObject:@""];
-    }
-
-//    for (NSString *s in [table allKeys]) {
-    NSString *s;
-//    ArrayIterator *it = [table keyEnumerator];
-    ArrayIterator *it = (ArrayIterator *)[table keyEnumerator];
+    AMutableArray *a = [AMutableArray arrayWithCapacity:8];
+    NSString *key;
+    LHMKeyIterator *it = (LHMKeyIterator *)[table newKeyIterator];
     while ( [it hasNext] ) {
-        s = (NSString *)[it nextObject];
-        i = [(NSString *)[table objectForKey:s] integerValue];
-        [a replaceObjectAtIndex:i withObject:s];
+        key = (NSString *)[it next];
+        [a addObject:key];
     }
     return a;
 }
 
-- (void) setObject:(id)obj forKey:(id)aKey
+- (void) put:(id)aKey value:(id)obj
 {
-    [table setObject:obj forKey:aKey];
+    [table put:aKey value:obj];
 }
 
 @synthesize table;

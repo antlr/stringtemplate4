@@ -93,10 +93,10 @@ NSInteger compare(NSString *s1, NSString *s2, void *context);
     NSMutableString *buf = [NSMutableString stringWithCapacity:100];
     [buf appendFormat:@"%@:", [self getTemplateDeclaratorString]];
     n++;
-    AMutableDictionary *attributes = [who getAttributes];
+    LinkedHashMap *attributes = [who getAttributes];
     if (attributes != nil) {
         AMutableArray *attrNames = [AMutableArray arrayWithCapacity:5];
-        [attrNames addObjectsFromArray:[attributes allKeys]];
+        [attrNames addObjectsFromArray:[[attributes newKeyIterator] toArray]];
         [attrNames sortUsingFunction:compare context:nil];
         NSString *longestName = [attrNames objectAtIndex:0];
         NSInteger w = [longestName length];
@@ -112,7 +112,7 @@ NSInteger compare(NSString *s1, NSString *s2, void *context);
             [buf appendString:@"\n"];
             [self indent:buf n:n];
             [buf appendFormat:fmtStr, [name cStringUsingEncoding:NSASCIIStringEncoding]];
-            id value = [attributes objectForKey:name];
+            id value = [[attributes get:name].value;
             [buf appendString:[self getValueDebugString:value n:n]];
         }
         

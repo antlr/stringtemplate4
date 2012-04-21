@@ -174,7 +174,7 @@
 
 - (void) updateAttributes:(DebugST *)st m:(STViewFrame *)m {
     DefaultListModel *attrModel = [[DefaultListModel alloc] init];
-    AMutableDictionary *attrs = [st attributes];
+    LinkedHashMap *attrs = [st attributes];
     if (attrs != nil) {
         
 //        for (NSString *a in [attrs allKeys]) {
@@ -196,10 +196,10 @@
                     }
                     
                 }
-                [attrModel addElement:[[a stringByAppendingString:@" = "] + [attrs objectForKey:a] stringByAppendingString:@" @ "] + [locations description]];
+                [attrModel addElement:[[a stringByAppendingString:@" = "] + [attrs get:a] stringByAppendingString:@" @ "] + [locations description]];
             }
             else {
-                [attrModel addElement:[a stringByAppendingString:@" = "] + [attrs objectForKey:a]];
+                [attrModel addElement:[a stringByAppendingString:@" = "] + [attrs get:a]];
             }
         }
         

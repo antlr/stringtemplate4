@@ -136,7 +136,6 @@
 {
     if ( formalArguments == nil )
         return;
-//    for (NSString *s in [formalArguments allKeys]) {
     NSString *a;
     LHMKeyIterator *it = [formalArguments newKeyIterator];
     while ( [it hasNext] ) {

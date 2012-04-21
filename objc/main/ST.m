@@ -181,9 +181,9 @@ NSString *RegionTypeDescription(RegionTypeEnum value)
 }
 
 /** Track construction-time add attribute "events"; used for ST user-level debugging */
-- (AMutableDictionary *)setAddAttrEvents
+- (LinkedHashMap *)setAddAttrEvents
 {
-    addAttrEvents = [AMutableDictionary dictionaryWithCapacity:25];
+    addAttrEvents = [LinkedHashMap newLinkedHashMap:25];
     return addAttrEvents;
 }
 
@@ -396,7 +396,7 @@ static DebugState *st_debugState = nil;
 #pragma mark fix this
     if ( STGroup.trackCreationEvents ) {
         if ( debugState==nil ) debugState = [DebugState newDebugState];
-        [debugState.addAttrEvents setObject:(id)[AddAttributeEvent newAddAttributeEvent:aName value:value] forKey:aName];
+        [debugState.addAttrEvents put:aName value:(id)[AddAttributeEvent newAddAttributeEvent:aName value:value]];
     }
     FormalArgument *arg = nil;
     if (impl.hasFormalArgs) {
@@ -447,6 +447,9 @@ static DebugState *st_debugState = nil;
     else if ( value != nil && [value isKindOfClass:[NSArray class]] ) {
         [multi addObjectsFromArray:(AMutableArray *)value];
     }
+    else if ( value != nil && [value isKindOfClass:[HashMap class]] ) {
+        [multi addObjectsFromArray:[[value values] toArray]];
+    }
     else {
         [multi addObject:value];
     }
@@ -495,7 +498,7 @@ static DebugState *st_debugState = nil;
     Aggregate *aggr = [Aggregate newAggregate];
     for (NSString *p in propNames) {
         id v = [values objectAtIndex:i++];
-        [aggr.props setObject:v forKey:p];
+        [aggr.props put:p value:v];
     }
 
     [self add:aggrName value:aggr]; // now add as usual
@@ -561,11 +564,11 @@ static DebugState *st_debugState = nil;
     return nil;
 }
 
-- (AMutableDictionary *) getAttributes
+- (LinkedHashMap *) getAttributes
 {
     if ( impl.formalArguments == nil )
         return nil;
-    AMutableDictionary *attributes = [AMutableDictionary dictionaryWithCapacity:16];
+    LinkedHashMap *attributes = [LinkedHashMap newLinkedHashMap:16];
     LHMValueIterator *it = [impl.formalArguments newValueIterator];
     while ( [it hasNext] ) {
         FormalArgument *arg = [it next];
@@ -573,7 +576,7 @@ static DebugState *st_debugState = nil;
         if ( obj == ST.EMPTY_ATTR ) {
             continue;
         }
-        [attributes setObject:obj forKey:arg.name];
+        [attributes put:arg.name value:obj];
     }
     return attributes;
 }

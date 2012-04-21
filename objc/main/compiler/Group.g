@@ -137,6 +137,7 @@ STGroup *group;
 + (NSInteger) TBIGSTRING_NO_NL { return BIGSTRING_NO_NL; }
 + (NSInteger) TID { return ID; }
 + (NSInteger) TTRUE { return T_TRUE; }
+
 - (void) displayRecognitionError:(AMutableArray *) tokenNames e:(RecognitionException *)e
 {
     NSString *msg = [self getErrorMessage:e TokenNames:[self getTokenNames]];
@@ -151,7 +152,7 @@ STGroup *group;
     NSFileWrapper *f = [[NSFileWrapper alloc] initWithURL:fullFileName options:NSFileWrapperReadingImmediate error:outError]; // strip to simple name
     return [f filename];
 #endif
-    return [group getFileName];
+    return [Misc getFileName:[group getFileName]];
 }
 
 - (void) error:(NSString *)msg
@@ -161,10 +162,12 @@ STGroup *group;
     [self recover:input Exception:nil];
 }
 
-- (NSString *) getErrorMessage:(NSException *)e TokenNames:(AMutableArray *)TokenNames
+/*
+- (NSString *) getErrorMessage:(RecognitionException *)e TokenNames:(AMutableArray *)TokenNames
 {
     return [NSString stringWithFormat:@"\%@--\%@", e.name, e.reason];
 }
+*/
 
 }
 
@@ -200,7 +203,7 @@ STGroup *group;
 
 - (NSString *) getSourceName
 {
-    return [super getSourceName];
+    return [Misc getFileName:[group getFileName]];
 }
 
 }

@@ -47,11 +47,11 @@
 - (id) init;
 - (void)dealloc;
 - (BOOL) containsObject:(NSString *)text;
-- (id) objectForKey:(NSString *)key;
-- (void) setObject:(id)obj forKey:(id)key;
+- (id) get:(NSString *)key;
+- (void) put:(id)key value:(id)obj;
 - (NSInteger) count;
-- (NSEnumerator *) keyEnumerator;
-- (NSArray *) objectEnumerator;
+- (LHMKeyIterator *) newKeyIterator;
+- (LHMEntryIterator *) newValueIterator;
 
 @property (retain) LinkedHashMap *dict;
 
@@ -155,7 +155,7 @@ NSString *OptionDescription(OptionEnum value);
      */
     __strong AMutableArray *events;
     //Map<ST, List<InterpEvent>> debugInfo;
-    __strong AMutableDictionary *debugInfo;
+    __strong LinkedHashMap *debugInfo;
     BOOL debug;
 }
 
@@ -180,9 +180,9 @@ NSString *OptionDescription(OptionEnum value);
 - (NSInteger) _exec:(Writer *)anSTWriter who:(ST *)aWho;
 - (void) load_str:(ST *)who ip:(NSInteger)ip;
 - (void) super_new:(ST *)aWho name:(NSString *)name nargs:(NSInteger)nargs;
-- (void) super_new:(ST *)aWho name:(NSString *)name attrs:(AMutableDictionary *)attrs;
-- (void) passthru:(ST *)aWho templateName:(NSString *)templateName attrs:(AMutableDictionary *)attrs;
-- (void) storeArgs:(ST *)aWho attrs:(AMutableDictionary *)attrs st:(ST *)st;
+- (void) super_new:(ST *)aWho name:(NSString *)name attrs:(LinkedHashMap *)attrs;
+- (void) passthru:(ST *)aWho templateName:(NSString *)templateName attrs:(LinkedHashMap *)attrs;
+- (void) storeArgs:(ST *)aWho attrs:(LinkedHashMap *)attrs st:(ST *)st;
 - (void) storeArgs:(ST *)aWho nargs:(NSInteger)nargs st:(ST *)st;
 - (void) indent:(id<STWriter>)wr1 who:(ST *)aWho index:(NSInteger)strIndex;
 - (NSInteger) writeObjectNoOptions:(Writer *)wr1 who:(ST *)aWho obj:(id)obj;
@@ -211,7 +211,7 @@ NSString *OptionDescription(OptionEnum value);
 - (ArrayIterator *) convertAnythingToIterator:(id)obj;
 - (BOOL) testAttributeTrue:(id)a;
 - (id) getObjectProperty:(id<STWriter>)anSTWriter who:(ST *)aWho obj:(id)obj property:(id)property;
-- (AMutableDictionary *) getDictionary:(STGroup *)g name:(NSString *)name;
+- (LinkedHashMap *) getDictionary:(STGroup *)g name:(NSString *)name;
 - (id) getAttribute:(ST *)aWho name:(NSString *)name;
 - (void) setDefaultArguments:(id<STWriter>)wr1 who:(ST *)invokedST;
 - (void) popScope;
@@ -238,7 +238,7 @@ NSString *OptionDescription(OptionEnum value);
 @property (retain) ErrorManager *errMgr;
 @property (retain) AMutableArray *events;
 @property (retain) AMutableArray *executeTrace;
-@property (retain) AMutableDictionary *debugInfo;
+@property (retain) LinkedHashMap *debugInfo;
 @property (assign) BOOL debug;
 
 @end

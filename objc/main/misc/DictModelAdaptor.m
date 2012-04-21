@@ -47,7 +47,7 @@
 - (id) getProperty:(Interpreter *)interp who:(ST *)aWho obj:(id)obj property:(id)aProperty propertyName:(NSString *)aPropertyName
 {
     id value;
-    AMutableDictionary *dict = (AMutableDictionary *)obj;
+    NSDictionary *dict = (NSDictionary *)obj;
     if ( aProperty == nil ) {
         value = [dict objectForKey:STGroup.DEFAULT_KEY];
     }

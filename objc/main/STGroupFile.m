@@ -208,7 +208,7 @@
         // beneath it.
     if ( STGroup.verbose ) NSLog(@"loading group file %@\n", [URL description]);
     [self loadGroupFile:@"/" fileName:fileName];
-    if ( STGroup.verbose ) NSLog(@"found %d templates in %@ = %@\n", [templates count], [URL description], [templates allKeys]);
+    if ( STGroup.verbose ) NSLog(@"found %d templates in %@ = %@\n", [templates count], [URL description], [[templates keySet] toArray]);
  }
 
 - (NSString *) show

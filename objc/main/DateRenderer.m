@@ -32,12 +32,12 @@
 
 @synthesize aDict;
 
-+ (id) newDictionary
++ (id) newDateRenderer_Anon1
 {
     return [[DateRenderer_Anon1 alloc] init];
 }
 
-+ (id) DictionaryWithCapacity:(NSInteger)len
++ (id) newDateRenderer_Anon1:(NSInteger)len
 {
     return [[DateRenderer_Anon1 alloc] initWithCapacity:len];
 }
@@ -46,20 +46,20 @@
 {
     self=[super init];
     if ( self != nil ) {
-        aDict = [[AMutableDictionary dictionaryWithCapacity:16] retain];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle] forKey:@"short"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle] forKey:@"medium"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle] forKey:@"medium"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle] forKey:@"long"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle] forKey:@"full"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle] forKey:@"date:short"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle] forKey:@"date:medium"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle] forKey:@"date:long"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle] forKey:@"date:full"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle] forKey:@"time:short"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle] forKey:@"time:medium"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle] forKey:@"time:long"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle] forKey:@"time:full"];
+        aDict = [[LinkedHashMap newLinkedHashMap:16] retain];
+        [aDict put:@"short" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle]];
+        [aDict put:@"medium" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle]];
+        [aDict put:@"medium" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle]];
+        [aDict put:@"long" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle]];
+        [aDict put:@"full" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle]];
+        [aDict put:@"date:short" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle]];
+        [aDict put:@"date:medium" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle]];
+        [aDict put:@"date:long" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle]];
+        [aDict put:@"date:full" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle]];
+        [aDict put:@"time:short" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle]];
+        [aDict put:@"time:medium" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle]];
+        [aDict put:@"time:long" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle]];
+        [aDict put:@"time:full" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle]];
     }
     return self;
 }
@@ -68,20 +68,20 @@
 {
     self=[super init];
     if ( self != nil ) {
-        aDict = [[AMutableDictionary dictionaryWithCapacity:len] retain];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle] forKey:@"short"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle] forKey:@"medium"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle] forKey:@"medium"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle] forKey:@"long"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle] forKey:@"full"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle] forKey:@"date:short"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle] forKey:@"date:medium"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle] forKey:@"date:long"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle] forKey:@"date:full"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle] forKey:@"time:short"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle] forKey:@"time:medium"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle] forKey:@"time:long"];
-        [aDict setObject:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle] forKey:@"time:full"];
+        aDict = [[LinkedHashMap newLinkedHashMap:len] retain];
+        [aDict put:@"short" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle]];
+        [aDict put:@"medium" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle]];
+        [aDict put:@"medium" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle]];
+        [aDict put:@"long" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle]];
+        [aDict put:@"full" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle]];
+        [aDict put:@"date:short" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle]];
+        [aDict put:@"date:medium" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle]];
+        [aDict put:@"date:long" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle]];
+        [aDict put:@"date:full" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle]];
+        [aDict put:@"time:short" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterShortStyle]];
+        [aDict put:@"time:medium" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterMediumStyle]];
+        [aDict put:@"time:long" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterLongStyle]];
+        [aDict put:@"time:full" value:[NSString stringWithFormat:@"%ld", (long)NSDateFormatterFullStyle]];
     }
     return self;
 }
@@ -95,14 +95,14 @@
     [super dealloc];
 }
 
-- (void) setObject:(id)anObject forKey:(id)aKey
+- (void) put:(id)aKey value:(id)anObject
 {
-    [aDict setObject:[anObject retain] forKey:[aKey retain]];
+    [aDict put:[aKey retain] value:[anObject retain]];
 }
 
-- (id) objectForKey:(id)aKey
+- (id) get:(id)aKey
 {
-    return [aDict objectForKey:aKey];
+    return [aDict get:aKey];
 }
 
 @end
@@ -113,10 +113,10 @@ static DateRenderer_Anon1 *formatToInt;
 
 + (void) initialize
 {
-    formatToInt = [DateRenderer_Anon1 newDictionary];
+    formatToInt = [DateRenderer_Anon1 newDateRenderer_Anon1];
 }
 
-+ (id) newDateRenderer
++ (id) newRenderer
 {
     return [[DateRenderer alloc] init];
 }
@@ -124,7 +124,7 @@ static DateRenderer_Anon1 *formatToInt;
 - (id) init
 {
     if ( (self=[super init]) != nil ) {
-        formatToInt = [DateRenderer_Anon1 newDictionary];
+        formatToInt = [DateRenderer_Anon1 newDateRenderer_Anon1];
     }
     return self;
 }
@@ -140,7 +140,7 @@ static DateRenderer_Anon1 *formatToInt;
 //        d = [((NSCalendar *)obj) time];
 //    else
 //        d = (NSDate *)obj;
-    style = (NSString *)[formatToInt objectForKey:formatString];
+    style = (NSString *)[formatToInt get:formatString];
     if (style == nil) {
         dateStr = [NSDateFormatter localizedStringFromDate:d dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterMediumStyle];
     }

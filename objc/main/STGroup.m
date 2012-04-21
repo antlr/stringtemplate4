@@ -87,8 +87,8 @@
  */
         dict = [[LinkedHashMap newLinkedHashMap:16] retain];
         [dict put:[NSObject className] value:[ObjectModelAdaptor newModelAdaptor]];
-        [dict put:[HashMap className] value:[MapModelAdaptor newModelAdaptor]];
         [dict put:[ST className] value:[STModelAdaptor newModelAdaptor]];
+        [dict put:[HashMap className] value:[MapModelAdaptor newModelAdaptor]];
         [dict put:[NSDictionary className] value:[DictModelAdaptor newModelAdaptor]];
         [dict put:[Aggregate className] value:[AggregateModelAdaptor newModelAdaptor]];
     }
@@ -109,13 +109,13 @@
     return dict;
 }
 
-- (id) objectForKey:(id)aKey
+- (id) get:(id)aKey
 {
     //    return [dict objectForKey:aKey];
     return [dict get:aKey];
 }
 
-- (void) setObject:(id)anObject forKey:(id)aKey
+- (void) put:(id)aKey value:(id)anObject
 {
     //    [dict setObject:anObject forKey:aKey];
     [dict put:aKey value:anObject];
@@ -252,8 +252,8 @@ static BOOL trackCreationEvents = NO;
         delimiterStopChar = aDelimiterStopChar;
         imports = [[AMutableArray arrayWithCapacity:16] retain];
         importsToClearOnUnload = [[AMutableArray arrayWithCapacity:16] retain];
-        templates = [[AMutableDictionary dictionaryWithCapacity:16] retain];
-        dictionaries = [[AMutableDictionary dictionaryWithCapacity:16] retain];
+        templates = [[LinkedHashMap newLinkedHashMap:16] retain];
+        dictionaries = [[LinkedHashMap newLinkedHashMap:16] retain];
         adaptors = [[[STGroup_Anon1 newSTGroup_Anon1] getDict] retain];
         typeToAdaptorCache = [[LinkedHashMap newLinkedHashMap:16] retain];
         iterateAcrossValues = NO;
@@ -353,9 +353,10 @@ static BOOL trackCreationEvents = NO;
 /** Look up a fully-qualified name */
 - (CompiledST *) lookupTemplate:(NSString *)aName
 {
+    CompiledST *code;
     if ( [aName characterAtIndex:0] != '/') aName = [NSString stringWithFormat:@"/%@", aName];
     if ( verbose ) NSLog(@"[%@ lookupTemplate:%@]\n", [self className], aName);
-    CompiledST *code = [self rawGetTemplate:aName];
+    code = [self rawGetTemplate:aName];
     if ( code == STGroup.NOT_FOUND_ST ) {
         if ( verbose ) NSLog(@"%@ previously seen as not found\n", aName);
         return nil;
@@ -365,7 +366,7 @@ static BOOL trackCreationEvents = NO;
     if ( code == nil ) code = [self lookupImportedTemplate:aName];
     if ( code == nil ) {
         if ( verbose ) NSLog(@"%@ recorded not found\n", aName);
-        [templates setObject:NOT_FOUND_ST forKey:aName];
+        [templates put:aName value:NOT_FOUND_ST];
     }
     if ( verbose && code != nil ) NSLog(@"[%@ lookupTemplate:%@] found\n", [self className], aName);
     return code;
@@ -377,8 +378,8 @@ static BOOL trackCreationEvents = NO;
  */
 - (void) unload
 {
-    [templates removeAllObjects];
-    [dictionaries removeAllObjects];
+    [templates clear];
+    [dictionaries clear];
     STGroup *imp;
     for ( imp in imports ) {
         [imp unload];
@@ -428,18 +429,19 @@ static BOOL trackCreationEvents = NO;
 
 - (CompiledST *) rawGetTemplate:(NSString *)aName
 {
-    CompiledST *c = [templates objectForKey:aName];
+    CompiledST *c;
+    c = [templates get:aName];
     return c;
 }
 
-- (AMutableDictionary *) rawGetDictionary:(NSString *)aName
+- (LinkedHashMap *) rawGetDictionary:(NSString *)aName
 {
-    return [dictionaries objectForKey:aName];
+    return [dictionaries get:aName];
 }
 
 - (BOOL) isDictionary:(NSString *)aName
 {
-    return ([dictionaries objectForKey:aName] != nil);
+    return ([dictionaries get:aName] != nil);
 }
 
 // for testing
@@ -593,12 +595,12 @@ static BOOL trackCreationEvents = NO;
     }
     code.nativeGroup = self;
     code.templateDefStartToken = defT;
-    [templates setObject:code forKey:aName];
+    [templates put:aName value:code];
 }
     
 - (void) undefineTemplate:(NSString *)aName
 {
-    [templates removeObjectForKey:aName];
+    [templates remove:aName];
 }
     
 /** Compile a template */
@@ -642,7 +644,7 @@ static BOOL trackCreationEvents = NO;
  */
 - (void) defineDictionary:(NSString *)aName mapping:(LinkedHashMap *)mapping
 {
-    [dictionaries setObject:mapping forKey:aName];
+    [dictionaries put:aName value:mapping];
 }
 
 - (void) importTemplates:(STGroup *)g
@@ -916,9 +918,9 @@ static BOOL trackCreationEvents = NO;
      [typeToAdaptorCache clear]; // be safe, not clever; whack all values
      */
     if (renderers == nil) {
-        renderers = [[AMutableArray arrayWithCapacity:5] retain];
+        renderers = [[LinkedHashMap newLinkedHashMap:5] retain];
     }
-    [renderers setObject:r forKey:[attributeType className]];
+    [renderers put:[attributeType className] value:r];
     if ( recursive ) {
         [self load];
         STGroup *g;
@@ -948,20 +950,19 @@ static BOOL trackCreationEvents = NO;
         if ( t.isAssignableFrom(attributeType) ) return renderers.get(t);
     }
  */
-    NSString *t;
-//    for ( t in [renderers allKeys] ) {
-    ArrayIterator *it = (ArrayIterator *)[renderers keyEnumerator];
+    LHMEntry *e;
+    LHMEntryIterator *it = (LHMEntryIterator *)[renderers newEntryIterator];
     while ( [it hasNext] ) {
-        t = (NSString *)[it nextObject];
+        e = [it next];
         // t works for attributeType if attributeType subclasses t or implements
-        id rendererClass = objc_getClass([t UTF8String]);
-        r = [renderers objectForKey:t];
+        id rendererClass = objc_getClass([e.key UTF8String]);
+        r = [renderers get:e.key];
         if ( typeToRendererCache == nil ) {
             typeToRendererCache = [[LinkedHashMap newLinkedHashMap:16] retain];
         }
         [typeToRendererCache put:[attributeType class] value:r];
         if ( [[attributeType class] isSubclassOfClass:rendererClass] )
-            return [renderers objectForKey:t];
+            return r;
     }
     return nil;
 }
@@ -1050,17 +1051,16 @@ static BOOL trackCreationEvents = NO;
     if (imports != nil) [buf appendFormat:@" : %@", imports];
 
     NSString *aName;
-//    for ( aName in [templates allKeys] ) {
-    ArrayIterator *it = (ArrayIterator *)[templates keyEnumerator];
+    LinkedHashIterator *it = (LinkedHashIterator *)[templates newKeyIterator];
     while ( [it hasNext] ) {
-        aName = (NSString *)[it nextObject];
+        aName = (NSString *)[it next];
         CompiledST *c = [self rawGetTemplate:aName];
         if (c.isAnonSubtemplate || c == STGroup.NOT_FOUND_ST)
             continue;
         aName = [aName lastPathComponent];
         [buf appendFormat:@"%@(", aName];
         if (c.formalArguments != nil)
-            [buf appendString:[Misc join:[[[c.formalArguments newValueIterator] toArray] objectEnumerator] separator:@","]];
+            [buf appendString:[Misc join:[[[c.formalArguments values] toArray] objectEnumerator] separator:@","]];
         [buf appendFormat:@") ::= <<%@%@%@>>%@", Misc.newline, c.template, Misc.newline, Misc.newline];
     }
     return [buf description];
@@ -1087,9 +1087,12 @@ static BOOL trackCreationEvents = NO;
         }
     }
 #endif
-    for ( NSString *e in [templates allKeys] ) {
-        if ( [templates objectForKey:e] != NOT_FOUND_ST ) {
-            [result addObject:e];
+    LHMEntryIterator *it = [templates newEntryIterator];
+    LHMEntry *e;
+    while ( [it hasNext] ) {
+        e = [it next];
+        if ( e.value != NOT_FOUND_ST ) {
+            [result addObject:e.key];
         }
     }
     return result;

@@ -84,17 +84,17 @@ typedef enum {
     /** Record who made us? ConstructionEvent creates Exception to grab stack */
     __strong ConstructionEvent *newSTEvent;
     /** Track construction-time add attribute "events"; used for ST user-level debugging */
-    __strong AMutableDictionary *addAttrEvents;
+    __strong LinkedHashMap *addAttrEvents;
 }
 
 @property (retain) ConstructionEvent *newSTEvent;
-@property (retain) AMutableDictionary *addAttrEvents;
+@property (retain) LinkedHashMap *addAttrEvents;
 
 + (id) newDebugState;
 - (id) init;
 - (void) dealloc;
 
-- (AMutableDictionary *)setAddAttrEvents;
+- (LinkedHashMap *)setAddAttrEvents;
 @end
 
 /**
@@ -181,7 +181,7 @@ typedef enum {
 - (void) remove:(NSString *)name;
 - (void) rawSetAttribute:(NSString *)name value:(id)value;
 - (id) getAttribute:(NSString *)name;
-- (AMutableDictionary *) getAttributes;
+- (LinkedHashMap *) getAttributes;
 + (AttributeList *) convertToAttributeList:(id)curvalue;
 - (NSString *) getName;
 - (NSInteger) write:(Writer *)wr1;

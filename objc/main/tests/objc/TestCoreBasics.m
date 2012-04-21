@@ -70,20 +70,20 @@
 {
     self=[super init];
     if ( self != nil ) {
-        aDict = [AMutableDictionary dictionaryWithCapacity:5];
-        [aDict setObject:@"b" forKey:@"a"];
+        aDict = [LinkedHashMap newLinkedHashMap:8];
+        [aDict put:@"a" value:@"b"];
     }
     return self;
 }
 
-- (void) setObject:(id)anObj forKey:(id)aName
+- (void) put:(id)aName value:(id)anObj
 {
-    [aDict setObject:anObj forKey:aName];
+    [aDict put:aName value:anObj];
 }
 
-- (id) objectForKey:(id)aKey
+- (id) get:(id)aKey
 {
-    return [aDict objectForKey:aKey];
+    return [aDict get:aKey];
 }
 
 @end
@@ -101,21 +101,20 @@
 {
     self=[super init];
     if ( self != nil ) {
-        aDict = [AMutableDictionary dictionaryWithCapacity:16];
-        [self setObject:@"b" forKey:@"a"];
-        [self setObject:@"d" forKey:@"c"];
+        aDict = [LinkedHashMap newLinkedHashMap:16];
+        [self put:@"a" value:@"b"];
+        [self put:@"c" value:@"d"];
     }
     return self;
 }
 
-- (void) setObject:(id)anObj forKey:(id)aName
-{
-    [aDict setObject:anObj forKey:aName];
+- (void) put:(id)aName value:(id)anObj{
+    [aDict put:aName value:anObj];
 }
 
-- (id) objectForKey:(id)aKey
+- (id) get:(id)aKey
 {
-    return [aDict objectForKey:aKey];
+    return [aDict get:aKey];
 }
 
 @end
@@ -955,8 +954,8 @@
 {
     NSString *aTemplate = @"<if(m.name)>works \\\\<endif>";
     ST *st = [ST newSTWithTemplate:aTemplate];
-    AMutableDictionary *m = [AMutableDictionary dictionaryWithCapacity:16];
-    [m setObject:@"Ter" forKey:@"name"];
+    LinkedHashMap *m = [LinkedHashMap newLinkedHashMap:16];
+    [m put:@"name" value:@"Ter"];
     [st add:@"m" value:m];
     NSString *expected = @"works \\";
     NSString *result = [st render];

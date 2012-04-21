@@ -66,7 +66,7 @@
     self = [super init];
     if (self) {
         // Initialization code here.
-        props = [AMutableDictionary dictionaryWithCapacity:5];
+        props = [LinkedHashMap newLinkedHashMap:5];
     }
     
     return self;
@@ -78,19 +78,14 @@
     [super dealloc];
 }
 
-- (void) put:(NSString *)propName Object:(id) propValue
+- (void) put:(NSString *)propName value:(id) propValue
 {
-    [props setObject:propValue forKey:propName];
+    [props put:propName value:propValue];
 }
 
 - (id) get:(NSString *)propName
 {
-    return [props objectForKey:propName];
-}
-
-- (NSString *)toString
-{
-    return [props description];
+    return [props get:propName];
 }
 
 - (NSString *)description
@@ -98,6 +93,11 @@
     NSString *desc = [props description];
     if ( desc == nil ) desc = @"props=<nil>";
     return desc;
+}
+
+- (NSString *)toString
+{
+    return [self description];
 }
 
 @end

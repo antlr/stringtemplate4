@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ANTLR/AMutableDictionary.h>
+#import <ANTLR/LinkedHashMap.h>
 
 @interface Aggregate : NSObject {
-    AMutableDictionary *props;
+    LinkedHashMap *props;
 	/** Allow StringTemplate to add values, but prevent the end
 	 *  user from doing so.
 	 */
@@ -23,10 +23,10 @@
 
 - (id)init;
 - (void) dealloc;
-- (void) put:(NSString *)propName Object:(id) propValue;
+- (void) put:(NSString *)propName value:(id) propValue;
 - (id) get:(NSString *)propName;
-- (NSString *)toString;
 - (NSString *)description;
+- (NSString *)toString;
 
-@property (retain) AMutableDictionary *props;
+@property (retain) LinkedHashMap *props;
 @end

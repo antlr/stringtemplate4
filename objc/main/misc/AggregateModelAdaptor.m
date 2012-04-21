@@ -49,22 +49,22 @@
     id value;
     Aggregate *aggr = (Aggregate *)obj;
     if ( aProperty == nil ) {
-        value = [aggr.props objectForKey:STGroup.DEFAULT_KEY];
+        value = [aggr.props get:STGroup.DEFAULT_KEY];
     }
     else if ( [aProperty isEqualTo:@"keys"] ) {
-        value = [aggr.props allKeys];
+        value = [[aggr.props keySet] toArray];
     }
     else if ( [aProperty isEqualTo:@"values"] ) {
-        value = [aggr.props allValues];
+        value = [[aggr.props values] toArray];
     }
-    else if ( [aProperty isKindOfClass:[NSString class]] && [aggr.props objectForKey:aProperty] ) {
-        value = [aggr.props objectForKey:aProperty];
+    else if ( [aProperty isKindOfClass:[NSString class]] && [aggr.props get:aProperty] ) {
+        value = [aggr.props get:aProperty];
     }
-    else if ( [aggr.props objectForKey:aPropertyName] ) { // if can't find the key, try toString version
-        value = [aggr.props objectForKey:aPropertyName];
+    else if ( [aggr.props get:aPropertyName] ) { // if can't find the key, try toString version
+        value = [aggr.props get:aPropertyName];
     }
     else {
-        value = [aggr.props objectForKey:STGroup.DEFAULT_KEY]; // not found, use default
+        value = [aggr.props get:STGroup.DEFAULT_KEY]; // not found, use default
     }
     if ( value == STGroup.DICT_KEY ) {
         value = aProperty;

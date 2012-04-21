@@ -16,27 +16,27 @@
 @end
 
 @interface TestCoreBasics_Anon2 : NSObject {
-    AMutableDictionary *aDict;
+    LinkedHashMap *aDict;
 }
 
 + (id) newAnon;
 - (id) init;
-- (void) setObject:(id)anObj forKey:(id)aName;
-- (id) objectForKey:(id)aKey;
+- (id) get:(id)aKey;
+- (void) put:(id)aName value:(id)anObj;
 
-@property (retain) AMutableDictionary *aDict;
+@property (retain) LinkedHashMap *aDict;
 @end
 
 @interface TestCoreBasics_Anon3 : NSObject {
-    AMutableDictionary *aDict;
+    LinkedHashMap *aDict;
 }
 
 + (id) newAnon;
 - (id) init;
-- (void) setObject:(id)anObj forKey:(id)aName;
-- (id) objectForKey:(id)aKey;
+- (id) get:(id)aKey;
+- (void) put:(id)aName value:(id)anObj;
 
-@property (retain) AMutableDictionary *aDict;
+@property (retain) LinkedHashMap *aDict;
 @end
 
 
