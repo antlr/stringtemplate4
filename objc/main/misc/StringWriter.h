@@ -6,7 +6,7 @@
 //  Copyright 2011 Alan's MachineWorks. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import "Writer.h"
 
 @interface StringWriter : Writer {

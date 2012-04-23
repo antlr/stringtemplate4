@@ -25,12 +25,12 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #import <ANTLR/ANTLR.h>
 #import "AutoIndentWriter.h"
 #import "Writer.h"
 #import "ST.h"
+#import "Misc.h"
 
 @implementation AutoIndentWriter
 @synthesize indents;
@@ -64,6 +64,7 @@
     if (self != nil) {
         writer = self;
     }
+    [Misc setNewline:@"\n"];
     return self;
 }
 
@@ -81,6 +82,7 @@
         [indents addObject:@""];
         newline = aNewline;
         [newline retain];
+        [Misc setNewline:newline];
         ip = 0;
         if (aWriter == nil) {
             writer = self;
@@ -118,6 +120,7 @@
         [indents addObject:@""];
         newline = @"\n";
         [newline retain];
+        [Misc setNewline:newline];
         writer = self;
         ip = 0;
     }

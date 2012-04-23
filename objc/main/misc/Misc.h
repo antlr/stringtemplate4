@@ -36,6 +36,7 @@
 }
 
 + (NSString *) newline;
++ (void) setNewline:(NSString *)aNewLine;
 + (NSString *) join:(ArrayIterator *)iter separator:(NSString *)separator;
 + (NSString *) strip:(NSString *)s n:(NSInteger)n;
 + (NSString *) trimOneStartingNewline:(NSString *)s;

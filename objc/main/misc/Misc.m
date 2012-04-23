@@ -25,20 +25,24 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#import <Cocoa/Cocoa.h>
+#import <FOUNDATION/Foundation.h>
 #import <ANTLR/ANTLR.h>
 #import "Misc.h"
-#import <FOUNDATION/Foundation.h>
 #import <objc/runtime.h>
 #import "STException.h"
 
 @implementation Misc
 
-static NSString *const newline = @"\n";
+static NSString *newline = @"\n";
 
 + (NSString *) newline
 {
     return newline;
+}
+
++ (void) setNewline:(NSString *)aNewLine
+{
+    newline = aNewLine;
 }
 
 + (NSString *) join:(ArrayIterator *)iter separator:(NSString *)separator

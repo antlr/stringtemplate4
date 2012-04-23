@@ -37,7 +37,7 @@
  * 
  * See unit tests.
  */
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class Interpreter;
 @class ST;

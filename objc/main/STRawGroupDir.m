@@ -1,4 +1,4 @@
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import "STRawGroupDir.h"
 
 /** A dir of templates w/o headers like ST v3 had.  Still allows group files

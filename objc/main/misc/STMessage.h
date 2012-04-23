@@ -26,7 +26,7 @@
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #import <ANTLR/ANTLR.h>
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import "ErrorType.h"
 #import <ANTLR/CommonToken.h>
 
