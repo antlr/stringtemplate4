@@ -129,16 +129,17 @@
 
 - (void) emit:(CommonTree *)opAST opcode:(short)opcode
 {
+    NSInteger i, j, lim, n, p, q;
     [self ensureCapacity:1];
     if (opAST != nil) {
-        NSInteger i = [opAST getTokenStartIndex];
-        NSInteger j = [opAST getTokenStopIndex];
-        NSInteger p = [((CommonToken *)[[tokens getTokens] objectAtIndex:i]) getStart];
-        NSInteger q = [((CommonToken *)[[tokens getTokens] objectAtIndex:j]) getStop];
-        if (!(p < 0 || q < 0)) {
-            j = [impl.sourceMap count];
-            if ( j <= ip ) {
-                for (NSInteger i = j; i <= ip; i++ )
+        i = [opAST getTokenStartIndex];
+        j = [opAST getTokenStopIndex];
+        p = [((CommonToken *)[[tokens getTokens] objectAtIndex:i]) getStart];
+        q = [((CommonToken *)[[tokens getTokens] objectAtIndex:j]) getStop];
+        if ( !(p < 0 || q < 0) ) {
+            lim = [impl.sourceMap count];
+            if ( lim <= ip ) {
+                for ( n = lim; n <= ip; n++ )
                     [impl.sourceMap addObject:[NSNull null]];
             }
             [impl.sourceMap replaceObjectAtIndex:ip withObject:[Interval newInterval:p b:q]];

@@ -16,8 +16,8 @@
 
 - (void) test02ListLiteralWithEmptyElements {
     ST *st = [ST newSTWithTemplate:@"<[\"Ter\",,\"Jesse\"]:{n | <i>:<n>}; separator=\", \", null={foo}>"];
-    NSString *expected = @"1:Ter, foo, 2:Jesse";
     [st.impl dump];
+    NSString *expected = @"1:Ter, foo, 2:Jesse";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
 }
@@ -128,7 +128,7 @@
 
 - (void) test13ListAsTemplateArgument {
     NSString *templates = @"test(names,phones) ::= \"<foo([names,phones])>\"\nfoo(items) ::= \"<items:{a | *<a>*}>\"\n";
-    [BaseTest writeFile:tmpdir fileName:@"t.stg" content:templates];
+    [self writeFile:tmpdir fileName:@"t.stg" content:templates];
     STGroup *group = [STGroupFile newSTGroupFile:[tmpdir stringByAppendingPathComponent:@"t.stg"]];
     ST *st = [group getInstanceOf:@"test"];
     [st add:@"names" value:@"Ter"];

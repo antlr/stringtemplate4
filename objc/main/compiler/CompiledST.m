@@ -242,10 +242,10 @@
     NSString *tmp;
 
     BytecodeDisassembler *dis = [BytecodeDisassembler newBytecodeDisassembler:self];
-    NSLog( @"%@:%@", name, [dis disassemble] );
-    NSLog( @"Strings:%@", [dis strings] );
+    NSLog( @"%@:\n%@", name, [dis disassemble] );
+    NSLog( @"Strings:\n%@", [dis strings] );
     tmp = [dis sourceMap];
-    NSLog( @"Bytecode to template map:%@", ((tmp != nil)?tmp:@"[dis sourceMap] returned nil") );
+    NSLog( @"Bytecode to template map:\n%@", ((tmp != nil)?tmp:@"[dis sourceMap] returned nil") );
 }
 
 - (NSString *) disasm

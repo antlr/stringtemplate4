@@ -172,13 +172,13 @@
     NSMutableString *buf = [NSMutableString stringWithCapacity:200];
     NSInteger addr = 0;
     if (code.strings != nil) {
-        for (id obj in code.strings) {
 /*
+        for (id obj in code.strings) {
+ */
         id obj;
         ArrayIterator *it = [ArrayIterator newIterator:code.strings];
         while ( [it hasNext] ) {
             obj = [it nextObject];
- */
             if ([obj isKindOfClass:[NSString class]]) {
                 NSString *s = (NSString *)obj;
                 s = [Misc replaceEscapes:s];
@@ -202,7 +202,7 @@
     ArrayIterator *it = [code.sourceMap objectEnumerator];
     while ( [it hasNext] ) {
         I = (Interval *)[it nextObject];
-        if (I != nil && I != [NSNull null]) {
+        if ( !(I == nil || I == [NSNull null]) ) {
             NSString *chunk = [code.template substringWithRange:NSMakeRange(I.a, (I.b + 1)-I.a)];
             [buf appendString:[NSString stringWithFormat:@"%04d: %@\t\"%@\"\n", addr, I, chunk]];
         }
