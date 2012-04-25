@@ -430,27 +430,21 @@ static DebugState *st_debugState = nil;
     AttributeList *multi;
     curvalue = [locals objectAtIndex:arg.index];
     if (curvalue == EMPTY_ATTR) {
-        if ( [value isKindOfClass:[NSArray class]] ) {
-            multi = [ST convertToAttributeList:value];
-            [locals replaceObjectAtIndex:arg.index withObject:multi];
-        }
-        else {
-            [locals replaceObjectAtIndex:arg.index withObject:value];
-        }
+        [locals replaceObjectAtIndex:arg.index withObject:value];
         return self;
     }
     multi = [ST convertToAttributeList:curvalue];
     [locals replaceObjectAtIndex:arg.index withObject:multi];
-    if ( [value isKindOfClass:[NSDictionary class]] ) {
+    if ( value != nil && [value isKindOfClass:[HashMap class]] ) {
+        [multi addObjectsFromArray:[[value entrySet] toArray]];
+    }
+    else if ( [value isKindOfClass:[NSDictionary class]] ) {
         [multi addObjectsFromArray:(NSArray *)[value allValues]];
     }
     else if ( value != nil && [value isKindOfClass:[NSArray class]] ) {
         [multi addObjectsFromArray:(AMutableArray *)value];
     }
-    else if ( value != nil && [value isKindOfClass:[HashMap class]] ) {
-        [multi addObjectsFromArray:[[value values] toArray]];
-    }
-    else {
+    else  {
         [multi addObject:value];
     }
     return self;
@@ -592,11 +586,11 @@ static DebugState *st_debugState = nil;
         multi = (AttributeList *)curvalue;
     }
     else if ( [curvalue isKindOfClass:[HashMap class]]) { // existing attribute is non-ST List
-                                                                // must copy to an ST-managed list before adding new attribute
-                                                                // (can't alter incoming attributes)
+        // must copy to an ST-managed list before adding new attribute
+        // (can't alter incoming attributes)
         HashMap *hm = (HashMap *)curvalue;
         multi = [AttributeList arrayWithCapacity:[hm count]];
-        [multi addObjectsFromArray:[[hm values] toArray]];
+        [multi addObjectsFromArray:[[hm entrySet] toArray]];
     }
     else if ( [curvalue isKindOfClass:[AMutableArray class]]) { // existing attribute is non-ST List
         // must copy to an ST-managed list before adding new attribute

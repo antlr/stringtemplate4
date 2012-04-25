@@ -68,20 +68,10 @@
     else if ( [map get:aPropertyName] ) { // if can't find the key, try toString version
         value = [map get:aPropertyName];
     }
-    else {
-        value = [map get:STGroup.DEFAULT_KEY]; // not found, use default
-    }
+    else value = [map get:STGroup.DEFAULT_KEY]; // not found, use default
     if ( value == STGroup.DICT_KEY ) {
         value = aProperty;
     }
-/*
-    if ( [value isKindOfClass:[ST class]] ) {
-        ST *st = (ST *)value;
-        st = [st.groupThatCreatedThisInstance createStringTemplateInternally:[CompiledST newCompiledST]];
-        st.enclosingInstance = aWho;
-        value = st;
-    }
- */
     return value;
 }
 

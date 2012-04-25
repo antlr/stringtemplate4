@@ -146,8 +146,8 @@ static ErrorManager *aDEFAULT_ERR_MGR = nil;
 /**
  * When we use key as a value in a dictionary, this is how we signify.
  */
-static NSString *const DEFAULT_KEY = @"default";
-static NSString *const DICT_KEY = @"key";
+static const NSString *DICT_KEY = @"key";
+static const NSString *DEFAULT_KEY = @"default";
 static BOOL debug = NO;
 static BOOL verbose = YES;
 static BOOL trackCreationEvents = NO;

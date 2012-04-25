@@ -13,6 +13,7 @@
 #import "ErrorManager.h"
 #import "STGroup.h"
 #import "Compiler.h"
+#import "Interpreter.h"
 
 NSString *const tmpdir = @"~/Documents/tmp";
 NSString *const newline = @"\n"/* Misc.newline */;

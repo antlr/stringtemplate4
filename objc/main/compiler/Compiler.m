@@ -51,11 +51,11 @@
 {
     if ( (self=[super init]) != nil ) {
         dict = [[LinkedHashMap newLinkedHashMap:16] retain];
-        [dict put:@"anchor"    value:[NSString stringWithFormat:@"%d", ANCHOR]];
-        [dict put:@"format"    value:[NSString stringWithFormat:@"%d", FORMAT]];
-        [dict put:@"null"      value:[NSString stringWithFormat:@"%d", _NULL]];
-        [dict put:@"separator" value:[NSString stringWithFormat:@"%d", SEPARATOR]];
-        [dict put:@"wrap"      value:[NSString stringWithFormat:@"%d", WRAP]];
+        [dict put:@"anchor"    value:[ACNumber numberWithInteger:ANCHOR]];
+        [dict put:@"format"    value:[ACNumber numberWithInteger:FORMAT]];
+        [dict put:@"null"      value:[ACNumber numberWithInteger:_NULL]];
+        [dict put:@"separator" value:[ACNumber numberWithInteger:SEPARATOR]];
+        [dict put:@"wrap"      value:[ACNumber numberWithInteger:WRAP]];
     }
     return self;
 }

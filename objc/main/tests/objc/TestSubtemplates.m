@@ -37,11 +37,12 @@
     STGroup *group = [STGroup newSTGroup];
     [group defineTemplate:@"test" argsS:@"emails" template:@"<emails:{n|<n>}>!"];
     ST *st = [group getInstanceOf:@"test"];
-    AMutableDictionary *emails = [AMutableDictionary dictionaryWithCapacity:10];
-    [emails setObject:@"Ter" forKey:@"parrt"];
-    [emails setObject:@"Tom" forKey:@"tombu"];
-    [emails setObject:@"Dan" forKey:@"dmose"];
+    LinkedHashMap *emails = [LinkedHashMap newLinkedHashMap:8];
+    [emails put:@"parrt" value:@"Ter"];
+    [emails put:@"tombu" value:@"Tom"];
+    [emails put:@"dmose" value:@"Dan"];
     [st add:@"emails" value:emails];
+    [st.impl dump];
     NSString *expected = @"parrttombudmose!";
     NSString *result = [st render];
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );

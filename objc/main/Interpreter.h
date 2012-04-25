@@ -162,6 +162,7 @@ NSString *OptionDescription(OptionEnum value);
 + (NSInteger) DEFAULT_OPERAND_STACK_SIZE;
 + (LinkedHashMap *) predefinedAnonSubtemplateAttributes;
 + (Interpreter_Anon3 *) Option;
++ (void) initialize;
 
 + (id) newInterpreter:(STGroup *)aGroup locale:(NSLocale *)aLocale debug:(BOOL)aDebug;
 

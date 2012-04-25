@@ -1094,7 +1094,7 @@ static BOOL trace = NO;
     while ( [it hasNext] ) {
         iterValue = [it nextObject];
         // Emit separator if we're beyond first value
-        if ( iterValue == [NSNull null] ) continue;
+        if ( iterValue == [NSNull null] ) iterValue = nil;
         BOOL needSeparator = seenAValue &&
                              separator != nil &&
                              ( iterValue != nil ||
