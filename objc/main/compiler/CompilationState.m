@@ -93,7 +93,7 @@
         [self emit1:aTree opcode:Bytecode.INSTR_LOAD_LOCAL arg:index];
     }
     else {
-        if ( [[Interpreter predefinedAnonSubtemplateAttributes] get:name] != nil ) {
+        if ( [[Interpreter predefinedAnonSubtemplateAttributes] containsKey:name] ) {
             [errMgr compileTimeError:REF_TO_IMPLICIT_ATTRIBUTE_OUT_OF_SCOPE templateToken:templateToken t:(CommonToken *)aTree.token];
             [self emit:aTree opcode:Bytecode.INSTR_NULL];
         }

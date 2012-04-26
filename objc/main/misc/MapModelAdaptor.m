@@ -62,10 +62,10 @@
     else if ( [aProperty isEqualTo:@"values"] ) {
         value = [[map values] toArray];
     }
-    else if ( [map get:aProperty] ) {
+    else if ( [map containsKey:aProperty] ) {
         value = [map get:aProperty];
     }
-    else if ( [map get:aPropertyName] ) { // if can't find the key, try toString version
+    else if ( [map containsKey:aPropertyName] ) { // if can't find the key, try toString version
         value = [map get:aPropertyName];
     }
     else value = [map get:STGroup.DEFAULT_KEY]; // not found, use default
