@@ -390,6 +390,11 @@ static BOOL trace = NO;
     return [[Interpreter alloc] init:aGroup locale:aLocale debug:aDebug];
 }
 
++ (id) newInterpreter:(STGroup *)aGroup locale:(NSLocale *)aLocale errMgr:(ErrorManager *)anErrMgr debug:(BOOL)aDebug
+{
+    return [[Interpreter alloc] init:aGroup locale:aLocale errMgr:anErrMgr debug:aDebug];
+}
+
 - (id) initWithGroup:(STGroup *)aGroup debug:(BOOL)aDebug
 {
     self = [self init:aGroup locale:[NSLocale currentLocale] errMgr:aGroup.errMgr debug:aDebug];
@@ -1172,8 +1177,8 @@ static BOOL trace = NO;
         if ( st != nil ) {
             [self setFirstArgument:aWho st:st attr:attr];
             if ( st.impl.isAnonSubtemplate ) {
-                [st rawSetAttribute:@"i0" value:@"0"];
-                [st rawSetAttribute:@"i" value:@"1"];
+                [st rawSetAttribute:@"i0" value:[ACNumber numberWithInteger:0]];
+                [st rawSetAttribute:@"i" value:[ACNumber numberWithInteger:1]];
             }
             operands[++sp] = st;
         }
@@ -1536,19 +1541,20 @@ static BOOL trace = NO;
     ArrayIterator *iter = nil;
     if ( obj == nil )
         return nil;
-    if ( [obj isKindOfClass:[HashMap class]] ) {
-        HashMap *obj1 = obj;
-        iter = (ArrayIterator *)[[[obj1 values] toArray] objectEnumerator];
-    }
-    else if ( [obj isKindOfClass:[AMutableArray class]] ) {
+    if ( [obj isKindOfClass:[AMutableArray class]] ) {
         AMutableArray *obj1 = obj;
         iter = (ArrayIterator *)[obj1 objectEnumerator];
     }
     else if ( [obj  isKindOfClass:[NSArray class]] )
         iter = (ArrayIterator *)[ArrayIterator newIterator:(NSArray *)obj];
     else if ( currentScope.st.groupThatCreatedThisInstance.iterateAcrossValues &&
-                [obj isKindOfClass:[AMutableDictionary class]] )
-        iter = (ArrayIterator *)[obj objectEnumerator];
+             [obj isKindOfClass:[HashMap class]] )
+            iter = (ArrayIterator *)[ArrayIterator newIterator:[[(HashMap *)obj values] toArray]];
+    else if (  currentScope.st.groupThatCreatedThisInstance.iterateAcrossValues &&
+             [obj isKindOfClass:[AMutableDictionary class]] )
+            iter = (ArrayIterator *)[obj objectEnumerator];
+    else if ( [obj isKindOfClass:[HashMap class]] )
+        iter = (ArrayIterator *)[ArrayIterator newIterator:[[(HashMap *)obj keySet] toArray]];
     else if ( [obj isKindOfClass:[AMutableDictionary class]] )
         iter = (ArrayIterator *)[obj keyEnumerator];
     else if ( [obj isKindOfClass:[NSDictionary class]] )
@@ -1565,14 +1571,6 @@ static BOOL trace = NO;
     obj = [self convertAnythingIteratableToIterator:obj];
     if ([obj isKindOfClass:[ArrayIterator class]])
         return (ArrayIterator *)obj;
-    if ( [obj isKindOfClass:[HashMap class]] )
-        return [[[((HashMap *)obj) values] toArray] objectEnumerator];
-    if ( [obj isKindOfClass:[AMutableDictionary class]] )
-        return [[((AMutableDictionary *)obj) allValues] objectEnumerator];
-    if ( [obj isKindOfClass:[AMutableArray class]] )
-        return [((AMutableArray *)obj) objectEnumerator];
-    if ( [obj isKindOfClass:[NSArray class]] )
-        return [[AMutableArray arrayWithArray:((NSArray *)obj)] objectEnumerator];
     AttributeList *singleton = [[AttributeList arrayWithCapacity:1] retain];
     [singleton addObject:obj];
     return (ArrayIterator *)[singleton objectEnumerator];

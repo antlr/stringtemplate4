@@ -165,6 +165,7 @@ NSString *OptionDescription(OptionEnum value);
 + (void) initialize;
 
 + (id) newInterpreter:(STGroup *)aGroup locale:(NSLocale *)aLocale debug:(BOOL)aDebug;
++ (id) newInterpreter:(STGroup *)aGroup locale:(NSLocale *)aLocale errMgr:(ErrorManager *)anErrMgr debug:(BOOL)aDebug;
 
 - (id) initWithGroup:(STGroup *)group debug:(BOOL)aDebug;
 - (id) init:(STGroup *)group locale:(NSLocale *)locale debug:(BOOL)aDebug;

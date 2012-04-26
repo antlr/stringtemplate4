@@ -626,25 +626,25 @@ static DebugState *st_debugState = nil;
 
 - (NSInteger) write:(id<STWriter>)wr1
 {
-    Interpreter *interp = [[Interpreter alloc] init:groupThatCreatedThisInstance errMgr:impl.nativeGroup.errMgr debug:NO];
+    Interpreter *interp = [Interpreter newInterpreter:groupThatCreatedThisInstance locale:[NSLocale currentLocale] errMgr:impl.nativeGroup.errMgr debug:NO];
     return [interp exec:wr1 who:self];
 }
 
 - (NSInteger) write:(id<STWriter>)wr1 locale:(NSLocale *)locale
 {
-    Interpreter *interp = [[Interpreter alloc] init:groupThatCreatedThisInstance locale:locale errMgr:impl.nativeGroup.errMgr debug:NO];
+    Interpreter *interp = [Interpreter newInterpreter:groupThatCreatedThisInstance locale:locale errMgr:impl.nativeGroup.errMgr debug:NO];
     return [interp exec:wr1 who:self];
 }
 
 - (NSInteger) write:(id<STWriter>)wr1 listener:(id<STErrorListener>)listener
 {
-    Interpreter *interp = [[Interpreter alloc] init:groupThatCreatedThisInstance errMgr:impl.nativeGroup.errMgr debug:NO];
+    Interpreter *interp = [Interpreter newInterpreter:groupThatCreatedThisInstance locale:[NSLocale currentLocale] errMgr:impl.nativeGroup.errMgr debug:NO];
     return [interp exec:wr1 who:self];
 }
 
 - (NSInteger) write:(id<STWriter>)wr1 locale:(NSLocale *)locale listener:(id<STErrorListener>)listener
 {
-    Interpreter *interp = [[Interpreter alloc] init:groupThatCreatedThisInstance locale:locale errMgr:[ErrorManager newErrorManagerWithListener:listener] debug:NO];
+    Interpreter *interp = [Interpreter newInterpreter:groupThatCreatedThisInstance locale:locale errMgr:[ErrorManager newErrorManagerWithListener:listener] debug:NO];
     return [interp exec:wr1 who:self];
 }
 

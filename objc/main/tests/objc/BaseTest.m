@@ -122,7 +122,7 @@ NSString *const newline = @"\n"/* Misc.newline */;
 - (void)tearDown
 {
     // Tear-down code here.
-    
+    [STGroup resetDefaultGroup];
 //    [super tearDown];
 }
 
