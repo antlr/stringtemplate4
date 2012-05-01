@@ -50,7 +50,7 @@ static NSString *newline = @"\n";
     NSMutableString *buf = [NSMutableString stringWithCapacity:16];
     NSString *obj;
     while ( (obj = [iter nextObject]) != nil ) {
-        [buf appendString:obj];
+        [buf appendString:[obj description]];
         if ([iter hasNext]) {
             [buf appendString:separator];
         }
