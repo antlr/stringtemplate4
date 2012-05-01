@@ -26,6 +26,7 @@
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #import "AttributeRenderer.h"
+#import <ANTLR/ACNumber.h>
 /**
  * Works with Byte, Short, Integer, Long, and BigInteger as well as
  * Float, Double, and BigDecimal.  You pass in a format string suitable
@@ -40,7 +41,9 @@
 @interface NumberRenderer : NSObject <AttributeRenderer> {
 }
 
++ (NumberRenderer *) newRenderer;
 - (id) init;
+- (NSString *) formatObj:(ACNumber *)obj format:(NSString *)str locale:(NSLocale *)locale;
 - (NSString *) description:(id)obj formatString:(NSString *)formatString locale:(NSLocale *)locale;
 - (NSString *) toString:(id)obj formatString:(NSString *)formatString locale:(NSLocale *)locale;
 @end

@@ -106,7 +106,7 @@
 - (void) setOption:(CommonTree *)aTree
 {
     NSInteger Opt;
-    Opt = (NSInteger)[[[Compiler getSupportedOptions] get:aTree.text] intValue];
+    Opt = (NSInteger)[[[Compiler getSupportedOptions] get:aTree.text] integerValue];
     [self emit1:aTree opcode:Bytecode.INSTR_STORE_OPTION arg:Opt];
 }
 

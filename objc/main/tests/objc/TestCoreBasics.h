@@ -1,11 +1,10 @@
 #import <Foundation/Foundation.h>
 #import <ANTLR/ANTLR.h>
-#import <GHUnit/GHTestCase.h>
+#import "BaseTest.h"
 #import "ErrorBuffer.h"
 #import "STException.h"
 #import "STRuntimeMessage.h"
 #import "StringWriter.h"
-#import "BaseTest.h"
 
 @interface TestCoreBasics_Anon1 : AMutableArray {
 }

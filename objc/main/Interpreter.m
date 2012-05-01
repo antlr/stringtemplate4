@@ -1120,16 +1120,11 @@ static BOOL trace = NO;
     id<AttributeRenderer> r = nil;
     if (options != nil)
         formatString = [options objectAtIndex:Interpreter.Option.FORMAT];
-    if ( obj != nil ) {
-        r = [group getAttributeRenderer:[obj class]];
-    }
+    r = [currentScope.st.impl.nativeGroup getAttributeRenderer:[obj class]];
     if ( r != nil )
         v = [r description:obj formatString:formatString locale:locale];
     else {
-        if ( obj == nil )
-            v = @"";
-        else
-            v = [obj description];
+        v = [obj description];
     }
     NSInteger n;
     if ( options != nil && [options objectAtIndex:Interpreter.Option.WRAP] != nil ) {

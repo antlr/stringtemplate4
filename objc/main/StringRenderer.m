@@ -29,6 +29,11 @@
 
 @implementation StringRenderer
 
++ (StringRenderer *) newRenderer
+{
+    return [[StringRenderer alloc] init];
+}
+
 - (id) init
 {
     self = [super init];
@@ -36,7 +41,12 @@
 }
 
 - (NSString *) description:(id)obj formatString:(NSString *)formatString locale:(NSLocale *)locale {
-    NSString *s = (NSString *)obj;
+    NSString *s;
+    if ( [obj isKindOfClass:[NSString class]] )  
+        s = (NSString *)obj;
+    else
+        return ( @"Invalid Class Object for obj\n" );
+
     if ( formatString == nil )
         return s;
     if ( [formatString isEqualToString:@"upper"] )
@@ -51,12 +61,12 @@
         return [s stringByStandardizingPath];
     }
 #pragma error to resolve
-#ifdef DONTUSEYET
     if ( [formatString isEqualToString:@"xml-encode"] ) {
-        return [self escapeHTML:s];
+        return [StringRenderer escapeHTML:s];
     }
-#endif
-    return [NSString stringWithFormat:formatString, s];
+    char *str;
+    str = [s cStringUsingEncoding:NSASCIIStringEncoding];
+    return [NSString stringWithFormat:formatString, str];
 }
 
 - (NSString *) toString:(id)obj formatString:(NSString *)formatString locale:(NSLocale *)locale {

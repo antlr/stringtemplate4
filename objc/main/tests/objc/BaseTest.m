@@ -217,7 +217,7 @@ NSString *const newline = @"\n"/* Misc.newline */;
     return nil;
 }
 
-- (void) assertEquals:(NSString *)expected arg1:(NSString *)result
+- (void) assertEquals:(NSString *)expected result:(NSString *)result
 {
     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
 }
