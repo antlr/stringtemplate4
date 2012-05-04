@@ -345,7 +345,7 @@ static formalArgs_Scope *formalArgs_scope;
 + (NSInteger) TID { return ID; }
 + (NSInteger) TTRUE { return T_TRUE; }
 
-- (void) displayRecognitionError:(AMutableArray *) tokenNames e:(RecognitionException *)e
+- (void) displayRecognitionError:(AMutableArray *) tokenNames Exception:(RecognitionException *)e
 {
     NSString *msg = [self getErrorMessage:e TokenNames:[self getTokenNames]];
     [group.errMgr groupSyntaxError:SYNTAX_ERROR srcName:[self getSourceName] e:e msg:msg];
@@ -1106,7 +1106,7 @@ static formalArgs_Scope *formalArgs_scope;
                         alt12=3;
                         }
                         break;
-                    case EOF: ;
+                    case 65535: ;
                     case ID: ;
                     case 22: ;
                         {

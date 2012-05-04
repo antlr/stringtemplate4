@@ -121,7 +121,7 @@ STGroup *group;
 + (NSInteger) TBIGSTRING_NO_NL;
 + (NSInteger) TID;
 + (NSInteger) TTRUE;
-- (void) displayRecognitionError:(AMutableArray *) tokenNames e:(RecognitionException *)e;
+- (void) displayRecognitionError:(AMutableArray *) tokenNames Exception:(RecognitionException *)e;
 - (NSString *) getSourceName;
 - (void) error:(NSString *)msg;
 - (NSString *) getErrorMessage:(NSException *)e TokenNames:(AMutableArray *)TokenNames;

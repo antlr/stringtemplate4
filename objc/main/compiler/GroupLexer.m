@@ -329,8 +329,9 @@ const static NSInteger *dfa8_transition[] =
 #pragma error fix formatting
         msg = [NSString stringWithFormat:@"invalid character '%C'", [input LA:1]];
     }
-    else if ( [e isKindOfClass:[MismatchedTokenException class]] && ((MismatchedTokenException *)e).expecting=='"' ) {
-        msg = @"unterminated string";
+    else if ( [e isKindOfClass:[MismatchedTokenException class]] &&
+              ((MismatchedTokenException *)e).expectingChar == '"' ) {
+            msg = @"unterminated string";
     }
     else {
         msg = [self getErrorMessage:e TokenNames:[self getTokenNames]];

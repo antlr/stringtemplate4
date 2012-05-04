@@ -934,35 +934,24 @@ static BOOL trackCreationEvents = NO;
     if ( renderers == nil )     return nil;
     id<AttributeRenderer> r = nil;
     if ( typeToRendererCache != nil ) {
-        r = [typeToRendererCache get:attributeType];
+        r = [typeToRendererCache get:[attributeType className]];
         if ( r != nil ) return r;
     }
-/*
-    if ( renderers==nil ) return nil;
-    AttributeRenderer r = nil;
-    if ( typeToRendererCache != nil ) {
-        r = [typeToRendererCache objectAtIndex:attributeType];
-        if ( r != nil ) return r;
-    }
-    // Else look up, finding first first
-    for ( Class t in [renderers allKeys] ) {
-        // t works for attributeType if attributeType subclasses t or implements
-        if ( t.isAssignableFrom(attributeType) ) return renderers.get(t);
-    }
- */
     LHMEntry *e;
-    LHMEntryIterator *it = (LHMEntryIterator *)[renderers newEntryIterator];
+    NSString *key;
+    LHMEntryIterator *it = (LHMEntryIterator *)[renderers newKeyIterator];
     while ( [it hasNext] ) {
-        e = [it next];
+        key = [it next];
         // t works for attributeType if attributeType subclasses t or implements
-        id rendererClass = objc_getClass([e.key UTF8String]);
-        r = [renderers get:e.key];
-        if ( typeToRendererCache == nil ) {
-            typeToRendererCache = [[LinkedHashMap newLinkedHashMap:16] retain];
-        }
-        [typeToRendererCache put:[attributeType class] value:r];
-        if ( [[attributeType class] isSubclassOfClass:rendererClass] )
+        id rendererClass = objc_getClass([key UTF8String]);
+        if ( [[attributeType class] isSubclassOfClass:rendererClass] ) {
+            r = [renderers get:key];
+            if ( typeToRendererCache == nil ) {
+                typeToRendererCache = [[LinkedHashMap newLinkedHashMap:16] retain];
+            }
+            [typeToRendererCache put:[attributeType className] value:r];
             return r;
+        }
     }
     return nil;
 }
@@ -1048,7 +1037,7 @@ static BOOL trackCreationEvents = NO;
 - (NSString *) show
 {
     NSMutableString *buf = [NSMutableString stringWithCapacity:16];
-    if (imports != nil) [buf appendFormat:@" : %@", imports];
+    if (imports != nil && [imports count] > 0) [buf appendFormat:@" : %@", imports];
 
     NSString *aName;
     LinkedHashIterator *it = (LinkedHashIterator *)[templates newKeyIterator];
