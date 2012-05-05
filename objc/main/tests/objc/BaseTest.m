@@ -15,7 +15,7 @@
 #import "Compiler.h"
 #import "Interpreter.h"
 
-NSString *const tmpdir = @"~/Documents/tmp";
+NSString *const tmpdir = @"/tmp";
 NSString *const newline = @"\n"/* Misc.newline */;
 
 @implementation User

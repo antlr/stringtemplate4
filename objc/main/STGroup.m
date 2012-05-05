@@ -796,7 +796,7 @@ static BOOL trackCreationEvents = NO;
         GroupLexer *lexer = [GroupLexer newGroupLexerWithCharStream:ais];
         CommonTokenStream *tokens = [CommonTokenStream newCommonTokenStreamWithTokenSource:lexer];
         aParser = [GroupParser newGroupParser:tokens];
-        [aParser group:self arg1:prefix];
+        [aParser group:self prefix:prefix];
     }
     @catch (NSException *e) {
         [errMgr IOError:nil error:CANT_LOAD_GROUP_FILE e:e arg:aFileName];

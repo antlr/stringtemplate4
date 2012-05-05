@@ -163,7 +163,7 @@ STGroup *group;
 /* ObjC start of methodsDecl */
 /* ObjC end of methodsDecl */
 
-- (void)group:(STGroup *)aGroup arg1:(NSString *)prefix ; 
+- (void)group:(STGroup *)aGroup prefix:(NSString *)prefix ; 
 - (void)oldStyleHeader; 
 - (NSString *)groupName; 
 - (void)delimiters; 

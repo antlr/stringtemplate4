@@ -111,7 +111,7 @@
         GroupLexer *lexer = [GroupLexer newGroupLexerWithCharStream:fs];
         CommonTokenStream *tokens = [CommonTokenStream newCommonTokenStreamWithTokenSource:lexer];
         parser = [GroupParser newGroupParser:tokens];
-        [parser group:self arg1:@"/"];
+        [parser group:self prefix:@"/"];
     }
     @catch (NSException * e) {
         [errMgr IOError:nil error:CANT_LOAD_GROUP_FILE e:e arg:@"<string>"];

@@ -385,7 +385,7 @@ static formalArgs_Scope *formalArgs_scope;
  * $ANTLR start group
  * /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/Group.g:211:1: group[STGroup *aGroup, NSString *prefix] : ( oldStyleHeader )? ( delimiters )? ( 'import' STRING | 'import' ID ( '.' ID )* )* ( def[prefix] )+ ;
  */
-- (void) group:(STGroup *)aGroup arg1:(NSString *)prefix 
+- (void) group:(STGroup *)aGroup prefix:(NSString *)prefix 
 {
     /* ruleScopeSetUp */
 
@@ -1269,8 +1269,7 @@ static formalArgs_Scope *formalArgs_scope;
 
                 /* ruleRef */
                 [self pushFollow:FOLLOW_formalArg_in_formalArgs660];
-                [self formalArg:args
-                 ];
+                [self formalArg:args];
 
                 [self popFollow];
 
