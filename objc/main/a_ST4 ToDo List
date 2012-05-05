@@ -1,7 +1,14 @@
-All of the files now compile.
-
-OcTest runs the tests with garbage collection on GCON and GCOFF.
-ST4 ObjC also passes all of the TestCompiler tests with GCON.
-ST4 ObjC also passes all of the TestFunction tests with GCON.
-ST4 ObjC also passes all of the TestLexer tests with GCON.
-ST4 ObjC passes first 22 TextCoreBasics tests with GCON.
+GHTest runs the tests with garbage collection GCOFF.
+ST4 ObjC passes all of the TestCompiler tests with GCOFF.
+ST4 ObjC passes all of the TestCoreBasics tests with GCOFF.
+ST4 ObjC passes all of the TestDictionaries tests with GCOFF.
+ST4 ObjC passes all of the TestFunction tests with GCOFF.
+ST4 ObjC passes all of the TestGroups tests with GCOFF.
+ST4 ObjC passes all of the TestGroupSyntax tests with GCOFF.
+ST4 ObjC passes all of the TestGroupSyntaxErrors tests with GCOFF.
+ST4 ObjC passes all of the TestLexer tests with GCOFF.
+ST4 ObjC passes all of the TestLists tests with GCOFF.
+ST4 ObjC passes all of the TestMisc tests with GCOFF.
+ST4 ObjC passes all of the TestRenderers tests with GCOFF.
+ST4 ObjC passes all of the TestSubtemplates tests with GCOFF.
+ST4 ObjC passes all of the TestWhitespace tests with GCOFF.
