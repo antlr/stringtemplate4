@@ -3,30 +3,33 @@
  * @author Terence Parr
  */
 
-@interface STViewFrame : JFrame {
-  JSplitPane *overallSplitPane;
-  JSplitPane *mainSplitPane;
-  JSplitPane *topSplitPane;
-  JScrollPane *treeScrollPane;
-  JTree *tree;
-  JScrollPane *scrollPane7;
-  JTextPane *output;
-  JSplitPane *bottomSplitPane;
-  JScrollPane *attributeScrollPane;
-  JList *attributes;
-  JTabbedPane *tabbedPane1;
-  JPanel *panel1;
-  JScrollPane *scrollPane3;
-  JTextPane *template;
-  JScrollPane *scrollPane2;
-  JTree *ast;
-  JScrollPane *scrollPane15;
-  JTextPane *bytecode;
-  JScrollPane *scrollPane1;
-  JTextPane *trace;
-  JScrollPane *errorScrollPane;
-  JList *errorList;
+#import <AppKit/AppKit.h>
+
+@interface STViewFrame : NSView {
+    JToolBar *toolBar1;
+    NSSplitView *treeContentSplitPane;
+    NSSplitView *treeAttributesSplitPane;
+    NSScrollView *treeScrollPane;
+    JTree *tree;
+    NSScrollView *attributeScrollPane;
+    JTree *attributes;
+    NSSplitView *outputTemplateSplitPane;
+    NSScrollView *scrollPane7;
+    NSTextView *output;
+    JTabbedPane *templateBytecodeTraceTabPanel;
+    NSPanel *panel1;
+    NSScrollView *scrollPane3;
+    NSTextView *template;
+    NSScrollView *scrollPane2;
+    JTree *ast;
+    NSScrollView *scrollPane15;
+    NSTextView *bytecode;
+    NSScrollView *scrollPane1;
+    NSTextView *trace;
+    NSScrollView *errorScrollPane;
+    JList *errorList;
 }
 
++ (STViewFrame *)newSTViewFrame;
 - (id) init;
 @end

@@ -2,76 +2,77 @@
 
 @implementation STViz_Anon1
 
-- (void) valueChanged:(TreeSelectionEvent *)treeSelectionEvent {
-    currentST = ((Wrapper *)[m.tree lastSelectedPathComponent]).st;
-    [self updateCurrentST:m];
+- (void) valueChanged:(TreeSelectionEvent *)treeSelectionEvent
+{
+    currentScope = ((Wrapper *)[viewFrame.tree lastSelectedPathComponent]).event.scope;
+    [self updateCurrentST:viewFrame];
 }
 
 @end
 
 @implementation STViz_Anon2
 
-- (void) valueChanged:(TreeSelectionEvent *)treeSelectionEvent {
+- (void) valueChanged:(TreeSelectionEvent *)treeSelectionEvent
+{
+    TreePath * path = [treeSelectionEvent newLeadSelectionPath];
+    if (path == nil)
+        return;
     CommonTree *node = (CommonTree *)[[treeSelectionEvent newLeadSelectionPath] lastPathComponent];
-    NSLog([@"select AST: " stringByAppendingString:node]);
-    CommonToken *a = (CommonToken *)[currentST.impl.tokens get:[node tokenStartIndex]];
-    CommonToken *b = (CommonToken *)[currentST.impl.tokens get:[node tokenStopIndex]];
-    [self highlight:m.template param1:[a startIndex] param2:[b stopIndex]];
+    CommonToken *a = (CommonToken *)[currentScope.st.impl.tokens get:[node tokenStartIndex]];
+    CommonToken *b = (CommonToken *)[currentScope.st.impl.tokens get:[node tokenStopIndex]];
+    [self highlight:viewFrame.template i:[a startIndex] j:[b stopIndex]];
 }
 
 @end
 
 @implementation STViz_Anon3
 
-- (void) valueChanged:(ListSelectionEvent *)e {
-    NSInteger minIndex = [m.attributes minSelectionIndex];
-    NSInteger maxIndex = [m.attributes maxSelectionIndex];
+- (void) caretUpdate:(CaretEvent *)e
+{
+    NSInteger dot = [e dot];
+    InterpEvent *de = [self findEventAtOutputLocation:allEvents param1:dot];
+    if (de == nil)
+        currentScope = tmodel.root.event.scope;
+    else
+        currentScope = de.scope;
+    NSMutableArray *stack = [Interpreter getEvalTemplateEventStack:currentScope param1:YES];
+    NSArray *path = [NSArray array];
+    int j = 0;
     
-    for (NSInteger i = minIndex; i <= maxIndex; i++) {
-        if ([m.attributes isSelectedIndex:i]) {
-        }
-    }
+    for (EvalTemplateEvent *s in stack)
+        path[j++] = [[[Wrapper alloc] init:s] autorelease];
     
+    TreePath *p = [[[TreePath alloc] init:path] autorelease];
+    [viewFrame.tree setSelectionPath:p];
+    [viewFrame.tree scrollPathToVisible:p];
+    [self updateCurrentST:viewFrame];
 }
 
 @end
 
 @implementation STViz_Anon4
 
-- (void) caretUpdate:(CaretEvent *)e {
-    NSInteger dot = [e dot];
-    InterpEvent *de = [self findEventAtOutputLocation:allEvents param1:dot];
-    if (de == nil)
-        currentST = tmodel.root.st;
-    else
-        currentST = de.self;
-    [self updateCurrentST:m];
-}
-
-@end
-
-@implementation STViz_Anon5
-
-- (void) valueChanged:(ListSelectionEvent *)e {
-    NSInteger minIndex = [m.errorList minSelectionIndex];
-    NSInteger maxIndex = [m.errorList maxSelectionIndex];
+- (void) valueChanged:(ListSelectionEvent *)e
+{
+    NSInteger minIndex = [viewFrame.errorList minSelectionIndex];
+    NSInteger maxIndex = [viewFrame.errorList maxSelectionIndex];
     NSInteger i = minIndex;
     
     while (i <= maxIndex) {
-        if ([m.errorList isSelectedIndex:i])
+        if ([viewFrame.errorList isSelectedIndex:i])
             break;
         i++;
     }
     
-    ListModel *model = [m.errorList model];
+    ListModel *model = [viewFrame.errorList model];
     STMessage *msg = (STMessage *)[model getElementAt:i];
     if ([msg conformsToProtocol:@protocol(STRuntimeMessage)]) {
         STRuntimeMessage *rmsg = (STRuntimeMessage *)msg;
         Interval *I = rmsg.self.impl.sourceMap[rmsg.ip];
-        currentST = (DebugST *)msg.self;
-        [self updateCurrentST:m];
+        currentScope = ((STRuntimeMessage *)msg).scope;
+        [self updateCurrentST:viewFrame];
         if (I != nil) {
-            [self highlight:m.template param1:I.a param2:I.b];
+            [self highlight:viewFrame.template i:I.a j:I.b];
         }
     }
 }
@@ -80,142 +81,128 @@
 
 @implementation STViz
 
-- (id) init:(ErrorManager *)errMgr root:(DebugST *)root output:(NSString *)output interp:(Interpreter *)interp trace:(AMutableArray *)trace errors:(AMutableArray *)errors {
-    if ( (self=[super init]) != nil ) {
++ (STViz *) newSTViz:(ErrorManager *)anErrMgr root:(EvalTemplateEvent *)aRoot output:(NSString *)anOutput interp:(Interpreter *)anInterp trace:(AMutableArray *)aTrace errors:(AMutableArray *)theErrors
+{
+    return [[STViz alloc] init:anErrMgr root:aRoot output:anOutput interp:anInterp trace:aTrace errors:theErrors];
+}
+
+- (id) init:(ErrorManager *)anErrMgr root:(EvalTemplateEvent *)aRoot output:(NSString *)anOutput interp:(Interpreter *)anInterp trace:(AMutableArray *)aTrace errors:(AMutableArray *)theErrors
+{
+    if (self = [super init]) {
         errMgr = errMgr;
-        currentST = root;
+        currentScope = root.scope;
+        output = output;
         interp = interp;
         allEvents = [interp events];
+        trace = trace;
         errors = errors;
-        STViewFrame *m = [[STViewFrame alloc] init];
-        [self updateStack:currentST m:m];
-        [self updateAttributes:currentST m:m];
-        tmodel = [[JTreeSTModel alloc] init:interp param1:currentST];
-        [m.tree setModel:tmodel];
-        [m.tree addTreeSelectionListener:[[STViz_Anon1 alloc] init]];
-        JTreeASTModel *astModel = [[JTreeASTModel alloc] init:[[CommonTreeAdaptor alloc] init] param1:currentST.impl.ast];
-        [m.ast setModel:astModel];
-        [m.ast addTreeSelectionListener:[[STViz_Anon2 alloc] init]];
-        [m.attributes addListSelectionListener:[[STViz_Anon3 alloc] init]];
-        [m.output setText:output];
-        [m.template setText:currentST.impl.template];
-        [m.bytecode setText:[currentST.impl disasm]];
-        [m.trace setText:[Misc join:[trace objectEnumerator] param1:@"\n"]];
-        CaretListener *caretListenerLabel = [[STViz_Anon4 alloc] init];
-        [m.output addCaretListener:caretListenerLabel];
-        [m setDefaultCloseOperation:JFrame.EXIT_ON_CLOSE];
-        [m pack];
-        [m setSize:800 param1:600];
-        [m.topSplitPane setBorder:nil];
-        [m.overallSplitPane setBorder:nil];
-        if (errors == nil || [errors count] == 0) {
-            [m.errorScrollPane setVisible:NO];
-        }
-        else {
-            DefaultListModel *errorListModel = [[DefaultListModel alloc] init];
-            
-            for (STMessage *msg in errors) {
-                [errorListModel addElement:msg];
-            }
-            
-            [m.errorList setModel:errorListModel];
-        }
-        [m.errorList addListSelectionListener:[[STViz_Anon5 alloc] init]];
-        [m.bottomSplitPane setBorder:nil];
-        [m.treeScrollPane setPreferredSize:[[Dimension alloc] init:120 param1:400]];
-        [m.bottomSplitPane setPreferredSize:[[Dimension alloc] init:120 param1:200]];
-        [m setVisible:YES];
     }
     return self;
 }
 
-- (void) updateCurrentST:(STViewFrame *)m {
-    [self updateStack:currentST m:m];
-    [self updateAttributes:currentST m:m];
-    [m.bytecode setText:[currentST.impl disasm]];
-    JTreeASTModel *astModel = [[JTreeASTModel alloc] init:[[CommonTreeAdaptor alloc] init] param1:currentST.impl.ast];
-    [m.ast setModel:astModel];
-    AMutableArray *pathST = [Interpreter getEnclosingInstanceStack:currentScope topDown:YES];
-    NSArray *path = [NSArray array];
-    NSInteger j = 0;
-    
-    for (ST *s in pathST)
-        path[j++] = [[Wrapper alloc] init:(DebugST *)s];
-    
-    [m.tree setSelectionPath:[[TreePath alloc] init:path]];
-    [m.template setText:currentST.impl.template];
-    Interval *r = [currentST.impl getTemplateRange];
-    if (currentST.enclosingInstance != nil) {
-        NSInteger i = [tmodel getIndexOfChild:(DebugST *)currentST.enclosingInstance param1:currentST];
-        InterpEvent *e = [[interp getEvents:currentST.enclosingInstance] get:i];
-        if ([e conformsToProtocol:@protocol(EvalTemplateEvent)]) {
-            if ([currentST anonSubtemplate]) {
-                [self highlight:m.template i:r.a j:r.b];
-            }
-            [self highlight:m.output i:e.start j:e.stop];
-        }
+- (void) open
+{
+    viewFrame = [[[STViewFrame alloc] init] autorelease];
+    [self updateStack:currentScope m:viewFrame];
+    [self updateAttributes:currentScope m:viewFrame];
+    NSMutableArray * events = currentScope.events;
+    tmodel = [[[JTreeSTModel alloc] init:interp param1:(EvalTemplateEvent *)[events objectAtIndex:[events count] - 1]] autorelease];
+    [viewFrame.tree setModel:tmodel];
+    [viewFrame.tree addTreeSelectionListener:[[[STViz_Anon1 alloc] init] autorelease]];
+    JTreeASTModel * astModel = [[[JTreeASTModel alloc] init:[[[CommonTreeAdaptor alloc] init] autorelease] param1:currentScope.st.impl.ast] autorelease];
+    [viewFrame.ast setModel:astModel];
+    [viewFrame.ast addTreeSelectionListener:[[[STViz_Anon2 alloc] init] autorelease]];
+    [viewFrame.output setText:output];
+    [viewFrame.template setText:currentScope.st.impl.template];
+    [viewFrame.bytecode setText:[currentScope.st.impl disasm]];
+    [viewFrame.trace setText:[Misc join:[trace objectEnumerator] param1:@"\n"]];
+    CaretListener * caretListenerLabel = [[[STViz_Anon3 alloc] init] autorelease];
+    [viewFrame.output addCaretListener:caretListenerLabel];
+    if (errors == nil || [errors count] == 0) {
+        [viewFrame.errorScrollPane setVisible:NO];
     }
     else {
-        [self highlight:m.output i:r.a j:r.b];
+        DefaultListModel *errorListModel = [[[DefaultListModel alloc] init] autorelease];
+        
+        for (STMessage *msg in errors) {
+            [errorListModel addElement:msg];
+        }
+        
+        [viewFrame.errorList setModel:errorListModel];
+    }
+    [viewFrame.errorList addListSelectionListener:[[[STViz_Anon4 alloc] init] autorelease]];
+    Border * empty = [BorderFactory createEmptyBorder];
+    [viewFrame.treeContentSplitPane setBorder:empty];
+    [viewFrame.outputTemplateSplitPane setBorder:empty];
+    [viewFrame.templateBytecodeTraceTabPanel setBorder:empty];
+    [viewFrame.treeAttributesSplitPane setBorder:empty];
+    [viewFrame.treeContentSplitPane setOneTouchExpandable:YES];
+    [viewFrame.outputTemplateSplitPane setOneTouchExpandable:YES];
+    [viewFrame.treeContentSplitPane setDividerSize:10];
+    [viewFrame.outputTemplateSplitPane setDividerSize:8];
+    [viewFrame.treeContentSplitPane setContinuousLayout:YES];
+    [viewFrame.treeAttributesSplitPane setContinuousLayout:YES];
+    [viewFrame.outputTemplateSplitPane setContinuousLayout:YES];
+    [viewFrame setDefaultCloseOperation:JFrame.DISPOSE_ON_CLOSE];
+    [viewFrame pack];
+    [viewFrame setSize:900 param1:700];
+    [viewFrame setVisible:YES];
+}
+
+- (void) updateCurrentST:(STViewFrame *)m
+{
+    [self updateStack:currentScope m:m];
+    [self updateAttributes:currentScope m:m];
+    [m.bytecode moveCaretPosition:0];
+    [m.bytecode setText:[currentScope.st.impl disasm]];
+    [m.template moveCaretPosition:0];
+    [m.template setText:currentScope.st.impl.template];
+    JTreeASTModel * astModel = [[[JTreeASTModel alloc] init:[[[CommonTreeAdaptor alloc] init] autorelease] param1:currentScope.st.impl.ast] autorelease];
+    [viewFrame.ast setModel:astModel];
+    NSMutableArray * events = currentScope.events;
+    EvalTemplateEvent * e = (EvalTemplateEvent *)[events objectAtIndex:[events count] - 1];
+    [self highlight:m.output i:e.outputStartChar j:e.outputStopChar];
+    
+    @try {
+        [m.output scrollRectToVisible:[m.output modelToView:e.outputStartChar]];
+    }
+    @catch (BadLocationException * ble) {
+        [currentScope.st.groupThatCreatedThisInstance.errMgr internalError:currentScope.st param1:[@"bad location: char index " stringByAppendingString:e.outputStartChar] param2:ble];
+    }
+    if ([currentScope.st anonSubtemplate]) {
+        Interval * r = [currentScope.st.impl templateRange];
+        [self highlight:m.template i:r.a j:r.b];
     }
 }
 
-- (void) highlight:(JTextComponent *)comp i:(NSInteger)i j:(NSInteger)j {
-    Highlighter *highlighter = [comp highlighter];
+- (void) highlight:(JTextComponent *)comp i:(int)i j:(int)j
+{
+    Highlighter * highlighter = [comp highlighter];
     [highlighter removeAllHighlights];
     
     @try {
         [highlighter addHighlight:i param1:j + 1 param2:DefaultHighlighter.DefaultPainter];
     }
-    @catch (BadLocationException *ble) {
-        [errMgr internalError:tmodel.root.st param1:@"bad highlight location" param2:ble];
+    @catch (BadLocationException * ble) {
+        [errMgr internalError:tmodel.root.event.scope.st param1:@"bad highlight location" param2:ble];
     }
 }
 
-- (void) updateAttributes:(DebugST *)st m:(STViewFrame *)m {
-    DefaultListModel *attrModel = [[DefaultListModel alloc] init];
-    LinkedHashMap *attrs = [st attributes];
-    if (attrs != nil) {
-        
-//        for (NSString *a in [attrs allKeys]) {
-        NSString *a;
-        ArrayIterator *it = (ArrayIterator *)[ArrayIterator newIteratorForDictKey:table];
-        while ( [it hasNext] ) {
-            a = (NSString *)[it nextObject];
-            if (st.addAttrEvents != nil) {
-                AMutableArray *events = [st.addAttrEvents get:a];
-                NSMutableString *locations = [NSMutableString stringWithCapacity:16];
-                NSInteger i = 0;
-                if (events != nil) {
-                    
-                    for (AddAttributeEvent *ae in events) {
-                        if (i > 0)
-                            [locations appendString:@", "];
-                        [locations appendString:[[ae fileName] stringByAppendingString:@":"] + [ae line]];
-                        i++;
-                    }
-                    
-                }
-                [attrModel addElement:[[a stringByAppendingString:@" = "] + [attrs get:a] stringByAppendingString:@" @ "] + [locations description]];
-            }
-            else {
-                [attrModel addElement:[a stringByAppendingString:@" = "] + [attrs get:a]];
-            }
-        }
-        
-    }
-    [m.attributes setModel:attrModel];
+- (void) updateAttributes:(InstanceScope *)scope m:(STViewFrame *)m {
+    [m.attributes setModel:[[[JTreeScopeStackModel alloc] init:scope] autorelease]];
+    [m.attributes setRootVisible:NO];
+    [m.attributes setShowsRootHandles:YES];
 }
 
-- (void) updateStack:(DebugST *)st m:(STViewFrame *)m {
-    AMutableArray *stack = [Interpreter getEnclosingInstanceStack:currentScope topDown:YES];
+- (void) updateStack:(InstanceScope *)scope m:(STViewFrame *)m {
+    NSMutableArray * stack = [Interpreter getEnclosingInstanceStack:scope param1:YES];
     [m setTitle:[[@"STViz - [" stringByAppendingString:[Misc join:[stack objectEnumerator] param1:@" "]] stringByAppendingString:@"]"]];
 }
 
-- (InterpEvent *) findEventAtOutputLocation:(AMutableArray *)events charIndex:(NSInteger)charIndex {
+- (InterpEvent *) findEventAtOutputLocation:(NSMutableArray *)events charIndex:(int)charIndex {
     
-    for (InterpEvent *e in events) {
-        if (charIndex >= e.start && charIndex <= e.stop)
+    for (InterpEvent * e in events) {
+        if (charIndex >= e.outputStartChar && charIndex <= e.outputStopChar)
             return e;
     }
     
@@ -223,59 +210,103 @@
 }
 
 + (void) main:(NSArray *)args {
-    NSString *templates = @"method(type,name,locals,args,stats) ::= <<\n<type> <ick()> <name>(<args:{a| NSInteger <a>}; separator=\", \">) {\n    <if(locals)>NSInteger locals[<locals>];<endif>\n    <stats;separator=\"\\n\">\n}\n>>\nassign(a,b) ::= \"<a> = <b>;\"\nreturn(x) ::= <<return <x>;>>\nparen(x) ::= \"(<x>)\"\n";
-    NSString *tmpdir = [System getProperty:@"java.io.tmpdir"];
+    if (args.length > 0 && [args[0] isEqualTo:@"1"])
+        [self test1];
+    else if (args.length > 0 && [args[0] isEqualTo:@"2"])
+        [self test2];
+    else if (args.length > 0 && [args[0] isEqualTo:@"3"])
+        [self test3];
+    else if (args.length > 0 && [args[0] isEqualTo:@"4"])
+        [self test4];
+}
+
++ (void) test1 {
+    NSString * templates = @"method(type,name,locals,args,stats) ::= <<\npublic <type> <name>(<args:{a| int <a>}; separator=\", \">) {\n    <if(locals)>int locals[<locals>];<endif>\n    <stats;separator=\"\\n\">\n}\n>>\nassign(a,b) ::= \"<a> = <b>;\"\nreturn(x) ::= <<return <x>;>>\nparen(x) ::= \"(<x>)\"\n";
+    NSString *tmpdir = @"/tmp";
     [self writeFile:tmpdir fileName:@"t.stg" content:templates];
-    STGroup *group = [[STGroupFile alloc] init:[[tmpdir stringByAppendingString:@"/"] stringByAppendingString:@"t.stg"]];
-    STGroup.debug = YES;
-    ST *st = [group getInstanceOf:@"method"];
+    STGroup * group = [[STGroupFile newSTGroupFile:[NSString stringWithFormat:@"%@/t.stg", tmpdir]] autorelease];
+    ST * st = [group getInstanceOf:@"method"];
     [st.impl dump];
     [st add:@"type" value:@"float"];
     [st add:@"name" value:@"foo"];
     [st add:@"locals" value:3];
-    [st add:@"args" value:[NSArray arrayWithObjects:@"x", @"y", @"z", nil]];
-    ST *s1 = [group getInstanceOf:@"assign"];
-    ST *paren = [group getInstanceOf:@"paren"];
+    [st add:@"args" value:(NSObject *)[NSArray arrayWithObjects:@"x", @"y", @"z", nil]];
+    ST * s1 = [group getInstanceOf:@"assign"];
+    ST * paren = [group getInstanceOf:@"paren"];
     [paren add:@"x" value:@"x"];
     [s1 add:@"a" value:paren];
     [s1 add:@"b" value:@"y"];
-    ST *s2 = [group getInstanceOf:@"assign"];
+    ST * s2 = [group getInstanceOf:@"assign"];
     [s2 add:@"a" value:@"y"];
     [s2 add:@"b" value:@"z"];
-    ST *s3 = [group getInstanceOf:@"return"];
+    ST * s3 = [group getInstanceOf:@"return"];
     [s3 add:@"x" value:@"3.14159"];
     [st add:@"stats" value:s1];
     [st add:@"stats" value:s2];
     [st add:@"stats" value:s3];
-    [((DebugST *)st) inspect];
+    STViz * viz = [st inspect];
+    [System.out println:[st render]];
+}
+
++ (void) test2 {
+    NSString *templates = @"t1(q1=\"Some\\nText\") ::= <<\n<q1>\n>>\n\nt2(p1) ::= <<\n<p1>\n>>\n\nmain() ::= <<\nSTART-<t1()>-END\n\nSTART-<t2(p1=\"Some\\nText\")>-END\n>>\n";
+    NSString *tmpdir = @"/tmp";
+    [self writeFile:tmpdir fileName:@"t.stg" content:templates];
+    STGroup *group = [[STGroupFile newSTGroupFile:[NSString stringWithFormat:@"%@/t.stg", tmpdir]] autorelease];
+    ST *st = [group getInstanceOf:@"main"];
+    STViz * viz = [st inspect];
+}
+
++ (void) test3 {
+    NSString *templates = @"main() ::= <<\nFoo: <{bar};format=\"lower\">\n>>\n";
+    NSString *tmpdir = [System getProperty:@"java.io.tmpdir"];
+    [self writeFile:tmpdir fileName:@"t.stg" content:templates];
+    STGroup *group = [[STGroupFile newSTGroupFile:[NSString stringWithFormat:@"%@/t.stg", tmpdir]] autorelease];
+    ST *st = [group getInstanceOf:@"main"];
+    [st inspect];
+}
+
++ (void) test4 {
+    NSString *templates = @"main(t) ::= <<\nhi: <t>\n>>\nfoo(x,y={hi}) ::= \"<bar(x,y)>\"\nbar(x,y) ::= << <y> >>\nignore(m) ::= \"<m>\"\n";
+    STGroup *group = [[STGroupString newSTGroupString:templates] autorelease];
+    ST *st = [group getInstanceOf:@"main"];
+    ST *foo = [group getInstanceOf:@"foo"];
+    [st add:@"t" value:foo];
+    ST *ignore = [group getInstanceOf:@"ignore"];
+    [ignore add:@"m" value:foo];
+    [st inspect];
     [st render];
 }
 
 + (void) writeFile:(NSString *)dir fileName:(NSString *)fileName content:(NSString *)content {
     
     @try {
-        File *f = [[File alloc] init:dir param1:fileName];
+        File * f = [[[File alloc] init:dir param1:fileName] autorelease];
         if (![[f parentFile] exists])
             [[f parentFile] mkdirs];
-        FileWriter *w = [[FileWriter alloc] init:f];
-        BufferedWriter *bw = [[BufferedWriter alloc] init:w];
+        FileWriter * w = [[[FileWriter alloc] init:f] autorelease];
+        BufferedWriter * bw = [[[BufferedWriter alloc] init:w] autorelease];
         [bw write:content];
         [bw close];
         [w close];
     }
-    @catch (IOException *ioe) {
+    @catch (IOException * ioe) {
         [System.err println:@"can't write file"];
         [ioe printStackTrace:System.err];
     }
 }
 
 - (void) dealloc {
-    [currentST release];
+    [root release];
+    [currentScope release];
     [allEvents release];
     [tmodel release];
-    [errors release];
     [errMgr release];
     [interp release];
+    [output release];
+    [trace release];
+    [errors release];
+    [viewFrame release];
     [super dealloc];
 }
 

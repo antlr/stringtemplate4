@@ -4,11 +4,12 @@
 #import "TreePath.h"
 
 @interface JTreeASTModel : NSObject <TreeModel> {
-  TreeAdaptor *adaptor;
+  CommonTreeAdaptor *adaptor;
   id root;
 }
 
-@property(nonatomic, retain, readonly) id root;
+@property(nonatomic, retain) CommonTreeAdaptor *adaptor;
+@property(nonatomic, retain) id root;
 - (id) init:(CommonTreeAdaptor *)adaptor root:(id)root;
 - (id) initWithRoot:(id)root;
 - (NSInteger) getChildCount:(id)parent;

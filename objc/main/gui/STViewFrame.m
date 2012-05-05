@@ -10,37 +10,37 @@
 }
 
 - (void) initComponents {
-  overallSplitPane = [[JSplitPane alloc] init];
-  mainSplitPane = [[JSplitPane alloc] init];
-  topSplitPane = [[JSplitPane alloc] init];
-  treeScrollPane = [[JScrollPane alloc] init];
+  overallSplitPane = [[NSSplitPView alloc] init];
+  mainSplitPane = [[NSSplitPView alloc] init];
+  topSplitPane = [[NSSplitPView alloc] init];
+  treeScrollPane = [[NSScrollView alloc] init];
   tree = [[JTree alloc] init];
-  scrollPane7 = [[JScrollPane alloc] init];
+  scrollPane7 = [[NSScrollView alloc] init];
   output = [[JTextPane alloc] init];
-  bottomSplitPane = [[JSplitPane alloc] init];
-  attributeScrollPane = [[JScrollPane alloc] init];
+  bottomSplitPane = [[NSSplitPView alloc] init];
+  attributeScrollPane = [[NSScrollView alloc] init];
   attributes = [[JList alloc] init];
   tabbedPane1 = [[JTabbedPane alloc] init];
   panel1 = [[JPanel alloc] init];
-  scrollPane3 = [[JScrollPane alloc] init];
+  scrollPane3 = [[NSScrollView alloc] init];
   template = [[JTextPane alloc] init];
-  scrollPane2 = [[JScrollPane alloc] init];
+  scrollPane2 = [[NSScrollView alloc] init];
   ast = [[JTree alloc] init];
-  scrollPane15 = [[JScrollPane alloc] init];
+  scrollPane15 = [[NSScrollView alloc] init];
   bytecode = [[JTextPane alloc] init];
-  scrollPane1 = [[JScrollPane alloc] init];
+  scrollPane1 = [[NSScrollView alloc] init];
   trace = [[JTextPane alloc] init];
-  errorScrollPane = [[JScrollPane alloc] init];
+  errorScrollPane = [[NSScrollView alloc] init];
   errorList = [[JList alloc] init];
   Container *contentPane = [self contentPane];
   [contentPane setLayout:[[GridLayout alloc] init:1 param1:0 param2:0 param3:10]];
   {
-    [overallSplitPane setOrientation:JSplitPane.VERTICAL_SPLIT];
+    [overallSplitPane setOrientation:NSSplitPView.VERTICAL_SPLIT];
     [overallSplitPane setContinuousLayout:YES];
     [overallSplitPane setOneTouchExpandable:YES];
     [overallSplitPane setResizeWeight:0.9];
     {
-      [mainSplitPane setOrientation:JSplitPane.VERTICAL_SPLIT];
+      [mainSplitPane setOrientation:NSSplitPView.VERTICAL_SPLIT];
       [mainSplitPane setResizeWeight:0.8];
       [mainSplitPane setOneTouchExpandable:YES];
       [mainSplitPane setContinuousLayout:YES];

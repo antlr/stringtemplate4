@@ -63,16 +63,20 @@
 @end
 
 @interface STViz : NSObject {
-  DebugST *currentST;
-  AMutableArray *allEvents;
-  JTreeSTModel *tmodel;
-  AMutableArray *errors;
-  ErrorManager *errMgr;
-  Interpreter *interp;
+    EvalTemplateEvent *root;
+    InstanceScope *currentScope;
+	AMutableArray *allEvents;
+	JTreeSTModel *tmodel;
+    ErrorManager *errMgr;
+    Interpreter *interp;
+	NSString *output;
+	AMutableArray *trace;
+    AMutableArray *errors;
+	STViewFrame *viewFrame;
 }
 
-+ (id) newSTViz:errMgr root:(DebugST *)root output:(NSString *)output interp:(Interpreter *)interp trace:(AMutableArray *)trace errors:(AMutableArray *)errors
-- (id) init:(ErrorManager *)errMgr root:(DebugST *)root output:(NSString *)output interp:(Interpreter *)interp trace:(AMutableArray *)trace errors:(AMutableArray *)errors;
++ (id) newSTViz:(ErrorManager *)anErrMgr root:(EvalTemplateEvent *)aRoot output:(NSString *)anOutput interp:(Interpreter *)anInterp trace:(AMutableArray *)aTrace errors:(AMutableArray *)theErrors
+- (id) init:(ErrorManager *)anErrMgr root:(EvalTemplateEvent *)aRoot output:(NSString *)anOutput interp:(Interpreter *)anInterp trace:(AMutableArray *)aTrace errors:(AMutableArray *)theErrors;
 - (void) highlight:(JTextComponent *)comp i:(NSInteger)i j:(NSInteger)j;
 - (void) updateAttributes:(DebugST *)st m:(STViewFrame *)m;
 - (void) updateStack:(DebugST *)st m:(STViewFrame *)m;
