@@ -45,7 +45,7 @@
 
     [buf appendString:@"]"];
     NSString *result = buf;
-    STAssertTrue( [expected isEqualTo:result], @"Expected %@, but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) testOneExpr {

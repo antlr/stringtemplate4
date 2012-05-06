@@ -13,7 +13,7 @@
     NSString *expected = @"int x = 0;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -30,7 +30,7 @@
     NSString *expected = @"int x = 0L;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -46,7 +46,7 @@
     NSString *expected = @"int x = 0L;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -65,7 +65,7 @@
     NSString *expected = @"second";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -81,7 +81,7 @@
     NSString *expected = @"double x = ;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -97,7 +97,7 @@
     NSString *expected = @" x = ;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -112,7 +112,7 @@
     NSString *expected = @"int x = ;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -128,7 +128,7 @@
     NSString *expected = @"float x = ;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -143,7 +143,7 @@
     NSString *expected = @"UserRecord x = null;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -157,7 +157,7 @@
     NSString *expected = @" x = null;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -172,7 +172,7 @@
     NSString *expected = @"[test.stg 1:33: missing value for key at ']']";
     NSString *result = [errors.errors description];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -187,7 +187,7 @@
     NSString *expected = @"UserRecord x = UserRecord;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -206,7 +206,7 @@
     NSString *expected = @"default x = foo;";
     NSString *result = [st render];
     result = ((result != nil) ? result : @"result = nil");
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -223,7 +223,7 @@
     NSString *expected = @" default ";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -238,7 +238,7 @@
     NSString *expected = @"int x = 0;";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -255,7 +255,7 @@
     NSString *expected = @"int x = 0;";
     NSString *result = [interm render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -269,7 +269,7 @@
     NSString *expected = @"[foo]";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -283,7 +283,7 @@
     NSString *expected = @"[foo]";
     NSString *result = [st render];
     result = ((result == nil) ? @"result = nil" : result );
-    STAssertTrue([expected isEqualTo:result], @"Expected \"%@\" but had \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 

@@ -29,7 +29,7 @@
     [st add:@"names" value:@"Sumana"];
     NSString *expected = @"TerTomSumana!";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test02MapIterationIsByKeys
@@ -45,7 +45,7 @@
     [st.impl dump];
     NSString *expected = @"parrttombudmose!";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test03SimpleIterationWithArg
@@ -58,7 +58,7 @@
     [st add:@"names" value:@"Sumana"];
     NSString *expected = @"TerTomSumana!";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test04NestedIterationWithArg
@@ -72,7 +72,7 @@
     [st add:@"users" value:[User newUser:3 name:@"sri"]];
     NSString *expected = @"1=parrt2=tombu3=sri!";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test05SubtemplateAsDefaultArg
@@ -84,7 +84,7 @@
     [st add:@"x" value:@"a"];
     NSString *expected = @"x: a\ny: aa";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test06ParallelAttributeIteration
@@ -98,7 +98,7 @@
     [st add:@"salaries" value:@"huge"];
     NSString *expected = @"Ter@1: big\nTom@2: huge\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test07ParallelAttributeIterationWithNullValue
@@ -113,7 +113,7 @@
     [st add:@"salaries" value:@"enormous"];
     NSString *expected = @"Ter@1: big\nTom@: huge\nSriram@3: enormous\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test08ParallelAttributeIterationHasI
@@ -127,7 +127,7 @@
     [st add:@"salaries" value:@"huge"];
     NSString *expected = @"0. Ter@1: big\n1. Tom@2: huge\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test09ParallelAttributeIterationWithDifferentSizes
@@ -141,7 +141,7 @@
     [st add:@"salaries" value:@"big"];
     NSString *expected = @"Ter@1: big, Tom@2: , Sriram@: ";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test10ParallelAttributeIterationWithSingletons
@@ -152,7 +152,7 @@
     [st add:@"salaries" value:@"big"];
     NSString *expected = @"Ter@1: big";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test11ParallelAttributeIterationWithDifferentSizesTemplateRefInsideToo
@@ -169,7 +169,7 @@
     [st add:@"salaries" value:@"big"];
     NSString *expected = @" Ter@1: big, Tom@2: n/a, Sriram@n/a: n/a ";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test12EvalSTIteratingSubtemplateInSTFromAnotherGroup
@@ -187,8 +187,10 @@
     [outerST add:@"x" value:st];
     NSString *expected = @"hi hi hi ";
     NSString *result = [outerST render];
-    STAssertTrue( ([errors.errors count] == 0), @"Expected \"%d\" BUT GOT \"%d\"", 0, [errors.errors count] );
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
+    expected = @"[errors.errors count] == 0";
+    result = [NSString stringWithFormat:@"[errors.errors count] == %d", [errors.errors count]];
+    [self assertEquals:expected result:result];
 }
 
 - (void) test13EvalSTIteratingSubtemplateInSTFromAnotherGroupSingleValue
@@ -206,8 +208,10 @@
     [outerST add:@"x" value:st];
     NSString *expected = @"hi ";
     NSString *result = [outerST render];
-    STAssertTrue( ([errors.errors count] == 0), @"Expected \"%d\" BUT GOT \"%d\"", 0, [errors.errors count] );
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
+    expected = @"[errors.errors count] == 0";
+    result = [NSString stringWithFormat:@"[errors.errors count] == %d", [errors.errors count]];
+    [self assertEquals:expected result:result];
 }
 
 - (void) test14EvalSTFromAnotherGroup
@@ -225,8 +229,10 @@
     [outerST add:@"x" value:st];
     NSString *expected = @"inner";
     NSString *result = [outerST render];
-    STAssertTrue( ([errors.errors count] == 0), @"Expected \"%d\" BUT GOT \"%d\"", 0, [errors.errors count] );
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
+    expected = @"[errors.errors count] == 0";
+    result = [NSString stringWithFormat:@"[errors.errors count] == %d", [errors.errors count]];
+    [self assertEquals:expected result:result];
 }
 
 @end

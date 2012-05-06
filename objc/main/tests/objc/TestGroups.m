@@ -140,7 +140,7 @@
     ST *st = [group getInstanceOf:@"a"];
     NSString *expected = @"foo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -151,7 +151,7 @@
     ST *st = [group getInstanceOf:@"a"];
     NSString *expected = @"foo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -167,7 +167,7 @@
     ST *st2 = [group getInstanceOf:@"b"];
     NSString *expected = @"foobar";
     NSString *result = [NSString stringWithFormat:@"%@%@", [st1 render], [st2 render]];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -180,14 +180,14 @@
     ST *st1 = [group getInstanceOf:@"a"];
     NSString *expected = @"foo";
     NSString *result = [st1 render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     expected = @"bar";
     ST *st2 = [group getInstanceOf:@"subdir/b"];
     result = [st2 render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     ST *st3 = [group getInstanceOf:@"/subdir/b"];
     result = [st3 render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -203,7 +203,7 @@
 //    [[st add:@"x" value:@"a"] add:@"x" value:@"b"];
     NSString *expected = @"ab";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test06GroupFileInDir
@@ -219,7 +219,7 @@
     ST *st3 = [group getInstanceOf:@"group/c"];
     NSString *expected = @"foobarduh";
     NSString *result = [NSString stringWithFormat:@"%@%@%@", [st1 render], [st2 render], [st3 render]];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -235,7 +235,7 @@
     ST *st2 = [group getInstanceOf:@"sub1/sub2/b"];
     NSString *expected = @"foobar";
     NSString *result = [NSString stringWithFormat:@"%@%@", [st1 render], [st2 render]];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -252,7 +252,7 @@
     ST *st3 = [group getInstanceOf:@"subdir/group/c"];
     NSString *expected = @"foobarduh";
     NSString *result = [NSString stringWithFormat:@"%@%@%@", [st1 render], [st2 render], [st3 render]];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -268,7 +268,7 @@
     ST *st = [group getInstanceOf:@"a"];
     NSString *expected = @" bar ";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -284,7 +284,7 @@
     [st.impl dump];
     NSString *expected = @" bar ";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 #endif
@@ -300,7 +300,7 @@
     [group load];
     NSString *expected = @"group.stg 2:0: redefinition of template b\n";
     NSString *result = [errors description];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -313,7 +313,7 @@
     ST *st = [group getInstanceOf:@"b"];
     NSString *expected = @"bar";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -328,7 +328,7 @@
     [st addInt:@"y" value:2];
     NSString *expected = @"12";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -344,7 +344,7 @@
     [st.impl dump];
     NSString *expected = @" foo ";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -357,7 +357,7 @@
     [st add:@"name" value:@"foo"];
     NSString *expected = @"x=99; // foo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -371,7 +371,7 @@
     [st.impl dump];
     NSString *expected = @"foo; true false";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -384,7 +384,7 @@
     [st add:@"name" value:@"foo"];
     NSString *expected = @"x=99; // foo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -397,7 +397,7 @@
     [st add:@"x" value:@"a"];
     NSString *expected = @"x: a\ny: afoo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -409,7 +409,7 @@
     [st add:@"x" value:@"a"];
     NSString *expected = @"aa";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test18DefaultArgumentAsSimpleTemplate
@@ -421,7 +421,7 @@
     [b add:@"name" value:@"foo"];
     NSString *expected = @"x=99; // foo";
     NSString *result = [b render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -435,7 +435,7 @@
     [st.impl dump];
     NSString *expected = @"x=parrt; // parrt";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -448,7 +448,7 @@
     [st add:@"fields" value:[[Field_anon2 alloc] init]];
     NSString *expected = @"x=parrt; // parrt";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -461,7 +461,7 @@
     [st add:@"fields" value:[[Field_anon3 alloc] init]];
     NSString *expected = @"x=parrt; // parrt";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -475,7 +475,7 @@
     [st add:@"size" value:@"2"];
     NSString *expected = @"x=foo; // foo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -489,7 +489,7 @@
     [st add:@"size" value:@"2"];
     NSString *expected = @"x=[foo] ; // foo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -502,7 +502,7 @@
     [st add:@"name" value:@"foo"];
     NSString *expected = @"x=34; // foo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -515,7 +515,7 @@
     [st add:@"x" value:[[Counter alloc] init]];
     NSString *expected = @"0 1 2 0";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -528,7 +528,7 @@
     ST *st = [group getInstanceOf:@"g"];
     NSString *expected = @"truea";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -541,7 +541,7 @@
     ST *st = [group getInstanceOf:@"g"];
     NSString *expected = @"ab";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -554,7 +554,7 @@
     ST *st = [group getInstanceOf:@"g"];
     NSString *expected = @"ab";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -570,7 +570,7 @@
     [st render];
     NSString *expected = @"context [/g] 1:1 attribute z isn't defined\n";
     NSString *result = [errors description];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -585,7 +585,7 @@
     [group load];
     NSString *expected = @"group.stg 2:18: mismatched input '{' expecting ELLIPSIS\n";
     NSString *result = [errors description];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -600,7 +600,7 @@
     [group load];
     NSString *expected = @"group.stg 2:21: 'x' came as a complete surprise to me\n";
     NSString *result = [errors description];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -635,11 +635,11 @@
     //    STAssertTrue( (originalHashCode == newHashCode), @"Expected \"YES\" BUT GOT \"NO\"" );
     NSString *expected = @"foo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     st = [group getInstanceOf:@"b"];
     expected = @"bar";
     result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -658,11 +658,11 @@
     //STAssertTrue( (originalHashCode == newHashCode), @"Expected \"YES\" BUT GOT \"NO\"" );
     NSString *expected = @"foo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     st = [group getInstanceOf:@"b"];
     expected = @"bar";
     result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -681,28 +681,28 @@
     ST *stb = [group1 getInstanceOf:@"b"];
     NSString *expected = @"bar";
     NSString *result = [stb render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     
     // Is the include of b() resolved?
     ST *sta = [group1 getInstanceOf:@"a"];
     expected = @"foobar";
     result = [sta render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     
     // Are the correct "ThatCreatedThisInstance" groups assigned
     expected = @"group1";
     result = [[sta groupThatCreatedThisInstance] getName];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     result = [[stb groupThatCreatedThisInstance] getName];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     
     // Are the correct (native) groups assigned for the templates
     expected = @"group1";
     result = [sta.impl.nativeGroup getName];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     expected = @"group2";
     result = [stb.impl.nativeGroup getName];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test36GetTemplateNames
@@ -721,7 +721,7 @@
     // Should only contain "t" and "main" (not "t2")
     NSString *expected = @"2";
     NSString *result = [NSString stringWithFormat:@"%d", [names count]];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     STAssertTrue( [names containsObject:@"/t"], @"Expected \"YES\" BUT GOT \"NO\"" );
     STAssertTrue( [names containsObject:@"/main"], @"Expected \"YES\" BUT GOT \"NO\"" );
 }
@@ -735,7 +735,7 @@
     ST *st = [group getInstanceOf:@"main"];
     NSString *expected = @"v1-g1";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     
     // Change the text of group t, including the imports.
     [self writeFile:tmpdir fileName:@"t.stg" content:@"import \"g2.stg\"\n\nmain() ::= <<\nv2-<f()>;<f2()>\n>>"];
@@ -743,7 +743,7 @@
      st = [group getInstanceOf:@"main"];
      expected = @"v2-g2;f2";
      result = [st render];
-     STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" BUT GOT \"%@\"", expected, result );
+     [self assertEquals:expected result:result];
 }
 
 @end

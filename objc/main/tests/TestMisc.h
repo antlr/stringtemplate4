@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <GHUnit/GHTestCase.h>
+#import "BaseTest.h"
 
 
-@interface TestMisc : GHTestCase {
+@interface TestMisc : BaseTest {
 
 }
 

@@ -34,7 +34,9 @@
 {
     Coordinate *aCoord;
     aCoord = [Coordinate newCoordinate:3 b:5];
-    STAssertTrue( [[aCoord toString] isEqualToString:@"3:5"], @"expected \"3:5\" got %@", [aCoord description]);
+    NSString *expected = @"3:5";
+    NSString *result = [aCoord description];
+    [self assertEquals:expected result:result];
     NSLog( @"Coordinate =%@", [aCoord description]);
 }
 
@@ -43,9 +45,13 @@
     Writer *aWriter;
     aWriter = [Writer newWriter];
     NSInteger len = [aWriter length];
-    STAssertTrue( (len == 0), @"Expected len = 0, got len = %d", len);
+    NSString *expected = @"len = 0";
+    NSString *result = [NSString stringWithFormat:@"len = %d", len];
+    [self assertEquals:expected result:result];
     [aWriter appendString:@"Test String"];
-    STAssertTrue( [@"Test String" isEqualTo:[aWriter description]], @"Expected \"Test String\" but got \"%@\".", [aWriter description]);
+    expected = @"Test String";
+    result = [aWriter description];
+    [self assertEquals:expected result:result];
     //STAssertTrue( [aWriter compare:@"Test String"], @"Expected \"Test String\" but got \"%@\".", aWriter);
 }
 
@@ -54,10 +60,13 @@
     Writer *aWriter;
     aWriter = [Writer newWriter];
     NSInteger len = [aWriter count];
-    STAssertTrue( (len == 0), @"Expected len = 0, got len = %d", len);
-    STAssertTrue( (len == 0), @"Expected len = 0, got len = %d", len);
+    NSString *expected = @"len = 0";
+    NSString *result = [NSString stringWithFormat:@"len = %d", len];
+    [self assertEquals:expected result:result];
     [aWriter appendString:@"Test String"];
-    STAssertTrue( [@"Test String" isEqualTo:[aWriter description]], @"Expected \"Test String\" but got \"%@\".", [aWriter description]);
+    expected = @"Test String";
+    result = [aWriter description];
+    [self assertEquals:expected result:result];
     //STAssertTrue( [aWriter compare:@"Test String"], @"Expected \"Test String\" but got \"%@\".", aWriter);
 }
 

@@ -10,7 +10,7 @@
     [st add:@"phones" value:@"2"];
     NSString *expected = @"TerTom12";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test02ListLiteralWithEmptyElements {
@@ -18,14 +18,14 @@
     [st.impl dump];
     NSString *expected = @"1:Ter, foo, 2:Jesse";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test03ListLiteralWithEmptyFirstElement {
     ST *st = [ST newSTWithTemplate:@"<[,\"Ter\",\"Jesse\"]:{n | <i>:<n>}; separator=\", \", null={foo}>"];
     NSString *expected = @"foo, 1:Ter, 2:Jesse";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test04Length {
@@ -36,7 +36,7 @@
     [st add:@"phones" value:@"2"];
     NSString *expected = @"4";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test05Cat2Attributes {
@@ -47,7 +47,7 @@
     [st add:@"phones" value:@"2"];
     NSString *expected = @"Ter, Tom, 1, 2";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test06Cat2AttributesWithApply {
@@ -58,7 +58,7 @@
     [st add:@"phones" value:@"2"];
     NSString *expected = @"Ter.Tom.1.2.";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test07Cat3Attributes {
@@ -71,7 +71,7 @@
     [st add:@"salaries" value:@"huge"];
     NSString *expected = @"Ter, Tom, 1, 2, big, huge";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test08CatWithTemplateApplicationAsElement {
@@ -82,7 +82,7 @@
     [st add:@"phones" value:@"2"];
     NSString *expected = @"Ter!, Tom!, 1, 2";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test09CatWithIFAsElement {
@@ -93,7 +93,7 @@
     [st add:@"phones" value:@"2"];
     NSString *expected = @"doh, 1, 2";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test10CatNullValues {
@@ -102,7 +102,7 @@
     [st add:@"phones" value:@"2"];
     NSString *expected = @"foo, foo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test11CatWithNullTemplateApplicationAsElement {
@@ -111,7 +111,7 @@
     [st add:@"phones" value:@"2"];
     NSString *expected = @"x";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test12CatWithNestedTemplateApplicationAsElement {
@@ -122,7 +122,7 @@
     [st add:@"phones" value:@"2"];
     NSString *expected = @"Ter, Tom, foo!, bar!, 1, 2";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 - (void) test13ListAsTemplateArgument {
@@ -136,7 +136,7 @@
     [st add:@"phones" value:@"2"];
     NSString *expected = @"*Ter**Tom**1**2*";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
 }
 
 @end

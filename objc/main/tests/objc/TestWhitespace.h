@@ -1,6 +1,6 @@
-#import <GHUnit/GHTestCase.h>
+#import "BaseTest.h"
 
-@interface TestWhitespace : GHTestCase {
+@interface TestWhitespace : BaseTest {
 }
 
 - (void) test01TrimmedSubtemplates;

@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
 #import <ANTLR/ANTLR.h>
-#import <GHUnit/GHTestCase.h>
+#import "BaseTest.h"
 #import "STLexer.h"
 #import "STToken.h"
 
-@interface TestLexer : GHTestCase {
+@interface TestLexer : BaseTest {
 }
 
 - (void)setUp;

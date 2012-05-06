@@ -22,7 +22,7 @@
     [st add:@"names" value:@"Sumana"];
     NSString *expected = @"TerTomSumana!";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -34,7 +34,7 @@
     ST *st = [group getInstanceOf:@"test"];
     NSString *expected = @"[ foo ]";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -48,7 +48,7 @@
     [st add:@"names" value:@"Sumana"];
     NSString *expected = @" foo  foo  foo ";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -62,7 +62,7 @@
     [st add:@"names" value:@"Sumana"];
     NSString *expected = @" Ter  Tom  Sumana !";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -76,7 +76,7 @@
     [st add:@"names" value:@"Sumana"];
     NSString *expected = @"TerTomSumana!";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -90,7 +90,7 @@
     [st add:@"names" value:@"Sumana"];
     NSString *expected = @"Ter\nTom\nSumana\n!";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -106,7 +106,7 @@
     NSString *result = [st render];
     [st.impl dump];
     NSLog( @"expected string length =%d, result string length = %d\n", [expected length], [result length] );
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -115,7 +115,7 @@
     ST *st = [ST newSTWithTemplate:@"<users>\nend\n"];
     NSString *expected = @"end\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -124,7 +124,7 @@
     ST *st = [ST newSTWithTemplate:@"begin\n    \nend\n"];
     NSString *expected = @"begin\n\nend\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -133,7 +133,7 @@
     ST *st = [ST newSTWithTemplate:@"begin\n\nend\n"];
     NSString *expected = @"begin\n\nend\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -142,7 +142,7 @@
     ST *st = [ST newSTWithTemplate:@"begin\n<name>\n<users>\n<users>\nend\n"];
     NSString *expected = @"begin\nend\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -151,7 +151,7 @@
     ST *st = [ST newSTWithTemplate:@"begin\n  <name>\n	<users>\n	<users>\nend\n"];
     NSString *expected = @"begin\nend\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -160,7 +160,7 @@
     ST *st = [ST newSTWithTemplate:@"begin\n  <name>\n	<users><users>\nend\n"];
     NSString *expected = @"begin\nend\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -169,7 +169,7 @@
     ST *st = [ST newSTWithTemplate:@"begin\n<if(x)><endif>\nend\n"];
     NSString *expected = @"begin\nend\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -178,7 +178,7 @@
     ST *st = [ST newSTWithTemplate:@"begin\n    <if(x)><endif>\nend\n"];
     NSString *expected = @"begin\nend\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -187,7 +187,7 @@
     ST *st = [ST newSTWithTemplate:@"begin\n<if(users)><else><endif>\nend\n"];
     NSString *expected = @"begin\nend\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -196,7 +196,7 @@
     ST *st = [ST newSTWithTemplate:@"begin\n<if(users)>\nfoo\n<else>\nbar\n<endif>\nend\n"];
     NSString *expected = @"begin\nbar\nend\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -206,7 +206,7 @@
     [st add:@"x" value:@"x"];
     NSString *expected = @"begin\nbar\nend\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -217,7 +217,7 @@
     [st write:[AutoIndentWriter newWriter:sw newLine:@"\n"]];
     NSString *result = [sw description];
     NSString *expected = @"Foo bar\n";
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -228,7 +228,7 @@
     [st write:[AutoIndentWriter newWriter:sw newLine:@"\n"]];
     NSString *result = [sw description];
     NSString *expected = @"Foo bar\n";
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -239,7 +239,7 @@
     [st write:[AutoIndentWriter newWriter:sw newLine:@"\n"]];
     NSString *result = [sw description];
     NSString *expected = @"Foo bar\n";
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -250,7 +250,7 @@
     [st write:[AutoIndentWriter newWriter:sw newLine:@"\n"]];
     NSString *expected = @"Foo\nBar\n";
     NSString *result = [sw description];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -261,7 +261,7 @@
     [st write:[AutoIndentWriter newWriter:sw newLine:@"\r\n"]];
     NSString *expected = @"Foo\r\nBar\r\n";
     NSString *result = [sw description];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -273,7 +273,7 @@
     [st write:[AutoIndentWriter newWriter:sw newLine:@"\n"]];
     NSString *expected = @"Foo\na\nb\nc\n";
     NSString *result = [sw description];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -282,7 +282,7 @@
     ST *st = [ST newSTWithTemplate:@"begin\n<! ignore !>\nend\n"];
     NSString *expected = [NSString stringWithFormat:@"begin%@end%@", @"\n",  @"\n" ];
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -291,7 +291,7 @@
     ST *st = [ST newSTWithTemplate:@"begin\n    <! ignore !>\nend\n"];
     NSString *expected = @"begin\nend\n";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 

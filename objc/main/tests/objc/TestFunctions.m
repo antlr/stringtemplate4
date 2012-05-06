@@ -142,7 +142,7 @@
     [st add:@"names" value:names];
     NSString *expected = @"Ter";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -154,7 +154,7 @@
     [st add:@"names" value:names];
     NSString *expected = @"2";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -166,7 +166,7 @@
     [st add:@"names" value:names];
     NSString *expected = @"4";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -178,7 +178,7 @@
     [st add:@"names" value:@"Sriram"];
     NSString *expected = @"Ter";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -190,7 +190,7 @@
     [st add:@"names" value:@"Sriram"];
     NSString *expected = @"Ter, Tom";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -202,7 +202,7 @@
     [st add:@"names" value:@"Sriram"];
     NSString *expected = @"Tom, Sriram";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -212,7 +212,7 @@
     [st add:@"names" value:[AMutableArray arrayWithCapacity:16]];
     NSString *expected = @"";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -228,7 +228,7 @@
     [st add:@"names" value:names];
     NSString *expected = @"Tom, Tom";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -240,7 +240,7 @@
     [st add:@"names" value:@"Sriram"];
     NSString *expected = @"Sriram";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -255,7 +255,7 @@
     [st add:@"names" value:nil];
     NSString *expected = @"TomSriram";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -270,7 +270,7 @@
     [st add:@"names" value:nil];
     NSString *expected = @"2";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -284,7 +284,7 @@
     [st add:@"yours" value:@"b"];
     NSString *expected = @"1, b";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -297,7 +297,7 @@
     [st add:@"yours" value:@"a"];
     NSString *expected = @"1, 2, 3, a";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -316,7 +316,7 @@
     [st add:@"yours" value:yours];
     NSString *expected = @"TerTomFoo, TerTomFoo";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -329,7 +329,7 @@
     [st add:@"yours" value:@"a"];
     NSString *expected = @"1, 2, 3, a";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -341,7 +341,7 @@
     [st add:@"names" value:@"Sriram"];
     NSString *expected = @"Tom";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -351,7 +351,7 @@
     [st add:@"names" value:@"Ter"];
     NSString *expected = @"Ter";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -361,7 +361,7 @@
     [st add:@"names" value:@"Ter"];
     NSString *expected = @"Ter";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -371,7 +371,7 @@
     [st add:@"names" value:((TestFunctions_Anon4 *)[[TestFunctions_Anon4 alloc] init])];
     NSString *expected = @"Ter";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -381,7 +381,7 @@
     [st add:@"names" value:@"Ter"];
     NSString *expected = @"";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -391,7 +391,7 @@
     [st add:@"names" value:((TestFunctions_Anon5 *)[[TestFunctions_Anon5 alloc] init])];
     NSString *expected = @"";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -402,7 +402,7 @@
     [st add:@"names" value:@"Tom"];
     NSString *expected = @"Tom, Tom";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -413,7 +413,7 @@
     [st add:@"names" value:@"Tom"];
     NSString *expected = @"Tom, Tom";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -426,7 +426,7 @@
     [st add:@"phones" value:@"2"];
     NSString *expected = @"Ter";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -441,12 +441,12 @@
     [st add:@"maps" value:m2];
     NSString *expected = @"x5707";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     AMutableArray *list = [TestFunctions_Anon6 newAnon:m1 b:m2];
     [st add:@"maps" value:list];
     expected = @"x5707";
     result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -461,12 +461,12 @@
     [st add:@"maps" value:m2];
     NSString *expected = @"Ter!";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     AMutableArray *list = [TestFunctions_Anon7 newAnon:m1 b:m2];
     [st add:@"maps" value:list];
     expected = @"Ter!";
     result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -476,7 +476,7 @@
     [st add:@"name" value:@" Ter  \n"];
     NSString *expected = @"Ter";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -486,7 +486,7 @@
     [st add:@"name" value:@"012345"];
     NSString *expected = @"6";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
@@ -498,7 +498,7 @@
     [st add:@"names" value:@"Sriram"];
     NSString *expected = @"Sriram, Tom, Ter";
     NSString *result = [st render];
-    STAssertTrue( [expected isEqualTo:result], @"Expected \"%@\" but got \"%@\"", expected, result );
+    [self assertEquals:expected result:result];
     return;
 }
 
