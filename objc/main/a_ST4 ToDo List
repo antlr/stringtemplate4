@@ -9,6 +9,7 @@ ST4 ObjC passes all of the TestGroupSyntaxErrors tests with GCOFF.
 ST4 ObjC passes all of the TestLexer tests with GCOFF.
 ST4 ObjC passes all of the TestLists tests with GCOFF.
 ST4 ObjC passes all of the TestMisc tests with GCOFF.
+ST4 ObjC passes all of the TestOptions tests with GCOFF.
 ST4 ObjC passes all of the TestRenderers tests with GCOFF.
 ST4 ObjC passes all of the TestSubtemplates tests with GCOFF.
 ST4 ObjC passes all of the TestWhitespace tests with GCOFF.

@@ -452,7 +452,9 @@ static BOOL trackCreationEvents = NO;
     @try {
         CompiledST *impl = [self defineTemplate:templateName
                                           nameT:[CommonToken newToken:GroupParser.TID Text:templateName]
-                                           args:nil template:aTemplate templateToken:nil];
+                                           args:nil
+                                       template:aTemplate
+                                  templateToken:nil];
         return impl;
     }
     @catch (STException *se) {
@@ -480,7 +482,9 @@ static BOOL trackCreationEvents = NO;
     }
     return [self defineTemplate:aName
                           nameT:[CommonToken newToken:GroupParser.TID Text:aName]
-                           args:a template:template templateToken:nil];
+                           args:a
+                       template:template
+                  templateToken:nil];
 }
 
 - (CompiledST *) defineTemplate:(NSString *)fullyQualifiedTemplateName
