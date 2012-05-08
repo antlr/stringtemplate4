@@ -40,7 +40,6 @@
 
 - (void) dealloc;
 - (NSString *) description;
-- (NSString *) toString;
 
 @property (retain, getter=getMsg, setter=setMsg:) NSString *msg;
 @property (retain, getter=getTemplateToken, setter=setTemplateToken:) CommonToken *templateToken;

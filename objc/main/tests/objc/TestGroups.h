@@ -10,7 +10,6 @@
 
 - (id) init;
 - (NSString *) description;
-- (NSString *) toString;
 
 @property (retain) NSString *name;
 @property (assign) NSInteger n;
@@ -23,7 +22,6 @@
 
 - (id) init;
 - (NSString *) description;
-- (NSString *) toString;
 
 @property (retain) NSString *name;
 @property (assign) NSInteger n;
@@ -36,7 +34,6 @@
 
 - (id) init;
 - (NSString *) description;
-- (NSString *) toString;
 
 @property (retain) NSString *name;
 @property (assign) NSInteger n;
@@ -48,7 +45,6 @@
 
 - (id) init;
 - (NSString *) description;
-- (NSString *) toString;
 
 @property (assign) NSInteger n;
 @end

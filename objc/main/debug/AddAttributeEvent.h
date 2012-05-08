@@ -36,7 +36,6 @@
 
 - (id) init:(NSString *)aName value:(id)aValue;
 - (NSString *) description;
-- (NSString *) toString;
 
 @property (retain) NSString *name;
 @end

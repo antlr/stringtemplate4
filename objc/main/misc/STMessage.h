@@ -66,7 +66,6 @@
 
 - (void) dealloc;
 - (NSString *) description;
-- (NSString *) toString;
 
 @property (retain) ST *who;
 @property (assign) ErrorTypeEnum error;

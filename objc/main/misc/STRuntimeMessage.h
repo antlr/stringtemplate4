@@ -58,6 +58,5 @@
 
 - (NSString *) getSourceLocation;
 - (NSString *) description;
-- (NSString *) toString;
 
 @end

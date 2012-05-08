@@ -384,16 +384,6 @@ static NSString *ErrorType_Data[NUM_OF_ERRORENUMS] = {
     return (message != nil) ? message : @"message=<nil>";
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
-- (NSString *) toString:(NSInteger) value
-{
-    return [self description:value];
-}
-
 - (NSString *) description:(NSInteger) value
 {
     if (value < NO_SUCH_TEMPLATE || value >= NUM_OF_ERRORENUMS)

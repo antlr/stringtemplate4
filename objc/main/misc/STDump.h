@@ -54,9 +54,7 @@
 
 - (void) dealloc;
 - (NSString *) description;
-- (NSString *) toString;
 - (NSString *) description:(NSInteger)n;
-- (NSString *) toString:(NSInteger)n;
 - (NSString *) getValueDebugString:(id)value n:(NSInteger)n;
 - (NSString *) getTemplateDeclaratorString;
 - (void) indent:(NSMutableString *)buf n:(NSInteger)n;

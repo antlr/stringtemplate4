@@ -63,7 +63,6 @@
 - (void) ensureCapacity:(NSInteger)len;
 - (void) close;
 - (NSString *) description;
-- (NSString *) toString;
 
 - (void) print:(id)msg;
 - (void) println:(id)msg;

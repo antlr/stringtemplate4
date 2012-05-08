@@ -51,9 +51,4 @@
     return [NSString stringWithFormat:@"%d:%d", line, charPosition];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @end

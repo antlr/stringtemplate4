@@ -293,11 +293,6 @@ NSString *const newline = @"\n"/* Misc.newline */;
     return [NSString stringWithString:str];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @synthesize thisArray;
 @end
 

@@ -51,9 +51,4 @@
     return [NSString stringWithFormat:@"%d..%d", a, b];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @end

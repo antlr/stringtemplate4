@@ -133,9 +133,4 @@
     return [buf description];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @end

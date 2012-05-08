@@ -168,9 +168,4 @@ static DateRenderer_Anon1 *formatToInt;
     return ((dateStr == nil) ? @"dateStr=<nil>" : dateStr );
 }
 
-- (NSString *) toString:(NSDate *)d formatString:(NSString *)formatString locale:(NSLocale *)locale
-{
-    return [self description:d formatString:formatString locale:locale];
-}
-
 @end

@@ -61,10 +61,5 @@
         [self getTokenIndex], startIndex, stopIndex, txt, tokenName, channelStr, line, charPositionInLine];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @end
 

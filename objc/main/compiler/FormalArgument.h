@@ -73,7 +73,6 @@
 - (void) dealloc;
 - (NSInteger) hash;
 - (BOOL) isEqualTo:(NSString *)obj;
-- (NSString *) toString;
 - (NSString *) description;
 
 @property (retain) NSString *name;

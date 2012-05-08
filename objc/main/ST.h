@@ -73,8 +73,6 @@ typedef enum {
 - (NSString *) get:(NSString *)name;
 - (NSString *) description;
 - (NSString *) description:(NSInteger)i;
-- (NSString *) toString;
-- (NSString *) toString:(NSInteger)i;
 
 @end
 
@@ -201,7 +199,6 @@ typedef enum {
 - (AMutableArray *)getEvents:(NSLocale *)locale;
 - (AMutableArray *)getEvents:(NSLocale *)locale lineWidth:(NSInteger)lineWidth;
 - (NSString *) description;
-- (NSString *) toString;
 + (NSString *) format:(NSString *)template attributes:(id)attributes;
 + (NSString *) format:(NSString *)template attributes:(id)attributes lineWidth:(NSInteger)lineWidth;
 

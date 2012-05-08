@@ -114,11 +114,6 @@
     return [sw description];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @synthesize who;
 @synthesize error;
 @synthesize arg;

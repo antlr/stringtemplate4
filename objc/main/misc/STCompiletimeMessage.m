@@ -105,11 +105,6 @@
     return [NSString stringWithFormat:@"%@: %@", filepos, result ];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @synthesize templateToken;
 @synthesize token;
 @synthesize srcName;

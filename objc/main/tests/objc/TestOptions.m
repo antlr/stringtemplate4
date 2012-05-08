@@ -47,7 +47,7 @@
     STGroup *group = [STGroup newSTGroup];
     [group defineTemplate:@"test" argsS:@"name" template:@"hi <name; separator= \", \">!"];
     ST *st = [group getInstanceOf:@"test"];
-    NSLog( @"%@", [st.impl.ast toStringTree]);
+    NSLog( @"%@", [st.impl.ast descriptionTree]);
     [st add:@"name" value:@"Ter"];
     [st add:@"name" value:@"Tom"];
     [st add:@"name" value:@"Sumana"];

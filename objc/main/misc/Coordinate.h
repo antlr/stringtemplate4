@@ -42,5 +42,4 @@
 
 - (id) init:(NSInteger)a b:(NSInteger)b;
 - (NSString *) description;
-- (NSString *) toString;
 @end

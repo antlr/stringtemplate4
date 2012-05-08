@@ -40,6 +40,5 @@
 
 + (StringRenderer *) newRenderer;
 - (NSString *) description:(id)obj formatString:(NSString *)formatString locale:(NSLocale *)aLocale;
-- (NSString *) toString:(id)obj formatString:(NSString *)formatString locale:(NSLocale *)aLocale;
 + (NSString *) escapeHTML:(NSString *)s;
 @end

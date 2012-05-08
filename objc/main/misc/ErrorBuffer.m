@@ -93,9 +93,4 @@
     return (([buf length] > 0) ? buf : @"buf=<nil>");
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @end

@@ -22,6 +22,5 @@
 - (void) write:(NSData *)cbuf offset:(NSInteger) off len:(NSInteger) len;
 - (void) writeStr:(NSString *)str;
 - (NSString *)description;
-- (NSString *) toString;
 
 @end

@@ -49,11 +49,6 @@ NSInteger compare(NSString *s1, NSString *s2, void *context);
     return [d description];
 }
 
-+ (NSString *) toString:(ST *)aWho
-{
-    return [STDump description:aWho];
-}
-
 - (id) initWithWho:(ST *)aWho
 {
     self=[super init];
@@ -76,16 +71,6 @@ NSInteger compare(NSString *s1, NSString *s2, void *context);
 - (NSString *) description
 {
     return [self description:0];
-}
-
-- (NSString *) toString
-{
-    return [self description:0];
-}
-
-- (NSString *) toString:(NSInteger)n
-{
-    return [self description:n];
 }
 
 - (NSString *) description:(NSInteger)n

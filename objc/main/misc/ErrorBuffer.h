@@ -47,5 +47,4 @@
 - (void) IOError:(STMessage *)msg;
 - (void) internalError:(STMessage *)msg;
 - (NSString *) description;
-- (NSString *) toString;
 @end

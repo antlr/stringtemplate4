@@ -90,9 +90,4 @@
     return [filepos stringByAppendingFormat:@": %@", [NSString stringWithFormat:[ErrorType ErrorNum:error], msg]];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @end

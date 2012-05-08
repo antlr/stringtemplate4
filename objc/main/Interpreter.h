@@ -208,7 +208,6 @@ NSString *OptionDescription(OptionEnum value);
 - (id) reverse:(id)v;
 - (NSInteger) length:(id)v;
 - (NSString *) description:(id<STWriter>)aWriter who:(ST *)aWho value:(id)value;
-- (NSString *) toString:(id<STWriter>)aWriter who:(ST *)aWho value:(id)value;
 - (id) convertAnythingIteratableToIterator:(id)obj;
 - (ArrayIterator *) convertAnythingToIterator:(id)obj;
 - (BOOL) testAttributeTrue:(id)a;

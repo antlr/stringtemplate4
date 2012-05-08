@@ -57,11 +57,6 @@
     return [NSString stringWithFormat:@"addEvent{, name='%@', value=%@, location=%@:%d}", name, value, fname, sLine];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 - (void) dealloc
 {
 #ifdef DEBUG_DEALLOC

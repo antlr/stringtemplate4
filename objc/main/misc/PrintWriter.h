@@ -44,7 +44,6 @@
 - (id) initWithCapacity:(NSUInteger)aLen;
 - (id) initWithWriter:(Writer *)aSW;
 //- (NSString *)description;
-//- (NSString *)toString;
 - (void) print:(id)msg;
 - (void) println:(id)msg;
 //- (void) close;

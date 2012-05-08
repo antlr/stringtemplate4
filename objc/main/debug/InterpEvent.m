@@ -60,11 +60,6 @@
             [self className], outputStartChar, outputStopChar];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 - (void) dealloc
 {
     if ( scope ) [scope release];

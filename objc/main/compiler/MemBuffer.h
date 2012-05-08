@@ -81,7 +81,6 @@
 
 - (void) ensureCapacity:(NSInteger) index;
 - (NSString *) description;
-- (NSString *) toString;
 - (void) memcpy:(NSInteger)src dest:(NSInteger)dest length:(NSInteger)len;
 
 @end

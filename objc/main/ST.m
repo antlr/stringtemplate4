@@ -130,20 +130,10 @@ NSString *RegionTypeDescription(RegionTypeEnum value)
     return buf;
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 - (NSString *) description:(NSInteger)idx
 {
     id tmp = [self objectAtIndex:idx];
     return [NSString stringWithString:((tmp == nil)? @"nil" : [tmp description])];
-}
-
-- (NSString *) toString:(NSInteger)idx
-{
-    return [self description:idx];
 }
 
 @end
@@ -809,11 +799,6 @@ static DebugState *st_debugState = nil;
         }
     }
     return ((name!= nil)? name : @"impl.name=<nil>");
-}
-
-- (NSString *) toString
-{
-    return [self description];
 }
 
 // ST.format("name, phone | <name>:<phone>", n, p);

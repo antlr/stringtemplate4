@@ -95,9 +95,4 @@
     return desc;
 }
 
-- (NSString *)toString
-{
-    return [self description];
-}
-
 @end

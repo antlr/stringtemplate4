@@ -63,11 +63,6 @@
     return [NSString stringWithFormat:@"{self=%@, expr=%@, exprStartChar=%d, exprStopChar=%d start=%d, stop=%d}", [self className], expr, exprStartChar, exprStopChar, outputStartChar, outputStopChar];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @synthesize exprStartChar;
 @synthesize exprStopChar;
 @synthesize expr;

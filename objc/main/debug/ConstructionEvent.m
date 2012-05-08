@@ -73,11 +73,6 @@
     return ((msg != nil) ? msg : @"msg=<nil>");
 }
 
-- (NSString *) toString
-{
-    return msg;
-}
-
 @synthesize msg;
 
 @end

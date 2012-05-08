@@ -85,11 +85,6 @@
     return [NSString stringWithFormat:@"%d: %@",filepos , [NSString stringWithFormat:[ErrorType ErrorNum:error], arg, arg2]];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @synthesize token;
 @synthesize srcName;
 @end

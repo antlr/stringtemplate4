@@ -184,11 +184,6 @@
     return [NSString stringWithCString:ptr encoding:NSASCIIStringEncoding];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 - (void) replaceCharactersInRange:(NSRange)range withString:(NSString *)aString 
 {
     NSInteger i, start;

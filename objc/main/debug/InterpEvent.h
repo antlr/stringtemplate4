@@ -40,7 +40,6 @@
 
 - (id) init:(InstanceScope *)aScope start:(NSInteger)theStart stop:(NSInteger)theStop;
 - (NSString *) description;
-- (NSString *) toString;
 
 @property (retain) InstanceScope *scope;
 @property NSInteger outputStartChar;

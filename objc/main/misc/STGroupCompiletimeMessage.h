@@ -43,7 +43,6 @@
 
 - (id) init:(ErrorTypeEnum)error srcName:(NSString *)srcName t:(CommonToken *)t cause:(NSException *)aCause arg:(id)arg arg2:(id)arg2;
 - (NSString *) description;
-- (NSString *) toString;
 
 @property (retain) CommonToken *token;
 @property (retain) NSString *srcName;

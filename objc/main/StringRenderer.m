@@ -69,11 +69,6 @@
     return [NSString stringWithFormat:formatString, str];
 }
 
-- (NSString *) toString:(id)obj formatString:(NSString *)formatString locale:(NSLocale *)locale {
-    
-    return [self description:obj formatString:formatString locale:locale];
-}
-
 + (NSString *) escapeHTML:(NSString *)s {
     if (s == nil) {
         return nil;

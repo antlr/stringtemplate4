@@ -203,7 +203,6 @@
 - (NSURL *)getURL:(NSString *)fileName;
 - (NSURL *)getRootDirURL;
 - (NSString *) description;
-- (NSString *) toString;
 - (NSString *) show;
 
 // getters and setters

@@ -31,11 +31,6 @@
     return @"Field";
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 - (void) dealloc
 {
     [name release];
@@ -60,11 +55,6 @@
 - (NSString *) description
 {
     return @"Field";
-}
-
-- (NSString *) toString
-{
-    return [self description];
 }
 
 - (void) dealloc
@@ -93,11 +83,6 @@
     return @"Field";
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 - (void) dealloc
 {
     [name release];
@@ -120,11 +105,6 @@
 - (NSString *) description
 {
     return [NSString stringWithFormat:@"%d", n++];
-}
-
-- (NSString *) toString
-{
-    return [self description];
 }
 
 @end

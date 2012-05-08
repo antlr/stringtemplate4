@@ -26,7 +26,6 @@
 - (void) put:(NSString *)propName value:(id) propValue;
 - (id) get:(NSString *)propName;
 - (NSString *)description;
-- (NSString *)toString;
 
 @property (retain) LinkedHashMap *props;
 @end

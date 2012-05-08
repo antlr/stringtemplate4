@@ -84,7 +84,6 @@ extern NSString *const newline;
 - (void) addObject:(id)anObject;
 - (id) objectAtIndex:(NSInteger)idx;
 - (NSString *)description;
-- (NSString *)toString;
 
 @property (retain) AMutableArray *thisArray;
 @end

@@ -38,8 +38,6 @@
 - (id) init;
 - (id) initWithMessage:(NSString *)aMsg;
 - (NSString *) description;
-- (NSString *) toString;
-
 @property (retain) NSString *msg;
 
 @end

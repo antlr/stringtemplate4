@@ -56,6 +56,5 @@
 
 - (id) init;
 - (NSString *) description:(id)obj formatString:(NSString *)formatString locale:(NSLocale *)locale;
-- (NSString *) toString:(id)obj formatString:(NSString *)formatString locale:(NSLocale *)locale;
 
 @end

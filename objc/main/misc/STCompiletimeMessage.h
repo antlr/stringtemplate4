@@ -45,7 +45,6 @@
 
 - (id) init:(ErrorTypeEnum)error srcName:(NSString *)srcName templateToken:(CommonToken *)templateToken t:(CommonToken *)t cause:(NSException *)aCause arg:(id)arg arg2:(id)arg2;
 - (NSString *) description;
-- (NSString *) toString;
 
 @property (retain) CommonToken *templateToken;
 @property (retain) CommonToken *token;

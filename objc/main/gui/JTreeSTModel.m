@@ -39,11 +39,6 @@
     }
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 - (void) dealloc
 {
     [event release];

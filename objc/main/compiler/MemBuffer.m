@@ -264,11 +264,6 @@
     return str;
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 - (void) memcpy:(NSInteger)src dest:(NSInteger)dest length:(NSInteger)len
 {
     NSInteger i;

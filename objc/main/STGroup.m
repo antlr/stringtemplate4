@@ -1033,11 +1033,6 @@ static BOOL trackCreationEvents = NO;
     return [self getName];
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 - (NSString *) show
 {
     NSMutableString *buf = [NSMutableString stringWithCapacity:16];

@@ -130,9 +130,4 @@
     return @"NumberRenderer called with obj != ACNumber class object";
 }
 
-- (NSString *) toString:(id)obj formatString:(NSString *)formatString locale:(NSLocale *)locale
-{
-    return [self description:obj formatString:formatString locale:locale];
-}
-
 @end

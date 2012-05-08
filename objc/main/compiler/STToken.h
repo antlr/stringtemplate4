@@ -10,7 +10,6 @@
 - (id) init:(NSInteger)type Text:(NSString *)text;
 
 - (void) dealloc;
-- (NSString *) toString;
 - (NSString *) description;
 @end
 

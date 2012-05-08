@@ -178,9 +178,4 @@ static NSString *suffixes[] = {
     return name;
 }
 
-- (NSString *) toString
-{
-    return [self description];
-}
-
 @end

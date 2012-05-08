@@ -14,7 +14,6 @@
 - (BOOL) isEqualTo:(id)obj;
 - (NSInteger) hash;
 - (NSString *) description;
-- (NSString *) toString;
 @end
 
 @interface JTreeSTModel : NSObject <TreeModel> {

@@ -1526,11 +1526,6 @@ static BOOL trace = NO;
     return nil;
 }
 
-- (NSString *) toString:(id<STWriter>)wr1 who:(ST *)aWho value:(id)value
-{
-    return [self description:wr1 who:aWho value:value];
-}
-
 - (ArrayIterator *) convertAnythingIteratableToIterator:(id)obj
 {
     ArrayIterator *iter = nil;
