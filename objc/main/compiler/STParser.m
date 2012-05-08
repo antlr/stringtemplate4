@@ -1758,7 +1758,7 @@ static SymbolStack *conditional_stack;
     return self;
 }
 
-- (id) recoverFromMismatchedToken:(id<IntStream>)anInput type:(NSInteger)ttype follow:(ANTLRBitSet *)follow
+- (id) recoverFromMismatchedToken:(id<IntStream>)anInput TokenType:(NSInteger)ttype Follow:(ANTLRBitSet *)follow
 {
     @throw [MismatchedTokenException newException:ttype Stream:anInput];
 }
