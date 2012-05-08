@@ -5,19 +5,27 @@
 #import "ST.h"
 #import "STGroup.h"
 #import "STGroupFile.h"
-#import "STNoSuchPropertyException.h"
-#import "STRuntimeMessage.h"
+#import "ErrorBuffer.h"
 
 @interface UserAdaptor : NSObject <ModelAdaptor> {
 }
 
-- (NSObject *) getProperty:(ST *)self o:(NSObject *)o property:(NSObject *)property propertyName:(NSString *)propertyName;
+- (id) getProperty:(Interpreter *)interp
+               who:(ST *)aWho
+               obj:(id)anObj
+          property:(id)aProperty
+      propertyName:(NSString *)aPropertyName
+;
 @end
 
 @interface UserAdaptorConst : NSObject <ModelAdaptor> {
 }
 
-- (NSObject *) getProperty:(ST *)self o:(NSObject *)o property:(NSObject *)property propertyName:(NSString *)propertyName;
+- (id) getProperty:(Interpreter *)interp
+               who:(ST *)aWho
+               obj:(id)anObj
+          property:(id)aProperty
+      propertyName:(NSString *)aPropertyName;
 @end
 
 @interface SuperUser : User {
