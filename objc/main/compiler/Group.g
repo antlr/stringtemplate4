@@ -121,7 +121,7 @@ STGroup *group;
 + (NSInteger) TBIGSTRING_NO_NL;
 + (NSInteger) TID;
 + (NSInteger) TTRUE;
-- (void) displayRecognitionError:(AMutableArray *) tokenNames Exception:(RecognitionException *)e;
+- (void) displayRecognitionError:(AMutableArray *)tokenNames Exception:(RecognitionException *)e;
 - (NSString *) getSourceName;
 - (void) error:(NSString *)msg;
 - (NSString *) getErrorMessage:(NSException *)e TokenNames:(AMutableArray *)TokenNames;
@@ -138,7 +138,7 @@ STGroup *group;
 + (NSInteger) TID { return ID; }
 + (NSInteger) TTRUE { return T_TRUE; }
 
-- (void) displayRecognitionError:(AMutableArray *) tokenNames e:(RecognitionException *)e
+- (void) displayRecognitionError:(AMutableArray *) tokenNames Exception:(RecognitionException *)e
 {
     NSString *msg = [self getErrorMessage:e TokenNames:[self getTokenNames]];
     [group.errMgr groupSyntaxError:SYNTAX_ERROR srcName:[self getSourceName] e:e msg:msg];

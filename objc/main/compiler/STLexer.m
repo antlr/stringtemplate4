@@ -612,6 +612,7 @@ delimiterStopChar:(unichar)aStopChar
             re.line = [input getLine];
             re.charPositionInLine = [input getCharPositionInLine];
             [errMgr lexerError:[input getSourceName] msg:@"EOF in string" templateToken:templateToken e:re];
+            break;
         }
     }
     [buf appendFormat:@"%c", c];
@@ -637,7 +638,7 @@ delimiterStopChar:(unichar)aStopChar
             re.line = [input getLine];
             re.charPositionInLine = [input getCharPositionInLine];
             [errMgr lexerError:[input getSourceName] msg:[NSString stringWithFormat:@"Nonterminated comment starting at %d:%d: '!%c' missing", startLine, startCharPositionInLine, delimiterStopChar] templateToken:templateToken e:re];
-        break;
+            break;
         }
         [self consume];
     }
