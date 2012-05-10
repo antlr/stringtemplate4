@@ -6523,7 +6523,7 @@ static SymbolStack *conditional_stack;
                 alt35=6;
             }
             else {
-                if ( LA35_1 == ID ) [input consume];
+                if ( LA35_1 == EOF ) [input consume];
                 NoViableAltException *nvae = [NoViableAltException newException:35 state:1 stream:input];
                 nvae.c = LA35_1;
                 @throw nvae;
