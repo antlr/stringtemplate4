@@ -1,4 +1,4 @@
-// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/STParser.g 2012-02-22 16:12:13
+// $ANTLR 3.4 /Users/acondit/source/antlr/code/stringtemplate4/objc/main/compiler/STParser.g 2012-05-10 18:49:45
 
 /* =============================================================================
  * Standard antlr OBJC runtime definitions
@@ -100,7 +100,6 @@ typedef enum {
 #define TO_STR 60
 #define ZIP 61
 #endif
-
 #pragma mark Dynamic Global Scopes globalAttributeScopeInterface
 #pragma mark Dynamic Rule Scopes ruleAttributeScopeInterface
 /* start of ruleAttributeScopeInterface */

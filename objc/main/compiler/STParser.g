@@ -44,7 +44,6 @@ tokens {
     }
 
 @header {
-#import <ANTLR/ANTLR.h>
 #import "Compiler.h"
 #import "ErrorManager.h"
 #import "ErrorType.h"

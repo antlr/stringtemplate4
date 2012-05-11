@@ -193,7 +193,8 @@ STGroup *group;
         unichar c = [input LA:1];
         msg = (c == (unichar) EOF) ? @"invalid character '<EOF>'" : [NSString stringWithFormat:@"invalid character '%C'", c];
     }
-    else if ( [e isKindOfClass:[MismatchedTokenException class]] && ((MismatchedTokenException *)e).expecting=='"' ) {
+    else if ( [e isKindOfClass:[MismatchedTokenException class]] &&
+              ((MismatchedTokenException *)e).expectingChar == '"' ) {
         msg = @"unterminated string";
     }
     else {
