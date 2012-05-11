@@ -256,7 +256,7 @@ scope {
 	:	chunk
 		{ // finish off the CompiledST result
         if ( $template::cstate.stringtable != nil )
-            $impl.strings = [[$template::cstate.stringtable values] toArray];
+            $impl.strings = [[$template::cstate.stringtable keySet] toArray];
         $impl.codeSize = $template::cstate.ip;
 		}
 	;

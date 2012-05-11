@@ -52,7 +52,7 @@
     self=[super init];
     if ( self != nil ) {
         impl = [[CompiledST newCompiledST] retain];
-        stringtable = [[[StringTable alloc] init] retain];
+        stringtable = [[LinkedHashMap newLinkedHashMap:8] retain];
         ip = 0;
         errMgr = anErrMgr;
         if ( errMgr ) [errMgr retain];
@@ -79,7 +79,13 @@
 
 - (NSInteger) defineString:(NSString *)s
 {
-    return [stringtable addObject:s];
+    ACNumber *I;
+    I = [stringtable get:s];
+    if ( I == nil ) {
+        I = [ACNumber numberWithInteger:[stringtable count]];
+        [stringtable put:s value:I];
+    }
+    return [I integerValue];
 }
 
 - (void) refAttr:(CommonToken *)templateToken tree:(CommonTree *)aTree

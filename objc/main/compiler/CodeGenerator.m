@@ -446,7 +446,7 @@ return self;
 #pragma mark Dynamic Rule Scopes ruleAttributeScope
 /* ruleAttributeScope */
 static SymbolStack *template_stack;
-
+static template_Scope *template_scope;
 /* ObjC end of ruleAttributeScope */
 #pragma mark global Attribute Scopes globalAttributeScope
 /* ObjC start globalAttributeScope */
@@ -777,7 +777,7 @@ static SymbolStack *template_stack;
 
 
 
-     	/* scopeSetAttributeRef */
+    /* scopeSetAttributeRef */
     ((template_Scope *)[template_stack peek]).cstate =  [[CompilationState newCompilationState:errMgr name:name stream:[input getTokenStream]] retain];
     impl =  ((template_Scope *)[template_stack peek]).cstate.impl;
     if ( [template_stack count] == 1 )
@@ -809,11 +809,8 @@ static SymbolStack *template_stack;
 
          // finish off the CompiledST result
         if ( ((template_Scope *)[template_stack peek]).cstate.stringtable != nil )
-            impl.strings = [((template_Scope *)[template_stack peek]).cstate.stringtable toArray];
+            impl.strings = [[((template_Scope *)[template_stack peek]).cstate.stringtable keySet] toArray];
         impl.codeSize = ((template_Scope *)[template_stack peek]).cstate.ip;
-        		
-
-         
         }
 
         /* token+rule list labels */
@@ -1802,18 +1799,11 @@ static SymbolStack *template_stack;
 
 
                     el=(CommonTree *)[self match:input TokenType:ELSE Follow:FOLLOW_ELSE_in_ifstat466]; 
-                     
-
-
-
-                    					[endRefs addInteger:[self address]+1];
-                    					[self emit1:el opcode:Bytecode.INSTR_BR arg:-1]; // br end
-                    					// update previous branch instruction
-                                        [self write:prevBranchOperand value:(short)[self address]];
-                    					prevBranchOperand = -1;
-                    					
-
-                     
+                    [endRefs addInteger:[self address]+1];
+                    [self emit1:el opcode:Bytecode.INSTR_BR arg:-1]; // br end
+                    // update previous branch instruction
+                    [self write:prevBranchOperand value:(short)[self address]];
+                    prevBranchOperand = -1;
                     if ( [input LA:1] == DOWN ) {
                         [self match:input TokenType:DOWN Follow:nil]; 
 
@@ -2672,12 +2662,14 @@ static SymbolStack *template_stack;
                  
 
 
-                		if ( (args18!=nil?args18.passThru:NO )
-                 ) [self emit1:((CommonTree *)retval.start) opcode:Bytecode.INSTR_PASSTHRU s:(ID19!=nil?ID19.text:nil)];
-                		if ( (args18!=nil?args18.namedArgs:NO ) )
-                			[self emit1:INCLUDE17 opcode:Bytecode.INSTR_NEW_BOX_ARGS s:(ID19!=nil?ID19.text:nil)];
-                		else
-                			[self emit2:INCLUDE17 opcode:Bytecode.INSTR_NEW s:(ID19!=nil?ID19.text:nil) arg2:( (args18!=nil?args18.n:0)+num_exprs)];
+                if ( (args18!=nil?args18.passThru:NO ) )
+                    [self emit1:((CommonTree *)retval.start) opcode:Bytecode.INSTR_PASSTHRU
+                              s:(ID19!=nil?ID19.text:nil)];
+                if ( ((args18!=nil) ? args18.namedArgs:NO ) )
+                    [self emit1:INCLUDE17 opcode:Bytecode.INSTR_NEW_BOX_ARGS s:(ID19!=nil?ID19.text:nil)];
+                else
+                    [self emit2:INCLUDE17 opcode:Bytecode.INSTR_NEW s:(ID19!=nil?ID19.text:nil) arg2:(
+                (args18!=nil?args18.n:0)+num_exprs)];
                 		
 
                  
@@ -2926,11 +2918,11 @@ static SymbolStack *template_stack;
                  
 
 
-                		if ( (args24!=nil?args24.passThru:NO) )
-                            [self emit1:((CommonTree *)retval.start) opcode:Bytecode.INSTR_PASSTHRU s:(ID25!=nil?ID25.text:nil)];
-                		if ( (args24!=nil?args24.namedArgs:NO) )
-                            [self emit1:INCLUDE26 opcode:Bytecode.INSTR_NEW_BOX_ARGS s:(ID25!=nil?ID25.text:nil)];
-                		else [self emit2:INCLUDE26 opcode:Bytecode.INSTR_NEW s:(ID25!=nil?ID25.text:nil) arg2:(args24!=nil?args24.n:0 )];
+                    if ( (args24!=nil?args24.passThru:NO) )
+                        [self emit1:((CommonTree *)retval.start) opcode:Bytecode.INSTR_PASSTHRU s:(ID25!=nil?ID25.text:nil)];
+                    if ( (args24!=nil?args24.namedArgs:NO) )
+                        [self emit1:INCLUDE26 opcode:Bytecode.INSTR_NEW_BOX_ARGS s:(ID25!=nil?ID25.text:nil)];
+                    else [self emit2:INCLUDE26 opcode:Bytecode.INSTR_NEW s:(ID25!=nil?ID25.text:nil) arg2:(args24!=nil?args24.n:0 )];
                 		
 
                  
@@ -2965,7 +2957,7 @@ static SymbolStack *template_stack;
                     if ( (args27!=nil?args27.namedArgs:NO ) )
                         [self emit1:INCLUDE_SUPER29 opcode:Bytecode.INSTR_SUPER_NEW_BOX_ARGS s:(ID28!=nil?ID28.text:nil)];
                     else
-                        [self emit2:INCLUDE_SUPER29 opcode:Bytecode.INSTR_SUPER_NEW s:(ID28!=nil?ID28.text:nil) arg2:(args27!=nil?args27.n:nil )];
+                        [self emit2:INCLUDE_SUPER29 opcode:Bytecode.INSTR_SUPER_NEW s:(ID28!=nil?ID28.text:nil) arg2:(args27!=nil?args27.n:0 )];
                 		
 
                  
@@ -2987,11 +2979,10 @@ static SymbolStack *template_stack;
                  
 
 
-                									CompiledST *impl =
-                										[Compiler defineBlankRegion:outermostImpl token:ID30.token];
-                									//impl.dump();
-                									[self emit2:INCLUDE_REGION31 opcode:Bytecode.INSTR_NEW s:impl.name arg2:0];
-                									
+                CompiledST *impl = [Compiler defineBlankRegion:outermostImpl token:ID30.token];
+                //impl.dump();
+                [self emit2:INCLUDE_REGION31 opcode:Bytecode.INSTR_NEW s:impl.name arg2:0];
+                
 
                  
                 }

@@ -33,7 +33,6 @@
 #import "Interpreter.h"
 #import "Interval.h"
 #import "Bytecode.h"
-#import "StringTable.h"
 #import "CompiledST.h"
 
 /**
@@ -47,7 +46,7 @@
   __strong CompiledST *impl;
 
 	/** Track unique strings; copy into CompiledST's String[] after compilation */
-  __strong StringTable *stringtable;
+  __strong LinkedHashMap *stringtable;
 
 	/** Track instruction location within code.instrs array; this is
 	 *  next address to write to.  Byte-addressable memory.
@@ -82,7 +81,7 @@
 //+ (void) writeShort:(char *)memory index:(NSInteger)index value:(short)value;
 
 @property (retain) CompiledST *impl;
-@property (retain) StringTable *stringtable;
+@property (retain) LinkedHashMap *stringtable;
 @property (assign) NSInteger ip;
 @property (retain) CommonTokenStream *tokens;
 @property (retain) ErrorManager *errMgr;

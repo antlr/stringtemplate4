@@ -38,7 +38,6 @@
 #import "Compiler.h"
 #import "FormalArgument.h"
 #import "STException.h"
-#import "StringTable.h"
 #import "Compiler.h"
 //#import "DebugST.h"
 #import "EvalExprEvent.h"
