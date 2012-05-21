@@ -33,8 +33,8 @@ import org.antlr.runtime.Token;
 
 /** */
 public class STGroupCompiletimeMessage extends STMessage {
-	Token token;         // token inside group file
-	String srcName;
+	public Token token;         // token inside group file
+	public String srcName;
 
 	public STGroupCompiletimeMessage(ErrorType error, String srcName, Token t, Throwable cause) {
 		this(error, srcName, t, cause, null);

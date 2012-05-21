@@ -6,6 +6,10 @@ University of San Francisco
 
 CHANGES
 
+May 21, 2012
+
+* Made fields in the error messages public
+
 February 8, 2012 -- 4.0.5 release
 
 December 25, 2011
