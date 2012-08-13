@@ -2,6 +2,7 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Test;
 import org.stringtemplate.v4.*;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -44,5 +45,18 @@ public class TestSTRawGroupDir extends BaseTest {
 		ST b = group.getInstanceOf("b");
 		b.add("name", "Bob");
 		assertEquals("Bob", b.render());
+	}
+
+	@Test public void testSTRawGroupDir() {
+		String dir = getRandomDir();
+		writeFile(dir, "template.st", "$values:{foo|[$foo$]}$");
+		STGroup group = new STRawGroupDir(dir, '$', '$');
+		ST template = group.getInstanceOf("template");
+		List<String> values = new ArrayList<String>();
+		values.add("one");
+		values.add("two");
+		values.add("three");
+		template.add("values", values);
+		assertEquals("[one][two][three]", template.render());			
 	}
 }

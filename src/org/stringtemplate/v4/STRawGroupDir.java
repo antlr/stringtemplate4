@@ -1,6 +1,7 @@
 package org.stringtemplate.v4;
 
 import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonToken;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.misc.Misc;
@@ -37,8 +38,12 @@ public class STRawGroupDir extends STGroupDir {
 	{
 		String template = templateStream.substring(0, templateStream.size() - 1);
 		String templateName = Misc.getFileNameNoSuffix(unqualifiedFileName);
-		CompiledST impl = new Compiler(this).compile(templateName, template);
-		impl.prefix = prefix;
+		String fullyQualifiedTemplateName = prefix + templateName;
+		CompiledST impl = new Compiler(this).compile(fullyQualifiedTemplateName, template);
+		CommonToken nameT = new CommonToken(STLexer.SEMI); // Seems like a hack, best I could come up with.
+		nameT.setInputStream(templateStream);
+		rawDefineTemplate(fullyQualifiedTemplateName, impl, nameT);
+		impl.defineImplicitlyDefinedTemplates(this);
 		return impl;
 	}
 }
