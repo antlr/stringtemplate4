@@ -6,6 +6,10 @@ University of San Francisco
 
 CHANGES
 
+August 13, 2012
+
+* Fixed https://github.com/antlr/stringtemplate4/issues/5
+
 May 21, 2012
 
 * Made fields in the error messages public
