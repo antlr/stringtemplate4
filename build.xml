@@ -2,6 +2,7 @@
 
     <property file="build.properties" />
 
+    <property name="src.dir" value="${basedir}/src" />
     <property name="dist.dir" value="${basedir}/dist" />
     <property name="build.dir" value="${basedir}/build" />
     <property name="lib.dir" value="${basedir}/lib" />
@@ -26,28 +27,24 @@
     </target>
 
 	<target name="antlr" depends="init">
-		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
-			target="${source}/org/stringtemplate/v4/compiler/Group.g"
-			outputdirectory="${build.dir}/gen/org/stringtemplate/v4/compiler">
-			<classpath refid="classpath"/>
-		</antlr:ant-antlr3>
-		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
-			target="${source}/org/stringtemplate/v4/compiler/STParser.g"
-			outputdirectory="${build.dir}/gen/org/stringtemplate/v4/compiler">
-			<classpath refid="classpath"/>
-		</antlr:ant-antlr3>
-		<antlr:ant-antlr3 xmlns:antlr="antlib:org/apache/tools/ant/antlr"
-			target="${source}/org/stringtemplate/v4/compiler/CodeGenerator.g"
-			outputdirectory="${build.dir}/gen/org/stringtemplate/v4/compiler">
-			<classpath refid="classpath"/>
-		</antlr:ant-antlr3>
+        <echo>parse grammars</echo>
+      		<java classname="org.antlr.Tool" fork="true" failonerror="false" maxmemory="300m"
+      			dir="${src.dir}/org/stringtemplate/v4/compiler">
+      			<arg value="-make"/>
+      			<arg value="Group.g"/>
+      			<arg value="CodeGenerator.g"/>
+      			<classpath>
+      				<pathelement location="${antlr3.jar}"/>
+      				<pathelement path="${java.class.path}"/>
+      			</classpath>
+      		</java>
 	</target>
 
     <target name="compile" depends="antlr" description="Compile for generic OS">
         <mkdir dir="${build.dir}/classes"/>
         <mkdir dir="${build.dir}/src"/>
 	<copy todir="${build.dir}/src" >
-        	<fileset dir="${source}"/>
+        	<fileset dir="${src.dir}"/>
 	</copy>
 	<replace dir="${build.dir}/src" token="@version@" value="${version}"/>
         <javac
@@ -78,7 +75,7 @@
 
         <mkdir dir="${install.root.dir}/src"/>
         <copy todir="${install.root.dir}/src">
-            <fileset dir="${source}">
+            <fileset dir="${src.dir}">
                 <include name="**/*.java"/>
                 <include name="**/*.g"/>
                 <include name="**/*.st"/>
