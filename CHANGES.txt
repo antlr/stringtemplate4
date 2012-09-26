@@ -1,4 +1,4 @@
-ST 4.0.5 Release
+ST 4.0.6 Release
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
@@ -6,7 +6,7 @@ University of San Francisco
 
 CHANGES
 
-September 26, 2012
+September 26, 2012 -- Release 4.0.6
 
 * STRawGroupDir problem and ST("template") issue. When there are no formal
   args for template t and you map t across some values, t implicitly gets
