@@ -540,6 +540,11 @@ public class Interpreter {
 	}
 
 	void storeArgs(ST self, Map<String,Object> attrs, ST st) {
+		if ( attrs!=null && attrs.size()>0 &&
+			 !st.impl.hasFormalArgs && st.impl.formalArguments==null )
+		{
+			st.add(ST.IMPLICIT_ARG_NAME, null); // pretend we have "it" arg
+		}
 		int nformalArgs = 0;
 		if ( st.impl.formalArguments!=null ) nformalArgs = st.impl.formalArguments.size();
 		int nargs = 0;
@@ -571,6 +576,10 @@ public class Interpreter {
 	}
 
 	void storeArgs(ST self, int nargs, ST st) {
+		if ( nargs>0 && !st.impl.hasFormalArgs && st.impl.formalArguments==null ) {
+			st.add(ST.IMPLICIT_ARG_NAME, null); // pretend we have "it" arg
+		}
+
 		int nformalArgs = 0;
 		if ( st.impl.formalArguments!=null ) nformalArgs = st.impl.formalArguments.size();
 		int firstArg = sp-(nargs-1);
@@ -879,6 +888,13 @@ public class Interpreter {
 	}
 
 	protected void setFirstArgument(ST self, ST st, Object attr) {
+		if ( !st.impl.hasFormalArgs ) {
+			if ( st.impl.formalArguments==null ) {
+				st.add(ST.IMPLICIT_ARG_NAME, attr);
+				return;
+			}
+			// else fall thru to set locals[0]
+		}
 		if ( st.impl.formalArguments==null ) {
 			errMgr.runTimeError(this, self,
 									  current_ip,

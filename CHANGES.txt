@@ -6,6 +6,12 @@ University of San Francisco
 
 CHANGES
 
+September 26, 2012
+
+* STRawGroupDir problem and ST("template") issue. When there are no formal
+  args for template t and you map t across some values, t implicitly gets
+  arg "it".  E.g., "$names:bold()$" and bold as "<b>$it$</b>".
+
 August 13, 2012
 
 * Fixed https://github.com/antlr/stringtemplate4/issues/5

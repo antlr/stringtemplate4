@@ -67,6 +67,12 @@ public class ST {
     public static final String UNKNOWN_NAME = "anonymous";
 	public static final Object EMPTY_ATTR = new Object();
 
+	/** When there are no formal args for template t and you map t across
+	 *  some values, t implicitly gets arg "it".  E.g., "<b>$it$</b>"
+	 */
+	public static final String IMPLICIT_ARG_NAME = "it";
+
+
 	/** Cache exception since this could happen a lot if people use "missing"
 	 *  to mean boolean false.
 	 */
