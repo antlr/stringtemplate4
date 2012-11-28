@@ -32,6 +32,7 @@ import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
 
 public class STModelAdaptor implements ModelAdaptor {
+	@Override
 	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{

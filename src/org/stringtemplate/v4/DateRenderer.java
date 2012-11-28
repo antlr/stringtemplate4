@@ -58,6 +58,7 @@ public class DateRenderer implements AttributeRenderer {
             }
         };
 
+	@Override
     public String toString(Object o, String formatString, Locale locale) {
         Date d;
         if ( formatString==null ) formatString = "short";

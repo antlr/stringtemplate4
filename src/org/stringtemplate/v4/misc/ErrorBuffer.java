@@ -36,23 +36,28 @@ import java.util.List;
 public class ErrorBuffer implements STErrorListener {
     public List<STMessage> errors = new ArrayList<STMessage>();
 
+	@Override
     public void compileTimeError(STMessage msg) {
         errors.add(msg);
     }
 
+	@Override
     public void runTimeError(STMessage msg) {
         if ( msg.error != ErrorType.NO_SUCH_PROPERTY ) { // ignore these
             errors.add(msg);
         }
     }
 
+	@Override
     public void IOError(STMessage msg) {
         errors.add(msg);
     }
 
+	@Override
     public void internalError(STMessage msg) {
         errors.add(msg);
     }
+	@Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         for (STMessage m : errors) {

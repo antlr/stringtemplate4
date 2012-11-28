@@ -46,6 +46,7 @@ public class STLexerMessage extends STMessage {
 		this.srcName = srcName;
 	}
 
+	@Override
 	public String toString() {
 		RecognitionException re = (RecognitionException)cause;
 		int line = re.line;

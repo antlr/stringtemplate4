@@ -36,20 +36,24 @@ import org.stringtemplate.v4.STErrorListener;
 public class ErrorManager {
     public static STErrorListener DEFAULT_ERROR_LISTENER =
         new STErrorListener() {
+			@Override
             public void compileTimeError(STMessage msg) {
                 System.err.println(msg);
             }
 
+			@Override
             public void runTimeError(STMessage msg) {
                 if ( msg.error != ErrorType.NO_SUCH_PROPERTY ) { // ignore these
                     System.err.println(msg);
                 }
             }
 
+			@Override
             public void IOError(STMessage msg) {
                 System.err.println(msg);
             }
 
+			@Override
             public void internalError(STMessage msg) {
                 System.err.println(msg);
                 // throw new Error("internal error", msg.cause);

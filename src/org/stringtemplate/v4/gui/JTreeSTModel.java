@@ -54,6 +54,7 @@ public class JTreeSTModel implements TreeModel {
 			return this.event == ((Wrapper)o).event;
 		}
 
+		@Override
 		public String toString() {
 			ST st = event.scope.st;
 			if ( st.isAnonSubtemplate() ) return "{...}";
@@ -72,16 +73,19 @@ public class JTreeSTModel implements TreeModel {
 		this.root = new Wrapper(root);
 	}
 
+	@Override
 	public Object getChild(Object parent, int index) {
 		EvalTemplateEvent e = ((Wrapper)parent).event;
 		return new Wrapper(e.scope.childEvalTemplateEvents.get(index));
 	}
 
+	@Override
 	public int getChildCount(Object parent) {
 		EvalTemplateEvent e = ((Wrapper)parent).event;
 		return e.scope.childEvalTemplateEvents.size();
 	}
 
+	@Override
 	public int getIndexOfChild(Object parent, Object child) {
 		EvalTemplateEvent p = ((Wrapper)parent).event;
 		EvalTemplateEvent c = ((Wrapper)parent).event;
@@ -97,18 +101,23 @@ public class JTreeSTModel implements TreeModel {
 		return -1;
 	}
 
+	@Override
 	public boolean isLeaf(Object node) {
 		return getChildCount(node) == 0;
 	}
 
+	@Override
 	public Object getRoot() { return root; }
 
+	@Override
     public void valueForPathChanged(TreePath treePath, Object o) {
     }
 
+	@Override
     public void addTreeModelListener(TreeModelListener treeModelListener) {
     }
 
+	@Override
     public void removeTreeModelListener(TreeModelListener treeModelListener) {
     }
 }

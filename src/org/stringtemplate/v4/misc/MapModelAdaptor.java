@@ -35,6 +35,7 @@ import org.stringtemplate.v4.STGroup;
 import java.util.Map;
 
 public class MapModelAdaptor implements ModelAdaptor {
+	@Override
 	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{

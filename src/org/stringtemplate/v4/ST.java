@@ -522,6 +522,7 @@ public class ST {
         return interp.getEvents();
     }
 
+	@Override
     public String toString() {
         if ( impl==null ) return "bad-template()";
 		String name = impl.name+"()";

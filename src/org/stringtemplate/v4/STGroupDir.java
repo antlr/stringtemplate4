@@ -176,7 +176,9 @@ public class STGroupDir extends STGroup {
 		return loadTemplateFile(prefix, unqualifiedFileName, fs);
 	}
 
+	@Override
 	public String getName() { return groupDirName; }
+	@Override
 	public String getFileName() { return root.getFile(); }
 	@Override
 	public URL getRootDirURL() { return root; }

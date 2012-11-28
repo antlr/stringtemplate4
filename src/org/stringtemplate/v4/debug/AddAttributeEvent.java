@@ -36,6 +36,7 @@ public class AddAttributeEvent extends ConstructionEvent {
         this.value = value;
     }
 
+	@Override
     public String toString() {
         return "addEvent{" +
             ", name='" + name + '\'' +

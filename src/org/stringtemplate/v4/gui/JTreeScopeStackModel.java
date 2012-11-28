@@ -103,35 +103,43 @@ public class JTreeScopeStackModel implements TreeModel {
 		}
 	}
 
+	@Override
 	public Object getRoot() {
 		return root;
 	}
 
+	@Override
 	public Object getChild(Object parent, int i) {
 		StringTree t = (StringTree)parent;
 		return t.getChild(i);
 	}
 
+	@Override
 	public int getChildCount(Object parent) {
 		StringTree t = (StringTree)parent;
 		return t.getChildCount();
 	}
 
+	@Override
 	public boolean isLeaf(Object node) {
 		return getChildCount(node) == 0;
 	}
 
+	@Override
 	public int getIndexOfChild(Object parent, Object child) {
 		StringTree c = (StringTree)child;
 		return c.getChildIndex();
 	}
 
+	@Override
 	public void valueForPathChanged(TreePath treePath, Object o) {
 	}
 
+	@Override
 	public void addTreeModelListener(TreeModelListener treeModelListener) {
 	}
 
+	@Override
 	public void removeTreeModelListener(TreeModelListener treeModelListener) {
 	}
 }

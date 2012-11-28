@@ -41,6 +41,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 	protected DoubleKeyMap<Class, String, Member> classAndPropertyToMemberCache =
 		new DoubleKeyMap<Class, String, Member>();
 
+	@Override
 	public synchronized Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{

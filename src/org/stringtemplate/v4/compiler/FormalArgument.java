@@ -91,10 +91,12 @@ public class FormalArgument {
     }
     */
 
+	@Override
     public int hashCode() {
         return name.hashCode() + defaultValueToken.hashCode();
     }
 
+	@Override
     public boolean equals(Object o) {
 		if ( o==null || !(o instanceof FormalArgument) ) {
 			return false;
@@ -108,6 +110,7 @@ public class FormalArgument {
 			   (this.defaultValueToken == null && other.defaultValueToken != null));
 	}
 
+	@Override
     public String toString() {
 		if ( defaultValueToken!=null ) return name+"="+defaultValueToken.getText();
         return name;

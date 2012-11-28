@@ -61,6 +61,7 @@ public class STLexer implements TokenSource {
         }
         public STToken(int type, String text) { super(type, text); }
 
+		@Override
         public String toString() {
             String channelStr = "";
             if ( channel>0 ) {
@@ -173,6 +174,7 @@ public class STLexer implements TokenSource {
 		this.delimiterStopChar = delimiterStopChar;
 	}
 
+	@Override
 	public Token nextToken() {
 		Token t = null;
 		if ( tokens.size()>0 ) { t = tokens.remove(0); }
@@ -573,6 +575,7 @@ public class STLexer implements TokenSource {
 //        return startLine+":"+startCharPositionInLine;
 //    }
 //
+	@Override
     public String getSourceName() {
         return "no idea";
     }
