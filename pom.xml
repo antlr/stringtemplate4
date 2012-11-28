@@ -21,7 +21,7 @@
         SNAPSHOT replaced with the the data, time and unique number.
     -->
 
-    <version>4.0.4-SNAPSHOT</version>
+    <version>4.0.7-SNAPSHOT</version>
 
     <!--
         The name of the project as seen by IDEs and release documentation etc.
