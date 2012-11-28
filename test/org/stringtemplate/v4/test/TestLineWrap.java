@@ -92,7 +92,7 @@ public class TestLineWrap extends BaseTest {
         x.add("stuff", "2");
         x.add("stuff", "3");
         org.stringtemplate.v4.ST a = group.getInstanceOf("array");
-        a.add("values", new ArrayList() {{
+        a.add("values", new ArrayList<Object>() {{
             add("a"); add(x); add("b");
         }});
         String expecting =

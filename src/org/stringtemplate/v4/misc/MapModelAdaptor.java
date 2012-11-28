@@ -40,7 +40,7 @@ public class MapModelAdaptor implements ModelAdaptor {
 		throws STNoSuchPropertyException
 	{
 		Object value;
-		Map map = (Map)o;
+		Map<?, ?> map = (Map<?, ?>)o;
 		if ( property==null ) value = map.get(STGroup.DEFAULT_KEY);
 		else if ( property.equals("keys") ) value = map.keySet();
 		else if ( property.equals("values") ) value = map.values();

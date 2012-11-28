@@ -186,7 +186,7 @@ public class Misc {
     public static Method getMethod(Class c, String methodName) {
         Method m;
         try {
-            m = c.getMethod(methodName, (Class[])null);
+            m = c.getMethod(methodName);
         }
         catch (NoSuchMethodException nsme) {
             m = null;

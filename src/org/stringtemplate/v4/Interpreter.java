@@ -726,7 +726,7 @@ public class Interpreter {
 	protected int writeIterator(STWriter out, ST self, Object o, String[] options) throws IOException {
 		if ( o==null ) return 0;
 		int n = 0;
-		Iterator it = (Iterator)o;
+		Iterator<?> it = (Iterator<?>)o;
 		String separator = null;
 		if ( options!=null ) separator = options[Option.SEPARATOR.ordinal()];
 		boolean seenAValue = false;
@@ -812,7 +812,7 @@ public class Interpreter {
 
 	protected List<ST> rot_map_iterator(ST self, Iterator attr, List<ST> prototypes) {
 		List<ST> mapped = new ArrayList<ST>();
-		Iterator iter = (Iterator)attr;
+		Iterator<?> iter = attr;
 		int i0 = 0;
 		int i = 1;
 		int ti = 0;
@@ -853,7 +853,7 @@ public class Interpreter {
 		// ensure arguments line up
 		int numExprs = exprs.size();
 		CompiledST code = prototype.impl;
-		Map formalArguments = code.formalArguments;
+		Map<String, FormalArgument> formalArguments = code.formalArguments;
 		if ( !code.hasFormalArgs || formalArguments==null ) {
 			errMgr.runTimeError(this, self, current_ip, ErrorType.MISSING_FORMAL_ARGUMENTS);
 			return null;
@@ -891,7 +891,7 @@ public class Interpreter {
 			embedded.rawSetAttribute("i0", i);
 			embedded.rawSetAttribute("i", i+1);
 			for (int a = 0; a < numExprs; a++) {
-				Iterator it = (Iterator) exprs.get(a);
+				Iterator<?> it = (Iterator<?>) exprs.get(a);
 				if ( it!=null && it.hasNext() ) {
 					String argName = (String)formalArgumentNames[a];
 					Object iteratedValue = it.next();
@@ -932,7 +932,7 @@ public class Interpreter {
 		o = convertAnythingIteratableToIterator(o);
 		if ( o instanceof Iterator ) {
 			// copy of elements into our temp list
-			Iterator it = (Iterator)o;
+			Iterator<?> it = (Iterator<?>)o;
 			while (it.hasNext()) list.add(it.next());
 		}
 		else {
@@ -952,7 +952,7 @@ public class Interpreter {
 		Object r = v;
 		v = convertAnythingIteratableToIterator(v);
 		if ( v instanceof Iterator ) {
-			Iterator it = (Iterator)v;
+			Iterator<?> it = (Iterator<?>)v;
 			if ( it.hasNext() ) {
 				r = it.next();
 			}
@@ -970,14 +970,14 @@ public class Interpreter {
 	 */
 	public Object last(Object v) {
 		if ( v==null ) return null;
-		if ( v instanceof List ) return ((List)v).get(((List)v).size()-1);
+		if ( v instanceof List ) return ((List<?>)v).get(((List<?>)v).size()-1);
 		else if ( v.getClass().isArray() ) {
 			return Array.get(v, Array.getLength(v) - 1);
 		}
 		Object last = v;
 		v = convertAnythingIteratableToIterator(v);
 		if ( v instanceof Iterator ) {
-			Iterator it = (Iterator)v;
+			Iterator<?> it = (Iterator<?>)v;
 			while ( it.hasNext() ) {
 				last = it.next();
 			}
@@ -992,14 +992,14 @@ public class Interpreter {
 	public Object rest(Object v) {
 		if ( v == null ) return null;
 		if ( v instanceof List ) { // optimize list case
-			List elems = (List)v;
+			List<?> elems = (List<?>)v;
 			if ( elems.size()<=1 ) return null;
 			return elems.subList(1, elems.size());
 		}
 		v = convertAnythingIteratableToIterator(v);
 		if ( v instanceof Iterator ) {
-			List a = new ArrayList();
-			Iterator it = (Iterator)v;
+			List<Object> a = new ArrayList<Object>();
+			Iterator<?> it = (Iterator<?>)v;
 			if ( !it.hasNext() ) return null; // if not even one value return null
 			it.next(); // ignore first value
 			while (it.hasNext()) {
@@ -1015,14 +1015,14 @@ public class Interpreter {
 	public Object trunc(Object v) {
 		if ( v ==null ) return null;
 		if ( v instanceof List ) { // optimize list case
-			List elems = (List)v;
+			List<?> elems = (List<?>)v;
 			if ( elems.size()<=1 ) return null;
 			return elems.subList(0, elems.size()-1);
 		}
 		v = convertAnythingIteratableToIterator(v);
 		if ( v instanceof Iterator ) {
-			List a = new ArrayList();
-			Iterator it = (Iterator) v;
+			List<Object> a = new ArrayList<Object>();
+			Iterator<?> it = (Iterator<?>) v;
 			while (it.hasNext()) {
 				Object o = it.next();
 				if ( it.hasNext() ) a.add(o); // only add if not last one
@@ -1037,8 +1037,8 @@ public class Interpreter {
 		if ( v ==null ) return null;
 		v = convertAnythingIteratableToIterator(v);
 		if ( v instanceof Iterator ) {
-			List a = new ArrayList();
-			Iterator it = (Iterator) v;
+			List<Object> a = new ArrayList<Object>();
+			Iterator<?> it = (Iterator<?>) v;
 			while (it.hasNext()) {
 				Object o = it.next();
 				if ( o!=null ) a.add(o);
@@ -1058,8 +1058,8 @@ public class Interpreter {
 		if ( v==null ) return null;
 		v = convertAnythingIteratableToIterator(v);
 		if ( v instanceof Iterator ) {
-			List a = new LinkedList();
-			Iterator it = (Iterator)v;
+			List<Object> a = new LinkedList<Object>();
+			Iterator<?> it = (Iterator<?>)v;
 			while (it.hasNext()) a.add(0, it.next());
 			return a;
 		}
@@ -1076,12 +1076,12 @@ public class Interpreter {
 	public Object length(Object v) {
 		if ( v == null) return 0;
 		int i = 1;      // we have at least one of something. Iterator and arrays might be empty.
-		if ( v instanceof Map ) i = ((Map)v).size();
-		else if ( v instanceof Collection ) i = ((Collection)v).size();
+		if ( v instanceof Map ) i = ((Map<?, ?>)v).size();
+		else if ( v instanceof Collection ) i = ((Collection<?>)v).size();
 		else if ( v instanceof Object[] ) i = ((Object[])v).length;
 		else if ( v.getClass().isArray() ) i = Array.getLength(v);
 		else if ( v instanceof Iterator) {
-			Iterator it = (Iterator)v;
+			Iterator<?> it = (Iterator<?>)v;
 			i = 0;
 			while ( it.hasNext() ) {
 				it.next();
@@ -1098,10 +1098,9 @@ public class Interpreter {
 			StringWriter sw = new StringWriter();
 			STWriter stw = null;
 			try {
-				Class writerClass = out.getClass();
-				Constructor ctor =
-					writerClass.getConstructor(new Class[] {Writer.class});
-				stw = (STWriter)ctor.newInstance(sw);
+				Class<? extends STWriter> writerClass = out.getClass();
+				Constructor<? extends STWriter> ctor = writerClass.getConstructor(Writer.class);
+				stw = ctor.newInstance(sw);
 			}
 			catch (Exception e) {
 				stw = new AutoIndentWriter(sw);
@@ -1115,28 +1114,28 @@ public class Interpreter {
 	}
 
 	public Object convertAnythingIteratableToIterator(Object o) {
-		Iterator iter = null;
+		Iterator<?> iter = null;
 		if ( o == null ) return null;
-		if ( o instanceof Collection )      iter = ((Collection)o).iterator();
+		if ( o instanceof Collection )      iter = ((Collection<?>)o).iterator();
 		else if ( o instanceof Object[] )  iter = Arrays.asList((Object[])o).iterator();
 		else if ( o.getClass().isArray() ) iter = new ArrayIterator(o);
 		else if ( o instanceof Map ) {
 			if (currentScope.st.groupThatCreatedThisInstance.iterateAcrossValues) {
-				iter = ((Map)o).values().iterator();
+				iter = ((Map<?, ?>)o).values().iterator();
 			}
 			else {
-				iter = ((Map)o).keySet().iterator();
+				iter = ((Map<?, ?>)o).keySet().iterator();
 			}
 		}
-		else if ( o instanceof Iterator )  iter = (Iterator)o;
+		else if ( o instanceof Iterator )  iter = (Iterator<?>)o;
 		if ( iter==null ) return o;
 		return iter;
 	}
 
-	public Iterator convertAnythingToIterator(Object o) {
+	public Iterator<?> convertAnythingToIterator(Object o) {
 		o = convertAnythingIteratableToIterator(o);
-		if ( o instanceof Iterator ) return (Iterator)o;
-		List singleton = new ST.AttributeList(1);
+		if ( o instanceof Iterator ) return (Iterator<?>)o;
+		List<Object> singleton = new ST.AttributeList(1);
 		singleton.add(o);
 		return singleton.iterator();
 	}
@@ -1144,9 +1143,9 @@ public class Interpreter {
 	protected boolean testAttributeTrue(Object a) {
 		if ( a==null ) return false;
 		if ( a instanceof Boolean ) return (Boolean)a;
-		if ( a instanceof Collection ) return ((Collection)a).size()>0;
-		if ( a instanceof Map ) return ((Map)a).size()>0;
-		if ( a instanceof Iterator ) return ((Iterator)a).hasNext();
+		if ( a instanceof Collection ) return ((Collection<?>)a).size()>0;
+		if ( a instanceof Map ) return ((Map<?, ?>)a).size()>0;
+		if ( a instanceof Iterator ) return ((Iterator<?>)a).hasNext();
 		return true; // any other non-null object, return true--it's present
 	}
 
@@ -1349,7 +1348,7 @@ public class Interpreter {
 		}
 		o = convertAnythingIteratableToIterator(o);
 		if ( o instanceof Iterator ) {
-			Iterator it = (Iterator)o;
+			Iterator<?> it = (Iterator<?>)o;
 			tr.append(" [");
 			while ( it.hasNext() ) {
 				Object iterValue = it.next();

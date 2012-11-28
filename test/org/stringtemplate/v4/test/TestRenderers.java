@@ -338,7 +338,7 @@ public class TestRenderers extends BaseTest {
         STGroup group = new STGroup();
         group.registerRenderer(String.class, new StringRenderer());
         ST st = new ST(group, template);
-        List names = new ArrayList();
+        List<String> names = new ArrayList<String>();
         names.add("ter");
         names.add(null);
         names.add("sriram");

@@ -46,7 +46,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 		throws STNoSuchPropertyException
 	{
 		Object value = null;
-        Class c = o.getClass();
+        Class<?> c = o.getClass();
 
 		if ( property==null ) {
 			return throwNoSuchProperty(c, propertyName, null);
@@ -56,7 +56,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 		Member member = classAndPropertyToMemberCache.get(c, propertyName);
 		if ( member!=null ) {
 			try {
-				Class memberClass = member.getClass();
+				Class<?> memberClass = member.getClass();
 				if ( memberClass == Method.class ) return ((Method)member).invoke(o);
 				if ( memberClass == Field.class ) return ((Field)member).get(o);
 			}

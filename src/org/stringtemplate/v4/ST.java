@@ -241,7 +241,7 @@ public class ST {
         // now, add incoming value to multi-valued attribute
         if ( value instanceof List ) {
             // flatten incoming list into existing list
-            multi.addAll((List)value);
+            multi.addAll((List<?>)value);
         }
         else if ( value!=null && value.getClass().isArray() ) {
 			if (value instanceof Object[]) {
@@ -361,7 +361,7 @@ public class ST {
         else if ( curvalue instanceof List) { // existing attribute is non-ST List
             // must copy to an ST-managed list before adding new attribute
             // (can't alter incoming attributes)
-            List listAttr = (List)curvalue;
+            List<?> listAttr = (List<?>)curvalue;
             multi = new AttributeList<Object>(listAttr.size());
             multi.addAll(listAttr);
         }

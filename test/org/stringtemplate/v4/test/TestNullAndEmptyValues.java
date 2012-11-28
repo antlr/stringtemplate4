@@ -168,7 +168,7 @@ public class TestNullAndEmptyValues extends BaseTest {
             "<users:{u | name: <u>}; separator=\", \">\n" +
             "end\n");
         ST t = group.getInstanceOf("test");
-        t.add("users", new ArrayList());
+        t.add("users", new ArrayList<Object>());
         String expecting="begin"+newline+"end";
         String result = t.render();
         assertEquals(expecting, result);
@@ -178,7 +178,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("test", "m", "<m.foo>");
         ST t = group.getInstanceOf("test");
-        t.add("m", new HashMap());
+        t.add("m", new HashMap<Object, Object>());
         String expecting="";
         String result = t.render();
         assertEquals(expecting, result);
@@ -188,7 +188,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("test", "m", "<if(m.foo)>[<m.foo>]<endif>");
         ST t = group.getInstanceOf("test");
-        t.add("m", new HashMap());
+        t.add("m", new HashMap<Object, Object>());
         String expecting="";
         String result = t.render();
         assertEquals(expecting, result);
@@ -198,7 +198,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("test", "m", "<if(m.foo)>[<m.foo>]<endif>");
         ST t = group.getInstanceOf("test");
-        t.add("m", new HashMap() {{put("foo",null);}});
+        t.add("m", new HashMap<String, Object>() {{put("foo",null);}});
         String expecting="";
         String result = t.render();
         assertEquals(expecting, result);

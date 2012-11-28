@@ -701,7 +701,7 @@ public class STGroup {
 		//System.out.println("looking for adaptor for "+attributeType);
 		// Else, we must find adaptor that fits;
 		// find last fit (most specific)
-		for (Class t : adaptors.keySet()) {
+		for (Class<?> t : adaptors.keySet()) {
 			// t works for attributeType if attributeType subclasses t or implements
 			//System.out.println("checking "+t.getSimpleName()+" against "+attributeType);
 			if ( t.isAssignableFrom(attributeType) ) {
@@ -761,7 +761,7 @@ public class STGroup {
 		}
 
 		// Else look up, finding first first
-		for (Class t : renderers.keySet()) {
+		for (Class<?> t : renderers.keySet()) {
 			// t works for attributeType if attributeType subclasses t or implements
 			if ( t.isAssignableFrom(attributeType) ) {
 				r = renderers.get(t);
