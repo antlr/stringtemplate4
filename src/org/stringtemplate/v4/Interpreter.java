@@ -860,7 +860,7 @@ public class Interpreter {
 		}
 
 		// todo: track formal args not names for efficient filling of locals
-		Object[] formalArgumentNames = formalArguments.keySet().toArray();
+		String[] formalArgumentNames = formalArguments.keySet().toArray(new String[formalArguments.size()]);
 		int nformalArgs = formalArgumentNames.length;
 		if ( prototype.isAnonSubtemplate() ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
 		if ( nformalArgs != numExprs ) {
@@ -873,7 +873,7 @@ public class Interpreter {
 			// truncate arg list to match smaller size
 			int shorterSize = Math.min(formalArgumentNames.length, numExprs);
 			numExprs = shorterSize;
-			Object[] newFormalArgumentNames = new Object[shorterSize];
+			String[] newFormalArgumentNames = new String[shorterSize];
 			System.arraycopy(formalArgumentNames, 0,
 							 newFormalArgumentNames, 0,
 							 shorterSize);
@@ -893,7 +893,7 @@ public class Interpreter {
 			for (int a = 0; a < numExprs; a++) {
 				Iterator<?> it = (Iterator<?>) exprs.get(a);
 				if ( it!=null && it.hasNext() ) {
-					String argName = (String)formalArgumentNames[a];
+					String argName = formalArgumentNames[a];
 					Object iteratedValue = it.next();
 					embedded.rawSetAttribute(argName, iteratedValue);
 				}
