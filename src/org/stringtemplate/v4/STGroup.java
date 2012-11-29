@@ -97,7 +97,7 @@ public class STGroup {
 	 *  <p/>
      *  This structure is synchronized.
      */
-    protected Map<Class, AttributeRenderer> renderers;
+    protected Map<Class<?>, AttributeRenderer> renderers;
 
     /** A dictionary that allows people to register a model adaptor for
      *  a particular kind of object (subclass or implementation). Applies
@@ -108,9 +108,9 @@ public class STGroup {
 	 * <p/>
 	 *  The last one you register gets priority; do least to most specific.
 	 */
-	protected Map<Class, ModelAdaptor> adaptors =
+	protected Map<Class<?>, ModelAdaptor> adaptors =
 		Collections.synchronizedMap(
-			new LinkedHashMap<Class, ModelAdaptor>() {{
+			new LinkedHashMap<Class<?>, ModelAdaptor>() {{
 				put(Object.class, new ObjectModelAdaptor());
 				put(ST.class, new STModelAdaptor());
 				put(Map.class, new MapModelAdaptor());
@@ -119,11 +119,11 @@ public class STGroup {
 		);
 
 	/** Cache exact attribute type to {@link ModelAdaptor} object. */
-	protected Map<Class, ModelAdaptor> typeToAdaptorCache =
-		Collections.synchronizedMap(new LinkedHashMap<Class, ModelAdaptor>());
+	protected Map<Class<?>, ModelAdaptor> typeToAdaptorCache =
+		Collections.synchronizedMap(new LinkedHashMap<Class<?>, ModelAdaptor>());
 
 	/** Cache exact attribute type to {@link AttributeRenderer} object. */
-	protected Map<Class, AttributeRenderer> typeToRendererCache;
+	protected Map<Class<?>, AttributeRenderer> typeToRendererCache;
 
     /** Used to indicate that the template doesn't exist.
      *  Prevents duplicate group file loads and unnecessary file checks.
@@ -678,7 +678,7 @@ public class STGroup {
 	 * This must invalidate cache entries, so set your adaptors up before
 	 * calling {@link ST#render} for efficiency.
 	 */
-	public void registerModelAdaptor(Class attributeType, ModelAdaptor adaptor) {
+	public void registerModelAdaptor(Class<?> attributeType, ModelAdaptor adaptor) {
 		if ( attributeType.isPrimitive() ) {
 			throw new IllegalArgumentException("can't register ModelAdaptor for primitive type "+
 											   attributeType.getSimpleName());
@@ -690,11 +690,11 @@ public class STGroup {
 	/** Remove at least all types in cache that are subclasses or implement
 	 *  {@code attributeType}.
 	 */
-	public void invalidateModelAdaptorCache(Class attributeType) {
+	public void invalidateModelAdaptorCache(Class<?> attributeType) {
 		typeToAdaptorCache.clear(); // be safe, not clever; wack all values
 	}
 
-	public ModelAdaptor getModelAdaptor(Class attributeType) {
+	public ModelAdaptor getModelAdaptor(Class<?> attributeType) {
 		ModelAdaptor a = typeToAdaptorCache.get(attributeType);
 		if ( a!=null ) return a;
 
@@ -719,11 +719,11 @@ public class STGroup {
 	 *  object in question is an instance of {@code attributeType}.  Recursively
 	 *  set renderer into all import groups.
      */
-    public void registerRenderer(Class attributeType, AttributeRenderer r) {
+    public void registerRenderer(Class<?> attributeType, AttributeRenderer r) {
 		registerRenderer(attributeType, r, true);
 	}
 
-	public void registerRenderer(Class attributeType, AttributeRenderer r, boolean recursive) {
+	public void registerRenderer(Class<?> attributeType, AttributeRenderer r, boolean recursive) {
 		if ( attributeType.isPrimitive() ) {
 			throw new IllegalArgumentException("can't register renderer for primitive type "+
 											   attributeType.getSimpleName());
@@ -731,7 +731,7 @@ public class STGroup {
 		typeToAdaptorCache.clear(); // be safe, not clever; wack all values
         if ( renderers == null ) {
             renderers =
-				Collections.synchronizedMap(new LinkedHashMap<Class, AttributeRenderer>());
+				Collections.synchronizedMap(new LinkedHashMap<Class<?>, AttributeRenderer>());
         }
         renderers.put(attributeType, r);
 
@@ -752,7 +752,7 @@ public class STGroup {
 	 *  have multiple renderers for {@code String}, say, then just make uber combined
 	 *  renderer with more specific format names.
 	 */
-	public AttributeRenderer getAttributeRenderer(Class attributeType) {
+	public AttributeRenderer getAttributeRenderer(Class<?> attributeType) {
 		if ( renderers==null ) return null;
 		AttributeRenderer r = null;
 		if ( typeToRendererCache!=null ) {
@@ -767,7 +767,7 @@ public class STGroup {
 				r = renderers.get(t);
 				if ( typeToRendererCache==null ) {
 					typeToRendererCache =
-						Collections.synchronizedMap(new LinkedHashMap<Class, AttributeRenderer>());
+						Collections.synchronizedMap(new LinkedHashMap<Class<?>, AttributeRenderer>());
 				}
 				typeToRendererCache.put(attributeType, r);
 				return r;

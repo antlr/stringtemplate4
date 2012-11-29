@@ -42,7 +42,7 @@ public class Misc {
 	}
 
     // Seriously: why isn't this built in to java?
-    public static String join(Iterator iter, String separator) {
+    public static String join(Iterator<?> iter, String separator) {
         StringBuilder buf = new StringBuilder();
         while ( iter.hasNext() ) {
             buf.append(iter.next());
@@ -183,7 +183,7 @@ public class Misc {
         return value;
     }
 
-    public static Method getMethod(Class c, String methodName) {
+    public static Method getMethod(Class<?> c, String methodName) {
         Method m;
         try {
             m = c.getMethod(methodName);

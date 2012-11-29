@@ -35,7 +35,7 @@ import java.util.NoSuchElementException;
 /** Iterator for an array so I don't have to copy the array to a {@link List}
  *  just to make it implement {@link Iterator}.
  */
-public class ArrayIterator implements Iterator {
+public class ArrayIterator implements Iterator<Object> {
 	/** Index into the data array */
 	protected int i = -1;
 	protected Object array = null;

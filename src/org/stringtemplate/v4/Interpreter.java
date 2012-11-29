@@ -810,7 +810,7 @@ public class Interpreter {
 		}
 	}
 
-	protected List<ST> rot_map_iterator(ST self, Iterator attr, List<ST> prototypes) {
+	protected List<ST> rot_map_iterator(ST self, Iterator<?> attr, List<ST> prototypes) {
 		List<ST> mapped = new ArrayList<ST>();
 		Iterator<?> iter = attr;
 		int i0 = 0;

@@ -125,7 +125,7 @@ public class ST {
 	/** Just an alias for {@link ArrayList}, but this way I can track whether a
      *  list is something ST created or it's an incoming list.
      */
-    public static final class AttributeList<T> extends ArrayList<T> {
+    public static final class AttributeList extends ArrayList<Object> {
         public AttributeList(int size) { super(size); }
         public AttributeList() { super(); }
     }
@@ -235,7 +235,7 @@ public class ST {
         // attribute will be multi-valued for sure now
         // convert current attribute to list if not already
         // copy-on-write semantics; copy a list injected by user to add new value
-        AttributeList<Object> multi = convertToAttributeList(curvalue);
+        AttributeList multi = convertToAttributeList(curvalue);
 		locals[arg.index] = multi; // replace with list
 
         // now, add incoming value to multi-valued attribute
@@ -349,30 +349,30 @@ public class ST {
 		return attributes;
 	}
 
-    protected static AttributeList<Object> convertToAttributeList(Object curvalue) {
-        AttributeList<Object> multi;
+    protected static AttributeList convertToAttributeList(Object curvalue) {
+        AttributeList multi;
         if ( curvalue == null ) {
-            multi = new AttributeList<Object>(); // make list to hold multiple values
+            multi = new AttributeList(); // make list to hold multiple values
             multi.add(curvalue);                 // add previous single-valued attribute
         }
         else if ( curvalue.getClass() == AttributeList.class ) { // already a list made by ST
-            multi = (AttributeList<Object>)curvalue;
+            multi = (AttributeList)curvalue;
         }
         else if ( curvalue instanceof List) { // existing attribute is non-ST List
             // must copy to an ST-managed list before adding new attribute
             // (can't alter incoming attributes)
             List<?> listAttr = (List<?>)curvalue;
-            multi = new AttributeList<Object>(listAttr.size());
+            multi = new AttributeList(listAttr.size());
             multi.addAll(listAttr);
         }
         else if ( curvalue instanceof Object[] ) { // copy array to list
             Object[] a = (Object[])curvalue;
-            multi = new AttributeList<Object>(a.length);
+            multi = new AttributeList(a.length);
             multi.addAll(Arrays.asList(a)); // asList doesn't copy as far as I can tell
         }
         else if ( curvalue.getClass().isArray() ) { // copy primitive array to list
 			int length = Array.getLength(curvalue);
-            multi = new AttributeList<Object>(length);
+            multi = new AttributeList(length);
 			for (int i = 0; i < length; i++) {
 				multi.add(Array.get(curvalue, i));
 			}
@@ -380,7 +380,7 @@ public class ST {
         else {
             // curvalue nonlist and we want to add an attribute
             // must convert curvalue existing to list
-            multi = new AttributeList<Object>(); // make list to hold multiple values
+            multi = new AttributeList(); // make list to hold multiple values
             multi.add(curvalue);                 // add previous single-valued attribute
         }
         return multi;
