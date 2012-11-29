@@ -165,7 +165,7 @@ public class Misc {
             f.setAccessible(true);
         }
         catch (SecurityException se) {
-            ; // oh well; security won't let us
+            // oh well; security won't let us
         }
         value = f.get(o);
         return value;
@@ -177,7 +177,7 @@ public class Misc {
             m.setAccessible(true);
         }
         catch (SecurityException se) {
-            ; // oh well; security won't let us
+            // oh well; security won't let us
         }
         value = m.invoke(o,(Object[])null);
         return value;

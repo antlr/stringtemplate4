@@ -270,7 +270,7 @@ public class STGroup {
     protected CompiledST load(String name) { return null; }
 
     /** Force a load if it makes sense for the group. */
-    public void load() { ; }
+    public void load() { }
 
     protected CompiledST lookupImportedTemplate(String name) {
         if ( imports.size()==0 ) return null;
@@ -529,7 +529,7 @@ public class STGroup {
 
 		// search path is: working dir, g.stg's dir, CLASSPATH
 		URL thisRoot = getRootDirURL();
-		URL fileUnderRoot = null;
+		URL fileUnderRoot;
 //		System.out.println("thisRoot="+thisRoot);
 		try {
 			fileUnderRoot = new URL(thisRoot+"/"+fileName);
@@ -609,7 +609,7 @@ public class STGroup {
 	public void loadGroupFile(String prefix, String fileName) {
 		if ( verbose ) System.out.println(this.getClass().getSimpleName()+
 										  ".loadGroupFile(group-file-prefix="+prefix+", fileName="+fileName+")");
-		GroupParser parser = null;
+		GroupParser parser;
 		try {
 			URL f = new URL(fileName);
 			ANTLRInputStream fs = new ANTLRInputStream(f.openStream(), encoding);
@@ -754,7 +754,7 @@ public class STGroup {
 	 */
 	public AttributeRenderer getAttributeRenderer(Class<?> attributeType) {
 		if ( renderers==null ) return null;
-		AttributeRenderer r = null;
+		AttributeRenderer r;
 		if ( typeToRendererCache!=null ) {
 			r = typeToRendererCache.get(attributeType);
 			if ( r!=null ) return r;
@@ -814,7 +814,7 @@ public class STGroup {
 	public URL getRootDirURL() { return null; }
 
 	public URL getURL(String fileName) {
-		URL url = null;
+		URL url;
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		url = cl.getResource(fileName);
 		if ( url==null ) {

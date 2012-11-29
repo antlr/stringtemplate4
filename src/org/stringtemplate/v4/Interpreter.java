@@ -1096,7 +1096,7 @@ public class Interpreter {
 			if ( value.getClass()==String.class ) return (String)value;
 			// if not string already, must evaluate it
 			StringWriter sw = new StringWriter();
-			STWriter stw = null;
+			STWriter stw;
 			try {
 				Class<? extends STWriter> writerClass = out.getClass();
 				Constructor<? extends STWriter> ctor = writerClass.getConstructor(Writer.class);
