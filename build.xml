@@ -32,7 +32,8 @@
       			dir="${src.dir}/org/stringtemplate/v4/compiler">
       			<arg value="-make"/>
       			<arg value="Group.g"/>
-      			<arg value="CodeGenerator.g"/>
+				<arg value="STParser.g"/>
+				<arg value="CodeGenerator.g"/>
       			<classpath>
       				<pathelement location="${antlr3.jar}"/>
       				<pathelement path="${java.class.path}"/>

@@ -6,6 +6,10 @@ University of San Francisco
 
 CHANGES
 
+December 1, 2012
+
+* Missing ANT target for STParser.g in build
+
 September 26, 2012 -- Release 4.0.6
 
 * STRawGroupDir problem and ST("template") issue. When there are no formal
