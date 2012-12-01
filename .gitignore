@@ -1,0 +1,5 @@
+# Maven build folders
+/target/
+
+# NetBeans user configuration
+/nbactions.xml

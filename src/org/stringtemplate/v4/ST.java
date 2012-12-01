@@ -50,7 +50,7 @@ import java.util.*;
  *  attributes using add(). To render its attacks, use render().
  */
 public class ST {
-	public final static String VERSION = "@version@";
+	public final static String VERSION = "4.0.7-SNAPSHOT";
 
 	/** <@r()>, <@r>...<@end>, and @t.r() ::= "..." defined manually by coder */
     public static enum RegionType { IMPLICIT, EMBEDDED, EXPLICIT }
