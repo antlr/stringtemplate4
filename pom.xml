@@ -163,7 +163,6 @@ There are currently about 600 StringTemplate source downloads a month.
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>2.0</version>
-                <inherited>false</inherited>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -176,6 +175,7 @@ There are currently about 600 StringTemplate source downloads a month.
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <createSourcesJar>true</createSourcesJar>
                             <shadeSourcesContent>true</shadeSourcesContent>
+                            <shadedClassifierName>complete</shadedClassifierName>
                             <relocations>
                                 <relocation>
                                     <pattern>org.antlr</pattern>
