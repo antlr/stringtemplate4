@@ -300,7 +300,7 @@ There are currently about 600 StringTemplate source downloads a month.
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>sign</goal>
                         </goals>
