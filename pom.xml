@@ -51,8 +51,10 @@ There are currently about 600 StringTemplate source downloads a month.
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java5.home>${env.JAVA5_HOME}</java5.home>
         <java6.home>${env.JAVA6_HOME}</java6.home>
-        <bootclasspath.compile>${java5.home}/lib/rt.jar</bootclasspath.compile>
-        <bootclasspath.testCompile>${java6.home}/lib/rt.jar</bootclasspath.testCompile>
+        <bootclasspath.java5>${java5.home}/lib/rt.jar</bootclasspath.java5>
+        <bootclasspath.java6>${java6.home}/lib/rt.jar</bootclasspath.java6>
+        <bootclasspath.compile>${bootclasspath.java5}</bootclasspath.compile>
+        <bootclasspath.testCompile>${bootclasspath.java6}</bootclasspath.testCompile>
     </properties>
     
     <!--
