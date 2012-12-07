@@ -75,6 +75,16 @@ There are currently about 600 StringTemplate source downloads a month.
             <timezone>PST</timezone>
         </developer>
         <developer>
+            <name>Sam Harwell</name>
+            <organization>Tunnel Vision Laboratories, LLC</organization>
+            <organizationUrl>http://tunnelvisionlabs.com</organizationUrl>
+            <email>sam@tunnelvisionlabs.com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>CST</timezone>
+        </developer>
+        <developer>
             <name>Jim Idle</name>
             <organization>Temporal Wave LLC</organization>
             <organizationUrl>http://www.temporal-wave.com</organizationUrl>
