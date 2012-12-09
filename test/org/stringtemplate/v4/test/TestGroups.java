@@ -31,6 +31,7 @@ import org.junit.*;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
+import java.io.File;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -645,4 +646,32 @@ public class TestGroups extends BaseTest {
 		st = group.getInstanceOf("main");
 		Assert.assertEquals("v2-g2;f2", st.render());
 	}
+
+    @Test public void testLineBreakInGroup() throws Exception {
+		String templates =
+			"t() ::= <<"+newline+
+			"Foo <\\\\>"+newline+
+			"  \t  bar"+newline+
+			">>"+newline;
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("t");
+		Assert.assertNotNull(st);
+		String expecting ="Foo bar\n";     // expect \n in output
+		Assert.assertEquals(expecting, st.render());
+    }
+
+    @Test public void testLineBreakInGroup2() throws Exception {
+		String templates =
+			"t() ::= <<"+newline+
+			"Foo <\\\\>       "+newline+
+			"  \t  bar"+newline+
+			">>"+newline;
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("t");
+		Assert.assertNotNull(st);
+		String expecting ="Foo bar\n";     // expect \n in output
+		Assert.assertEquals(expecting, st.render());
+    }
 }
