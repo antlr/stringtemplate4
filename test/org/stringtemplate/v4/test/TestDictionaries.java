@@ -35,6 +35,7 @@ import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.STGroupString;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -351,6 +352,64 @@ public class TestDictionaries extends BaseTest {
 		String expected = "b";
 		String result = st.render();
 		assertEquals(expected, result);
+	}
+
+	@Test public void testStringsInDictionary() throws Exception {
+		String templates =
+			"auxMap ::= [\n" +
+			"   \"E\": \"electric <field>\",\n" +
+			"   \"I\": \"in <field> between\",\n" +
+			"   \"F\": \"<field> force\",\n" +
+			"   default: \"<field>\"\n" +
+			"]\n" +
+			"\n" +
+			"makeTmpl(type, field) ::= <<\n" +
+			"<auxMap.(type)>\n" +
+			">>\n" +
+			"\n" +
+			"top() ::= <<\n" +
+			"  <makeTmpl(\"E\", \"foo\")>\n" +
+			"  <makeTmpl(\"F\", \"foo\")>\n" +
+			"  <makeTmpl(\"I\", \"foo\")>\n" +
+			">>\n";
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("top");
+		Assert.assertNotNull(st);
+		String expecting =
+			"  electric <field>" + newline +
+			"  <field> force" + newline +
+			"  in <field> between";
+		Assert.assertEquals(expecting, st.render());
+	}
+
+	@Test public void testTemplatesInDictionary() throws Exception {
+		String templates =
+			"auxMap ::= [\n" +
+			"   \"E\": {electric <field>},\n" +
+			"   \"I\": {in <field> between},\n" +
+			"   \"F\": {<field> force},\n" +
+			"   default: {<field>}\n" +
+			"]\n" +
+			"\n" +
+			"makeTmpl(type, field) ::= <<\n" +
+			"<auxMap.(type)>\n" +
+			">>\n" +
+			"\n" +
+			"top() ::= <<\n" +
+			"  <makeTmpl(\"E\", \"foo\")>\n" +
+			"  <makeTmpl(\"F\", \"foo\")>\n" +
+			"  <makeTmpl(\"I\", \"foo\")>\n" +
+			">>\n";
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("top");
+		Assert.assertNotNull(st);
+		String expecting =
+			"  electric foo" + newline +
+			"  foo force" + newline +
+			"  in foo between";
+		Assert.assertEquals(expecting, st.render());
 	}
 
 }
