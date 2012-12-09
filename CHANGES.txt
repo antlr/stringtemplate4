@@ -6,6 +6,10 @@ University of San Francisco
 
 CHANGES
 
+December 9, 2012
+
+* >\> and %\> are the escapes now for >> and %> Fixes antlr/stringtemplate4#17
+
 December 3, 2012 -- Release 4.0.7-rc-1
 
 December 1, 2012
