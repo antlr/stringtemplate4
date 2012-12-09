@@ -336,19 +336,19 @@ STRING
 	;
 
 BIGSTRING_NO_NL // same as BIGSTRING but means ignore newlines later
-	:	'<%' (options {greedy=false;} : .)* '%>'
+	:	'<%' ( . )* '%>'
+        {
+        // %\> is the escape to avoid end of string
+        String txt = getText().replaceAll("\%\\\\>","\%>");
+		setText(txt);
+		}
 	;
 
 BIGSTRING
-	:	'<<'
-		(	options {greedy=false;}
-		:	'\\' '>'  // \> escape
-		|	'\\' ~'>'
-		|	~'\\'
-		)*
-        '>>'
+	:	'<<' ( . )* '>>'
         {
-        String txt = getText().replaceAll("\\\\>",">");;
+        // >\> is the escape to avoid end of string
+        String txt = getText().replaceAll(">\\\\>",">>");
 		setText(txt);
 		}
 	;

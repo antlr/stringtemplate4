@@ -27,7 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
+import org.junit.Test;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class TestLineWrap extends BaseTest {
 		StringWriter sw = new StringWriter();
 		org.stringtemplate.v4.STWriter stw = new org.stringtemplate.v4.AutoIndentWriter(sw,newline); // force \n as newline
 		stw.setLineWidth(40);
-		a.write(stw); 
+		a.write(stw);
 		String result = sw.toString();
 		assertEquals(expecting, result);
 	}
@@ -257,7 +257,7 @@ public class TestLineWrap extends BaseTest {
 
 	@Test public void testIndentBeyondLineWidth() throws Exception {
 		String templates =
-				"duh(chars) ::= <<    <chars; wrap=\"\\n\"\\>>>"+newline;
+				"duh(chars) ::= <<    <chars; wrap=\"\\n\">\\>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
@@ -275,7 +275,7 @@ public class TestLineWrap extends BaseTest {
 
 	@Test public void testIndentedExpr() throws Exception {
 		String templates =
-				"duh(chars) ::= <<    <chars; wrap=\"\\n\"\\>>>"+newline;
+				"duh(chars) ::= <<    <chars; wrap=\"\\n\">\\>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
@@ -293,7 +293,7 @@ public class TestLineWrap extends BaseTest {
 	@Test public void testNestedIndentedExpr() throws Exception {
 		String templates =
 				"top(d) ::= <<  <d>!>>"+newline+
-				"duh(chars) ::= <<  <chars; wrap=\"\\n\"\\>>>"+newline;
+				"duh(chars) ::= <<  <chars; wrap=\"\\n\">\\>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
@@ -312,7 +312,7 @@ public class TestLineWrap extends BaseTest {
 	@Test public void testNestedWithIndentAndTrackStartOfExpr() throws Exception {
 		String templates =
 				"top(d) ::= <<  <d>!>>"+newline+
-				"duh(chars) ::= <<x: <chars; anchor, wrap=\"\\n\"\\>>>"+newline;
+				"duh(chars) ::= <<x: <chars; anchor, wrap=\"\\n\">\\>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 

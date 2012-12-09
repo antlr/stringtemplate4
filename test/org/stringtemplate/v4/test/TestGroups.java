@@ -27,8 +27,15 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
-import org.stringtemplate.v4.*;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STErrorListener;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupDir;
+import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.STGroupString;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import java.io.File;
@@ -657,7 +664,7 @@ public class TestGroups extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
 		ST st = group.getInstanceOf("t");
 		Assert.assertNotNull(st);
-		String expecting ="Foo bar\n";     // expect \n in output
+		String expecting ="Foo bar";     // expect \n in output
 		Assert.assertEquals(expecting, st.render());
     }
 
@@ -671,7 +678,7 @@ public class TestGroups extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
 		ST st = group.getInstanceOf("t");
 		Assert.assertNotNull(st);
-		String expecting ="Foo bar\n";     // expect \n in output
+		String expecting ="Foo bar";     // expect \n in output
 		Assert.assertEquals(expecting, st.render());
     }
 }

@@ -27,7 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
+import org.junit.Test;
 import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -218,7 +218,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:15: 'b' came as a complete surprise to me]";
+		String expected = "[t.stg 1:13: 'a' came as a complete surprise to me]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
