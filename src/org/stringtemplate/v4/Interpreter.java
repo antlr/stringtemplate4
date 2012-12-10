@@ -145,7 +145,7 @@ public class Interpreter {
 	 * @return the number of characters written to {@code out}
 	 */
 	public int exec(STWriter out, ST self) {
-		if ( debug ) System.out.println("exec("+self.getName()+")");
+		if ( trace ) System.out.println("exec("+self.getName()+")");
 		pushScope(self);
 		try {
 			setDefaultArguments(out, self);
