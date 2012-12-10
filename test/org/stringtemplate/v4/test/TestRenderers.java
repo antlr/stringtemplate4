@@ -347,4 +347,16 @@ public class TestRenderers extends BaseTest {
         assertEquals(expecting, result);
     }
 
+	@Test public void testDateRendererWithLocale() {
+		String input = "<date; format=\"dd 'de' MMMMM 'de' yyyy\">";
+		STGroup group = new STGroup();
+		group.registerRenderer(Calendar.class, new DateRenderer());
+		ST st = new ST(group, input);
+
+		Calendar cal = Calendar.getInstance();
+		cal.set(2012, Calendar.JUNE, 12);
+		st.add("date", cal);
+
+		assertEquals("12 de Junho de 2012", st.render(new Locale("pt")));
+	}
 }
