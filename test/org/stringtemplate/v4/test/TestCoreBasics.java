@@ -853,6 +853,67 @@ public class TestCoreBasics extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testSeparatorInList2() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+		ST st = group.getInstanceOf("test");
+		st.add("names", "Ter");
+		st.add("names", new ArrayList<String>() {{
+			add("Tom");
+			add("Sriram");
+		}});
+		String expected =
+			"case Ter, case Tom, case Sriram";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testSeparatorInArray() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+		ST st = group.getInstanceOf("test");
+		st.add("names", new String[] { "Ter", "Tom" });
+		String expected =
+			"case Ter, case Tom";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testSeparatorInArray2() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+		ST st = group.getInstanceOf("test");
+		st.add("names", "Ter");
+		st.add("names", new String[] { "Tom", "Sriram" });
+		String expected =
+			"case Ter, case Tom, case Sriram";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testSeparatorInPrimitiveArray() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+		ST st = group.getInstanceOf("test");
+		st.add("names", new int[] { 0, 1 });
+		String expected =
+			"case 0, case 1";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testSeparatorInPrimitiveArray2() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+		ST st = group.getInstanceOf("test");
+		st.add("names", 0);
+		st.add("names", new int[] { 1, 2 });
+		String expected =
+			"case 0, case 1, case 2";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 	/** (...) forces early eval to string. early eval <(x)> using new
 	 *  STWriter derived from type of current STWriter. e.g., AutoIndentWriter.
 	 */
