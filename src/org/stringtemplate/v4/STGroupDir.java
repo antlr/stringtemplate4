@@ -129,13 +129,10 @@ public class STGroupDir extends STGroup {
         try {
             is = groupFileURL.openStream();
         }
-        catch (FileNotFoundException fnfe) {
+        catch (IOException ioe) {
             // must not be in a group file
 			String unqualifiedName = Misc.getFileName(name);
             return loadTemplateFile(prefix, unqualifiedName+".st"); // load t.st file
-        }
-        catch (IOException ioe) {
-            errMgr.internalError(null, "can't load template file "+name, ioe);
         }
         try { // clean up
             if (is!=null ) is.close();
