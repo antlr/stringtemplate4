@@ -125,6 +125,7 @@ public class STGroupDir extends STGroup {
             errMgr.internalError(null, "bad URL: "+root+parent+GROUP_FILE_EXTENSION, e);
 			return null;
         }
+
         InputStream is = null;
         try {
             is = groupFileURL.openStream();
@@ -133,13 +134,16 @@ public class STGroupDir extends STGroup {
             // must not be in a group file
 			String unqualifiedName = Misc.getFileName(name);
             return loadTemplateFile(prefix, unqualifiedName+TEMPLATE_FILE_EXTENSION); // load t.st file
+		}
+        finally { // clean up
+			try {
+				if (is!=null ) is.close();
+			}
+			catch (IOException ioe) {
+				errMgr.internalError(null, "can't close template file stream "+name, ioe);
+			}
         }
-        try { // clean up
-            if (is!=null ) is.close();
-        }
-        catch (IOException ioe) {
-            errMgr.internalError(null, "can't close template file stream "+name, ioe);
-        }
+
         loadGroupFile(prefix, root+parent+GROUP_FILE_EXTENSION);
         return rawGetTemplate(name);
     }
@@ -157,6 +161,7 @@ public class STGroupDir extends STGroup {
 								me, root + unqualifiedFileName);
 			return null;
 		}
+
 		ANTLRInputStream fs;
 		try {
 			fs = new ANTLRInputStream(f.openStream(), encoding);
@@ -167,6 +172,7 @@ public class STGroupDir extends STGroup {
 			//errMgr.IOError(null, ErrorType.NO_SUCH_TEMPLATE, ioe, unqualifiedFileName);
 			return null;
 		}
+
 		return loadTemplateFile(prefix, unqualifiedFileName, fs);
 	}
 
