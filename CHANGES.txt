@@ -6,6 +6,10 @@ University of San Francisco
 
 CHANGES
 
+December 10, 2012
+
+* DateRenderer and StringRenderer now use the provided locale (fixes antlr/stringtemplate4#11)
+
 December 9, 2012
 
 * >\> and %\> are the escapes now for >> and %> Fixes antlr/stringtemplate4#17
