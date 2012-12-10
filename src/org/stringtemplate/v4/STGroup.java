@@ -43,6 +43,13 @@ import java.util.*;
  *  Name inside must match filename (minus suffix).
  */
 public class STGroup {
+	public static final String GROUP_FILE_EXTENSION;
+	public static final String TEMPLATE_FILE_EXTENSION;
+	static {
+		GROUP_FILE_EXTENSION = ".stg";
+		TEMPLATE_FILE_EXTENSION = ".st";
+	}
+
     /** When we use key as a value in a dictionary, this is how we signify. */
     public static final String DICT_KEY = "key";
     public static final String DEFAULT_KEY = "default";
@@ -508,8 +515,8 @@ public class STGroup {
 		fileName = Misc.strip(fileName, 1);
 
 		//System.out.println("import "+fileName);
-		boolean isGroupFile = fileName.endsWith(".stg");
-		boolean isTemplateFile = fileName.endsWith(".st");
+		boolean isGroupFile = fileName.endsWith(GROUP_FILE_EXTENSION);
+		boolean isTemplateFile = fileName.endsWith(TEMPLATE_FILE_EXTENSION);
 		boolean isGroupDir = !(isGroupFile || isTemplateFile);
 
 		STGroup g = null;

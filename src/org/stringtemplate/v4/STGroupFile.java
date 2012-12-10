@@ -49,7 +49,7 @@ public class STGroupFile extends STGroup {
 
 	public STGroupFile(String fileName, char delimiterStartChar, char delimiterStopChar) {
 		super(delimiterStartChar, delimiterStopChar);
-		if ( !fileName.endsWith(".stg") ) {
+		if ( !fileName.endsWith(GROUP_FILE_EXTENSION) ) {
 			throw new IllegalArgumentException("Group file names must end in .stg: "+fileName);
 		}
 		//try {
