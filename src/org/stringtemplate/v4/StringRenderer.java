@@ -49,7 +49,7 @@ public class StringRenderer implements AttributeRenderer {
         if ( formatString.equals("xml-encode") ) {
             return escapeHTML(s);
         }
-        return String.format(formatString, s);
+        return String.format(locale, formatString, s);
     }
 
     public static String escapeHTML(String s) {
