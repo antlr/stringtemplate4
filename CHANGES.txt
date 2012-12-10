@@ -8,7 +8,14 @@ CHANGES
 
 December 10, 2012
 
-* DateRenderer and StringRenderer now use the provided locale (fixes antlr/stringtemplate4#11)
+* DateRenderer and StringRenderer now use the provided locale (fixes
+  antlr/stringtemplate4#11)
+* Fixes for handling of arrays (fixes antlr/stringtemplate4#12 and other
+  unreported issues)
+* Try to load template file (.st) if group file (.stg) failed with IOException
+  (fixes antlr/stringtemplate4#14)
+* Add STGroup.GROUP_FILE_EXTENSION and STGroup.TEMPLATE_FILE_EXTENSION
+* Updated documentation, code cleanup
 
 December 9, 2012
 
