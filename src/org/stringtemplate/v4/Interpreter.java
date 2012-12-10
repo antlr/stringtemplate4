@@ -1078,10 +1078,7 @@ public class Interpreter {
 		if ( v instanceof Map ) i = ((Map)v).size();
 		else if ( v instanceof Collection ) i = ((Collection)v).size();
 		else if ( v instanceof Object[] ) i = ((Object[])v).length;
-		else if ( v instanceof int[] ) i = ((int[])v).length;
-		else if ( v instanceof long[] ) i = ((long[])v).length;
-		else if ( v instanceof float[] ) i = ((float[])v).length;
-		else if ( v instanceof double[] ) i = ((double[])v).length;
+		else if ( v.getClass().isArray() ) i = Array.getLength(v);
 		else if ( v instanceof Iterator) {
 			Iterator it = (Iterator)v;
 			i = 0;
@@ -1120,13 +1117,16 @@ public class Interpreter {
 		Iterator iter = null;
 		if ( o == null ) return null;
 		if ( o instanceof Collection )      iter = ((Collection)o).iterator();
+		else if ( o instanceof Object[] )  iter = Arrays.asList((Object[])o).iterator();
 		else if ( o.getClass().isArray() ) iter = new ArrayIterator(o);
-		else if ( currentScope.st.groupThatCreatedThisInstance.iterateAcrossValues &&
-				  o instanceof Map )
-		{
-			iter = ((Map)o).values().iterator();
+		else if ( o instanceof Map ) {
+			if (currentScope.st.groupThatCreatedThisInstance.iterateAcrossValues) {
+				iter = ((Map)o).values().iterator();
+			}
+			else {
+				iter = ((Map)o).keySet().iterator();
+			}
 		}
-		else if ( o instanceof Map )        iter = ((Map)o).keySet().iterator();
 		else if ( o instanceof Iterator )  iter = (Iterator)o;
 		if ( iter==null ) return o;
 		return iter;
