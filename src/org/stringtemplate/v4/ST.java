@@ -37,6 +37,7 @@ import org.stringtemplate.v4.gui.STViz;
 import org.stringtemplate.v4.misc.*;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /** An instance of the StringTemplate. It consists primarily of
@@ -231,7 +232,12 @@ public class ST {
             multi.addAll((List)value);
         }
         else if ( value!=null && value.getClass().isArray() ) {
-            multi.addAll(Arrays.asList(value));
+			if (value instanceof Object[]) {
+				multi.addAll(Arrays.asList((Object[])value));
+			}
+			else {
+				multi.addAll(convertToAttributeList(value));
+			}
         }
         else {
             multi.add(value);
@@ -346,10 +352,17 @@ public class ST {
             multi = new AttributeList<Object>(listAttr.size());
             multi.addAll(listAttr);
         }
-        else if ( curvalue.getClass().isArray() ) { // copy array to list
+        else if ( curvalue instanceof Object[] ) { // copy array to list
             Object[] a = (Object[])curvalue;
             multi = new AttributeList<Object>(a.length);
             multi.addAll(Arrays.asList(a)); // asList doesn't copy as far as I can tell
+        }
+        else if ( curvalue.getClass().isArray() ) { // copy primitive array to list
+			int length = Array.getLength(curvalue);
+            multi = new AttributeList<Object>(length);
+			for (int i = 0; i < length; i++) {
+				multi.add(Array.get(curvalue, i));
+			}
         }
         else {
             // curvalue nonlist and we want to add an attribute

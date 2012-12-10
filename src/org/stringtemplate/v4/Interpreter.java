@@ -33,6 +33,7 @@ import org.stringtemplate.v4.debug.*;
 import org.stringtemplate.v4.misc.*;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
@@ -943,8 +944,7 @@ public class Interpreter {
 		if ( v==null ) return null;
 		if ( v instanceof List ) return ((List)v).get(((List)v).size()-1);
 		else if ( v.getClass().isArray() ) {
-			Object[] elems = (Object[])v;
-			return elems[elems.length-1];
+			return Array.get(v, Array.getLength(v) - 1);
 		}
 		Object last = v;
 		v = convertAnythingIteratableToIterator(v);
