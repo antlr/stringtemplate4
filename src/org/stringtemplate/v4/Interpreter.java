@@ -1153,7 +1153,7 @@ public class Interpreter {
 	protected Object getObjectProperty(STWriter out, ST self, Object o, Object property) {
 		if ( o==null ) {
 			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_SUCH_PROPERTY,
-									  "null attribute");
+									  "null." + property);
 			return null;
 		}
 
