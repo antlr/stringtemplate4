@@ -1192,12 +1192,7 @@ public class Interpreter {
 		if ( o!=null ) return o;
 
 		// not found, report unknown attr
-		if ( ST.cachedNoSuchAttrException ==null ) {
-			ST.cachedNoSuchAttrException = new STNoSuchAttributeException();
-		}
-		ST.cachedNoSuchAttrException.name = name;
-		ST.cachedNoSuchAttrException.scope = currentScope;
-		throw ST.cachedNoSuchAttrException;
+		throw new STNoSuchAttributeException(name, currentScope);
 	}
 
 	public Object getDictionary(STGroup g, String name) {

@@ -34,7 +34,6 @@ import org.stringtemplate.v4.compiler.STException;
 public class STNoSuchPropertyException extends STException {
 	public Object o;
 	public String propertyName;
-	public STNoSuchPropertyException() {}
 	public STNoSuchPropertyException(Exception e, Object o, String propertyName) {
 		super(null, e);
 		this.o = o;

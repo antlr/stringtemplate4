@@ -83,12 +83,6 @@ public class ST {
 	 */
 	public static final String IMPLICIT_ARG_NAME = "it";
 
-
-	/** Cache exception since this could happen a lot if people use "missing"
-	 *  to mean boolean {@code false}.
-	 */
-	public static STNoSuchAttributeException cachedNoSuchAttrException;
-
     /** The implementation for this template among all instances of same template . */
     public CompiledST impl;
 

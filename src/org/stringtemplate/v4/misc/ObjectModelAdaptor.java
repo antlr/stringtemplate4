@@ -41,11 +41,6 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 	protected DoubleKeyMap<Class, String, Member> classAndPropertyToMemberCache =
 		new DoubleKeyMap<Class, String, Member>();
 
-	/** Cached exception to reuse since creation is expensive part.
-	 *  Just in case people use "missing" to mean boolean {@code false} not error.
-	 */
-	static STNoSuchPropertyException cachedException;
-
 	public synchronized Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{
@@ -53,7 +48,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
         Class c = o.getClass();
 
 		if ( property==null ) {
-			return throwNoSuchProperty(c.getName() + "." + propertyName);
+			return throwNoSuchProperty(c, propertyName, null);
 		}
 
 		// Look in cache for Member first
@@ -65,7 +60,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 				if ( memberClass == Field.class ) return ((Field)member).get(o);
 			}
 			catch (Exception e) {
-				throwNoSuchProperty(c.getName() + "." + propertyName);
+				throwNoSuchProperty(c, propertyName, e);
 			}
 		}
 		return lookupMethod(o, propertyName, value, c);
@@ -95,20 +90,18 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 					value = Misc.accessField(f, o, value);
 				}
 				catch (IllegalAccessException iae) {
-					throwNoSuchProperty(c.getName() + "." + propertyName);
+					throwNoSuchProperty(c, propertyName, iae);
 				}
 			}
 		}
 		catch (Exception e) {
-			throwNoSuchProperty(c.getName() + "." + propertyName);
+			throwNoSuchProperty(c, propertyName, e);
 		}
 
 		return value;
 	}
 
-	protected Object throwNoSuchProperty(String propertyName) {
-		if ( cachedException==null ) cachedException = new STNoSuchPropertyException();
-		cachedException.propertyName = propertyName;
-		throw cachedException;
+	protected Object throwNoSuchProperty(Class<?> clazz, String propertyName, Exception cause) {
+		throw new STNoSuchPropertyException(cause, null, clazz.getName() + "." + propertyName);
 	}
 }
