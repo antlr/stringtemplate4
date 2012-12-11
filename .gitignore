@@ -3,3 +3,14 @@
 
 # NetBeans user configuration
 /nbactions.xml
+
+# IntelliJ project files
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Eclipse project files
+.project
+.classpath
+.settings/
