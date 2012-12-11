@@ -10,6 +10,9 @@ December 11, 2012
 
 * Don't cache the STNoSuchPropertyException and STNoSuchAttributeException
   instances.
+* Add ErrorType.NO_SUCH_ATTRIBUTE_PASS_THROUGH, reported on <foo(...)> where foo
+  contains a parameter with no default value and no matching attribute exists in
+  the surrounding scope.
 
 December 10, 2012
 

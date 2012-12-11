@@ -33,6 +33,7 @@ public enum ErrorType {
     NO_SUCH_TEMPLATE("no such template: %s"),
     NO_IMPORTED_TEMPLATE("no such template: super.%s"),
 	NO_SUCH_ATTRIBUTE("attribute %s isn't defined"),
+	NO_SUCH_ATTRIBUTE_PASS_THROUGH("could not pass through undefined attribute %s"),
 	REF_TO_IMPLICIT_ATTRIBUTE_OUT_OF_SCOPE("implicitly-defined attribute %s not visible"),
     MISSING_FORMAL_ARGUMENTS("missing argument definitions"),
 	NO_SUCH_PROPERTY("no such property or can't access: %s"),

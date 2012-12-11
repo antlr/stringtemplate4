@@ -546,6 +546,7 @@ public class Interpreter {
 					// if no such attribute exists for arg.name, set parameter
 					// if no default value
 					if ( arg.defaultValueToken==null ) {
+						errMgr.runTimeError(this, self, sp, ErrorType.NO_SUCH_ATTRIBUTE_PASS_THROUGH, arg.name);
 						attrs.put(arg.name, null);
 					}
 				}
