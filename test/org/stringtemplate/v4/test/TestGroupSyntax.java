@@ -33,6 +33,8 @@ import org.stringtemplate.v4.misc.*;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+
 public class TestGroupSyntax extends BaseTest {
     @Test public void testSimpleGroup() throws Exception {
         String templates =
@@ -169,6 +171,66 @@ public class TestGroupSyntax extends BaseTest {
         String result = group.show();
         assertEquals(expected, result);
     }
+
+	@Test
+	public void testDefaultValueBehaviorTrue() throws Exception {
+		String templates =
+			"t(a=true) ::= <<\n" +
+			"<a><if(a)>+<else>-<endif>\n" +
+			">>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("t");
+		String expected = "true+";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testDefaultValueBehaviorFalse() throws Exception {
+		String templates =
+			"t(a=false) ::= <<\n" +
+			"<a><if(a)>+<else>-<endif>\n" +
+			">>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("t");
+		String expected = "false-";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testDefaultValueBehaviorEmptyTemplate() throws Exception {
+		String templates =
+			"t(a={}) ::= <<\n" +
+			"<a><if(a)>+<else>-<endif>\n" +
+			">>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("t");
+		String expected = "+";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testDefaultValueBehaviorEmptyList() throws Exception {
+		String templates =
+			"t(a=[]) ::= <<\n" +
+			"<a><if(a)>+<else>-<endif>\n" +
+			">>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("t");
+		String expected = "-";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 
 	@Test public void testNestedTemplateInGroupFile() throws Exception {
 		String templates =

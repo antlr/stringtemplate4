@@ -138,7 +138,8 @@ public class CompiledST {
 			FormalArgument fa = formalArguments.get(a);
 			if ( fa.defaultValueToken!=null ) {
 				numberOfArgsWithDefaultValues++;
-				if ( fa.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
+				switch (fa.defaultValueToken.getType()) {
+				case GroupParser.ANONYMOUS_TEMPLATE:
 					String argSTname = fa.name + "_default_value";
 					Compiler c2 = new Compiler(group);
 					String defArgTemplate =
@@ -148,12 +149,26 @@ public class CompiledST {
 								   defArgTemplate, fa.defaultValueToken);
 					fa.compiledDefaultValue.name = argSTname;
 					fa.compiledDefaultValue.defineImplicitlyDefinedTemplates(group);
-				}
-				else if ( fa.defaultValueToken.getType()==GroupParser.STRING ) {
+					break;
+
+				case GroupParser.STRING:
 					fa.defaultValue = Misc.strip(fa.defaultValueToken.getText(), 1);
-				}
-				else { // true or false
+					break;
+
+				case GroupParser.LBRACK:
+					fa.defaultValue = Collections.emptyList();
+					break;
+
+				case GroupParser.TRUE:
 					fa.defaultValue = fa.defaultValueToken.getType()==GroupParser.TRUE;
+					break;
+
+				case GroupParser.FALSE:
+					fa.defaultValue = fa.defaultValueToken.getType()==GroupParser.TRUE;
+					break;
+
+				default:
+					throw new UnsupportedOperationException("Unexpected default value token type.");
 				}
 			}
 		}
