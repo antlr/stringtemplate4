@@ -57,6 +57,7 @@ public STParser(TokenStream input, ErrorManager errMgr, Token templateToken) {
 	this.errMgr = errMgr;
 	this.templateToken = templateToken;
 }
+@Override
 protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow)
 	throws RecognitionException
 {
