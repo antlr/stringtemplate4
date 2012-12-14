@@ -110,12 +110,14 @@ import java.io.File;
 @members {
 public STGroup group;
 
+@Override
 public void displayRecognitionError(String[] tokenNames,
                                     RecognitionException e)
 {
     String msg = getErrorMessage(e, tokenNames);
     group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 }
+@Override
 public String getSourceName() {
     String fullFileName = super.getSourceName();
     File f = new File(fullFileName); // strip to simple name
@@ -131,6 +133,7 @@ public void error(String msg) {
 @lexer::members {
 public STGroup group;
 
+@Override
 public void reportError(RecognitionException e) {
     String msg = null;
     if ( e instanceof NoViableAltException ) {
@@ -144,6 +147,7 @@ public void reportError(RecognitionException e) {
     }
     group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 }
+@Override
 public String getSourceName() {
     String fullFileName = super.getSourceName();
     File f = new File(fullFileName); // strip to simple name
