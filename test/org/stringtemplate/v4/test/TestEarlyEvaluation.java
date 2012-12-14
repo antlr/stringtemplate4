@@ -49,9 +49,8 @@ public class TestEarlyEvaluation extends BaseTest {
 
 	/**
 	 * see
-	 * http://www.antlr.org/pipermail/stringtemplate-interest/2011-May/003476.
-	 * html
-	 * 
+	 * http://www.antlr.org/pipermail/stringtemplate-interest/2011-May/003476.html
+	 *
 	 * @throws Exception
 	 */
 	@Ignore
@@ -71,15 +70,19 @@ public class TestEarlyEvaluation extends BaseTest {
 		// Calling inspect led to an java.lang.ArrayIndexOutOfBoundsException in
 		// 4.0.2
 		STViz viz = st.inspect();
-		waitUntilAnyWindowIsVisible(4000);
-		viz.viewFrame.dispose();
-		waitUntilAllWindowsAreClosed();
+		if (interactive) {
+			viz.waitForClose();
+		}
+		else {
+			waitUntilAnyWindowIsVisible(4000);
+			viz.viewFrame.dispose();
+			waitUntilAllWindowsAreClosed();
+		}
 	}
 
 	/**
 	 * see
-	 * http://www.antlr.org/pipermail/stringtemplate-interest/2011-May/003476.
-	 * html
+	 * http://www.antlr.org/pipermail/stringtemplate-interest/2011-May/003476.html
 	 * 
 	 * @throws Exception
 	 */
@@ -99,14 +102,19 @@ public class TestEarlyEvaluation extends BaseTest {
 		// When <f(...)> is invoked only once inspect throws no Exception in
 		// 4.0.2
 		STViz viz = st.inspect();
-		waitUntilAnyWindowIsVisible(4000);
-		viz.viewFrame.dispose();
-		waitUntilAllWindowsAreClosed();
+		if (interactive) {
+			viz.waitForClose();
+		}
+		else {
+			waitUntilAnyWindowIsVisible(4000);
+			viz.viewFrame.dispose();
+			waitUntilAllWindowsAreClosed();
+		}
 	}
 	
 
 	/**
-	 *  see http://www.antlr.org/pipermail/stringtemplate-interest/2011-August/003758.html 
+	 * see http://www.antlr.org/pipermail/stringtemplate-interest/2011-August/003758.html 
 	 * @throws Exception
 	 */
 	@Test
@@ -133,8 +141,13 @@ public class TestEarlyEvaluation extends BaseTest {
 		// works fine with inspect.
 		
 		STViz viz = st.inspect();
-		waitUntilAnyWindowIsVisible(4000);
-		viz.viewFrame.dispose();
-		waitUntilAllWindowsAreClosed();
+		if (interactive) {
+			viz.waitForClose();
+		}
+		else {
+			waitUntilAnyWindowIsVisible(4000);
+			viz.viewFrame.dispose();
+			waitUntilAllWindowsAreClosed();
+		}
 	}	
 }
