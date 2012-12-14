@@ -70,6 +70,7 @@ public abstract class BaseTest {
 			sucker = new Thread(this);
 			sucker.start();
 		}
+		@Override
 		public void run() {
 			try {
 				String line = in.readLine();
@@ -87,6 +88,7 @@ public abstract class BaseTest {
 		public void join() throws InterruptedException {
 			sucker.join();
 		}
+		@Override
 		public String toString() {
 			return buf.toString();
 		}
@@ -256,10 +258,12 @@ public abstract class BaseTest {
 
     public static class HashableUser extends User {
         public HashableUser(int id, String name) { super(id, name); }
+        @Override
         public int hashCode() {
             return id;
         }
 
+        @Override
         public boolean equals(Object o) {
             if ( o instanceof HashableUser ) {
                 HashableUser hu = (HashableUser)o;

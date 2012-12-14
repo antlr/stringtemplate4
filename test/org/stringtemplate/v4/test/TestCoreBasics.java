@@ -98,7 +98,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testAttrIsList() throws Exception {
         String template = "hi <name>!";
         ST st = new ST(template);
-        List names = new ArrayList() {{add("Ter"); add("Tom");}};
+        List<String> names = new ArrayList<String>() {{add("Ter"); add("Tom");}};
         st.add("name", names);
         st.add("name", "Sumana"); // shouldn't alter my version of names list!
         String expected =
@@ -133,7 +133,7 @@ public class TestCoreBasics extends BaseTest {
 	@Test public void testPropWithNoAttr() throws Exception {
 		String template = "<foo.a>: <ick>";
 		ST st = new ST(template);
-		st.add("foo", new HashMap() {{put("a","b");}});
+		st.add("foo", new HashMap<String, String>() {{put("a","b");}});
 		String expected = "b: ";
 		String result = st.render();
 		assertEquals(expected, result);
@@ -142,7 +142,7 @@ public class TestCoreBasics extends BaseTest {
 	@Test public void testMapAcrossDictionaryUsesKeys() throws Exception {
 		String template = "<foo:{f | <f>}>"; // checks field and method getter
 		ST st = new ST(template);
-		st.add("foo", new LinkedHashMap() {{put("a","b"); put("c","d");}});
+		st.add("foo", new LinkedHashMap<String, String>() {{put("a","b"); put("c","d");}});
 		String expected = "ac";
 		String result = st.render();
 		assertEquals(expected, result);
@@ -744,7 +744,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testMapConditionAndEscapeInside() throws Exception {
         String template = "<if(m.name)>works \\\\<endif>";
         ST st = new ST(template);
-        Map m = new HashMap();
+        Map<String, String> m = new HashMap<String, String>();
         m.put("name", "Ter");
         st.add("m", m);
         String expected = "works \\";

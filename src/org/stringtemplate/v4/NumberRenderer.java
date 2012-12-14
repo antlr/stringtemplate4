@@ -40,6 +40,7 @@ import java.util.Locale;
  *  This can even do {@code long} to {@code Date} conversions using the format string.
  */
 public class NumberRenderer implements AttributeRenderer {
+	@Override
     public String toString(Object o, String formatString, Locale locale) {
         // o will be instanceof Number
         if ( formatString==null ) return o.toString();

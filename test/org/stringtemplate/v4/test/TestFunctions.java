@@ -45,7 +45,7 @@ public class TestFunctions extends BaseTest {
     @Test public void testFirst() throws Exception {
         String template = "<first(names)>";
         org.stringtemplate.v4.ST st = new ST(template);
-        List names = new ArrayList() {
+        List<String> names = new ArrayList<String>() {
             {add("Ter"); add("Tom");}
         };
         st.add("names", names);
@@ -57,7 +57,7 @@ public class TestFunctions extends BaseTest {
 	@Test public void testLength() throws Exception {
 		String template = "<length(names)>";
 		org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
-		List names = new ArrayList() {
+		List<String> names = new ArrayList<String>() {
 			{add("Ter"); add("Tom");}
 		};
 		st.add("names", names);
@@ -69,7 +69,7 @@ public class TestFunctions extends BaseTest {
 	@Test public void testLengthWithNullValues() throws Exception {
 		String template = "<length(names)>";
 		org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
-		List names = new ArrayList() {
+		List<String> names = new ArrayList<String>() {
 			{add("Ter"); add(null); add("Tom"); add(null); }
 		};
 		st.add("names", names);
@@ -196,7 +196,7 @@ public class TestFunctions extends BaseTest {
         org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<rest(names); separator=\", \">"
             );
-        e.add("names", new ArrayList());
+        e.add("names", new ArrayList<Object>());
         String expecting = "";
         assertEquals(expecting, e.render());
     }
@@ -227,7 +227,7 @@ public class TestFunctions extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
         org.stringtemplate.v4.ST e = group.getInstanceOf("a");
-        List names = new ArrayList();
+        List<String> names = new ArrayList<String>();
         names.add("Ter");
         names.add("Tom");
         e.add("names", names);
@@ -454,11 +454,11 @@ public class TestFunctions extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
         org.stringtemplate.v4.ST e = group.getInstanceOf("a");
-        List mine = new ArrayList();
+        List<String> mine = new ArrayList<String>();
         mine.add("Ter");
         mine.add("Tom");
         e.add("mine", mine);
-        List yours = new ArrayList();
+        List<String> yours = new ArrayList<String>();
         yours.add("Foo");
         e.add("yours", yours);
         String expecting = "TerTomFoo, TerTomFoo";
@@ -583,7 +583,7 @@ public class TestFunctions extends BaseTest {
         org.stringtemplate.v4.ST e = new ST(
                 "<last(names)>"
             );
-        e.add("names", new ArrayList() {{add("Ter");}});
+        e.add("names", new ArrayList<String>() {{add("Ter");}});
         String expecting = "Ter";
         assertEquals(expecting, e.render());
     }
@@ -619,7 +619,7 @@ public class TestFunctions extends BaseTest {
         org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
                 "<rest(names)>"
             );
-        e.add("names", new ArrayList() {{add("Ter");}});
+        e.add("names", new ArrayList<String>() {{add("Ter");}});
         String expecting = "";
         assertEquals(expecting, e.render());
     }
@@ -705,8 +705,8 @@ public class TestFunctions extends BaseTest {
 		org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
 				"<first(maps).Ter>"
 			);
-		final Map m1 = new HashMap();
-		final Map m2 = new HashMap();
+		final Map<String, String> m1 = new HashMap<String, String>();
+		final Map<String, String> m2 = new HashMap<String, String>();
 		m1.put("Ter", "x5707");
 		e.add("maps", m1);
 		m2.put("Tom", "x5332");
@@ -714,7 +714,7 @@ public class TestFunctions extends BaseTest {
 		String expecting = "x5707";
 		assertEquals(expecting, e.render());
 
-		List list = new ArrayList() {{add(m1); add(m2);}};
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>() {{add(m1); add(m2);}};
 		e.add("maps", list);
 		expecting = "x5707";
 		assertEquals(expecting, e.render());
@@ -724,15 +724,15 @@ public class TestFunctions extends BaseTest {
 		org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
 				"<first(maps):{ m | <m>!}>"
 			);
-		final Map m1 = new HashMap();
-		final Map m2 = new HashMap();
+		final Map<String, String> m1 = new HashMap<String, String>();
+		final Map<String, String> m2 = new HashMap<String, String>();
 		m1.put("Ter", "x5707");
 		e.add("maps", m1);
 		m2.put("Tom", "x5332");
 		e.add("maps", m2);
 		String expecting = "Ter!";
 		assertEquals(expecting, e.render());
-		List list = new ArrayList() {{add(m1); add(m2);}};
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>() {{add(m1); add(m2);}};
 		e.add("maps", list);
 		expecting = "Ter!";
 		assertEquals(expecting, e.render());

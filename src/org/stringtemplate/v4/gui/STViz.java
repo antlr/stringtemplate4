@@ -94,6 +94,7 @@ public class STViz {
         viewFrame.tree.setModel(tmodel);
         viewFrame.tree.addTreeSelectionListener(
             new TreeSelectionListener() {
+				@Override
                 public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
                     currentScope = ((JTreeSTModel.Wrapper)viewFrame.tree.getLastSelectedPathComponent()).event.scope;
                     updateCurrentST(viewFrame);
@@ -105,6 +106,7 @@ public class STViz {
 		viewFrame.ast.setModel(astModel);
 		viewFrame.ast.addTreeSelectionListener(
 			new TreeSelectionListener() {
+				@Override
 				public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
 					TreePath path = treeSelectionEvent.getNewLeadSelectionPath();
 					if ( path==null ) return;
@@ -139,6 +141,7 @@ public class STViz {
         viewFrame.trace.setText(Misc.join(trace.iterator(), "\n"));
 
         CaretListener caretListenerLabel = new CaretListener() {
+			@Override
             public void caretUpdate(CaretEvent e) {
                 int dot = e.getDot();
                 InterpEvent de = findEventAtOutputLocation(allEvents, dot);
@@ -175,6 +178,7 @@ public class STViz {
 
         viewFrame.errorList.addListSelectionListener(
             new ListSelectionListener() {
+				@Override
                 public void valueChanged(ListSelectionEvent e) {
                     int minIndex = viewFrame.errorList.getMinSelectionIndex();
                     int maxIndex = viewFrame.errorList.getMaxSelectionIndex();

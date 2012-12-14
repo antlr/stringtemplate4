@@ -40,6 +40,7 @@ import java.util.Locale;
  */
 public class StringRenderer implements AttributeRenderer {
     // trim(s) and strlen(s) built-in funcs; these are format options
+    @Override
     public String toString(Object o, String formatString, Locale locale) {
         String s = (String)o;
         if ( formatString==null ) return s;

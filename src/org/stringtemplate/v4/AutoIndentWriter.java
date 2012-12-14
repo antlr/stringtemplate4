@@ -93,18 +93,22 @@ public class AutoIndentWriter implements STWriter {
 		this(out, System.getProperty("line.separator"));
 	}
 
+	@Override
 	public void setLineWidth(int lineWidth) {
 		this.lineWidth = lineWidth;
 	}
 
+	@Override
     public void pushIndentation(String indent) {
         indents.add(indent);
     }
 
+	@Override
     public String popIndentation() {
         return indents.remove(indents.size()-1);
     }
 
+	@Override
 	public void pushAnchorPoint() {
 		if ( (anchors_sp +1)>=anchors.length ) {
 			int[] a = new int[anchors.length*2];
@@ -115,13 +119,16 @@ public class AutoIndentWriter implements STWriter {
 		anchors[anchors_sp] = charPosition;
 	}
 
+	@Override
 	public void popAnchorPoint() {
 		anchors_sp--;
 	}
 
+	@Override
     public int index() { return charIndex; }
 
 	/** Write out a string literal or attribute expression or expression element. */
+	@Override
 	public int write(String str) throws IOException {
 		int n = 0;
 		int nll = newline.length();
@@ -153,6 +160,7 @@ public class AutoIndentWriter implements STWriter {
 		return n;
 	}
 
+	@Override
     public int writeSeparator(String str) throws IOException {
 		return write(str);
 	}
@@ -164,11 +172,13 @@ public class AutoIndentWriter implements STWriter {
 	 * If at or beyond desired line width then emit a {@link #newline} and any
 	 * indentation before spitting out {@code str}.
 	 */
+	@Override
 	public int write(String str, String wrap) throws IOException {
 		int n = writeWrap(wrap);
 		return n + write(str);
 	}
 
+	@Override
 	public int writeWrap(String wrap) throws IOException {
 		int n = 0;
 		// if want wrap and not already at start of line (last char was \n)

@@ -40,6 +40,7 @@ public class TestRenderers extends BaseTest {
 	private Locale origLocale;
 
 	@Before
+	@Override
 	public void setUp() {
 		origLocale = Locale.getDefault();
 		Locale.setDefault(Locale.US);
@@ -337,7 +338,7 @@ public class TestRenderers extends BaseTest {
         STGroup group = new STGroup();
         group.registerRenderer(String.class, new StringRenderer());
         ST st = new ST(group, template);
-        List names = new ArrayList();
+        List<String> names = new ArrayList<String>();
         names.add("ter");
         names.add(null);
         names.add("sriram");

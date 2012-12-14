@@ -82,6 +82,7 @@ public class Aggregate {
 	public Object get(String propName) {
 		return properties.get(propName);
 	}
+	@Override
 	public String toString() {
 		return properties.toString();
 	}

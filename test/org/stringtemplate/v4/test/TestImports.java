@@ -27,14 +27,11 @@
 */
 package org.stringtemplate.v4.test;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestImports extends BaseTest {
 	@Test public void testImportDir() throws Exception {
@@ -564,14 +561,14 @@ public class TestImports extends BaseTest {
 		writeFile(tmpdir, "g2.stg", "f() ::= \"g2\"\nf2() ::= \"f2\"\n");
 		STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir + "/t.stg");
 		ST st = group.getInstanceOf("main");
-		Assert.assertEquals("v1-g1", st.render());
+		assertEquals("v1-g1", st.render());
 
 		// Change the imports of group t.
 		writeFile(tmpdir, "t.stg",
 				"import \"g2.stg\"\n\nmain() ::= <<\nv2-<f()>;<f2()>\n>>");
 		group.unload(); // will also unload already imported groups
 		st = group.getInstanceOf("main");
-		Assert.assertEquals("v2-g2;f2", st.render());
+		assertEquals("v2-g2;f2", st.render());
 	}
 
 	/** Cannot import from a group file unless it's the root.

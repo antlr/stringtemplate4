@@ -50,31 +50,39 @@ public class JTreeASTModel implements TreeModel {
         this.root = root;
     }
 
+	@Override
     public int getChildCount(Object parent) {
         return adaptor.getChildCount(parent);
     }
 
+	@Override
     public int getIndexOfChild(Object parent, Object child){
         if ( parent==null ) return -1;
         return adaptor.getChildIndex(child);
     }
 
+	@Override
     public Object getChild(Object parent, int index){
         return adaptor.getChild(parent, index);
     }
 
+	@Override
     public boolean isLeaf(Object node) {
         return getChildCount(node)==0;
     }
 
+	@Override
     public Object getRoot() { return root; }
 
+	@Override
     public void valueForPathChanged(TreePath treePath, Object o) {
     }
 
+	@Override
     public void addTreeModelListener(TreeModelListener treeModelListener) {
     }
 
+	@Override
     public void removeTreeModelListener(TreeModelListener treeModelListener) {
     }
 }

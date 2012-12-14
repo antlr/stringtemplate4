@@ -54,16 +54,19 @@ public class STGroupString extends STGroup {
 		return super.isDictionary(name);
 	}
 
+	@Override
 	public boolean isDefined(String name) {
 		if ( !alreadyLoaded ) load();
         return super.isDefined(name);
     }
 
+	@Override
 	protected CompiledST load(String name) {
 		if ( !alreadyLoaded ) load();
         return rawGetTemplate(name);
     }
 
+	@Override
     public void load() {
 		if (alreadyLoaded) return;
 		alreadyLoaded = true;
@@ -83,5 +86,6 @@ public class STGroupString extends STGroup {
 		}
 	}
 
+	@Override
 	public String getFileName() { return "<string>"; }
 }

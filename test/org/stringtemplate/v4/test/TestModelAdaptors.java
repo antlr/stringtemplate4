@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TestModelAdaptors extends BaseTest {
 	static class UserAdaptor implements ModelAdaptor {
+		@Override
 		public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 			throws STNoSuchPropertyException
 		{
@@ -20,6 +21,7 @@ public class TestModelAdaptors extends BaseTest {
 	}
 
 	static class UserAdaptorConst implements ModelAdaptor {
+		@Override
 		public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 			throws STNoSuchPropertyException
 		{

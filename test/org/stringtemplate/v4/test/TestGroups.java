@@ -289,6 +289,7 @@ public class TestGroups extends BaseTest {
         class Field {
             public String name = "parrt";
             public int n = 0;
+			@Override
             public String toString() {
                 return "Field";
             }
@@ -313,6 +314,7 @@ public class TestGroups extends BaseTest {
         class Field {
             public String name = "parrt";
             public int n = 0;
+			@Override
             public String toString() {
                 return "Field";
             }
@@ -336,6 +338,7 @@ public class TestGroups extends BaseTest {
         class Field {
             public String name = "parrt";
             public int n = 0;
+			@Override
             public String toString() {
                 return "Field";
             }
@@ -411,6 +414,7 @@ public class TestGroups extends BaseTest {
     @Test public void testDefaultArgumentInParensToEvalEarly() throws Exception {
         class Counter {
             int n = 0;
+			@Override
             public String toString() {
                 return String.valueOf(n++);
             }

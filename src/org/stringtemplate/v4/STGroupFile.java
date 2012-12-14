@@ -111,6 +111,7 @@ public class STGroupFile extends STGroup {
 		return super.isDictionary(name);
 	}
 
+	@Override
     public boolean isDefined(String name) {
         if ( !alreadyLoaded ) load();
         return super.isDefined(name);
@@ -122,11 +123,13 @@ public class STGroupFile extends STGroup {
 		alreadyLoaded = false;
 	}
 
+	@Override
 	protected CompiledST load(String name) {
         if ( !alreadyLoaded ) load();
         return rawGetTemplate(name);
     }
 
+	@Override
     public void load() {
         if ( alreadyLoaded ) return;
         alreadyLoaded = true; // do before actual load to say we're doing it
@@ -137,12 +140,15 @@ public class STGroupFile extends STGroup {
 		if ( verbose ) System.out.println("found "+templates.size()+" templates in "+url.toString()+" = "+templates.keySet());
     }
 
+	@Override
     public String show() {
         if ( !alreadyLoaded ) load();
         return super.show();
     }
 
+	@Override
     public String getName() { return Misc.getFileNameNoSuffix(fileName); }
+	@Override
 	public String getFileName() { return fileName; }
 
 	@Override

@@ -42,7 +42,7 @@ public class Misc {
 	}
 
     // Seriously: why isn't this built in to java?
-    public static String join(Iterator iter, String separator) {
+    public static String join(Iterator<?> iter, String separator) {
         StringBuilder buf = new StringBuilder();
         while ( iter.hasNext() ) {
             buf.append(iter.next());
@@ -165,7 +165,7 @@ public class Misc {
             f.setAccessible(true);
         }
         catch (SecurityException se) {
-            ; // oh well; security won't let us
+            // oh well; security won't let us
         }
         value = f.get(o);
         return value;
@@ -177,16 +177,16 @@ public class Misc {
             m.setAccessible(true);
         }
         catch (SecurityException se) {
-            ; // oh well; security won't let us
+            // oh well; security won't let us
         }
         value = m.invoke(o,(Object[])null);
         return value;
     }
 
-    public static Method getMethod(Class c, String methodName) {
+    public static Method getMethod(Class<?> c, String methodName) {
         Method m;
         try {
-            m = c.getMethod(methodName, (Class[])null);
+            m = c.getMethod(methodName);
         }
         catch (NoSuchMethodException nsme) {
             m = null;

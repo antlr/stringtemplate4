@@ -38,14 +38,15 @@ import java.lang.reflect.Method;
 
 public class ObjectModelAdaptor implements ModelAdaptor {
 	/** Cache exact attribute type and property name reflection {@link Member} object. */
-	protected DoubleKeyMap<Class, String, Member> classAndPropertyToMemberCache =
-		new DoubleKeyMap<Class, String, Member>();
+	protected DoubleKeyMap<Class<?>, String, Member> classAndPropertyToMemberCache =
+		new DoubleKeyMap<Class<?>, String, Member>();
 
+	@Override
 	public synchronized Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{
 		Object value = null;
-        Class c = o.getClass();
+        Class<?> c = o.getClass();
 
 		if ( property==null ) {
 			return throwNoSuchProperty(c, propertyName, null);
@@ -55,7 +56,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 		Member member = classAndPropertyToMemberCache.get(c, propertyName);
 		if ( member!=null ) {
 			try {
-				Class memberClass = member.getClass();
+				Class<?> memberClass = member.getClass();
 				if ( memberClass == Method.class ) return ((Method)member).invoke(o);
 				if ( memberClass == Field.class ) return ((Field)member).get(o);
 			}
@@ -66,7 +67,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 		return lookupMethod(o, propertyName, value, c);
 	}
 
-	public synchronized Object lookupMethod(Object o, String propertyName, Object value, Class c) {
+	public synchronized Object lookupMethod(Object o, String propertyName, Object value, Class<?> c) {
 		// try getXXX and isXXX properties, look up using reflection
 		String methodSuffix = Character.toUpperCase(propertyName.charAt(0))+
 			propertyName.substring(1, propertyName.length());

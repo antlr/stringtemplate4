@@ -130,7 +130,7 @@ public class TestSubtemplates extends BaseTest {
         e.add("names", "Ter");
         e.add("names", "Tom");
         e.add("names", "Sriram");
-        e.add("phones", new ArrayList() {{add("1"); add(null); add("3");}});
+        e.add("phones", new ArrayList<String>() {{add("1"); add(null); add("3");}});
         e.add("salaries", "big");
         e.add("salaries", "huge");
         e.add("salaries", "enormous");
