@@ -43,11 +43,16 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.TreePath;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class STViz {
 	//public ST currentST; // current ST selected in template tree
@@ -214,6 +219,38 @@ public class STViz {
 
         viewFrame.setVisible(true);
     }
+
+	public void waitForClose() throws InterruptedException {
+		final Object lock = new Object();
+
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				synchronized (lock) {
+					while (viewFrame.isVisible()) {
+						try {
+							lock.wait();
+						} catch (InterruptedException e) {
+						}
+					}
+				}
+			}
+		};
+
+		t.start();
+
+		viewFrame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				synchronized (lock) {
+					viewFrame.setVisible(false);
+					lock.notify();
+				}
+			}
+		});
+
+		t.join();
+	}
 
 	private void updateCurrentST(STViewFrame m) {
 //		System.out.println("updateCurrentST(): currentScope.st="+currentScope.st);
