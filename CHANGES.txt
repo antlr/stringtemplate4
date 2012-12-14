@@ -6,6 +6,13 @@ University of San Francisco
 
 CHANGES
 
+December 13, 2012
+
+* Allow [] as a default value for formal arguments (fixes antlr/stringtemplate4#20)
+* Add method STViz.waitForClose()
+* Specify -Dtest.interactive to have STViz tests leave the window open for the user
+* Code cleanup
+
 December 11, 2012
 
 * Don't cache the STNoSuchPropertyException and STNoSuchAttributeException
