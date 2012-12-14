@@ -32,7 +32,7 @@ options {
 }
 
 tokens {
-	TRUE='true'; FALSE='false';
+	TRUE='true'; FALSE='false'; LBRACK='['; RBRACK=']';
 }
 
 @header {
@@ -247,6 +247,7 @@ scope {
 formalArg[List<FormalArgument> args]
 	:	ID
 		(	'=' a=(STRING|ANONYMOUS_TEMPLATE|'true'|'false') {$formalArgs::hasOptionalParameter = true;}
+		|	'=' a='[' ']' {$formalArgs::hasOptionalParameter = true;}
 		|	{
 			if ($formalArgs::hasOptionalParameter) {
 				group.errMgr.compileTimeError(ErrorType.REQUIRED_PARAMETER_AFTER_OPTIONAL,
