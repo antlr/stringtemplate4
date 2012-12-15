@@ -6,6 +6,11 @@ University of San Francisco
 
 CHANGES
 
+December 15, 2012
+
+* throw exceptionWhen the attribute name is no to be consistent with the
+  other check for '.' in the name.
+
 December 13, 2012
 
 * Allow [] as a default value for formal arguments (fixes antlr/stringtemplate4#20)
