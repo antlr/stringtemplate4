@@ -34,11 +34,25 @@ import org.stringtemplate.v4.debug.ConstructionEvent;
 import org.stringtemplate.v4.debug.EvalTemplateEvent;
 import org.stringtemplate.v4.debug.InterpEvent;
 import org.stringtemplate.v4.gui.STViz;
-import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.misc.Aggregate;
+import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.MultiMap;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /** An instance of the StringTemplate. It consists primarily of
  *  a {@linkplain ST#impl reference} to its implementation (shared among all
@@ -182,17 +196,20 @@ public class ST {
 	 *  {@link AttributeList} with both the previous and the new attribute as
 	 *  elements. This method will never alter a {@link List} that you inject.
 	 *  If you send in a {@link List} and then inject a single value element,
-	 *  {@code add} copies original list and adds the new value.
+	 *  {@code add} copies original list and adds the new value. The
+	 *  attribute name cannot be null or contain '.'.
 	 *  <p/>
 	 *  Return {@code this} so we can chain:
 	 *  <p/>
 	 *  {@code t.add("x", 1).add("y", "hi")}
      */
     public synchronized ST add(String name, Object value) {
-        if ( name==null ) return this; // allow null value but not name
-        if ( name.indexOf('.')>=0 ) {
-            throw new IllegalArgumentException("cannot have '.' in attribute names");
-        }
+		if ( name==null ) {
+			throw new IllegalArgumentException("null attribute name");
+		}
+		if ( name.indexOf('.')>=0 ) {
+			throw new IllegalArgumentException("cannot have '.' in attribute names");
+		}
 
 		if ( STGroup.trackCreationEvents ) {
 			if ( debugState==null ) debugState = new ST.DebugState();
