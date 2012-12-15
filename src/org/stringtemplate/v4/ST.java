@@ -205,7 +205,7 @@ public class ST {
      */
     public synchronized ST add(String name, Object value) {
 		if ( name==null ) {
-			throw new IllegalArgumentException("null attribute name");
+			throw new NullPointerException("null attribute name");
 		}
 		if ( name.indexOf('.')>=0 ) {
 			throw new IllegalArgumentException("cannot have '.' in attribute names");
