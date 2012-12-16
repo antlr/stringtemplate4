@@ -27,14 +27,16 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
-
-import org.stringtemplate.v4.*;
+import org.junit.Test;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class TestIndirectionAndEarlyEval extends BaseTest {
     @Test public void testEarlyEval() throws Exception {
@@ -72,15 +74,19 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
 
 	@Test
 	public void testIndirectCallWithPassThru() throws Exception {
-		// indirectly call t1, with "pass thru" (...) parameter passing
-		// (used to fail with:
-		// "t.stg 2:21: mismatched input '...' expecting RPAREN")
+		// pass-through for dynamic template invocation is not supported by the
+		// bytecode representation
 		writeFile(tmpdir, "t.stg",
-				"t1(x) ::= \"<x>\"\nmain(x=\"hello\",t=\"t1\") ::= <<\n<(t)(...)>\n>>");
+			"t1(x) ::= \"<x>\"\n" +
+			"main(x=\"hello\",t=\"t1\") ::= <<\n" +
+			"<(t)(...)>\n" +
+			">>");
 		STGroup group = new STGroupFile(tmpdir + "/t.stg");
+		ErrorBuffer errors = new ErrorBuffer();
+		group.setListener(errors);
 		ST st = group.getInstanceOf("main");
-		String result = st.render();
-		Assert.assertEquals("hello", result);
+		assertEquals("t.stg 2:34: mismatched input '...' expecting RPAREN" + newline, errors.toString());
+		assertNull(st);
 	}
 
     @Test public void testIndirectTemplateIncludeViaTemplate() throws Exception {
