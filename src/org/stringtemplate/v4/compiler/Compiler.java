@@ -159,7 +159,7 @@ public class Compiler {
 			impl = gen.template(name,args);
 			impl.nativeGroup = group;
 			impl.template = template;
-			impl.ast = (CommonTree)r.getTree();
+			impl.ast = r.getTree();
 			impl.ast.setUnknownTokenBoundaries();
 			impl.tokens = tokens;
 		}

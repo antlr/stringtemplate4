@@ -68,7 +68,10 @@ import java.util.Map;
  *  says.
  */
 public class ST {
-	public final static String VERSION = "4.0.7-SNAPSHOT";
+	public final static String VERSION;
+	static {
+		VERSION = "4.0.7-rc-2";
+	}
 
 	/** {@code <@r()>}, {@code <@r>...<@end>}, and {@code @t.r() ::= "..."} defined manually by coder */
     public static enum RegionType {
