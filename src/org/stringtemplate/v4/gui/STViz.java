@@ -138,12 +138,6 @@ public class STViz {
 //            }
 //        );
 
-        setText(viewFrame.output, output);
-
-        setText(viewFrame.template, currentScope.st.impl.template);
-        setText(viewFrame.bytecode, currentScope.st.impl.disasm());
-        setText(viewFrame.trace, Misc.join(trace.iterator(), "\n"));
-
         CaretListener caretListenerLabel = new CaretListener() {
 			@Override
             public void caretUpdate(CaretEvent e) {
@@ -224,6 +218,11 @@ public class STViz {
 		viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		viewFrame.pack();
 		viewFrame.setSize(900, 700);
+
+        setText(viewFrame.output, output);
+        setText(viewFrame.template, currentScope.st.impl.template);
+        setText(viewFrame.bytecode, currentScope.st.impl.disasm());
+        setText(viewFrame.trace, Misc.join(trace.iterator(), "\n"));
 
         viewFrame.setVisible(true);
     }
