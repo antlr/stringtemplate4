@@ -41,7 +41,8 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import java.io.File;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 public class TestGroups extends BaseTest {
 	@Test public void testSimpleGroup() throws Exception {
@@ -635,9 +636,9 @@ public class TestGroups extends BaseTest {
 		Set<String> names = group.getTemplateNames();
 
 		// Should only contain "t" and "main" (not "t2")
-		Assert.assertEquals(2, names.size());
-		Assert.assertTrue(names.contains("/t"));
-		Assert.assertTrue(names.contains("/main"));
+		assertEquals(2, names.size());
+		assertThat(names, hasItem("/t"));
+		assertThat(names, hasItem("/main"));
 	}
 
 	@Test

@@ -105,8 +105,7 @@ public class TestCoreBasics extends BaseTest {
             "hi TerTomSumana!";  // ST sees 3 names
         String result = st.render();
         assertEquals(expected, result);
-
-        assertTrue(names.size() == 2); // my names list is still just 2
+        assertEquals(2, names.size()); // my names list is still just 2
     }
 
     @Test public void testAttrIsArray() throws Exception {
