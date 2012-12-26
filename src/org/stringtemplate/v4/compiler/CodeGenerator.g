@@ -96,9 +96,6 @@ import org.stringtemplate.v4.*;
 	public void emit2(CommonTree opAST, short opcode, String s, int arg2) {
 		$template::state.emit2(opAST, opcode, s, arg2);
 	}
-	public void emit(short opcode) {
-		$template::state.emit(opcode);
-    }
     public void emit(CommonTree opAST, short opcode) {
 		$template::state.emit(opAST, opcode);
 	}
@@ -161,7 +158,7 @@ singleElement
 		}
 		}
 
-	|	NEWLINE {emit(Bytecode.INSTR_NEWLINE);}
+	|	NEWLINE {emit($NEWLINE, Bytecode.INSTR_NEWLINE);}
 	;
 
 compoundElement[CommonTree indent]
@@ -306,13 +303,13 @@ ifstat[CommonTree indent]
 	;
 
 conditional
-	:	^('||' conditional conditional)		{emit(Bytecode.INSTR_OR);}
-	|	^('&&' conditional conditional)		{emit(Bytecode.INSTR_AND);}
-	|	^('!' conditional)					{emit(Bytecode.INSTR_NOT);}
+	:	^(OR conditional conditional)		{emit($OR, Bytecode.INSTR_OR);}
+	|	^(AND conditional conditional)		{emit($AND, Bytecode.INSTR_AND);}
+	|	^(BANG conditional)					{emit($BANG, Bytecode.INSTR_NOT);}
 	|	expr // not all expr are valid, but reuse code gen (parser restricts syntax)
 	;
 
-exprOptions : {emit(Bytecode.INSTR_OPTIONS);} ^(OPTIONS option*) ;
+exprOptions : {emit($start, Bytecode.INSTR_OPTIONS);} ^(OPTIONS option*) ;
 
 option : ^('=' ID expr) {setOption($ID);} ;
 
@@ -423,7 +420,7 @@ args returns [int n=0, boolean namedArgs=false, boolean passThru]
 	|
  	;
 
-list:	{emit(Bytecode.INSTR_LIST);}
+list:	{emit($start, Bytecode.INSTR_LIST);}
 		^(LIST (listElement {emit($listElement.start, Bytecode.INSTR_ADD);})* )
 	;
 
