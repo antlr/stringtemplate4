@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
-import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 public class TestImports extends BaseTest {
@@ -592,7 +591,7 @@ public class TestImports extends BaseTest {
 		String result = errors.toString();
 		String expecting =
 			"import illegal in group files embedded in STGroupDirs; import \"imported.stg\" in STGroupDir";
-		assertThat(result, containsString(expecting));
+		assertTrue(result.contains(expecting));
 	}
 
 	@Test public void testGroupFileInDirImportsAGroupDir() throws Exception {

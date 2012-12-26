@@ -28,7 +28,6 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STErrorListener;
@@ -41,7 +40,6 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import java.io.File;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 public class TestGroups extends BaseTest {
@@ -636,8 +634,8 @@ public class TestGroups extends BaseTest {
 
 		// Should only contain "t" and "main" (not "t2")
 		assertEquals(2, names.size());
-		assertThat(names, hasItem("/t"));
-		assertThat(names, hasItem("/main"));
+		assertTrue(names.contains("/t"));
+		assertTrue(names.contains("/main"));
 	}
 
 	@Test
