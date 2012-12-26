@@ -6,6 +6,14 @@ University of San Francisco
 
 CHANGES
 
+December 25, 2012
+
+* Fix issues with bytecode to source mapping
+* Fix several STViz bugs
+* Improved error location reporting
+* Fix several unit tests
+* Explicit InstanceScope tracking in the interpreter
+
 December 15, 2012
 
 * throw exceptionWhen the attribute name is no to be consistent with the
