@@ -56,7 +56,7 @@ public class TestInterptimeErrors extends BaseTest {
 		group.setListener(errors);
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [/t] 1:0 no such template: /foo"+newline;
+        String expected = "context [/t] 1:1 no such template: /foo"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
