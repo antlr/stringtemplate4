@@ -38,9 +38,9 @@ import java.util.List;
 /** */
 public class InstanceScope {
 	/** Template that invoked us. */
-	public InstanceScope parent;
+	public final InstanceScope parent;
 	/** Template we've executing. */
-	public ST st;
+	public final ST st;
 	/** Return address. */
 	public int ret_ip;
 
