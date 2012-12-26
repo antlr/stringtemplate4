@@ -67,8 +67,11 @@ public class InstanceScope {
 	public List<EvalTemplateEvent> childEvalTemplateEvents =
 		new ArrayList<EvalTemplateEvent>();
 
+	public boolean earlyEval;
+
 	public InstanceScope(InstanceScope parent, ST st) {
 		this.parent = parent;
 		this.st = st;
+		this.earlyEval = parent != null && parent.earlyEval;
 	}
 }

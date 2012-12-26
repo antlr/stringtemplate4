@@ -404,6 +404,10 @@ public class STViz {
                                                  int charIndex)
     {
         for (InterpEvent e : events) {
+			if (e.scope.earlyEval) {
+				continue;
+			}
+
             if ( charIndex>=e.outputStartChar && charIndex<=e.outputStopChar) return e;
         }
         return null;
