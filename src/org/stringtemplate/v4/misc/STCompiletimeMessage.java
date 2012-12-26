@@ -71,7 +71,7 @@ public class STCompiletimeMessage extends STMessage {
 			charPos = token.getCharPositionInLine();
 			if ( templateToken!=null ) {
 				int templateDelimiterSize = 1;
-				if ( templateToken.getType()== GroupParser.BIGSTRING ) {
+				if ( templateToken.getType()== GroupParser.BIGSTRING || templateToken.getType()== GroupParser.BIGSTRING_NO_NL ) {
 					templateDelimiterSize = 2;
 				}
 				line += templateToken.getLine() - 1;
