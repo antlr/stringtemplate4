@@ -205,16 +205,20 @@ public class CompiledST {
 
 	public Interval getTemplateRange() {
 		if ( isAnonSubtemplate ) {
-			Interval start = sourceMap[0];
-			Interval stop = null;
-			for (int i = sourceMap.length-1; i>=0; i--) {
-				Interval I = sourceMap[i];
-				if ( I!=null ) {
-					stop = I;
-					break;
+			int start = Integer.MAX_VALUE;
+			int stop = Integer.MIN_VALUE;
+			for (Interval interval : sourceMap) {
+				if (interval == null) {
+					continue;
 				}
+
+				start = Math.min(start, interval.a);
+				stop = Math.max(stop, interval.b);
 			}
-			return new Interval(start.a, stop.b);
+
+			if (start <= stop + 1) {
+				return new Interval(start, stop);
+			}
 		}
 		return new Interval(0, template.length()-1);
 	}
