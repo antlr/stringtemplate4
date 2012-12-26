@@ -431,9 +431,8 @@ public class TestRegions extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	@Ignore
+	@Ignore("fix so we ignore inside {...}")
 	@Test public void testEmbeddedSubtemplate() throws Exception {
-		// fix so we ignore inside {...}
 		String dir = getRandomDir();
 		String groupFile =
 			"a() ::= <<\n" +

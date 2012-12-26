@@ -133,9 +133,8 @@ public class TestWhitespace extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	@Ignore
+	@Ignore("fails since it counts indent from outer too")
 	@Test public void testTabBeforeEndInSubtemplates() throws Exception {
-		// fails since it counts indent from outer too
 		STGroup group = new STGroup();
 		group.defineTemplate("test", "names", "  <names:{n |\n" +
 									 "    <n>\n" +
