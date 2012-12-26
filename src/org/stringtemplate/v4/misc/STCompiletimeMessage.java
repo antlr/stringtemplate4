@@ -69,7 +69,8 @@ public class STCompiletimeMessage extends STMessage {
 		if ( token!=null ) {
 			line = token.getLine();
 			charPos = token.getCharPositionInLine();
-			if ( templateToken!=null ) {
+			// check the input streams - if different then token is embedded in templateToken and we need to adjust the offset
+			if ( templateToken!=null && !templateToken.getInputStream().equals(token.getInputStream()) ) {
 				int templateDelimiterSize = 1;
 				if ( templateToken.getType()== GroupParser.BIGSTRING || templateToken.getType()== GroupParser.BIGSTRING_NO_NL ) {
 					templateDelimiterSize = 2;
