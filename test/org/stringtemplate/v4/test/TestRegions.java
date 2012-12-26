@@ -164,7 +164,7 @@ public class TestRegions extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	@Ignore public void testAnonymousTemplateInRegionInSubdir() throws Exception {
+	@Test public void testAnonymousTemplateInRegionInSubdir() throws Exception {
 		//fails since it makes region name /region__/g/a/_r
 		String dir = getRandomDir();
 		String g = "a() ::= <<[<@r()>]>>\n" +
@@ -356,12 +356,11 @@ public class TestRegions extends BaseTest {
         assertEquals(expecting, result);
     }
 
-	@Ignore
     @Test public void testUnknownRegionDefError() throws Exception {
         String dir = getRandomDir();
         String g =
                 "a() ::= <<\n" +
-                "X<@r()>Y" +
+                "X<@r()>Y\n" +
                 ">>\n"+
                 "@a.q() ::= \"foo\"" +newline;
         STErrorListener errors = new ErrorBuffer();
@@ -371,7 +370,7 @@ public class TestRegions extends BaseTest {
         ST st = group.getInstanceOf("a");
         st.render();
         String result = errors.toString();
-        String expecting = "g.stg 4:3: template a doesn't have a region called q"+newline;
+        String expecting = "g.stg 4:3: template /a doesn't have a region called q"+newline;
         assertEquals(expecting, result);
     }
 
@@ -432,9 +431,8 @@ public class TestRegions extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	@Ignore
+	@Ignore("fix so we ignore inside {...}")
 	@Test public void testEmbeddedSubtemplate() throws Exception {
-		// fix so we ignore inside {...}
 		String dir = getRandomDir();
 		String groupFile =
 			"a() ::= <<\n" +

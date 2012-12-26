@@ -508,7 +508,6 @@ public class TestGroups extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	@Ignore
 	@Test public void testNamedArgsNotAllowInIndirectInclude() throws Exception {
 		String dir = getRandomDir();
 		String groupFile =
@@ -521,7 +520,7 @@ public class TestGroups extends BaseTest {
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		group.load();
-		String expected = "group.stg 2:21: 'x' came as a complete surprise to me"+newline;
+		String expected = "group.stg 2:22: '=' came as a complete surprise to me"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}

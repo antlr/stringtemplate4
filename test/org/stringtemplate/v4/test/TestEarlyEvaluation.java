@@ -3,7 +3,6 @@ package org.stringtemplate.v4.test;
 import java.awt.Window;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -53,7 +52,6 @@ public class TestEarlyEvaluation extends BaseTest {
 	 *
 	 * @throws Exception
 	 */
-	@Ignore
 	@Test
 	public void testEarlyEval() throws Exception {
 		String templates = "main() ::= <<\n<f(p=\"x\")>*<f(p=\"y\")>\n>>\n\n"
