@@ -66,15 +66,8 @@ public class Interpreter {
 	Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
 	/** Stack pointer register. */
 	int sp = -1;
-	/** Mirrors {@code ip} in {@link #exec}, but visible to all methods. */
-	int current_ip = 0;
 	/** The number of characters written on this template line so far. */
 	int nwline = 0;
-
-	/** Stack of enclosing instances (scopes).  Used for dynamic scoping
-	 *  of attributes.
-	 */
-	public InstanceScope currentScope = null;
 
 	/** Render template with respect to this group.
 	 *
@@ -144,26 +137,26 @@ public class Interpreter {
 	 *
 	 * @return the number of characters written to {@code out}
 	 */
-	public int exec(STWriter out, ST self) {
+	public int exec(STWriter out, InstanceScope scope) {
+		final ST self = scope.st;
 		if ( trace ) System.out.println("exec("+self.getName()+")");
-		pushScope(self);
 		try {
-			setDefaultArguments(out, self);
-			return _exec(out, self);
+			setDefaultArguments(out, scope);
+			return _exec(out, scope);
 		}
 		catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
 			pw.flush();
-			errMgr.runTimeError(this, self, current_ip, ErrorType.INTERNAL_ERROR,
+			errMgr.runTimeError(this, scope, ErrorType.INTERNAL_ERROR,
 								"internal error: "+sw.toString());
 			return 0;
 		}
-		finally { popScope(); }
 	}
 
-	protected int _exec(STWriter out, ST self) {
+	protected int _exec(STWriter out, InstanceScope scope) {
+		final ST self = scope.st;
 		int start = out.index(); // track char we're about to write
 		int prevOpcode = 0;
 		int n = 0; // how many char we write out
@@ -177,10 +170,10 @@ public class Interpreter {
 		byte[] code = self.impl.instrs;        // which code block are we executing
 		int ip = 0;
 		while ( ip < self.impl.codeSize ) {
-			if ( trace || debug ) trace(self, ip);
+			if ( trace || debug ) trace(scope, ip);
 			short opcode = code[ip];
 			//count[opcode]++;
-			current_ip = ip;
+			scope.ip = ip;
 			ip++; //jump to next instruction or first byte of operand
 			switch (opcode) {
 				case Bytecode.INSTR_LOAD_STR :
@@ -193,11 +186,11 @@ public class Interpreter {
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = self.impl.strings[nameIndex];
 					try {
-						o = getAttribute(self, name);
+						o = getAttribute(scope, name);
 						if ( o==ST.EMPTY_ATTR ) o = null;
 					}
 					catch (STNoSuchAttributeException nsae) {
-						errMgr.runTimeError(this, self, current_ip, ErrorType.NO_SUCH_ATTRIBUTE, name);
+						errMgr.runTimeError(this, scope, ErrorType.NO_SUCH_ATTRIBUTE, name);
 						o = null;
 					}
 					operands[++sp] = o;
@@ -214,12 +207,12 @@ public class Interpreter {
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					o = operands[sp--];
 					name = self.impl.strings[nameIndex];
-					operands[++sp] = getObjectProperty(out, self, o, name);
+					operands[++sp] = getObjectProperty(out, scope, o, name);
 					break;
 				case Bytecode.INSTR_LOAD_PROP_IND :
 					Object propName = operands[sp--];
 					o = operands[sp];
-					operands[sp] = getObjectProperty(out, self, o, propName);
+					operands[sp] = getObjectProperty(out, scope, o, propName);
 					break;
 				case Bytecode.INSTR_NEW :
 					nameIndex = getShort(code, ip);
@@ -229,9 +222,9 @@ public class Interpreter {
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					// look up in original hierarchy not enclosing template (variable group)
 					// see TestSubtemplates.testEvalSTFromAnotherGroup()
-					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, self, ip, name);
+					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, scope, name);
 					// get n args and store into st's attr list
-					storeArgs(self, nargs, st);
+					storeArgs(scope, nargs, st);
 					sp -= nargs;
 					operands[++sp] = st;
 					break;
@@ -239,8 +232,8 @@ public class Interpreter {
 					nargs = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = (String)operands[sp-nargs];
-					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, self, ip, name);
-					storeArgs(self, nargs, st);
+					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, scope, name);
+					storeArgs(scope, nargs, st);
 					sp -= nargs;
 					sp--; // pop template name
 					operands[++sp] = st;
@@ -252,9 +245,9 @@ public class Interpreter {
 					Map<String, Object> attrs = (ArgumentsMap)operands[sp--];
 					// look up in original hierarchy not enclosing template (variable group)
 					// see TestSubtemplates.testEvalSTFromAnotherGroup()
-					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, self, ip, name);
+					st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, scope, name);
 					// get n args and store into st's attr list
-					storeArgs(self, attrs, st);
+					storeArgs(scope, attrs, st);
 					operands[++sp] = st;
 					break;
 				case Bytecode.INSTR_SUPER_NEW :
@@ -263,14 +256,14 @@ public class Interpreter {
 					name = self.impl.strings[nameIndex];
 					nargs = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
-					super_new(self, name, nargs);
+					super_new(scope, name, nargs);
 					break;
 				case Bytecode.INSTR_SUPER_NEW_BOX_ARGS :
 					nameIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = self.impl.strings[nameIndex];
 					attrs = (ArgumentsMap)operands[sp--];
-					super_new(self, name, attrs);
+					super_new(scope, name, attrs);
 					break;
 				case Bytecode.INSTR_STORE_OPTION:
 					int optionIndex = getShort(code, ip);
@@ -289,21 +282,21 @@ public class Interpreter {
 					break;
 				case Bytecode.INSTR_WRITE :
 					o = operands[sp--];
-					int n1 = writeObjectNoOptions(out, self, o);
+					int n1 = writeObjectNoOptions(out, scope, o);
 					n += n1;
 					nwline += n1;
 					break;
 				case Bytecode.INSTR_WRITE_OPT :
 					options = (Object[])operands[sp--]; // get options
 					o = operands[sp--];                 // get option to write
-					int n2 = writeObjectWithOptions(out, self, o, options);
+					int n2 = writeObjectWithOptions(out, scope, o, options);
 					n += n2;
 					nwline += n2;
 					break;
 				case Bytecode.INSTR_MAP :
 					st = (ST)operands[sp--]; // get prototype off stack
 					o = operands[sp--];		 // get object to map prototype across
-					map(self,o,st);
+					map(scope,o,st);
 					break;
 				case Bytecode.INSTR_ROT_MAP :
 					int nmaps = getShort(code, ip);
@@ -312,7 +305,7 @@ public class Interpreter {
 					for (int i=nmaps-1; i>=0; i--) templates.add((ST)operands[sp-i]);
 					sp -= nmaps;
 					o = operands[sp--];
-					if ( o!=null ) rot_map(self,o,templates);
+					if ( o!=null ) rot_map(scope,o,templates);
 					break;
 				case Bytecode.INSTR_ZIP_MAP:
 					st = (ST)operands[sp--];
@@ -321,7 +314,7 @@ public class Interpreter {
 					List<Object> exprs = new ObjectList();
 					for (int i=nmaps-1; i>=0; i--) exprs.add(operands[sp-i]);
 					sp -= nmaps;
-					operands[++sp] = zip_map(self, exprs, st);
+					operands[++sp] = zip_map(scope, exprs, st);
 					break;
 				case Bytecode.INSTR_BR :
 					ip = getShort(code, ip);
@@ -343,7 +336,7 @@ public class Interpreter {
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					name = self.impl.strings[nameIndex];
 					attrs = (ArgumentsMap)operands[sp];
-					passthru(self, name, attrs);
+					passthru(scope, name, attrs);
 					break;
 				case Bytecode.INSTR_LIST :
 					operands[++sp] = new ObjectList();
@@ -351,26 +344,26 @@ public class Interpreter {
 				case Bytecode.INSTR_ADD :
 					o = operands[sp--];             // pop value
 					List<Object> list = (ObjectList)operands[sp]; // don't pop list
-					addToList(list, o);
+					addToList(scope, list, o);
 					break;
 				case Bytecode.INSTR_TOSTR :
 					// replace with string value; early eval
-					operands[sp] = toString(out, self, operands[sp]);
+					operands[sp] = toString(out, scope, operands[sp]);
 					break;
 				case Bytecode.INSTR_FIRST  :
-					operands[sp] = first(operands[sp]);
+					operands[sp] = first(scope, operands[sp]);
 					break;
 				case Bytecode.INSTR_LAST   :
-					operands[sp] = last(operands[sp]);
+					operands[sp] = last(scope, operands[sp]);
 					break;
 				case Bytecode.INSTR_REST   :
-					operands[sp] = rest(operands[sp]);
+					operands[sp] = rest(scope, operands[sp]);
 					break;
 				case Bytecode.INSTR_TRUNC  :
-					operands[sp] = trunc(operands[sp]);
+					operands[sp] = trunc(scope, operands[sp]);
 					break;
 				case Bytecode.INSTR_STRIP  :
-					operands[sp] = strip(operands[sp]);
+					operands[sp] = strip(scope, operands[sp]);
 					break;
 				case Bytecode.INSTR_TRIM   :
 					o = operands[sp--];
@@ -378,7 +371,7 @@ public class Interpreter {
 						operands[++sp] = ((String)o).trim();
 					}
 					else {
-						errMgr.runTimeError(this, self, current_ip, ErrorType.EXPECTING_STRING, "trim", o.getClass().getName());
+						errMgr.runTimeError(this, scope, ErrorType.EXPECTING_STRING, "trim", o.getClass().getName());
 						operands[++sp] = o;
 					}
 					break;
@@ -391,12 +384,12 @@ public class Interpreter {
 						operands[++sp] = ((String)o).length();
 					}
 					else {
-						errMgr.runTimeError(this, self, current_ip, ErrorType.EXPECTING_STRING, "strlen", o.getClass().getName());
+						errMgr.runTimeError(this, scope, ErrorType.EXPECTING_STRING, "strlen", o.getClass().getName());
 						operands[++sp] = 0;
 					}
 					break;
 				case Bytecode.INSTR_REVERSE :
-					operands[sp] = reverse(operands[sp]);
+					operands[sp] = reverse(scope, operands[sp]);
 					break;
 				case Bytecode.INSTR_NOT :
 					operands[sp] = !testAttributeTrue(operands[sp]);
@@ -414,7 +407,7 @@ public class Interpreter {
 				case Bytecode.INSTR_INDENT :
 					int strIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
-					indent(out, self, strIndex);
+					indent(out, scope, strIndex);
 					break;
 				case Bytecode.INSTR_DEDENT :
 					out.popIndentation();
@@ -451,7 +444,7 @@ public class Interpreter {
 					strIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					o = self.impl.strings[strIndex];
-					n1 = writeObjectNoOptions(out, self, o);
+					n1 = writeObjectNoOptions(out, scope, o);
 					n += n1;
 					nwline += n1;
 					break;
@@ -473,8 +466,8 @@ public class Interpreter {
 		}
 		if ( debug ) {
 			int stop = out.index() - 1;
-			EvalTemplateEvent e = new EvalTemplateEvent(currentScope, start, stop);
-			trackDebugEvent(self, e);
+			EvalTemplateEvent e = new EvalTemplateEvent(scope, start, stop);
+			trackDebugEvent(scope, e);
 		}
 		return n;
 	}
@@ -486,29 +479,31 @@ public class Interpreter {
 	}
 
 	// TODO: refactor to remove dup'd code
-	void super_new(ST self, String name, int nargs) {
+	void super_new(InstanceScope scope, String name, int nargs) {
+		final ST self = scope.st;
 		ST st = null;
 		CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
 		if ( imported==null ) {
-			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
+			errMgr.runTimeError(this, scope, ErrorType.NO_IMPORTED_TEMPLATE,
 								name);
 			st = self.groupThatCreatedThisInstance.createStringTemplateInternally(new CompiledST());
 		}
 		else {
-			st = imported.nativeGroup.getEmbeddedInstanceOf(this, self, current_ip, name);
+			st = imported.nativeGroup.getEmbeddedInstanceOf(this, scope, name);
 			st.groupThatCreatedThisInstance = group;
 		}
 		// get n args and store into st's attr list
-		storeArgs(self, nargs, st);
+		storeArgs(scope, nargs, st);
 		sp -= nargs;
 		operands[++sp] = st;
 	}
 
-	void super_new(ST self, String name, Map<String,Object> attrs) {
+	void super_new(InstanceScope scope, String name, Map<String,Object> attrs) {
+		final ST self = scope.st;
 		ST st = null;
 		CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
 		if ( imported==null ) {
-			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_IMPORTED_TEMPLATE,
+			errMgr.runTimeError(this, scope, ErrorType.NO_IMPORTED_TEMPLATE,
 								name);
 			st = self.groupThatCreatedThisInstance.createStringTemplateInternally(new CompiledST());
 		}
@@ -518,11 +513,11 @@ public class Interpreter {
 		}
 
 		// get n args and store into st's attr list
-		storeArgs(self, attrs, st);
+		storeArgs(scope, attrs, st);
 		operands[++sp] = st;
 	}
 
-	void passthru(ST self, String templateName, Map<String,Object> attrs) {
+	void passthru(InstanceScope scope, String templateName, Map<String,Object> attrs) {
 		CompiledST c = group.lookupTemplate(templateName);
 		if ( c==null ) return; // will get error later
 		if ( c.formalArguments==null ) return;
@@ -531,7 +526,7 @@ public class Interpreter {
 			if ( !attrs.containsKey(arg.name) ) {
 				//System.out.println("arg "+arg.name+" missing");
 				try {
-					Object o = getAttribute(self, arg.name);
+					Object o = getAttribute(scope, arg.name);
 					// If the attribute exists but there is no value and
 					// the formal argument has no default value, make it null.
 					if ( o==ST.EMPTY_ATTR && arg.defaultValueToken==null ) {
@@ -546,7 +541,7 @@ public class Interpreter {
 					// if no such attribute exists for arg.name, set parameter
 					// if no default value
 					if ( arg.defaultValueToken==null ) {
-						errMgr.runTimeError(this, self, sp, ErrorType.NO_SUCH_ATTRIBUTE_PASS_THROUGH, arg.name);
+						errMgr.runTimeError(this, scope, ErrorType.NO_SUCH_ATTRIBUTE_PASS_THROUGH, arg.name);
 						attrs.put(arg.name, null);
 					}
 				}
@@ -554,7 +549,7 @@ public class Interpreter {
 		}
 	}
 
-	void storeArgs(ST self, Map<String,Object> attrs, ST st) {
+	void storeArgs(InstanceScope scope, Map<String,Object> attrs, ST st) {
 		if ( attrs!=null && attrs.size()>0 &&
 			 !st.impl.hasFormalArgs && st.impl.formalArguments==null )
 		{
@@ -568,8 +563,7 @@ public class Interpreter {
 		if ( nargs < (nformalArgs-st.impl.numberOfArgsWithDefaultValues) ||
 			 nargs > nformalArgs )
 		{
-			errMgr.runTimeError(this, self,
-								current_ip,
+			errMgr.runTimeError(this, scope,
 								ErrorType.ARGUMENT_COUNT_MISMATCH,
 								nargs,
 								st.impl.name,
@@ -579,8 +573,7 @@ public class Interpreter {
 		for (String argName : attrs.keySet()) {
 			// don't let it throw an exception in rawSetAttribute
 			if ( st.impl.formalArguments==null || !st.impl.formalArguments.containsKey(argName) ) {
-				errMgr.runTimeError(this, self,
-									current_ip,
+				errMgr.runTimeError(this, scope,
 									ErrorType.NO_SUCH_ATTRIBUTE,
 									argName);
 				continue;
@@ -590,7 +583,7 @@ public class Interpreter {
 		}
 	}
 
-	void storeArgs(ST self, int nargs, ST st) {
+	void storeArgs(InstanceScope scope, int nargs, ST st) {
 		if ( nargs>0 && !st.impl.hasFormalArgs && st.impl.formalArguments==null ) {
 			st.add(ST.IMPLICIT_ARG_NAME, null); // pretend we have "it" arg
 		}
@@ -604,8 +597,7 @@ public class Interpreter {
 		if ( nargs < (nformalArgs-st.impl.numberOfArgsWithDefaultValues) ||
 			 nargs > nformalArgs )
 		{
-			errMgr.runTimeError(this, self,
-								current_ip,
+			errMgr.runTimeError(this, scope,
 								ErrorType.ARGUMENT_COUNT_MISMATCH,
 								nargs,
 								st.impl.name,
@@ -622,15 +614,15 @@ public class Interpreter {
 		}
 	}
 
-	protected void indent(STWriter out, ST self, int strIndex) {
-		String indent = self.impl.strings[strIndex];
+	protected void indent(STWriter out, InstanceScope scope, int strIndex) {
+		String indent = scope.st.impl.strings[strIndex];
 		if ( debug ) {
 			int start = out.index(); // track char we're about to write
-			EvalExprEvent e = new IndentEvent(currentScope,
+			EvalExprEvent e = new IndentEvent(scope,
 											  start, start + indent.length() - 1,
-											  getExprStartChar(self),
-											  getExprStopChar(self));
-			trackDebugEvent(self, e);
+											  getExprStartChar(scope),
+											  getExprStopChar(scope));
+			trackDebugEvent(scope, e);
 		}
 		out.pushIndentation(indent);
 	}
@@ -638,15 +630,15 @@ public class Interpreter {
 	/** Write out an expression result that doesn't use expression options.
 	 *  E.g., {@code <name>}
 	 */
-	protected int writeObjectNoOptions(STWriter out, ST self, Object o) {
+	protected int writeObjectNoOptions(STWriter out, InstanceScope scope, Object o) {
 		int start = out.index(); // track char we're about to write
-		int n = writeObject(out, self, o, null);
+		int n = writeObject(out, scope, o, null);
         if ( debug ) {
-			EvalExprEvent e = new EvalExprEvent(currentScope,
+			EvalExprEvent e = new EvalExprEvent(scope,
 												start, out.index() - 1,
-												getExprStartChar(self),
-												getExprStopChar(self));
-			trackDebugEvent(self, e);
+												getExprStartChar(scope),
+												getExprStopChar(scope));
+			trackDebugEvent(scope, e);
         }
 		return n;
 	}
@@ -654,7 +646,7 @@ public class Interpreter {
 	/** Write out an expression result that uses expression options.
 	 *  E.g., {@code <names; separator=", ">}
 	 */
-	protected int writeObjectWithOptions(STWriter out, ST self, Object o,
+	protected int writeObjectWithOptions(STWriter out, InstanceScope scope, Object o,
 										 Object[] options)
 	{
 		int start = out.index(); // track char we're about to write
@@ -663,24 +655,24 @@ public class Interpreter {
 		if ( options!=null ) {
 			optionStrings = new String[options.length];
 			for (int i=0; i<Compiler.NUM_OPTIONS; i++) {
-				optionStrings[i] = toString(out, self, options[i]);
+				optionStrings[i] = toString(out, scope, options[i]);
 			}
 		}
 		if ( options!=null && options[Option.ANCHOR.ordinal()]!=null ) {
 			out.pushAnchorPoint();
 		}
 
-		int n = writeObject(out, self, o, optionStrings);
+		int n = writeObject(out, scope, o, optionStrings);
 
 		if ( options!=null && options[Option.ANCHOR.ordinal()]!=null ) {
 			out.popAnchorPoint();
 		}
         if ( debug ) {
-			EvalExprEvent e = new EvalExprEvent(currentScope,
+			EvalExprEvent e = new EvalExprEvent(scope,
 												start, out.index() - 1,
-												getExprStartChar(self),
-												getExprStopChar(self));
-			trackDebugEvent(self, e);
+												getExprStartChar(scope),
+												getExprStopChar(scope));
+			trackDebugEvent(scope, e);
         }
 		return n;
 	}
@@ -688,7 +680,7 @@ public class Interpreter {
 	/** Generic method to emit text for an object. It differentiates
 	 *  between templates, iterable objects, and plain old Java objects (POJOs)
 	 */
-	protected int writeObject(STWriter out, ST self, Object o, String[] options) {
+	protected int writeObject(STWriter out, InstanceScope scope, Object o, String[] options) {
 		int n = 0;
 		if ( o == null ) {
 			if ( options!=null && options[Option.NULL.ordinal()]!=null ) {
@@ -697,7 +689,7 @@ public class Interpreter {
 			else return 0;
 		}
 		if ( o instanceof ST ) {
-			ST st = (ST)o;
+			scope = new InstanceScope(scope, (ST)o);
 			if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
 				// if we have a wrap string, then inform writer it
 				// might need to wrap
@@ -705,25 +697,25 @@ public class Interpreter {
 					out.writeWrap(options[Option.WRAP.ordinal()]);
 				}
 				catch (IOException ioe) {
-					errMgr.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
+					errMgr.IOError(scope.st, ErrorType.WRITE_IO_ERROR, ioe);
 				}
 			}
-			n = exec(out, st);
+			n = exec(out, scope);
 		}
 		else {
-			o = convertAnythingIteratableToIterator(o); // normalize
+			o = convertAnythingIteratableToIterator(scope, o); // normalize
 			try {
-				if ( o instanceof Iterator) n = writeIterator(out, self, o, options);
-				else n = writePOJO(out, o, options);
+				if ( o instanceof Iterator) n = writeIterator(out, scope, o, options);
+				else n = writePOJO(out, scope, o, options);
 			}
 			catch (IOException ioe) {
-				errMgr.IOError(self, ErrorType.WRITE_IO_ERROR, ioe, o);
+				errMgr.IOError(scope.st, ErrorType.WRITE_IO_ERROR, ioe, o);
 			}
 		}
 		return n;
 	}
 
-	protected int writeIterator(STWriter out, ST self, Object o, String[] options) throws IOException {
+	protected int writeIterator(STWriter out, InstanceScope scope, Object o, String[] options) throws IOException {
 		if ( o==null ) return 0;
 		int n = 0;
 		Iterator<?> it = (Iterator<?>)o;
@@ -738,18 +730,18 @@ public class Interpreter {
 				(iterValue!=null ||           // either we have a value
 					options[Option.NULL.ordinal()]!=null); // or no value but null option
 			if ( needSeparator ) n += out.writeSeparator(separator);
-			int nw = writeObject(out, self, iterValue, options);
+			int nw = writeObject(out, scope, iterValue, options);
 			if ( nw > 0 ) seenAValue = true;
 			n += nw;
 		}
 		return n;
 	}
 
-	protected int writePOJO(STWriter out, Object o, String[] options) throws IOException {
+	protected int writePOJO(STWriter out, InstanceScope scope, Object o, String[] options) throws IOException {
 		String formatString = null;
 		if ( options!=null ) formatString = options[Option.FORMAT.ordinal()];
 		// ask the native group defining the surrounding template for the renderer
-		AttributeRenderer r = currentScope.st.impl.nativeGroup.getAttributeRenderer(o.getClass());
+		AttributeRenderer r = scope.st.impl.nativeGroup.getAttributeRenderer(o.getClass());
 		String v;
 		if ( r!=null ) v = r.toString(o, formatString, locale);
 		else v = o.toString();
@@ -763,41 +755,41 @@ public class Interpreter {
 		return n;
 	}
 
-	protected int getExprStartChar(ST self) {
-		Interval templateLocation = self.impl.sourceMap[current_ip];
+	protected int getExprStartChar(InstanceScope scope) {
+		Interval templateLocation = scope.st.impl.sourceMap[scope.ip];
 		if ( templateLocation!=null ) return templateLocation.a;
 		return -1;
 	}
 
-	protected int getExprStopChar(ST self) {
-		Interval templateLocation = self.impl.sourceMap[current_ip];
+	protected int getExprStopChar(InstanceScope scope) {
+		Interval templateLocation = scope.st.impl.sourceMap[scope.ip];
 		if ( templateLocation!=null ) return templateLocation.b;
 		return -1;
 	}
 
-	protected void map(ST self, Object attr, final ST st) {
-		rot_map(self, attr, new ArrayList<ST>() {{add(st);}});
+	protected void map(InstanceScope scope, Object attr, final ST st) {
+		rot_map(scope, attr, new ArrayList<ST>() {{add(st);}});
 	}
 
 	/**
 	 * Renders expressions of the form {@code <names:a()>} or
 	 * {@code <names:a(),b()>}.
 	 */
-	protected void rot_map(ST self, Object attr, List<ST> prototypes) {
+	protected void rot_map(InstanceScope scope, Object attr, List<ST> prototypes) {
 		if ( attr==null ) {
 			operands[++sp] = null;
 			return;
 		}
-		attr = convertAnythingIteratableToIterator(attr);
+		attr = convertAnythingIteratableToIterator(scope, attr);
 		if ( attr instanceof Iterator ) {
-			List<ST> mapped = rot_map_iterator(self, (Iterator) attr, prototypes);
+			List<ST> mapped = rot_map_iterator(scope, (Iterator) attr, prototypes);
 			operands[++sp] = mapped;
 		}
 		else { // if only single value, just apply first template to sole value
 			ST proto = prototypes.get(0);
 			ST st = group.createStringTemplateInternally(proto);
 			if ( st!=null ) {
-				setFirstArgument(self, st, attr);
+				setFirstArgument(scope, st, attr);
 				if ( st.impl.isAnonSubtemplate ) {
 					st.rawSetAttribute("i0", 0);
 					st.rawSetAttribute("i", 1);
@@ -810,7 +802,7 @@ public class Interpreter {
 		}
 	}
 
-	protected List<ST> rot_map_iterator(ST self, Iterator<?> attr, List<ST> prototypes) {
+	protected List<ST> rot_map_iterator(InstanceScope scope, Iterator<?> attr, List<ST> prototypes) {
 		List<ST> mapped = new ArrayList<ST>();
 		Iterator<?> iter = attr;
 		int i0 = 0;
@@ -823,7 +815,7 @@ public class Interpreter {
 			ti++;
 			ST proto = prototypes.get(templateIndex);
 			ST st = group.createStringTemplateInternally(proto);
-			setFirstArgument(self, st, iterValue);
+			setFirstArgument(scope, st, iterValue);
 			if ( st.impl.isAnonSubtemplate ) {
 				st.rawSetAttribute("i0", i0);
 				st.rawSetAttribute("i", i);
@@ -840,14 +832,14 @@ public class Interpreter {
 	 * {@code <a,b:t()>}.
 	 */
 	// todo: i, i0 not set unless mentioned? map:{k,v | ..}?
-	protected ST.AttributeList zip_map(ST self, List<Object> exprs, ST prototype) {
+	protected ST.AttributeList zip_map(InstanceScope scope, List<Object> exprs, ST prototype) {
 		if ( exprs==null || prototype==null || exprs.size()==0 ) {
 			return null; // do not apply if missing templates or empty values
 		}
 		// make everything iterable
 		for (int i = 0; i < exprs.size(); i++) {
 			Object attr = exprs.get(i);
-			if ( attr!=null ) exprs.set(i, convertAnythingToIterator(attr));
+			if ( attr!=null ) exprs.set(i, convertAnythingToIterator(scope, attr));
 		}
 
 		// ensure arguments line up
@@ -855,7 +847,7 @@ public class Interpreter {
 		CompiledST code = prototype.impl;
 		Map<String, FormalArgument> formalArguments = code.formalArguments;
 		if ( !code.hasFormalArgs || formalArguments==null ) {
-			errMgr.runTimeError(this, self, current_ip, ErrorType.MISSING_FORMAL_ARGUMENTS);
+			errMgr.runTimeError(this, scope, ErrorType.MISSING_FORMAL_ARGUMENTS);
 			return null;
 		}
 
@@ -864,8 +856,7 @@ public class Interpreter {
 		int nformalArgs = formalArgumentNames.length;
 		if ( prototype.isAnonSubtemplate() ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
 		if ( nformalArgs != numExprs ) {
-			errMgr.runTimeError(this, self,
-									  current_ip,
+			errMgr.runTimeError(this, scope,
 									  ErrorType.MAP_ARGUMENT_COUNT_MISMATCH,
 									  numExprs,
 									  nformalArgs);
@@ -908,7 +899,7 @@ public class Interpreter {
 		return results;
 	}
 
-	protected void setFirstArgument(ST self, ST st, Object attr) {
+	protected void setFirstArgument(InstanceScope scope, ST st, Object attr) {
 		if ( !st.impl.hasFormalArgs ) {
 			if ( st.impl.formalArguments==null ) {
 				st.add(ST.IMPLICIT_ARG_NAME, attr);
@@ -917,8 +908,7 @@ public class Interpreter {
 			// else fall thru to set locals[0]
 		}
 		if ( st.impl.formalArguments==null ) {
-			errMgr.runTimeError(this, self,
-									  current_ip,
+			errMgr.runTimeError(this, scope,
 									  ErrorType.ARGUMENT_COUNT_MISMATCH,
 									  1,
 									  st.impl.name,
@@ -928,8 +918,8 @@ public class Interpreter {
 		st.locals[0] = attr;
 	}
 
-	protected void addToList(List<Object> list, Object o) {
-		o = convertAnythingIteratableToIterator(o);
+	protected void addToList(InstanceScope scope, List<Object> list, Object o) {
+		o = convertAnythingIteratableToIterator(scope, o);
 		if ( o instanceof Iterator ) {
 			// copy of elements into our temp list
 			Iterator<?> it = (Iterator<?>)o;
@@ -947,10 +937,10 @@ public class Interpreter {
 	 * This method is used for rendering expressions of the form
 	 * {@code <names:first()>}.
 	 */
-	public Object first(Object v) {
+	public Object first(InstanceScope scope, Object v) {
 		if ( v==null ) return null;
 		Object r = v;
-		v = convertAnythingIteratableToIterator(v);
+		v = convertAnythingIteratableToIterator(scope, v);
 		if ( v instanceof Iterator ) {
 			Iterator<?> it = (Iterator<?>)v;
 			if ( it.hasNext() ) {
@@ -968,14 +958,14 @@ public class Interpreter {
 	 * This method is used for rendering expressions of the form
 	 * {@code <names:last()>}.
 	 */
-	public Object last(Object v) {
+	public Object last(InstanceScope scope, Object v) {
 		if ( v==null ) return null;
 		if ( v instanceof List ) return ((List<?>)v).get(((List<?>)v).size()-1);
 		else if ( v.getClass().isArray() ) {
 			return Array.get(v, Array.getLength(v) - 1);
 		}
 		Object last = v;
-		v = convertAnythingIteratableToIterator(v);
+		v = convertAnythingIteratableToIterator(scope, v);
 		if ( v instanceof Iterator ) {
 			Iterator<?> it = (Iterator<?>)v;
 			while ( it.hasNext() ) {
@@ -989,14 +979,14 @@ public class Interpreter {
 	 * Return everything but the first attribute if multi-valued, or
 	 * {@code null} if single-valued.
 	 */
-	public Object rest(Object v) {
+	public Object rest(InstanceScope scope, Object v) {
 		if ( v == null ) return null;
 		if ( v instanceof List ) { // optimize list case
 			List<?> elems = (List<?>)v;
 			if ( elems.size()<=1 ) return null;
 			return elems.subList(1, elems.size());
 		}
-		v = convertAnythingIteratableToIterator(v);
+		v = convertAnythingIteratableToIterator(scope, v);
 		if ( v instanceof Iterator ) {
 			List<Object> a = new ArrayList<Object>();
 			Iterator<?> it = (Iterator<?>)v;
@@ -1012,14 +1002,14 @@ public class Interpreter {
 	}
 
 	/** Return all but the last element. <code>trunc(<i>x</i>)==null</code> if <code><i>x</i></code> is single-valued. */
-	public Object trunc(Object v) {
+	public Object trunc(InstanceScope scope, Object v) {
 		if ( v ==null ) return null;
 		if ( v instanceof List ) { // optimize list case
 			List<?> elems = (List<?>)v;
 			if ( elems.size()<=1 ) return null;
 			return elems.subList(0, elems.size()-1);
 		}
-		v = convertAnythingIteratableToIterator(v);
+		v = convertAnythingIteratableToIterator(scope, v);
 		if ( v instanceof Iterator ) {
 			List<Object> a = new ArrayList<Object>();
 			Iterator<?> it = (Iterator<?>) v;
@@ -1033,9 +1023,9 @@ public class Interpreter {
 	}
 
 	/** Return a new list without {@code null} values. */
-	public Object strip(Object v) {
+	public Object strip(InstanceScope scope, Object v) {
 		if ( v ==null ) return null;
-		v = convertAnythingIteratableToIterator(v);
+		v = convertAnythingIteratableToIterator(scope, v);
 		if ( v instanceof Iterator ) {
 			List<Object> a = new ArrayList<Object>();
 			Iterator<?> it = (Iterator<?>) v;
@@ -1054,9 +1044,9 @@ public class Interpreter {
 	 * Note that {@code null} values are <i>not</i> stripped out; use
 	 * {@code reverse(strip(v))} to do that.
 	 */
-	public Object reverse(Object v) {
+	public Object reverse(InstanceScope scope, Object v) {
 		if ( v==null ) return null;
-		v = convertAnythingIteratableToIterator(v);
+		v = convertAnythingIteratableToIterator(scope, v);
 		if ( v instanceof Iterator ) {
 			List<Object> a = new LinkedList<Object>();
 			Iterator<?> it = (Iterator<?>)v;
@@ -1091,7 +1081,7 @@ public class Interpreter {
 		return i;
 	}
 
-	protected String toString(STWriter out, ST self, Object value) {
+	protected String toString(STWriter out, InstanceScope scope, Object value) {
 		if ( value!=null ) {
 			if ( value.getClass()==String.class ) return (String)value;
 			// if not string already, must evaluate it
@@ -1104,38 +1094,29 @@ public class Interpreter {
 			}
 			catch (Exception e) {
 				stw = new AutoIndentWriter(sw);
-				errMgr.runTimeError(this, self, current_ip, ErrorType.WRITER_CTOR_ISSUE, out.getClass().getSimpleName());
+				errMgr.runTimeError(this, scope, ErrorType.WRITER_CTOR_ISSUE, out.getClass().getSimpleName());
 			}
 
-			boolean mustPopScope = false;
-			if (debug && !currentScope.earlyEval) {
-				pushScope(self);
-				currentScope.earlyEval = true;
-				mustPopScope = true;
+			if (debug && !scope.earlyEval) {
+				scope = new InstanceScope(scope, scope.st);
+				scope.earlyEval = true;
 			}
 
-			try {
-				writeObjectNoOptions(stw, self, value);
-			}
-			finally {
-				if (mustPopScope) {
-					this.popScope();
-				}
-			}
+			writeObjectNoOptions(stw, scope, value);
 
 			return sw.toString();
 		}
 		return null;
 	}
 
-	public Object convertAnythingIteratableToIterator(Object o) {
+	public Object convertAnythingIteratableToIterator(InstanceScope scope, Object o) {
 		Iterator<?> iter = null;
 		if ( o == null ) return null;
 		if ( o instanceof Collection )      iter = ((Collection<?>)o).iterator();
 		else if ( o instanceof Object[] )  iter = Arrays.asList((Object[])o).iterator();
 		else if ( o.getClass().isArray() ) iter = new ArrayIterator(o);
 		else if ( o instanceof Map ) {
-			if (currentScope.st.groupThatCreatedThisInstance.iterateAcrossValues) {
+			if (scope.st.groupThatCreatedThisInstance.iterateAcrossValues) {
 				iter = ((Map<?, ?>)o).values().iterator();
 			}
 			else {
@@ -1147,8 +1128,8 @@ public class Interpreter {
 		return iter;
 	}
 
-	public Iterator<?> convertAnythingToIterator(Object o) {
-		o = convertAnythingIteratableToIterator(o);
+	public Iterator<?> convertAnythingToIterator(InstanceScope scope, Object o) {
+		o = convertAnythingIteratableToIterator(scope, o);
 		if ( o instanceof Iterator ) return (Iterator<?>)o;
 		List<Object> singleton = new ST.AttributeList(1);
 		singleton.add(o);
@@ -1164,19 +1145,20 @@ public class Interpreter {
 		return true; // any other non-null object, return true--it's present
 	}
 
-	protected Object getObjectProperty(STWriter out, ST self, Object o, Object property) {
+	protected Object getObjectProperty(STWriter out, InstanceScope scope, Object o, Object property) {
 		if ( o==null ) {
-			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+			errMgr.runTimeError(this, scope, ErrorType.NO_SUCH_PROPERTY,
 									  "null." + property);
 			return null;
 		}
 
 		try {
+			final ST self = scope.st;
 			ModelAdaptor adap = self.groupThatCreatedThisInstance.getModelAdaptor(o.getClass());
-			return adap.getProperty(this, self, o, property, toString(out,self,property));
+			return adap.getProperty(this, self, o, property, toString(out,scope,property));
 		}
 		catch (STNoSuchPropertyException e) {
-			errMgr.runTimeError(this, self, current_ip, ErrorType.NO_SUCH_PROPERTY,
+			errMgr.runTimeError(this, scope, ErrorType.NO_SUCH_PROPERTY,
 									  e, o.getClass().getName()+"."+property);
 		}
 		return null;
@@ -1189,25 +1171,26 @@ public class Interpreter {
 	 * <p/>
 	 * Return {@link ST#EMPTY_ATTR} if found definition but no value.
 	 */
-	public Object getAttribute(ST self, String name) {
-		InstanceScope scope = currentScope;
-		while ( scope!=null ) {
-			ST p = scope.st;
+	public Object getAttribute(InstanceScope scope, String name) {
+		InstanceScope current = scope;
+		while ( current!=null ) {
+			ST p = current.st;
 			FormalArgument localArg = null;
 			if ( p.impl.formalArguments!=null ) localArg = p.impl.formalArguments.get(name);
 			if ( localArg!=null ) {
 				Object o = p.locals[localArg.index];
 				return o;
 			}
-			scope = scope.parent; // look up enclosing scope chain
+			current = current.parent; // look up enclosing scope chain
 		}
 		// got to root scope and no definition, try dictionaries in group and up
+		final ST self = scope.st;
 		STGroup g = self.impl.nativeGroup;
 		Object o = getDictionary(g, name);
 		if ( o!=null ) return o;
 
 		// not found, report unknown attr
-		throw new STNoSuchAttributeException(name, currentScope);
+		throw new STNoSuchAttributeException(name, scope);
 	}
 
 	public Object getDictionary(STGroup g, String name) {
@@ -1231,7 +1214,8 @@ public class Interpreter {
 	 * The evaluation context is the {@code invokedST} template itself so
 	 * template default arguments can see other arguments.
 	 */
-	public void setDefaultArguments(STWriter out, ST invokedST) {
+	public void setDefaultArguments(STWriter out, InstanceScope scope) {
+		final ST invokedST = scope.st;
 		if ( invokedST.impl.formalArguments==null ||
 			 invokedST.impl.numberOfArgsWithDefaultValues==0 ) {
 			return;
@@ -1257,7 +1241,7 @@ public class Interpreter {
 				if ( defArgTemplate.startsWith("{"+group.delimiterStartChar+"(") &&
 					defArgTemplate.endsWith(")"+group.delimiterStopChar+"}") ) {
 
-					invokedST.rawSetAttribute(arg.name, toString(out, invokedST, defaultArgST));
+					invokedST.rawSetAttribute(arg.name, toString(out, new InstanceScope(scope, invokedST), defaultArgST));
 				}
 				else {
 					invokedST.rawSetAttribute(arg.name, defaultArgST);
@@ -1267,20 +1251,6 @@ public class Interpreter {
 				invokedST.rawSetAttribute(arg.name, arg.defaultValue);
 			}
 		}
-	}
-
-	private void popScope() {
-		current_ip = currentScope.ret_ip;
-		currentScope = currentScope.parent; // pop
-	}
-
-	private void pushScope(ST self) {
-		currentScope = new InstanceScope(currentScope, self); // push
-		if ( debug ) {
-			currentScope.events = new ArrayList<InterpEvent>();
-			currentScope.childEvalTemplateEvents = new ArrayList<EvalTemplateEvent>();
-		}
-		currentScope.ret_ip = current_ip;
 	}
 
 	/**
@@ -1334,7 +1304,8 @@ public class Interpreter {
 		return stack;
 	}
 
-	protected void trace(ST self, int ip) {
+	protected void trace(InstanceScope scope, int ip) {
+		final ST self = scope.st;
 		StringBuilder tr = new StringBuilder();
 		BytecodeDisassembler dis = new BytecodeDisassembler(self.impl);
 		StringBuilder buf = new StringBuilder();
@@ -1345,29 +1316,29 @@ public class Interpreter {
 		tr.append("\tstack=[");
 		for (int i = 0; i <= sp; i++) {
 			Object o = operands[i];
-			printForTrace(tr,o);
+			printForTrace(tr,scope,o);
 		}
 		tr.append(" ], calls=");
-		tr.append(getEnclosingInstanceStackString(currentScope));
+		tr.append(getEnclosingInstanceStackString(scope));
 		tr.append(", sp="+sp+", nw="+ nwline);
 		String s = tr.toString();
 		if ( debug ) executeTrace.add(s);
 		if ( trace ) System.out.println(s);
 	}
 
-	protected void printForTrace(StringBuilder tr, Object o) {
+	protected void printForTrace(StringBuilder tr, InstanceScope scope, Object o) {
 		if ( o instanceof ST ) {
 			if ( ((ST)o).impl ==null ) tr.append("bad-template()");
 			else tr.append(" "+((ST)o).impl.name+"()");
 			return;
 		}
-		o = convertAnythingIteratableToIterator(o);
+		o = convertAnythingIteratableToIterator(scope, o);
 		if ( o instanceof Iterator ) {
 			Iterator<?> it = (Iterator<?>)o;
 			tr.append(" [");
 			while ( it.hasNext() ) {
 				Object iterValue = it.next();
-				printForTrace(tr, iterValue);
+				printForTrace(tr, scope, iterValue);
 			}
 			tr.append(" ]");
 		}
@@ -1386,15 +1357,15 @@ public class Interpreter {
 	 * {@link InstanceScope#childEvalTemplateEvents} list for {@link STViz} tree
 	 * view.
 	 */
-	protected void trackDebugEvent(ST self, InterpEvent e) {
+	protected void trackDebugEvent(InstanceScope scope, InterpEvent e) {
 //		System.out.println(e);
 		this.events.add(e);
-		currentScope.events.add(e);
+		scope.events.add(e);
 		if ( e instanceof EvalTemplateEvent ) {
-			InstanceScope parent = currentScope.parent;
+			InstanceScope parent = scope.parent;
 			if ( parent!=null ) {
 				// System.out.println("add eval "+e.self.getName()+" to children of "+parent.getName());
-				currentScope.parent.childEvalTemplateEvents.add((EvalTemplateEvent)e);
+				scope.parent.childEvalTemplateEvents.add((EvalTemplateEvent)e);
 			}
 		}
 	}

@@ -177,18 +177,17 @@ public class STGroup {
     }
 
     protected ST getEmbeddedInstanceOf(Interpreter interp,
-									   ST enclosingInstance,
-									   int ip,
+									   InstanceScope scope,
 									   String name)
 	{
 		String fullyQualifiedName = name;
 		if ( name.charAt(0)!='/' ) {
-			fullyQualifiedName = enclosingInstance.impl.prefix + name;
+			fullyQualifiedName = scope.st.impl.prefix + name;
 		}
 		if ( verbose ) System.out.println("getEmbeddedInstanceOf(" + fullyQualifiedName +")");
         ST st = getInstanceOf(fullyQualifiedName);
 		if ( st==null ) {
-			errMgr.runTimeError(interp, enclosingInstance, ip,
+			errMgr.runTimeError(interp, scope,
 								ErrorType.NO_SUCH_TEMPLATE,
 								fullyQualifiedName);
 			return createStringTemplateInternally(new CompiledST());
