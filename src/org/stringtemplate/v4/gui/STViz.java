@@ -50,11 +50,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class STViz {
+	protected static final String WINDOWS_LINE_ENDINGS = "WINDOWS_LINE_ENDINGS";
+
 	//public ST currentST; // current ST selected in template tree
 	public EvalTemplateEvent root;
 	public InstanceScope currentScope;
@@ -134,16 +138,10 @@ public class STViz {
 //            }
 //        );
 
-        viewFrame.output.setText(output);
-
-        viewFrame.template.setText(currentScope.st.impl.template);
-        viewFrame.bytecode.setText(currentScope.st.impl.disasm());
-        viewFrame.trace.setText(Misc.join(trace.iterator(), "\n"));
-
         CaretListener caretListenerLabel = new CaretListener() {
 			@Override
             public void caretUpdate(CaretEvent e) {
-                int dot = e.getDot();
+                int dot = toEventPosition((JTextComponent)e.getSource(), e.getDot());
                 InterpEvent de = findEventAtOutputLocation(allEvents, dot);
                 if ( de==null ) currentScope = tmodel.root.event.scope;
 				else currentScope = de.scope;
@@ -221,6 +219,11 @@ public class STViz {
 		viewFrame.pack();
 		viewFrame.setSize(900, 700);
 
+        setText(viewFrame.output, output);
+        setText(viewFrame.template, currentScope.st.impl.template);
+        setText(viewFrame.bytecode, currentScope.st.impl.disasm());
+        setText(viewFrame.trace, Misc.join(trace.iterator(), "\n"));
+
         viewFrame.setVisible(true);
     }
 
@@ -262,9 +265,9 @@ public class STViz {
 		updateStack(currentScope, m); 					   // STACK
 		updateAttributes(currentScope, m); 			 	   // ATTRIBUTES
 		m.bytecode.moveCaretPosition(0);
-        m.bytecode.setText(currentScope.st.impl.disasm()); // BYTECODE DIS.
+        setText(m.bytecode, currentScope.st.impl.disasm()); // BYTECODE DIS.
 		m.template.moveCaretPosition(0);
-		m.template.setText(currentScope.st.impl.template); // TEMPLATE SRC
+		setText(m.template, currentScope.st.impl.template); // TEMPLATE SRC
 		JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
 		viewFrame.ast.setModel(astModel);
 
@@ -275,7 +278,7 @@ public class STViz {
 		//m.output.moveCaretPosition(e.outputStartChar);
 		highlight(m.output, e.outputStartChar, e.outputStopChar);
 		try {
-		m.output.scrollRectToVisible(m.output.modelToView(e.outputStartChar));
+		m.output.scrollRectToVisible(m.output.modelToView(toComponentPosition(m.output, e.outputStartChar)));
 		}
 		catch (BadLocationException ble) {
 			currentScope.st.groupThatCreatedThisInstance.errMgr.internalError(
@@ -291,11 +294,56 @@ public class STViz {
 		}
 	}
 
+	protected void setText(JEditorPane component, String text) {
+		List<Integer> windowsLineEndingsList = new ArrayList<Integer>();
+		for (int i = 0; i < text.length(); i += 2) {
+			i = text.indexOf("\r\n", i);
+			if (i < 0) {
+				break;
+			}
+
+			windowsLineEndingsList.add(i);
+		}
+
+		int[] windowsLineEndings = new int[windowsLineEndingsList.size()];
+		for (int i = 0; i < windowsLineEndingsList.size(); i++) {
+			windowsLineEndings[i] = windowsLineEndingsList.get(i);
+		}
+
+		component.setText(text);
+		component.getDocument().putProperty(WINDOWS_LINE_ENDINGS, windowsLineEndings);
+	}
+
+	protected int toComponentPosition(JTextComponent component, int position) {
+		int[] windowsLineEndings = (int[])component.getDocument().getProperty(WINDOWS_LINE_ENDINGS);
+		if (windowsLineEndings == null || windowsLineEndings.length == 0) {
+			return position;
+		}
+
+		int index = Arrays.binarySearch(windowsLineEndings, position);
+		if (index >= 0) {
+			return position - index;
+		}
+
+		return position - (-index - 1);
+	}
+
+	protected int toEventPosition(JTextComponent component, int position) {
+		int result = position;
+		while (toComponentPosition(component, result) < position) {
+			result++;
+		}
+
+		return result;
+	}
+
 	protected void highlight(JTextComponent comp, int i, int j) {
 		Highlighter highlighter = comp.getHighlighter();
 		highlighter.removeAllHighlights();
 
 		try {
+			i = toComponentPosition(comp, i);
+			j = toComponentPosition(comp, j);
 			highlighter.addHighlight(i, j+1, DefaultHighlighter.DefaultPainter);
 		}
 		catch (BadLocationException ble) {
@@ -355,6 +403,10 @@ public class STViz {
                                                  int charIndex)
     {
         for (InterpEvent e : events) {
+			if (e.scope.earlyEval) {
+				continue;
+			}
+
             if ( charIndex>=e.outputStartChar && charIndex<=e.outputStopChar) return e;
         }
         return null;

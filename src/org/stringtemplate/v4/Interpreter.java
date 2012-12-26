@@ -1106,7 +1106,22 @@ public class Interpreter {
 				stw = new AutoIndentWriter(sw);
 				errMgr.runTimeError(this, self, current_ip, ErrorType.WRITER_CTOR_ISSUE, out.getClass().getSimpleName());
 			}
-			writeObjectNoOptions(stw, self, value);
+
+			boolean mustPopScope = false;
+			if (debug && !currentScope.earlyEval) {
+				pushScope(self);
+				currentScope.earlyEval = true;
+				mustPopScope = true;
+			}
+
+			try {
+				writeObjectNoOptions(stw, self, value);
+			}
+			finally {
+				if (mustPopScope) {
+					this.popScope();
+				}
+			}
 
 			return sw.toString();
 		}
