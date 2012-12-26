@@ -29,6 +29,7 @@ package org.stringtemplate.v4.misc;
 
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
+import org.stringtemplate.v4.InstanceScope;
 import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STErrorListener;
@@ -119,24 +120,24 @@ public class ErrorManager {
 		);
 	}
 
-    public void runTimeError(Interpreter interp, ST self, int ip, ErrorType error) {
-        listener.runTimeError(new STRuntimeMessage(interp, error,ip,self));
+    public void runTimeError(Interpreter interp, InstanceScope scope, ErrorType error) {
+        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.ip : 0, scope));
     }
 
-    public void runTimeError(Interpreter interp, ST self, int ip, ErrorType error, Object arg) {
-        listener.runTimeError(new STRuntimeMessage(interp, error,ip,self,arg));
+    public void runTimeError(Interpreter interp, InstanceScope scope, ErrorType error, Object arg) {
+        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.ip : 0, scope,arg));
     }
 
-    public void runTimeError(Interpreter interp, ST self, int ip, ErrorType error, Throwable e, Object arg) {
-        listener.runTimeError(new STRuntimeMessage(interp, error,ip,self,e,arg));
+    public void runTimeError(Interpreter interp, InstanceScope scope, ErrorType error, Throwable e, Object arg) {
+        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.ip : 0, scope,e,arg));
     }
 
-	public void runTimeError(Interpreter interp, ST self, int ip, ErrorType error, Object arg, Object arg2) {
-		listener.runTimeError(new STRuntimeMessage(interp, error,ip,self,null,arg,arg2));
+	public void runTimeError(Interpreter interp, InstanceScope scope, ErrorType error, Object arg, Object arg2) {
+		listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.ip : 0, scope,null,arg,arg2));
 	}
 
-	public void runTimeError(Interpreter interp, ST self, int ip, ErrorType error, Object arg, Object arg2, Object arg3) {
-		listener.runTimeError(new STRuntimeMessage(interp, error,ip,self,null,arg,arg2,arg3));
+	public void runTimeError(Interpreter interp, InstanceScope scope, ErrorType error, Object arg, Object arg2, Object arg3) {
+		listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.ip : 0, scope,null,arg,arg2,arg3));
 	}
 
     public void IOError(ST self, ErrorType error, Throwable e) {

@@ -63,7 +63,7 @@ public interface STWriter {
 
 	/**
 	 * Because we evaluate ST instance by invoking
-	 * {@link Interpreter#exec(STWriter, ST)} again, we can't pass options in.
+	 * {@link Interpreter#exec(STWriter, InstanceScope)} again, we can't pass options in.
 	 * So the {@link Bytecode#INSTR_WRITE} instruction of an applied template
 	 * (such as when we wrap in between template applications like
 	 * {@code <data:{v|[<v>]}; wrap>}) we need to write the {@code wrap} string

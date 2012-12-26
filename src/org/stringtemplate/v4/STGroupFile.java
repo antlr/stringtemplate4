@@ -159,7 +159,7 @@ public class STGroupFile extends STGroup {
 			return new URL(parent);
 		}
 		catch (MalformedURLException mue) {
-			errMgr.runTimeError(null, null, 0, ErrorType.INVALID_TEMPLATE_NAME,
+			errMgr.runTimeError(null, null, ErrorType.INVALID_TEMPLATE_NAME,
 								mue, parent);
 		}
 		return null;

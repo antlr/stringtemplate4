@@ -157,7 +157,7 @@ public class STGroupDir extends STGroup {
 			f = new URL(root+prefix+unqualifiedFileName);
 		}
 		catch (MalformedURLException me) {
-			errMgr.runTimeError(null, null, 0, ErrorType.INVALID_TEMPLATE_NAME,
+			errMgr.runTimeError(null, null, ErrorType.INVALID_TEMPLATE_NAME,
 								me, root + unqualifiedFileName);
 			return null;
 		}

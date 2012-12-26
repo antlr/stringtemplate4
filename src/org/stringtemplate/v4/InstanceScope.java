@@ -41,8 +41,8 @@ public class InstanceScope {
 	public final InstanceScope parent;
 	/** Template we've executing. */
 	public final ST st;
-	/** Return address. */
-	public int ret_ip;
+	/** Current instruction pointer. */
+	public int ip;
 
 	/**
 	 * Includes the {@link EvalTemplateEvent} for this template. This is a

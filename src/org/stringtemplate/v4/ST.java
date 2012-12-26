@@ -411,7 +411,8 @@ public class ST {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
 											 impl.nativeGroup.errMgr,
 											 false);
-		return interp.exec(out, this);
+		InstanceScope scope = new InstanceScope(null, this);
+		return interp.exec(out, scope);
     }
 
 	public int write(STWriter out, Locale locale) {
@@ -419,14 +420,16 @@ public class ST {
 											 locale,
 											 impl.nativeGroup.errMgr,
 											 false);
-		return interp.exec(out, this);
+		InstanceScope scope = new InstanceScope(null, this);
+		return interp.exec(out, scope);
 	}
 
 	public int write(STWriter out, STErrorListener listener) {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
 											 new ErrorManager(listener),
 											 false);
-		return interp.exec(out, this);
+		InstanceScope scope = new InstanceScope(null, this);
+		return interp.exec(out, scope);
 	}
 
 	public int write(STWriter out, Locale locale, STErrorListener listener) {
@@ -434,7 +437,8 @@ public class ST {
 											 locale,
 											 new ErrorManager(listener),
 											 false);
-		return interp.exec(out, this);
+		InstanceScope scope = new InstanceScope(null, this);
+		return interp.exec(out, scope);
 	}
 
 	public int write(File outputFile, STErrorListener listener) throws IOException {
@@ -511,7 +515,8 @@ public class ST {
 		wr.setLineWidth(lineWidth);
 		Interpreter interp =
 			new Interpreter(groupThatCreatedThisInstance, locale, true);
-		interp.exec(wr, this); // render and track events
+		InstanceScope scope = new InstanceScope(null, this);
+		interp.exec(wr, scope); // render and track events
 		List<InterpEvent> events = interp.getEvents();
 		EvalTemplateEvent overallTemplateEval =
 			(EvalTemplateEvent)events.get(events.size()-1);
@@ -535,7 +540,8 @@ public class ST {
         wr.setLineWidth(lineWidth);
         Interpreter interp =
 			new Interpreter(groupThatCreatedThisInstance, locale, true);
-        interp.exec(wr, this); // render and track events
+		InstanceScope scope = new InstanceScope(null, this);
+        interp.exec(wr, scope); // render and track events
         return interp.getEvents();
     }
 
