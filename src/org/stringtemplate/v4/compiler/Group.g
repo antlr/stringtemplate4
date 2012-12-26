@@ -228,7 +228,11 @@ templateDef[String prefix]
 			template = Misc.strip(template, n);
 			String templateName = $name.text;
 			if ( prefix.length()>0 ) templateName = prefix+$name.text;
-			group.defineTemplateOrRegion(templateName, $enclosing.text, templateToken,
+			String enclosingTemplateName = $enclosing.text;
+			if (enclosingTemplateName != null && enclosingTemplateName.length()>0 && prefix.length()>0) {
+				enclosingTemplateName = prefix + enclosingTemplateName;
+			}
+			group.defineTemplateOrRegion(templateName, enclosingTemplateName, templateToken,
 										 template, $name, $formalArgs.args);
 		}
 	    }
