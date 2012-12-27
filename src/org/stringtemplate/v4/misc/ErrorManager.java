@@ -27,6 +27,7 @@
  */
 package org.stringtemplate.v4.misc;
 
+import org.antlr.runtime.CharStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.stringtemplate.v4.InstanceScope;
@@ -77,8 +78,12 @@ public class ErrorManager {
 	}
 
 	public void compileTimeError(ErrorType error, Token templateToken, Token t) {
-		String srcName = t.getInputStream().getSourceName();
-		if ( srcName!=null ) srcName = Misc.getFileName(srcName);
+		CharStream input = t.getInputStream();
+		String srcName = null;
+		if ( input!=null ) {
+			srcName = input.getSourceName();
+			if ( srcName!=null ) srcName = Misc.getFileName(srcName);
+		}
 		listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,templateToken,t,null,t.getText())
         );
