@@ -412,4 +412,84 @@ public class TestDictionaries extends BaseTest {
 		Assert.assertEquals(expecting, st.render());
 	}
 
+	@Test
+	public void testDictionaryBehaviorTrue() throws Exception {
+		String templates =
+			"d ::= [\n" +
+			"	\"x\" : true,\n" +
+			"	default : false,\n" +
+			"]\n" +
+			"\n" +
+			"t() ::= <<\n" +
+			"<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
+			">>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("t");
+		String expected = "true+";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testDictionaryBehaviorFalse() throws Exception {
+		String templates =
+			"d ::= [\n" +
+			"	\"x\" : false,\n" +
+			"	default : false,\n" +
+			"]\n" +
+			"\n" +
+			"t() ::= <<\n" +
+			"<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
+			">>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("t");
+		String expected = "false-";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testDictionaryBehaviorEmptyTemplate() throws Exception {
+		String templates =
+			"d ::= [\n" +
+			"	\"x\" : {},\n" +
+			"	default : false,\n" +
+			"]\n" +
+			"\n" +
+			"t() ::= <<\n" +
+			"<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
+			">>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("t");
+		String expected = "+";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testDictionaryBehaviorEmptyList() throws Exception {
+		String templates =
+			"d ::= [\n" +
+			"	\"x\" : [],\n" +
+			"	default : false,\n" +
+			"]\n" +
+			"\n" +
+			"t() ::= <<\n" +
+			"<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
+			">>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("t");
+		String expected = "-";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 }
