@@ -27,8 +27,8 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
-
+import org.junit.Assert;
+import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -477,7 +477,7 @@ public class TestDictionaries extends BaseTest {
 		String templates =
 			"d ::= [\n" +
 			"	\"x\" : [],\n" +
-			"	default : false,\n" +
+			"	default : false\n" +
 			"]\n" +
 			"\n" +
 			"t() ::= <<\n" +

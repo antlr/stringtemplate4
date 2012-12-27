@@ -27,8 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
-
+import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -146,7 +145,7 @@ public class TestLists extends BaseTest {
 			);
 		e.add("phones", "1");
 		e.add("phones", "2");
-		String expecting = "foo, foo";  // only one since template application gives nothing
+		String expecting = "foo, foo";
 		assertEquals(expecting, e.render());
 	}
 
@@ -188,4 +187,15 @@ public class TestLists extends BaseTest {
 		String result = e.render();
 		assertEquals(expecting, result);
 	}
+
+	@Test public void testListWithTwoEmptyListsCollapsesToEmptyList() throws Exception {
+		ST e = new ST(
+			"<[[],[]]:{x | <x>!}; separator=\", \">"
+		);
+		e.add("names", "Ter");
+		e.add("names", "Tom");
+		String expecting = "";
+		assertEquals(expecting, e.render());
+	}
+
 }

@@ -28,14 +28,24 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.*;
-import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.AutoIndentWriter;
+import org.stringtemplate.v4.NoIndentWriter;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.STGroupString;
+import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.stringtemplate.v4.misc.STNoSuchPropertyException;
+import org.stringtemplate.v4.misc.STRuntimeMessage;
 
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TestCoreBasics extends BaseTest {
     @Test public void testNullAttr() throws Exception {
@@ -536,22 +546,52 @@ public class TestCoreBasics extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-    @Test public void testRepeatedMap() throws Exception {
-        STGroup group = new STGroup();
-        group.defineTemplate("a", "x", "[<x>]");
-        group.defineTemplate("b", "x", "(<x>)");
-        group.defineTemplate("test", "name", "hi <name:a():b()>!");
-        ST st = group.getInstanceOf("test");
-        st.add("name", "Ter");
-        st.add("name", "Tom");
-        st.add("name", "Sumana");
-        String expected =
-            "hi ([Ter])([Tom])([Sumana])!";
-        String result = st.render();
-        assertEquals(expected, result);
-    }
+	@Test public void testRepeatedMap() throws Exception {
+     STGroup group = new STGroup();
+     group.defineTemplate("a", "x", "[<x>]");
+     group.defineTemplate("b", "x", "(<x>)");
+     group.defineTemplate("test", "name", "hi <name:a():b()>!");
+     ST st = group.getInstanceOf("test");
+     st.add("name", "Ter");
+     st.add("name", "Tom");
+     st.add("name", "Sumana");
+     String expected =
+         "hi ([Ter])([Tom])([Sumana])!";
+     String result = st.render();
+     assertEquals(expected, result);
+ }
 
-    @Test public void testRoundRobinMap() throws Exception {
+	@Test public void testRepeatedMapWithNullValue() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("a", "x", "[<x>]");
+		group.defineTemplate("b", "x", "(<x>)");
+		group.defineTemplate("test", "name", "hi <name:a():b()>!");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		st.add("name", null);
+		st.add("name", "Sumana");
+		String expected =
+			"hi ([Ter])([Sumana])!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testRepeatedMapWithNullValueAndNullOption() throws Exception {
+		STGroup group = new STGroup();
+		group.defineTemplate("a", "x", "[<x>]");
+		group.defineTemplate("b", "x", "(<x>)");
+		group.defineTemplate("test", "name", "hi <name:a():b(); null={x}>!");
+		ST st = group.getInstanceOf("test");
+		st.add("name", "Ter");
+		st.add("name", null);
+		st.add("name", "Sumana");
+		String expected =
+			"hi ([Ter])x([Sumana])!";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testRoundRobinMap() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("a", "x", "[<x>]");
         group.defineTemplate("b", "x", "(<x>)");
