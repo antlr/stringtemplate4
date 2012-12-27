@@ -6,6 +6,10 @@ University of San Francisco
 
 CHANGES
 
+December 26, 2012
+
+* Allow [] as a dictionary value, resolves antlr/stringtemplate4#33
+
 December 25, 2012
 
 * Fix issues with bytecode to source mapping

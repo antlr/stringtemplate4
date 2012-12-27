@@ -64,6 +64,8 @@ tokens {
  *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.stringtemplate.v4.compiler;
+
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -315,6 +317,7 @@ keyValue returns [Object value]
 	|	STRING				{$value = Misc.replaceEscapes(Misc.strip($STRING.text, 1));}
 	|	TRUE				{$value = true;}
 	|	FALSE				{$value = false;}
+	|	'[' ']'				{$value = Collections.emptyList();}
 	|	{input.LT(1).getText().equals("key")}?=> ID
 							{$value = STGroup.DICT_KEY;}
 	;
