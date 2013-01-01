@@ -40,7 +40,8 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import java.io.File;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestGroups extends BaseTest {
 	@Test public void testSimpleGroup() throws Exception {
@@ -49,6 +50,17 @@ public class TestGroups extends BaseTest {
 		STGroup group = new STGroupDir(dir);
 		ST st = group.getInstanceOf("a");
 		String expected = "foo";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testTripleAngleOnEnds() throws Exception {
+		String dir = getRandomDir();
+		writeFile(dir, "a.st", "a(x) ::= <<<x>>>");
+		STGroup group = new STGroupDir(dir);
+		ST st = group.getInstanceOf("a");
+		st.add("x", "parrt");
+		String expected = "parrt";
 		String result = st.render();
 		assertEquals(expected, result);
 	}

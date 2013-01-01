@@ -6,6 +6,14 @@ University of San Francisco
 
 CHANGES
 
+December 31, 2012
+
+* Reversing decision to use >\> and %\> as the escapes now for >> and %>.
+  Simply allowing >>> is the best, such as <<Hi <name>>>.
+  It will strip off the >> and leave > as the appropriate end of expression.
+  Added testTripleAngleOnEnds.  Even <<<x>>> works now.  There is no escape
+  for %>.
+
 December 26, 2012
 
 * Allow [] as a dictionary value, resolves antlr/stringtemplate4#33
