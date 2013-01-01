@@ -14,6 +14,8 @@ January 1, 2013
 
 * Added warning about: "Missing newline after newline escape <\\>"
 
+* Actually: %\> is the escape to avoid end of string
+
 December 31, 2012
 
 * Reversing decision to use >\> and %\> as the escapes now for >> and %>.

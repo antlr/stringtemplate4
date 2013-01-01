@@ -349,6 +349,11 @@ STRING
 
 BIGSTRING_NO_NL // same as BIGSTRING but means ignore newlines later
 	:	'<%' ( . )* '%>'
+        // %\> is the escape to avoid end of string
+        {
+        String txt = getText().replaceAll("\%\\\\>","\%>");
+		setText(txt);
+		}
 	;
 
 /** Match <<...>> but also allow <<..<x>>> so we can have tag on end.
