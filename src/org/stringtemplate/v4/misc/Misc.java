@@ -135,7 +135,9 @@ public class Misc {
         return s;
     }
 
-	/** Replace \> with > in s and return. Do NOT replace if it's <\\> */
+	/** Replace >\> with >> in s. Replace \>> unless prefix of \>>> with >>.
+	 *  Do NOT replace if it's <\\>
+	 */
 	public static String replaceEscapedRightAngle(String s) {
 		StringBuilder buf = new StringBuilder();
 		int i = 0;
@@ -146,9 +148,16 @@ public class Misc {
 				i += "<\\\\>".length();
 				continue;
 			}
-			if ( c=='\\' && s.substring(i).startsWith("\\>") ) {
-				buf.append(">");
-				i += "\\>".length();
+			if ( c=='>' && s.substring(i).startsWith(">\\>") ) {
+				buf.append(">>");
+				i += ">\\>".length();
+				continue;
+			}
+			if ( c=='\\' && s.substring(i).startsWith("\\>>") &&
+				!s.substring(i).startsWith("\\>>>") )
+			{
+				buf.append(">>");
+				i += "\\>>".length();
 				continue;
 			}
 			buf.append(c);

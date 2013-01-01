@@ -54,17 +54,6 @@ public class TestGroups extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	@Test public void testTripleAngleOnEnds() throws Exception {
-		String dir = getRandomDir();
-		writeFile(dir, "a.st", "a(x) ::= <<<x>>>");
-		STGroup group = new STGroupDir(dir);
-		ST st = group.getInstanceOf("a");
-		st.add("x", "parrt");
-		String expected = "parrt";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
 	@Test public void testEscapeOneRightAngle() throws Exception {
 		String dir = getRandomDir();
 		writeFile(dir, "a.st", "a(x) ::= << > >>");
@@ -87,13 +76,24 @@ public class TestGroups extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	@Test public void testEscapeJavaRightShiftAtRightEdge() throws Exception {
+	@Test public void testEscapeJavaRightShift2() throws Exception {
 		String dir = getRandomDir();
-		writeFile(dir, "a.st", "a(x) ::= <<\\>>>>");
+		writeFile(dir, "a.st", "a(x) ::= << >\\> >>");
 		STGroup group = new STGroupDir(dir);
 		ST st = group.getInstanceOf("a");
 		st.add("x", "parrt");
-		String expected = ">>";
+		String expected = " >> ";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testEscapeJavaRightShiftAtRightEdge() throws Exception {
+		String dir = getRandomDir();
+		writeFile(dir, "a.st", "a(x) ::= <<\\>>>"); // <<\>>>
+		STGroup group = new STGroupDir(dir);
+		ST st = group.getInstanceOf("a");
+		st.add("x", "parrt");
+		String expected = "\\>";
 		String result = st.render();
 		assertEquals(expected, result);
 	}

@@ -8,9 +8,10 @@ CHANGES
 
 January 1, 2013
 
-* Tweaked escapes so that \> becomes > in <<...>>. Do NOT replace if it's <\\>.
-  a(x) ::= <<\>>>> yields >> as output.
-  a(x) ::= <<>\>>> yields >> as output.
+* Tweaked escapes in <<...>>. Do NOT replace if it's <\\>.
+  Escapes: >\> means >> inside of <<...>>.
+  Escapes: \>> means >> inside of <<...>> unless at end like <<...\>>>>.
+  In that case, use <%..>>%> instead.
 
 * Added warning about: "Missing newline after newline escape <\\>"
 

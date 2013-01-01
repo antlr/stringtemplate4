@@ -357,7 +357,9 @@ BIGSTRING_NO_NL // same as BIGSTRING but means ignore newlines later
 	;
 
 /** Match <<...>> but also allow <<..<x>>> so we can have tag on end.
-    Escapes: \> means > inside of <<...>>.
+    Escapes: >\> means >> inside of <<...>>.
+    Escapes: \>> means >> inside of <<...>> unless at end like <<...\>>>>.
+    In that case, use <%..>>%> instead.
  */
 BIGSTRING
 	:	'<<'
@@ -366,7 +368,7 @@ BIGSTRING
 		|	'\\' ~'>' // allow this but don't collapse in action
 		|	~'\\'
 		)*
-        ('>>'|'>>>')
+        '>>'
         {
         String txt = getText();
         txt = Misc.replaceEscapedRightAngle(txt); // replace \> with > unless <\\>

@@ -257,7 +257,9 @@ public class TestLineWrap extends BaseTest {
 
 	@Test public void testIndentBeyondLineWidth() throws Exception {
 		String templates =
-				"duh(chars) ::= <<    <chars; wrap=\"\\n\">>>"+newline;
+				"duh(chars) ::= <<" +newline+
+				"    <chars; wrap=\"\\n\">" + newline +
+				">>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
@@ -275,7 +277,9 @@ public class TestLineWrap extends BaseTest {
 
 	@Test public void testIndentedExpr() throws Exception {
 		String templates =
-				"duh(chars) ::= <<    <chars; wrap=\"\\n\">>>"+newline;
+				"duh(chars) ::= <<" +newline+
+				"    <chars; wrap=\"\\n\">" +newline+
+				">>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
@@ -293,7 +297,9 @@ public class TestLineWrap extends BaseTest {
 	@Test public void testNestedIndentedExpr() throws Exception {
 		String templates =
 				"top(d) ::= <<  <d>!>>"+newline+
-				"duh(chars) ::= <<  <chars; wrap=\"\\n\">>>"+newline;
+				"duh(chars) ::= <<" +newline+
+				"  <chars; wrap=\"\\n\">" + newline+
+				">>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
@@ -312,7 +318,9 @@ public class TestLineWrap extends BaseTest {
 	@Test public void testNestedWithIndentAndTrackStartOfExpr() throws Exception {
 		String templates =
 				"top(d) ::= <<  <d>!>>"+newline+
-				"duh(chars) ::= <<x: <chars; anchor, wrap=\"\\n\">>>"+newline;
+				"duh(chars) ::= <<" +newline+
+				"x: <chars; anchor, wrap=\"\\n\">" +newline+
+				">>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
@@ -363,7 +371,7 @@ public class TestLineWrap extends BaseTest {
 	@Test public void testLineWrapInNestedExpr() throws Exception {
 		String templates =
 				"top(arrays) ::= <<Arrays: <arrays>done>>"+newline+
-				"array(values) ::= <<int[] a = { <values; anchor, wrap=\"\\n\", separator=\",\"> };<\\n\\>>>"+newline;
+				"array(values) ::= <%int[] a = { <values; anchor, wrap=\"\\n\", separator=\",\"> };<\\n>%>"+newline;
         writeFile(tmpdir, "t.stg", templates);
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
