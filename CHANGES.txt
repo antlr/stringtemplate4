@@ -6,6 +6,14 @@ University of San Francisco
 
 CHANGES
 
+January 1, 2013
+
+* Tweaked escapes so that \> becomes > in <<...>>. Do NOT replace if it's <\\>.
+  a(x) ::= <<\>>>> yields >> as output.
+  a(x) ::= <<>\>>> yields >> as output.
+
+* Added warning about: "Missing newline after newline escape <\\>"
+
 December 31, 2012
 
 * Reversing decision to use >\> and %\> as the escapes now for >> and %>.

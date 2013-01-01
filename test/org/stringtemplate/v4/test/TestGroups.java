@@ -65,6 +65,50 @@ public class TestGroups extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testEscapeOneRightAngle() throws Exception {
+		String dir = getRandomDir();
+		writeFile(dir, "a.st", "a(x) ::= << > >>");
+		STGroup group = new STGroupDir(dir);
+		ST st = group.getInstanceOf("a");
+		st.add("x", "parrt");
+		String expected = " > ";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testEscapeJavaRightShift() throws Exception {
+		String dir = getRandomDir();
+		writeFile(dir, "a.st", "a(x) ::= << \\>> >>");
+		STGroup group = new STGroupDir(dir);
+		ST st = group.getInstanceOf("a");
+		st.add("x", "parrt");
+		String expected = " >> ";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testEscapeJavaRightShiftAtRightEdge() throws Exception {
+		String dir = getRandomDir();
+		writeFile(dir, "a.st", "a(x) ::= <<\\>>>>");
+		STGroup group = new STGroupDir(dir);
+		ST st = group.getInstanceOf("a");
+		st.add("x", "parrt");
+		String expected = ">>";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testEscapeJavaRightShiftAtRightEdge2() throws Exception {
+		String dir = getRandomDir();
+		writeFile(dir, "a.st", "a(x) ::= <<>\\>>>");
+		STGroup group = new STGroupDir(dir);
+		ST st = group.getInstanceOf("a");
+		st.add("x", "parrt");
+		String expected = ">>";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testSimpleGroupFromString() throws Exception {
 		String g =
 			"a(x) ::= <<foo>>\n"+
@@ -668,31 +712,58 @@ public class TestGroups extends BaseTest {
 		Assert.assertEquals("v2-g2;f2", st.render());
 	}
 
-    @Test public void testLineBreakInGroup() throws Exception {
+	@Test public void testLineBreakInGroup() throws Exception {
 		String templates =
 			"t() ::= <<"+newline+
-			"Foo <\\\\>"+newline+
-			"  \t  bar"+newline+
-			">>"+newline;
+				"Foo <\\\\>"+newline+
+				"  \t  bar"+newline+
+				">>"+newline;
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
 		ST st = group.getInstanceOf("t");
 		Assert.assertNotNull(st);
 		String expecting ="Foo bar";     // expect \n in output
 		Assert.assertEquals(expecting, st.render());
-    }
+	}
 
-    @Test public void testLineBreakInGroup2() throws Exception {
+	@Test public void testLineBreakInGroup2() throws Exception {
 		String templates =
 			"t() ::= <<"+newline+
-			"Foo <\\\\>       "+newline+
-			"  \t  bar"+newline+
-			">>"+newline;
+				"Foo <\\\\>       "+newline+
+				"  \t  bar"+newline+
+				">>"+newline;
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
 		ST st = group.getInstanceOf("t");
 		Assert.assertNotNull(st);
 		String expecting ="Foo bar";     // expect \n in output
 		Assert.assertEquals(expecting, st.render());
-    }
+	}
+
+	@Test public void testLineBreakMissingTrailingNewline() throws Exception {
+		writeFile(tmpdir, "t.stg", "a(x) ::= <<<\\\\>\r\n>>"); // that is <<<\\>>> not an escaped >>
+		ErrorBuffer errors = new ErrorBuffer();
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		ST st = group.getInstanceOf("a");
+		assertEquals("t.stg 1:15: Missing newline after newline escape <\\\\>\n", errors.toString());
+		st.add("x", "parrt");
+		String expected = "";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testLineBreakWithScarfedTrailingNewline() throws Exception {
+		writeFile(tmpdir, "t.stg", "a(x) ::= <<<\\\\>\r\n>>"); // \r\n removed as trailing whitespace
+		ErrorBuffer errors = new ErrorBuffer();
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		ST st = group.getInstanceOf("a");
+		assertEquals("t.stg 1:15: Missing newline after newline escape <\\\\>\n", errors.toString());
+		st.add("x", "parrt");
+		String expected = "";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 }

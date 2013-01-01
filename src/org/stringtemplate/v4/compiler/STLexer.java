@@ -27,11 +27,19 @@
  */
 package org.stringtemplate.v4.compiler;
 
-import org.antlr.runtime.*;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.MismatchedTokenException;
+import org.antlr.runtime.NoViableAltException;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.TokenSource;
 import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.Misc;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents the tokenizer for templates. It operates in two modes:
@@ -176,10 +184,10 @@ public class STLexer implements TokenSource {
 
 	@Override
 	public Token nextToken() {
-		Token t = null;
+		Token t;
 		if ( tokens.size()>0 ) { t = tokens.remove(0); }
 		else t = _nextToken();
-		//System.out.println(t);
+//		System.out.println(t);
 		return t;
 	}
 
@@ -526,10 +534,18 @@ public class STLexer implements TokenSource {
     }
 
     void LINEBREAK() {
-        match('\\'); // only kill 2nd \ as outside() kills first one
+        match('\\'); // only kill 2nd \ as ESCAPE() kills first one
         match(delimiterStopChar);
         while ( c==' ' || c=='\t' ) consume(); // scarf WS after <\\>
-        if ( c=='\r' ) consume();
+		if ( c==EOF ) {
+			RecognitionException re = new RecognitionException(input);
+			re.line = input.getLine();
+			re.charPositionInLine = input.getCharPositionInLine();
+			errMgr.lexerError(input.getSourceName(), "Missing newline after newline escape <\\\\>",
+				              templateToken, re);
+			return;
+		}
+		if ( c=='\r' ) consume();
         match('\n');
         while ( c==' ' || c=='\t' ) consume(); // scarf any indent
     }

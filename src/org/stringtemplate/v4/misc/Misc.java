@@ -27,9 +27,14 @@
  */
 package org.stringtemplate.v4.misc;
 
-import java.io.*;
-import java.lang.reflect.*;
-import java.net.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Iterator;
 
 public class Misc {
@@ -129,6 +134,28 @@ public class Misc {
         s = s.replaceAll("\t", "\\\\t");
         return s;
     }
+
+	/** Replace \> with > in s and return. Do NOT replace if it's <\\> */
+	public static String replaceEscapedRightAngle(String s) {
+		StringBuilder buf = new StringBuilder();
+		int i = 0;
+		while ( i<s.length() ) {
+			char c = s.charAt(i);
+			if ( c=='<' && s.substring(i).startsWith("<\\\\>") ) {
+				buf.append("<\\\\>");
+				i += "<\\\\>".length();
+				continue;
+			}
+			if ( c=='\\' && s.substring(i).startsWith("\\>") ) {
+				buf.append(">");
+				i += "\\>".length();
+				continue;
+			}
+			buf.append(c);
+			i++;
+		}
+		return buf.toString();
+	}
 
 	public static boolean urlExists(URL url) {
 		try {
