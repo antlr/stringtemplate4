@@ -31,6 +31,7 @@ import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeAdaptor;
 import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.debug.EvalExprEvent;
 import org.stringtemplate.v4.debug.EvalTemplateEvent;
 import org.stringtemplate.v4.debug.InterpEvent;
 import org.stringtemplate.v4.misc.*;
@@ -60,6 +61,7 @@ public class STViz {
 
 	//public ST currentST; // current ST selected in template tree
 	public EvalTemplateEvent root;
+	public InterpEvent currentEvent;
 	public InstanceScope currentScope;
 	public List<InterpEvent> allEvents;
 	public JTreeSTModel tmodel;
@@ -81,6 +83,7 @@ public class STViz {
                  List<STMessage> errors)
     {
 		this.errMgr = errMgr;
+		this.currentEvent = root;
 		this.currentScope = root.scope;
 		this.output = output;
 		this.interp = interp;
@@ -107,7 +110,8 @@ public class STViz {
 							return;
 						}
 
-						currentScope = ((JTreeSTModel.Wrapper)viewFrame.tree.getLastSelectedPathComponent()).event.scope;
+						currentEvent = ((JTreeSTModel.Wrapper)viewFrame.tree.getLastSelectedPathComponent()).event;
+						currentScope = currentEvent.scope;
 						updateCurrentST(viewFrame);
 					}
 					finally {
@@ -169,9 +173,9 @@ public class STViz {
 					}
 
 					int dot = toEventPosition((JTextComponent)e.getSource(), e.getDot());
-					InterpEvent de = findEventAtOutputLocation(allEvents, dot);
-					if ( de==null ) currentScope = tmodel.root.event.scope;
-					else currentScope = de.scope;
+					currentEvent = findEventAtOutputLocation(allEvents, dot);
+					if ( currentEvent==null ) currentScope = tmodel.root.event.scope;
+					else currentScope = currentEvent.scope;
 
 					// update tree view of template hierarchy
 					// compute path from root to currentST, create TreePath for tree widget
@@ -179,7 +183,9 @@ public class STViz {
 					//System.out.println("\nselect path="+stack);
 					Object[] path = new Object[stack.size()];
 					int j = 0;
-					for (EvalTemplateEvent s : stack) path[j++] = new JTreeSTModel.Wrapper(s);
+					for (EvalTemplateEvent s : stack) {
+						path[j++] = new JTreeSTModel.Wrapper(s);
+					}
 					TreePath p = new TreePath(path);
 					viewFrame.tree.setSelectionPath(p);
 					viewFrame.tree.scrollPathToVisible(p);
@@ -227,6 +233,7 @@ public class STViz {
 						if ( msg instanceof STRuntimeMessage ) {
 							STRuntimeMessage rmsg = (STRuntimeMessage)msg;
 							Interval I = rmsg.self.impl.sourceMap[rmsg.ip];
+							currentEvent = null;
 							currentScope = ((STRuntimeMessage) msg).scope;
 							updateCurrentST(viewFrame);
 							if ( I!=null ) { // highlight template
@@ -314,24 +321,40 @@ public class STViz {
 
 		// highlight output text and, if {...} subtemplate, region in ST src
 		// get last event for currentScope.st; it's the event that captures ST eval
-		List<InterpEvent> events = currentScope.events;
-		EvalTemplateEvent e = (EvalTemplateEvent)events.get(events.size() - 1);
-		//m.output.moveCaretPosition(e.outputStartChar);
-		highlight(m.output, e.outputStartChar, e.outputStopChar);
-		try {
-			m.output.scrollRectToVisible(m.output.modelToView(toComponentPosition(m.output, e.outputStartChar)));
+		if (currentEvent instanceof EvalExprEvent) {
+			EvalExprEvent exprEvent = (EvalExprEvent)currentEvent;
+			highlight(m.output, exprEvent.outputStartChar, exprEvent.outputStopChar);
+			highlight(m.template, exprEvent.exprStartChar, exprEvent.exprStopChar);
 		}
-		catch (BadLocationException ble) {
-			currentScope.st.groupThatCreatedThisInstance.errMgr.internalError(
-				currentScope.st, "bad location: char index "+e.outputStartChar, ble
-			);
-		}
+		else {
+			EvalTemplateEvent templateEvent;
+			if (currentEvent instanceof EvalTemplateEvent) {
+				templateEvent = (EvalTemplateEvent)currentEvent;
+			}
+			else {
+				List<InterpEvent> events = currentScope.events;
+				templateEvent = (EvalTemplateEvent)events.get(events.size() - 1);
+			}
 
-		if ( currentScope.st.isAnonSubtemplate() ) {
-			Interval r = currentScope.st.impl.getTemplateRange();
-//				System.out.println("currentScope.st src range="+r);
-			//m.template.moveCaretPosition(r.a);
-			highlight(m.template, r.a, r.b);
+			//m.output.moveCaretPosition(e.outputStartChar);
+			if (templateEvent != null) {
+				highlight(m.output, templateEvent.outputStartChar, templateEvent.outputStopChar);
+				try {
+					m.output.scrollRectToVisible(m.output.modelToView(toComponentPosition(m.output, templateEvent.outputStartChar)));
+				}
+				catch (BadLocationException ble) {
+					currentScope.st.groupThatCreatedThisInstance.errMgr.internalError(
+						currentScope.st, "bad location: char index "+templateEvent.outputStartChar, ble
+					);
+				}
+			}
+
+			if ( currentScope.st.isAnonSubtemplate() ) {
+				Interval r = currentScope.st.impl.getTemplateRange();
+				//System.out.println("currentScope.st src range="+r);
+				//m.template.moveCaretPosition(r.a);
+				highlight(m.template, r.a, r.b);
+			}
 		}
 	}
 
