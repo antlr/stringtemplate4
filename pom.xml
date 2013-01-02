@@ -126,7 +126,7 @@ There are currently about 600 StringTemplate source downloads a month.
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr-runtime</artifactId>
-            <version>3.5-rc-2</version>
+            <version>3.5-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
             
