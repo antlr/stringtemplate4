@@ -43,8 +43,6 @@ import java.util.Map;
  * <p/>
  * Given {@code <a.foo>}, we look up {@code foo} via the adaptor if
  * {@code a instanceof M}.
- * <p/>
- * @see TestModelAdaptors
  */
 public interface ModelAdaptor {
 	/**

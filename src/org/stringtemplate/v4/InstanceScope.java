@@ -39,7 +39,7 @@ import java.util.List;
 public class InstanceScope {
 	/** Template that invoked us. */
 	public final InstanceScope parent;
-	/** Template we've executing. */
+	/** Template we're executing. */
 	public final ST st;
 	/** Current instruction pointer. */
 	public int ip;
