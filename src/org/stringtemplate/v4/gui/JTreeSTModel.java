@@ -29,6 +29,7 @@ package org.stringtemplate.v4.gui;
 
 import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.StringRenderer;
 import org.stringtemplate.v4.debug.EvalTemplateEvent;
 
 import javax.swing.event.TreeModelListener;
@@ -59,8 +60,9 @@ public class JTreeSTModel implements TreeModel {
 			ST st = event.scope.st;
 			if ( st.isAnonSubtemplate() ) return "{...}";
 			if ( st.debugState!=null && st.debugState.newSTEvent!=null ) {
-				return st.toString()+" @ "+st.debugState.newSTEvent.getFileName()+":"+
+				String label = st.toString()+" @ "+st.debugState.newSTEvent.getFileName()+":"+
 					   st.debugState.newSTEvent.getLine();
+				return "<html><b>" + StringRenderer.escapeHTML(label) + "</b></html>";
 			}
 			else {
 				return st.toString();
