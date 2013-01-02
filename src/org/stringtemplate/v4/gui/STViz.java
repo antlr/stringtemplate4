@@ -312,9 +312,7 @@ public class STViz {
 		// update all views according to currentScope.st
 		updateStack(currentScope, m); 					   // STACK
 		updateAttributes(currentScope, m); 			 	   // ATTRIBUTES
-		m.bytecode.moveCaretPosition(0);
         setText(m.bytecode, currentScope.st.impl.disasm()); // BYTECODE DIS.
-		m.template.moveCaretPosition(0);
 		setText(m.template, currentScope.st.impl.template); // TEMPLATE SRC
 		JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
 		viewFrame.ast.setModel(astModel);
@@ -336,17 +334,8 @@ public class STViz {
 				templateEvent = (EvalTemplateEvent)events.get(events.size() - 1);
 			}
 
-			//m.output.moveCaretPosition(e.outputStartChar);
 			if (templateEvent != null) {
 				highlight(m.output, templateEvent.outputStartChar, templateEvent.outputStopChar);
-				try {
-					m.output.scrollRectToVisible(m.output.modelToView(toComponentPosition(m.output, templateEvent.outputStartChar)));
-				}
-				catch (BadLocationException ble) {
-					currentScope.st.groupThatCreatedThisInstance.errMgr.internalError(
-						currentScope.st, "bad location: char index "+templateEvent.outputStartChar, ble
-					);
-				}
 			}
 
 			if ( currentScope.st.isAnonSubtemplate() ) {
@@ -401,7 +390,11 @@ public class STViz {
 		return result;
 	}
 
-	protected void highlight(JTextComponent comp, int i, int j) {
+	protected final void highlight(JTextComponent comp, int i, int j) {
+		highlight(comp, i, j, true);
+	}
+
+	protected void highlight(JTextComponent comp, int i, int j, boolean scroll) {
 		Highlighter highlighter = comp.getHighlighter();
 		highlighter.removeAllHighlights();
 
@@ -409,6 +402,12 @@ public class STViz {
 			i = toComponentPosition(comp, i);
 			j = toComponentPosition(comp, j);
 			highlighter.addHighlight(i, j+1, DefaultHighlighter.DefaultPainter);
+			if (scroll) {
+				if (comp.getCaretPosition() < i || comp.getCaretPosition() > j) {
+					comp.moveCaretPosition(i);
+					comp.scrollRectToVisible(comp.modelToView(i));
+				}
+			}
 		}
 		catch (BadLocationException ble) {
 			errMgr.internalError(tmodel.root.event.scope.st, "bad highlight location", ble);
