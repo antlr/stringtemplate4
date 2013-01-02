@@ -32,13 +32,17 @@ import org.antlr.runtime.tree.CommonTree;
 import org.stringtemplate.v4.InstanceScope;
 import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.StringRenderer;
 import org.stringtemplate.v4.debug.AddAttributeEvent;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** From a scope, get stack of enclosing scopes in order from root down
  *  to scope.  Then show each scope's (ST's) attributes as children.
@@ -64,16 +68,17 @@ public class JTreeScopeStackModel implements TreeModel {
 
 	public JTreeScopeStackModel(InstanceScope scope) {
 		root = new StringTree("Scope stack:");
-		List<InstanceScope> stack = Interpreter.getScopeStack(scope, true);
+		Set<String> names = new HashSet<String>();
+		List<InstanceScope> stack = Interpreter.getScopeStack(scope, false);
 		for (InstanceScope s : stack) {
 			StringTree templateNode = new StringTree(s.st.getName());
-			root.addChild(templateNode);
-			addAttributeDescriptions(s.st, templateNode);
+			root.insertChild(0, templateNode);
+			addAttributeDescriptions(s.st, templateNode, names);
 		}
 		//System.out.println(root.toStringTree());
 	}
 
-	public void addAttributeDescriptions(ST st, StringTree node) {
+	public void addAttributeDescriptions(ST st, StringTree node, Set<String> names) {
 		Map<String, Object> attrs = st.getAttributes();
 		if ( attrs==null ) return;
 		for (String a : attrs.keySet()) {
@@ -99,6 +104,15 @@ public class JTreeScopeStackModel implements TreeModel {
 			else {
 				descr = a + " = " +attrs.get(a);
 			}
+
+			if (!names.add(a)) {
+				StringBuilder builder = new StringBuilder();
+				builder.append("<html><font color=\"gray\">");
+				builder.append(StringRenderer.escapeHTML(descr));
+				builder.append("</font></html>");
+				descr = builder.toString();
+			}
+
 			node.addChild( new StringTree(descr) );
 		}
 	}
