@@ -17,6 +17,11 @@ January 1, 2013
 
 * Actually: %\> is the escape to avoid end of string
 
+* Several STViz updates:
+  * Highlight template subexpressions and literal text responsible for output
+  * Gray out hidden (inherited+aliased) attributes
+  * Highlight user-instanced templates in bold
+
 December 31, 2012
 
 * Reversing decision to use >\> and %\> as the escapes now for >> and %>.
