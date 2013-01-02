@@ -27,14 +27,14 @@
  */
 package org.stringtemplate.v4;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Formatter;
 import java.util.Locale;
 
-/** Works with Byte, Short, Integer, Long, and BigInteger as well as
- *  Float, Double, and BigDecimal.  You pass in a format string suitable
- *  for Formatter object:
- *  <p/>
- *  <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html"/>
+/** Works with {@link Byte}, {@link Short}, {@link Integer}, {@link Long}, and {@link BigInteger} as well as
+ *  {@link Float}, {@link Double}, and {@link BigDecimal}.  You pass in a format string suitable
+ *  for {@link Formatter#format}.
  *  <p/>
  *  For example, {@code %10d} emits a number as a decimal int padding to 10 char.
  *  This can even do {@code long} to {@code Date} conversions using the format string.
