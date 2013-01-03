@@ -108,22 +108,15 @@ public class STGroup {
 	 * <p/>
 	 *  The last one you register gets priority; do least to most specific.
 	 */
-	protected Map<Class<?>, ModelAdaptor> adaptors =
-		Collections.synchronizedMap(
-			new LinkedHashMap<Class<?>, ModelAdaptor>() {{
-				put(Object.class, new ObjectModelAdaptor());
-				put(ST.class, new STModelAdaptor());
-				put(Map.class, new MapModelAdaptor());
-				put(Aggregate.class, new AggregateModelAdaptor());
-			}}
-		);
-
-	/** Cache exact attribute type to {@link ModelAdaptor} object. */
-	protected Map<Class<?>, ModelAdaptor> typeToAdaptorCache =
-		Collections.synchronizedMap(new LinkedHashMap<Class<?>, ModelAdaptor>());
-
-	/** Cache exact attribute type to {@link AttributeRenderer} object. */
-	protected Map<Class<?>, AttributeRenderer> typeToRendererCache;
+	protected final Map<Class<?>, ModelAdaptor> adaptors;
+	{
+		TypeRegistry<ModelAdaptor> registry = new TypeRegistry<ModelAdaptor>();
+		registry.put(Object.class, new ObjectModelAdaptor());
+		registry.put(ST.class, new STModelAdaptor());
+		registry.put(Map.class, new MapModelAdaptor());
+		registry.put(Aggregate.class, new AggregateModelAdaptor());
+		adaptors = Collections.synchronizedMap(registry);
+	}
 
     /** Used to indicate that the template doesn't exist.
      *  Prevents duplicate group file loads and unnecessary file checks.
@@ -682,35 +675,12 @@ public class STGroup {
 			throw new IllegalArgumentException("can't register ModelAdaptor for primitive type "+
 											   attributeType.getSimpleName());
 		}
-		adaptors.put(attributeType, adaptor);
-		invalidateModelAdaptorCache(attributeType);
-	}
 
-	/** Remove at least all types in cache that are subclasses or implement
-	 *  {@code attributeType}.
-	 */
-	public void invalidateModelAdaptorCache(Class<?> attributeType) {
-		typeToAdaptorCache.clear(); // be safe, not clever; wack all values
+		adaptors.put(attributeType, adaptor);
 	}
 
 	public ModelAdaptor getModelAdaptor(Class<?> attributeType) {
-		ModelAdaptor a = typeToAdaptorCache.get(attributeType);
-		if ( a!=null ) return a;
-
-		//System.out.println("looking for adaptor for "+attributeType);
-		// Else, we must find adaptor that fits;
-		// find last fit (most specific)
-		for (Class<?> t : adaptors.keySet()) {
-			// t works for attributeType if attributeType subclasses t or implements
-			//System.out.println("checking "+t.getSimpleName()+" against "+attributeType);
-			if ( t.isAssignableFrom(attributeType) ) {
-				//System.out.println(t.getName()+" = "+attributeType.getName());
-				a = adaptors.get(t);
-			}
-		}
-		//System.out.println("adaptor for "+attributeType+" is "+a);
-		typeToAdaptorCache.put(attributeType, a); // cache it for next time
-		return a;
+		return adaptors.get(attributeType);
 	}
 
     /** Register a renderer for all objects of a particular "kind" for all
@@ -727,16 +697,18 @@ public class STGroup {
 			throw new IllegalArgumentException("can't register renderer for primitive type "+
 											   attributeType.getSimpleName());
 		}
-		typeToAdaptorCache.clear(); // be safe, not clever; wack all values
-        if ( renderers == null ) {
-            renderers =
-				Collections.synchronizedMap(new LinkedHashMap<Class<?>, AttributeRenderer>());
-        }
-        renderers.put(attributeType, r);
+
+		if ( renderers == null ) {
+			renderers = Collections.synchronizedMap(new TypeRegistry<AttributeRenderer>());
+		}
+
+		renderers.put(attributeType, r);
 
 		if ( recursive ) {
 			load(); // make sure imports exist (recursively)
-			for (STGroup g : imports) g.registerRenderer(attributeType, r, true);
+			for (STGroup g : imports) {
+				g.registerRenderer(attributeType, r, true);
+			}
 		}
 	}
 
@@ -752,27 +724,11 @@ public class STGroup {
 	 *  renderer with more specific format names.
 	 */
 	public AttributeRenderer getAttributeRenderer(Class<?> attributeType) {
-		if ( renderers==null ) return null;
-		AttributeRenderer r;
-		if ( typeToRendererCache!=null ) {
-			r = typeToRendererCache.get(attributeType);
-			if ( r!=null ) return r;
+		if ( renderers==null ) {
+			return null;
 		}
 
-		// Else look up, finding first first
-		for (Class<?> t : renderers.keySet()) {
-			// t works for attributeType if attributeType subclasses t or implements
-			if ( t.isAssignableFrom(attributeType) ) {
-				r = renderers.get(t);
-				if ( typeToRendererCache==null ) {
-					typeToRendererCache =
-						Collections.synchronizedMap(new LinkedHashMap<Class<?>, AttributeRenderer>());
-				}
-				typeToRendererCache.put(attributeType, r);
-				return r;
-			}
-		}
-		return null;
+		return renderers.get(attributeType);
 	}
 
 	public ST createStringTemplate(CompiledST impl) {
