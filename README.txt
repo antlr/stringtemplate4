@@ -34,7 +34,7 @@ All you need to do is get the StringTemplate jar into your CLASSPATH
 as well as its dependent ANTLR jar. Download the following and put
 into your favorite lib directory such as /usr/local/lib on UNIX:
 
-  * antlr-complete.jar; http://www.antlr.org/download/antlr-3.5-complete.jar
+  * antlr-3.5-complete.jar; http://www.antlr.org/download/antlr-3.5-complete.jar
   * ST.jar; see http://www.stringtemplate.org/download/ST-4.0.7.jar
 
 Add to your CLASSPATH. On UNIX that looks like
@@ -45,57 +45,51 @@ Java will now see all the libraries necessary to execute ST stuff.
 
 BUILDING FROM SOURCE
 
-If you would like to make changes to ST and build it yourself, just
-run "ant" from the main directory. This assumes that you have the
-antlr3 ant task set up so first take a look at:
+The source is at github.com:
 
-http://www.antlr.org/wiki/display/ANTLR3/How+to+use+ant+with+ANTLR3
+	https://github.com/antlr/stringtemplate4
+
+If you would like to make changes to ST and build it yourself, just set
+build.properties to the appropriate version of this:
+
+  version=4.0.7
+  antlr3.jar=/usr/local/lib/antlr-3.5-rc-2-complete.jar
+  build.sysclasspath=ignore
+
+and then run "ant" from the main directory.
 
 Then, once you're set up with the ant task, go for it. Looks like this:
 
 $ cd /usr/local/ST-4.0.7
 $ ant
-Buildfile: /usr/local/website/st/depot/ST4/java/main/build.xml
+Buildfile: /Users/parrt/antlr/code/stringtemplate4/build.xml
 
 clean:
-   [delete] Deleting directory /usr/local/website/st/depot/ST4/java/main/build
-   [delete] Deleting directory /usr/local/website/st/depot/ST4/java/main/dist
+   [delete] Deleting directory /Users/parrt/antlr/code/stringtemplate4/build
 
 init:
-    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/build/gen/org/stringtemplate/v4/compiler
+    [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/build/classes
+    [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/build/src
+     [copy] Copying 72 files to /Users/parrt/antlr/code/stringtemplate4/build/src
 
 antlr:
+     [echo] Run ANTLR on grammars
 
 compile:
-    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/build/classes
-    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/build/src
-     [copy] Copying 89 files to /usr/local/website/st/depot/ST4/java/main/build/src
-    [javac] Compiling 57 source files to /usr/local/website/st/depot/ST4/java/main/build/classes
-    [javac] Note: /usr/local/website/st/depot/ST4/java/main/build/src/org/stringtemplate/v4/StringRenderer.java uses or overrides a deprecated API.
-    [javac] Note: Recompile with -Xlint:deprecation for details.
-    [javac] Note: Some input files use unchecked or unsafe operations.
-    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] Compiling 61 source files to /Users/parrt/antlr/code/stringtemplate4/build/classes
 
 zip-source:
-    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.7
-    [mkdir] Created dir: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.7/src
-     [copy] Copying 53 files to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.7/src
-     [copy] Copying 4 files to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.7
-     [copy] Copying 1 file to /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.7/lib
-      [zip] Building zip: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.7-src.zip
+    [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7
+    [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7/src
+     [copy] Copying 65 files to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7/src
+     [copy] Copying 5 files to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7
+     [copy] Copying 1 file to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7/lib
+      [zip] Building zip: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7-src.zip
 
 build-jar:
-      [jar] Building jar: /usr/local/website/st/depot/ST4/java/main/dist/ST-4.0.7.jar
+      [jar] Building jar: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7.jar
 
 distribute:
 
 BUILD SUCCESSFUL
-Total time: 14 seconds
-
-DAILY BUILDS
-
-For the latest build, check out:
-
-http://www.stringtemplate.org/depot/ST4/java/main/dist
-
-It has both the source and the binary Java jar.
+Total time: 5 seconds
