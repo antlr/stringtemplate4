@@ -1,10 +1,14 @@
-ST 4.0.7-rc-1 Release
+ST 4.0.7 Release
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
 University of San Francisco
 
 CHANGES
+
+January 4, 2013 -- Release 4.0.7
+
+* Fixed README for release
 
 January 1, 2013
 
