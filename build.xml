@@ -85,6 +85,7 @@
 				<include name="**/*.stg"/>
 				<include name="**/STLexer.tokens"/>
             </fileset>
+			<fileset dir="${antlr3.gen.dir}"/>
         </copy>
 
         <copy todir="${install.root.dir}">
