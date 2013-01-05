@@ -6,7 +6,7 @@
 /dist/
 
 # NetBeans user configuration
-/nbactions.xml
+nbactions*.xml
 
 # IntelliJ project files
 *.iml
