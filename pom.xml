@@ -132,6 +132,66 @@ There are currently about 600 StringTemplate source downloads a month.
             
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>sonatype-oss-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-compile</id>
+                                <configuration>
+                                    <compilerArguments>
+                                        <bootclasspath>${bootclasspath.compile}</bootclasspath>
+                                    </compilerArguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>default-testCompile</id>
+                                <configuration>
+                                    <compilerArguments>
+                                        <bootclasspath>${bootclasspath.testCompile}</bootclasspath>
+                                    </compilerArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>2.0</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <minimizeJar>true</minimizeJar>
+                                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                                    <createSourcesJar>true</createSourcesJar>
+                                    <shadeSourcesContent>true</shadeSourcesContent>
+                                    <shadedClassifierName>complete</shadedClassifierName>
+                                    <relocations>
+                                        <relocation>
+                                            <pattern>org.antlr</pattern>
+                                            <shadedPattern>st4hidden.org.antlr</shadedPattern>
+                                        </relocation>
+                                    </relocations>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <defaultGoal>install</defaultGoal>
 
@@ -171,34 +231,6 @@ There are currently about 600 StringTemplate source downloads a month.
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <minimizeJar>true</minimizeJar>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <createSourcesJar>true</createSourcesJar>
-                            <shadeSourcesContent>true</shadeSourcesContent>
-                            <shadedClassifierName>complete</shadedClassifierName>
-                            <relocations>
-                                <relocation>
-                                    <pattern>org.antlr</pattern>
-                                    <shadedPattern>st4hidden.org.antlr</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
            <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr3-maven-plugin</artifactId>
@@ -235,7 +267,6 @@ There are currently about 600 StringTemplate source downloads a month.
                             <target>1.5</target>
                             <compilerArgument>-Xlint:-serial</compilerArgument>
                             <compilerArguments>
-                                <bootclasspath>${bootclasspath.compile}</bootclasspath>
                                 <Xlint/>
                             </compilerArguments>
                         </configuration>
@@ -247,7 +278,6 @@ There are currently about 600 StringTemplate source downloads a month.
                             <target>1.6</target>
                             <compilerArgument>-Xlint:-serial</compilerArgument>
                             <compilerArguments>
-                                <bootclasspath>${bootclasspath.testCompile}</bootclasspath>
                                 <Xlint/>
                             </compilerArguments>
                         </configuration>
@@ -277,53 +307,31 @@ There are currently about 600 StringTemplate source downloads a month.
                 </configuration>
             </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <!-- override the version inherited from the parent -->
                 <version>2.2.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <!-- override the version inherited from the parent -->
                 <version>2.9</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-                        <configuration>
-                            <quiet>true</quiet>
-                        </configuration>
-					</execution>
-				</executions>
-			</plugin>
+                <configuration>
+                    <quiet>true</quiet>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
+                <!-- override the version inherited from the parent -->
                 <version>1.4</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
-	</plugins>
+        </plugins>
     </build>
 </project>
 
