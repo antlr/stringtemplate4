@@ -133,7 +133,7 @@ public class TestWhitespace extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	@Ignore("fails since it counts indent from outer too")
+	@Ignore("will revisit the behavior of indented expressions spanning multiple lines for a future release")
 	@Test public void testTabBeforeEndInSubtemplates() throws Exception {
 		STGroup group = new STGroup();
 		group.defineTemplate("test", "names", "  <names:{n |\n" +

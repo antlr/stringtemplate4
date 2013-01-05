@@ -431,7 +431,7 @@ public class TestRegions extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	@Ignore("fix so we ignore inside {...}")
+	@Ignore("will revisit the behavior of indented expressions spanning multiple lines for a future release")
 	@Test public void testEmbeddedSubtemplate() throws Exception {
 		String dir = getRandomDir();
 		String groupFile =
