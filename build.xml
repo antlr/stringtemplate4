@@ -24,17 +24,12 @@
         <property name="antlr3.gen.dir" value="${build.dir}/generated-sources/antlr3" />
         <mkdir dir="${antlr3.gen.dir}" />
         <mkdir dir="${build.dir}/classes"/>
-        <mkdir dir="${build.dir}/src"/>
-        <copy todir="${build.dir}/src" >
-                <fileset dir="${src.dir}"/>
-        </copy>
-        <replace dir="${build.dir}/src" token="@version@" value="${version}"/>
     </target>
 
 	<target name="antlr" depends="init">
         <echo>Run ANTLR on grammars</echo>
         <java classname="org.antlr.Tool" fork="false" failonerror="true" maxmemory="300m"
-            dir="${build.dir}/src/org/stringtemplate/v4/compiler">
+            dir="${src.dir}/org/stringtemplate/v4/compiler">
             <arg value="-verbose"/>
             <arg value="-make"/>
             <arg value="-o"/>
@@ -59,7 +54,7 @@
             <compilerarg value="-Xlint"/>
             <compilerarg value="-Xlint:-serial"/>
 			<classpath refid="classpath"/>
-            <src path="${build.dir}/src:${antlr3.gen.dir}"/>
+            <src path="${src.dir}:${antlr3.gen.dir}"/>
         </javac>
     </target>
 
