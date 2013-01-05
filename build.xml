@@ -28,10 +28,13 @@
 
 	<target name="antlr" depends="init">
         <echo>Run ANTLR on grammars</echo>
-        <java classname="org.antlr.Tool" fork="false" failonerror="true" maxmemory="300m"
-            dir="${src.dir}/org/stringtemplate/v4/compiler">
+        <java classname="org.antlr.Tool" fork="false" failonerror="true">
             <arg value="-verbose"/>
             <arg value="-make"/>
+            <arg value="-in"/>
+            <arg value="${src.dir}/org/stringtemplate/v4/compiler"/>
+            <arg value="-lib"/>
+            <arg value="${src.dir}/org/stringtemplate/v4/compiler"/>
             <arg value="-o"/>
             <arg value="${antlr3.gen.dir}/org/stringtemplate/v4/compiler"/>
             <arg value="Group.g"/>
