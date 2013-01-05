@@ -1,6 +1,10 @@
 # Maven build folders
 /target/
 
+# Ant build folders
+/build/
+/dist/
+
 # NetBeans user configuration
 /nbactions.xml
 
