@@ -21,6 +21,8 @@
 
     <target name="init">
         <!-- Create the build directory structure used by compile -->
+        <property name="antlr3.gen.dir" value="${build.dir}/generated-sources/antlr3" />
+        <mkdir dir="${antlr3.gen.dir}" />
         <mkdir dir="${build.dir}/classes"/>
         <mkdir dir="${build.dir}/src"/>
         <copy todir="${build.dir}/src" >
@@ -33,6 +35,10 @@
         <echo>Run ANTLR on grammars</echo>
         <java classname="org.antlr.Tool" fork="true" failonerror="true" maxmemory="300m"
             dir="${build.dir}/src/org/stringtemplate/v4/compiler">
+            <arg value="-verbose"/>
+            <arg value="-make"/>
+            <arg value="-o"/>
+            <arg value="${antlr3.gen.dir}/org/stringtemplate/v4/compiler"/>
             <arg value="Group.g"/>
             <arg value="STParser.g"/>
             <arg value="CodeGenerator.g"/>
@@ -51,7 +57,7 @@
                 debug="true"
                 excludes="org/stringtemplate/v4/test/**">
 			<classpath refid="classpath"/>
-            <src path="${build.dir}/src"/>
+            <src path="${build.dir}/src:${antlr3.gen.dir}"/>
         </javac>
     </target>
 
