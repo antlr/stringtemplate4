@@ -68,12 +68,18 @@ clean:
    [delete] Deleting directory /Users/parrt/antlr/code/stringtemplate4/build
 
 init:
+    [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/build/generated-sources/antlr3
     [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/build/classes
-    [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/build/src
-     [copy] Copying 72 files to /Users/parrt/antlr/code/stringtemplate4/build/src
 
 antlr:
      [echo] Run ANTLR on grammars
+     [java] ANTLR Parser Generator  Version 3.x
+     [java] Output file /Users/parrt/antlr/code/stringtemplate4/build/generated-sources/antlr3/org/stringtemplate/v4/compiler/STParser.java does not exist: must build /Users/parrt/antlr/code/stringtemplate4/src/org/stringtemplate/v4/compiler/STParser.g
+     [java] STParser.g
+     [java] Output file /Users/parrt/antlr/code/stringtemplate4/build/generated-sources/antlr3/org/stringtemplate/v4/compiler/GroupParser.java does not exist: must build /Users/parrt/antlr/code/stringtemplate4/src/org/stringtemplate/v4/compiler/Group.g
+     [java] Group.g
+     [java] Output file /Users/parrt/antlr/code/stringtemplate4/build/generated-sources/antlr3/org/stringtemplate/v4/compiler/CodeGenerator.java does not exist: must build /Users/parrt/antlr/code/stringtemplate4/src/org/stringtemplate/v4/compiler/CodeGenerator.g
+     [java] CodeGenerator.g
 
 compile:
     [javac] Compiling 61 source files to /Users/parrt/antlr/code/stringtemplate4/build/classes
@@ -81,7 +87,7 @@ compile:
 zip-source:
     [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7
     [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7/src
-     [copy] Copying 65 files to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7/src
+     [copy] Copying 68 files to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7/src
      [copy] Copying 5 files to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7
      [copy] Copying 1 file to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7/lib
       [zip] Building zip: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7-src.zip
@@ -92,4 +98,4 @@ build-jar:
 distribute:
 
 BUILD SUCCESSFUL
-Total time: 5 seconds
+Total time: 4 seconds
