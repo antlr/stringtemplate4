@@ -21,7 +21,7 @@
         SNAPSHOT replaced with the the data, time and unique number.
     -->
 
-    <version>4.0.7-SNAPSHOT</version>
+    <version>4.0.7</version>
 
     <!--
         The name of the project as seen by IDEs and release documentation etc.
@@ -126,7 +126,7 @@ There are currently about 600 StringTemplate source downloads a month.
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr-runtime</artifactId>
-            <version>3.5-SNAPSHOT</version>
+            <version>3.5</version>
             <scope>compile</scope>
         </dependency>
             
@@ -202,7 +202,7 @@ There are currently about 600 StringTemplate source downloads a month.
            <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr3-maven-plugin</artifactId>
-                <version>3.5-rc-2</version>
+                <version>3.5</version>
                 <configuration>
                     <libDirectory>src/org/stringtemplate/v4/compiler</libDirectory>
                     <sourceDirectory>src</sourceDirectory>
