@@ -56,6 +56,8 @@
                 target="1.5"
                 debug="true"
                 excludes="org/stringtemplate/v4/test/**">
+            <compilerarg value="-Xlint"/>
+            <compilerarg value="-Xlint:-serial"/>
 			<classpath refid="classpath"/>
             <src path="${build.dir}/src:${antlr3.gen.dir}"/>
         </javac>
