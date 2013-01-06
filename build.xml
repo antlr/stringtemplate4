@@ -17,8 +17,8 @@
         <path id="cp.antlr3" path="${antlr3.jar}"/>
 
         <!-- Create the build directory structure used by compile -->
-        <property name="antlr3.gen.dir" value="${build.dir}/generated-sources/antlr3" />
-        <mkdir dir="${antlr3.gen.dir}" />
+        <property name="build.antlr3.dir" value="${build.dir}/generated-sources/antlr3" />
+        <mkdir dir="${build.antlr3.dir}" />
     </target>
 
     <target name="build-init" depends="basic-init">
@@ -44,7 +44,7 @@
             <arg value="-verbose"/>
             <arg value="-make"/>
             <arg value="-o"/>
-            <arg value="${antlr3.gen.dir}/org/stringtemplate/v4/compiler"/>
+            <arg value="${build.antlr3.dir}/org/stringtemplate/v4/compiler"/>
             <arg value="Group.g"/>
             <arg value="STParser.g"/>
             <arg value="CodeGenerator.g"/>
@@ -67,7 +67,7 @@
             <classpath>
                 <path refid="cp.antlr3"/>
             </classpath>
-            <src path="${src.dir}:${antlr3.gen.dir}"/>
+            <src path="${src.dir}:${build.antlr3.dir}"/>
         </javac>
     </target>
 
@@ -95,7 +95,7 @@
 				<include name="**/*.stg"/>
 				<include name="**/STLexer.tokens"/>
             </fileset>
-			<fileset dir="${antlr3.gen.dir}"/>
+			<fileset dir="${build.antlr3.dir}"/>
         </copy>
 
         <copy todir="${install.root.dir}">
