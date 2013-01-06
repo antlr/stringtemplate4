@@ -4,6 +4,7 @@
 # Ant build folders
 /build/
 /dist/
+/lib/
 
 # NetBeans user configuration
 nbactions*.xml
