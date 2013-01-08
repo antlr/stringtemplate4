@@ -87,7 +87,7 @@ public class TestImports extends BaseTest {
 			root);
 		compile("Test.java", root);
 		// jar has sub, base as dirs in CLASSPATH
-		jar("test.jar", new String[]{"sub", "base"}, root);
+		jar("test.jar", new String[]{"sub", "base", "Test.class"}, root);
 		deleteFile(root+"/sub");
 		deleteFile(root+"/base");
 		String result = java("Test", "test.jar", root);
@@ -121,7 +121,7 @@ public class TestImports extends BaseTest {
 			"String result = st.render();\n",
 			root);
 		compile("Test.java", root);
-		jar("test.jar", new String[] {"org"}, root);
+		jar("test.jar", new String[] {"org", "Test.class"}, root);
 		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
@@ -155,7 +155,7 @@ public class TestImports extends BaseTest {
 			"String result = st.render();\n",
 			root);
 		compile("Test.java", root);
-		jar("test.jar", new String[] {"org"}, root);
+		jar("test.jar", new String[] {"org", "Test.class"}, root);
 		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
@@ -190,7 +190,7 @@ public class TestImports extends BaseTest {
 			"String result = st.render();\n",
 			root);
 		compile("Test.java", root);
-		jar("test.jar", new String[] {"org"}, root);
+		jar("test.jar", new String[] {"org", "Test.class"}, root);
 		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
@@ -223,7 +223,7 @@ public class TestImports extends BaseTest {
 			"String result = st.render();\n",
 			root);
 		compile("Test.java", root);
-		jar("test.jar", new String[] {"org"}, root);
+		jar("test.jar", new String[] {"org", "Test.class"}, root);
 		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
