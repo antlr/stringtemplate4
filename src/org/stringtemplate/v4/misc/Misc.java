@@ -167,14 +167,20 @@ public class Misc {
 	}
 
 	public static boolean urlExists(URL url) {
+		InputStream is = null;
 		try {
 			URLConnection con = url.openConnection();
-			InputStream is = con.getInputStream();
-			is.close();
+			is = con.getInputStream();
 			return true;
 		}
 		catch (IOException ioe) {
 			return false;
+		} finally {
+			try {
+				is.close();
+			} catch (NullPointerException npe) {
+			} catch (IOException e) {
+			}
 		}
 	}
 

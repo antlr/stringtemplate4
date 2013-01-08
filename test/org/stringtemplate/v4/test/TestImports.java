@@ -262,6 +262,44 @@ public class TestImports extends BaseTest {
 		result = st.render();
 		assertEquals(expected, result);
 	}
+	
+	@Test public void testImportRelativeDirInJarViaCLASSPATH() throws Exception {
+		/*
+		org/foo/templates
+			g.stg has a() that imports subdir with relative path
+			subdir
+				a.st
+				b.st
+				c.st
+		 */
+		String root = getRandomDir();
+		System.out.println(root);
+		String dir = root+"/org/foo/templates";
+		String gstr =
+				"import \"subdir\"\n" + // finds subdir in dir
+						"a() ::= <<dir1 a>>\n";
+		writeFile(dir, "g.stg", gstr);
+		
+		String a = "a() ::= <<subdir a>>\n";
+		String b = "b() ::= <<subdir b>>\n";
+		String c = "c() ::= <<subdir b>>\n";
+		writeFile(dir, "subdir/a.st", a);
+		writeFile(dir, "subdir/b.st", b);
+		writeFile(dir, "subdir/c.st", c);
+		
+		writeTestFile(
+			"STGroup group = new STGroupFile(\"org/foo/templates/g.stg\");\n" +
+			"ST st = group.getInstanceOf(\"b\");\n"+
+			"String result = st.render();\n",
+			root);
+		compile("Test.java", root);
+		jar("test.jar", new String[] {"org"}, root);
+		deleteFile(root + "/org");
+		String result = java("Test", "test.jar", root);
+
+		String expected = "subdir b\n";
+		assertEquals(expected, result);
+	}
 
 	@Test public void testImportGroupFileSameDir() throws Exception {
 		/*
