@@ -33,6 +33,10 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 public class TestImports extends BaseTest {
 	@Test public void testImportDir() throws Exception {
 		/*
@@ -87,7 +91,7 @@ public class TestImports extends BaseTest {
 			root);
 		compile("Test.java", root);
 		// jar has sub, base as dirs in CLASSPATH
-		jar("test.jar", new String[]{"sub", "base"}, root);
+		jar("test.jar", new String[]{"sub", "base", "Test.class"}, root);
 		deleteFile(root+"/sub");
 		deleteFile(root+"/base");
 		String result = java("Test", "test.jar", root);
@@ -121,7 +125,7 @@ public class TestImports extends BaseTest {
 			"String result = st.render();\n",
 			root);
 		compile("Test.java", root);
-		jar("test.jar", new String[] {"org"}, root);
+		jar("test.jar", new String[] {"org", "Test.class"}, root);
 		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
@@ -155,7 +159,7 @@ public class TestImports extends BaseTest {
 			"String result = st.render();\n",
 			root);
 		compile("Test.java", root);
-		jar("test.jar", new String[] {"org"}, root);
+		jar("test.jar", new String[] {"org", "Test.class"}, root);
 		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
@@ -190,7 +194,7 @@ public class TestImports extends BaseTest {
 			"String result = st.render();\n",
 			root);
 		compile("Test.java", root);
-		jar("test.jar", new String[] {"org"}, root);
+		jar("test.jar", new String[] {"org", "Test.class"}, root);
 		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
@@ -223,7 +227,7 @@ public class TestImports extends BaseTest {
 			"String result = st.render();\n",
 			root);
 		compile("Test.java", root);
-		jar("test.jar", new String[] {"org"}, root);
+		jar("test.jar", new String[] {"org", "Test.class"}, root);
 		deleteFile(root+"/org");
 		String result = java("Test", "test.jar", root);
 
@@ -260,6 +264,44 @@ public class TestImports extends BaseTest {
 		assertEquals(expected, result);
 		st = group.getInstanceOf("c");
 		result = st.render();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testImportRelativeDirInJarViaCLASSPATH() throws Exception {
+		/*
+		org/foo/templates
+			g.stg has a() that imports subdir with relative path
+			subdir
+				a.st
+				b.st
+				c.st
+		 */
+		String root = getRandomDir();
+		System.out.println(root);
+		String dir = root+"/org/foo/templates";
+		String gstr =
+				"import \"subdir\"\n" + // finds subdir in dir
+						"a() ::= <<dir1 a>>\n";
+		writeFile(dir, "g.stg", gstr);
+
+		String a = "a() ::= <<subdir a>>\n";
+		String b = "b() ::= <<subdir b>>\n";
+		String c = "c() ::= <<subdir b>>\n";
+		writeFile(dir, "subdir/a.st", a);
+		writeFile(dir, "subdir/b.st", b);
+		writeFile(dir, "subdir/c.st", c);
+
+		jar("test.jar", new String[] {"org"}, root);
+		deleteFile(root + "/org");
+
+		File path = new File(root + File.separatorChar + "test.jar");
+		assertTrue(path.isFile());
+		URLClassLoader loader = new URLClassLoader(new URL[] { path.toURI().toURL() });
+		STGroup group = new STGroupFile(loader.getResource("org/foo/templates/g.stg"), "UTF-8", '<', '>');
+		ST st = group.getInstanceOf("b");
+		String result = st.render();
+
+		String expected = "subdir b";
 		assertEquals(expected, result);
 	}
 

@@ -149,7 +149,7 @@ public abstract class BaseTest {
 
 	public void jar(String fileName, String[] files, String workingDirName) {
 		String[] cmd = {
-			"jar", "cf", fileName, "Test.class"
+			"jar", "cf", fileName
 		};
 		// SO SAD FOR YOU JAVA!!!!
 		List<String> list = new ArrayList<String>();
