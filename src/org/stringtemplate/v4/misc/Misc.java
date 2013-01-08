@@ -33,7 +33,9 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.Iterator;
 
@@ -168,8 +170,19 @@ public class Misc {
 
 	public static boolean urlExists(URL url) {
 		try {
-			URLConnection con = url.openConnection();
-			InputStream is = con.getInputStream();
+			URLConnection connection = url.openConnection();
+			if (connection instanceof JarURLConnection) {
+				JarURLConnection jarURLConnection = (JarURLConnection)connection;
+				URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarURLConnection.getJarFileURL() });
+				try {
+					return urlClassLoader.findResource(jarURLConnection.getEntryName()) != null;
+				}
+				finally {
+					urlClassLoader.close();
+				}
+			}
+
+			InputStream is = url.openStream();
 			is.close();
 			return true;
 		}
