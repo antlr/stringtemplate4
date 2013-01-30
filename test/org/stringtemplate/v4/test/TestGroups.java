@@ -722,7 +722,7 @@ public class TestGroups extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
 		ST st = group.getInstanceOf("t");
 		Assert.assertNotNull(st);
-		String expecting ="Foo bar";     // expect \n in output
+		String expecting ="Foo bar";
 		Assert.assertEquals(expecting, st.render());
 	}
 
@@ -736,7 +736,7 @@ public class TestGroups extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
 		ST st = group.getInstanceOf("t");
 		Assert.assertNotNull(st);
-		String expecting ="Foo bar";     // expect \n in output
+		String expecting ="Foo bar";
 		Assert.assertEquals(expecting, st.render());
 	}
 
