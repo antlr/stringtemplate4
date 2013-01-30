@@ -30,9 +30,6 @@ package org.stringtemplate.v4.misc;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -206,40 +203,5 @@ public class Misc {
         }
 
         return new Coordinate(line,charPos);
-    }
-
-    public static Object accessField(Field f, Object o, Object value) throws IllegalAccessException {
-        try {
-            // make sure it's accessible (stupid java)
-            f.setAccessible(true);
-        }
-        catch (SecurityException se) {
-            // oh well; security won't let us
-        }
-        value = f.get(o);
-        return value;
-    }
-
-    public static Object invokeMethod(Method m, Object o, Object value) throws IllegalAccessException, InvocationTargetException {
-        try {
-            // make sure it's accessible (stupid java)
-            m.setAccessible(true);
-        }
-        catch (SecurityException se) {
-            // oh well; security won't let us
-        }
-        value = m.invoke(o,(Object[])null);
-        return value;
-    }
-
-    public static Method getMethod(Class<?> c, String methodName) {
-        Method m;
-        try {
-            m = c.getMethod(methodName);
-        }
-        catch (NoSuchMethodException nsme) {
-            m = null;
-        }
-        return m;
     }
 }

@@ -252,7 +252,7 @@ public class TestImports extends BaseTest {
 
 		String a = "a() ::= <<subdir a>>\n";
 		String b = "b() ::= <<subdir b>>\n";
-		String c = "c() ::= <<subdir b>>\n";
+		String c = "c() ::= <<subdir c>>\n";
 		writeFile(dir, "subdir/a.st", a);
 		writeFile(dir, "subdir/b.st", b);
 		writeFile(dir, "subdir/c.st", c);
@@ -264,6 +264,7 @@ public class TestImports extends BaseTest {
 		assertEquals(expected, result);
 		st = group.getInstanceOf("c");
 		result = st.render();
+		expected = "subdir c";
 		assertEquals(expected, result);
 	}
 
