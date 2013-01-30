@@ -1,10 +1,16 @@
-ST 4.0.7 Release
+ST 4.0.8-Dev Release
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
 University of San Francisco
 
 CHANGES
+
+January 30, 2013
+
+* Require EOF in Group.g (rule group)
+* Minor cleanup and documentation tweaks
+* Improve ObjectModelAdaptor caching performance, eliminate chance of deadlock
 
 January 4, 2013 -- Release 4.0.7
 
