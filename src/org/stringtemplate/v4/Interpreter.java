@@ -1123,7 +1123,10 @@ public class Interpreter {
 				iter = ((Map<?, ?>)o).keySet().iterator();
 			}
 		}
-		else if ( o instanceof Iterator )  iter = (Iterator<?>)o;
+		//// this is implied by the following line
+		//else if ( o instanceof Iterator ) {
+		//	iter = (Iterator<?>)o;
+		//}
 		if ( iter==null ) return o;
 		return iter;
 	}

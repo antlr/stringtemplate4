@@ -160,9 +160,6 @@ public class CompiledST {
 					break;
 
 				case GroupParser.TRUE:
-					fa.defaultValue = fa.defaultValueToken.getType()==GroupParser.TRUE;
-					break;
-
 				case GroupParser.FALSE:
 					fa.defaultValue = fa.defaultValueToken.getType()==GroupParser.TRUE;
 					break;
