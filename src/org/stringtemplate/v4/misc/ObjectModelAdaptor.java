@@ -27,7 +27,6 @@
  */
 package org.stringtemplate.v4.misc;
 
-import org.antlr.runtime.misc.DoubleKeyMap;
 import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
@@ -35,71 +34,133 @@ import org.stringtemplate.v4.ST;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ObjectModelAdaptor implements ModelAdaptor {
-	/** Cache exact attribute type and property name reflection {@link Member} object. */
-	protected DoubleKeyMap<Class<?>, String, Member> classAndPropertyToMemberCache =
-		new DoubleKeyMap<Class<?>, String, Member>();
+	protected static final Member INVALID_MEMBER;
+	static {
+		Member invalidMember;
+		try {
+			invalidMember = ObjectModelAdaptor.class.getDeclaredField("INVALID_MEMBER");
+		} catch (NoSuchFieldException ex) {
+			invalidMember = null;
+		} catch (SecurityException ex) {
+			invalidMember = null;
+		}
+
+		INVALID_MEMBER = invalidMember;
+	}
+
+	protected static final Map<Class<?>, Map<String, Member>> membersCache =
+		new HashMap<Class<?>, Map<String, Member>>();
 
 	@Override
 	public synchronized Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException
 	{
-		Object value = null;
-        Class<?> c = o.getClass();
+		if (o == null) {
+			throw new NullPointerException("o");
+		}
+
+		Class<?> c = o.getClass();
 
 		if ( property==null ) {
 			return throwNoSuchProperty(c, propertyName, null);
 		}
 
-		// Look in cache for Member first
-		Member member = classAndPropertyToMemberCache.get(c, propertyName);
+		Member member = findMember(c, propertyName);
 		if ( member!=null ) {
 			try {
-				Class<?> memberClass = member.getClass();
-				if ( memberClass == Method.class ) return ((Method)member).invoke(o);
-				if ( memberClass == Field.class ) return ((Field)member).get(o);
+				if (member instanceof Method) {
+					return ((Method)member).invoke(o);
+				}
+				else if (member instanceof Field) {
+					return ((Field)member).get(o);
+				}
 			}
 			catch (Exception e) {
 				throwNoSuchProperty(c, propertyName, e);
 			}
 		}
-		return lookupMethod(o, propertyName, value, c);
+
+		return throwNoSuchProperty(c, propertyName, null);
 	}
 
-	public synchronized Object lookupMethod(Object o, String propertyName, Object value, Class<?> c) {
-		// try getXXX and isXXX properties, look up using reflection
-		String methodSuffix = Character.toUpperCase(propertyName.charAt(0))+
-			propertyName.substring(1, propertyName.length());
-		Method m = Misc.getMethod(c, "get" + methodSuffix);
-		if ( m==null ) {
-			m = Misc.getMethod(c, "is"+methodSuffix);
-			if ( m==null ) {
-				m = Misc.getMethod(c, "has"+methodSuffix);
-			}
+	protected static Member findMember(Class<?> clazz, String memberName) {
+		if (clazz == null) {
+			throw new NullPointerException("clazz");
 		}
-		try {
-			if ( m != null ) {
-				classAndPropertyToMemberCache.put(c, propertyName, m);
-				value = Misc.invokeMethod(m, o, value);
-			}
-			else {
-				// try for a visible field
-				Field f = c.getField(propertyName);
-				classAndPropertyToMemberCache.put(c, propertyName, f);
-				try {
-					value = Misc.accessField(f, o, value);
-				}
-				catch (IllegalAccessException iae) {
-					throwNoSuchProperty(c, propertyName, iae);
-				}
-			}
-		}
-		catch (Exception e) {
-			throwNoSuchProperty(c, propertyName, e);
+		if (memberName == null) {
+			throw new NullPointerException("memberName");
 		}
 
-		return value;
+		synchronized (membersCache) {
+			Map<String, Member> members = membersCache.get(clazz);
+			Member member = null;
+			if (members != null) {
+				member = members.get(memberName);
+				if (member != null) {
+					return member != INVALID_MEMBER ? member : null;
+				}
+			}
+			else {
+				members = new HashMap<String, Member>();
+				membersCache.put(clazz, members);
+			}
+
+			// try getXXX and isXXX properties, look up using reflection
+			String methodSuffix = Character.toUpperCase(memberName.charAt(0)) +
+				memberName.substring(1, memberName.length());
+			
+			member = tryGetMethod(clazz, "get" + methodSuffix);
+			if (member == null) {
+				member = tryGetMethod(clazz, "is" + methodSuffix);
+				if (member == null) {
+					member = tryGetMethod(clazz, "has" + methodSuffix);
+				}
+			}
+
+			if (member == null) {
+				// try for a visible field
+				member = tryGetField(clazz, memberName);
+			}
+
+			members.put(memberName, member != null ? member : INVALID_MEMBER);
+			return member;
+		}
+	}
+
+	protected static Method tryGetMethod(Class<?> clazz, String methodName) {
+		try {
+			Method method = clazz.getMethod(methodName);
+			if (method != null) {
+				method.setAccessible(true);
+			}
+
+			return method;
+		} catch (NoSuchMethodException ex) {
+		} catch (SecurityException ex) {
+		}
+
+		return null;
+	}
+
+	protected static Field tryGetField(Class<?> clazz, String fieldName) {
+		try {
+			Field field = clazz.getField(fieldName);
+			if (field != null) {
+				field.setAccessible(true);
+			}
+
+			return field;
+		} catch (NoSuchFieldException ex) {
+		} catch (SecurityException ex) {
+		}
+
+		return null;
 	}
 
 	protected Object throwNoSuchProperty(Class<?> clazz, String propertyName, Exception cause) {
