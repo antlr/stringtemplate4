@@ -172,8 +172,9 @@ this.group = lexer.group = $group;
 			}
 			ID ('.' ID)* // might be a.b.c.d
 		)*
-        def[prefix]+
-    ;
+		def[prefix]+
+		EOF
+	;
 
 oldStyleHeader // ignore but lets us use this parser in AW for both v3 and v4
     :   'group' ID ( ':' ID )?
