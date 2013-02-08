@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.STGroupString;
 
 import static org.junit.Assert.assertEquals;
 
@@ -89,4 +90,45 @@ public class TestDollarDelimiters extends BaseTest {
         String result = b.render();
         assertEquals(expecting, result);
     }
+
+	/**
+	 * This is part of a regression test for antlr/stringtemplate4#46.
+	 * https://github.com/antlr/stringtemplate4/issues/46
+	 */
+	@Test public void testDelimitersClause() throws Exception {
+		String templates =
+				"delimiters \"$\", \"$\""+newline+
+				"method(name) ::= <<"+newline+
+				"$stat(name)$" +newline+
+				">>"+newline+
+				"stat(name,value=\"99\") ::= \"x=$value$; // $name$\""+newline
+				;
+		writeFile(tmpdir, "group.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/group.stg");
+		ST b = group.getInstanceOf("method");
+		b.add("name", "foo");
+		String expecting = "x=99; // foo";
+		String result = b.render();
+		assertEquals(expecting, result);
+	}
+
+	/**
+	 * This is part of a regression test for antlr/stringtemplate4#46.
+	 * https://github.com/antlr/stringtemplate4/issues/46
+	 */
+	@Test public void testDelimitersClauseInGroupString() throws Exception {
+		String templates =
+				"delimiters \"$\", \"$\""+newline+
+				"method(name) ::= <<"+newline+
+				"$stat(name)$" +newline+
+				">>"+newline+
+				"stat(name,value=\"99\") ::= \"x=$value$; // $name$\""+newline
+				;
+		STGroup group = new STGroupString(templates);
+		ST b = group.getInstanceOf("method");
+		b.add("name", "foo");
+		String expecting = "x=99; // foo";
+		String result = b.render();
+		assertEquals(expecting, result);
+	}
 }
