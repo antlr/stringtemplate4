@@ -188,6 +188,9 @@ public class ST {
 			this.locals = new Object[proto.locals.length];
 			System.arraycopy(proto.locals, 0, this.locals, 0, proto.locals.length);
 		}
+		else if (impl.formalArguments != null && !impl.formalArguments.isEmpty()) {
+			this.locals = new Object[impl.formalArguments.size()];
+		}
 		this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
 	}
 
