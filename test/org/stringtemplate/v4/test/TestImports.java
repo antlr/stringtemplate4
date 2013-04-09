@@ -306,6 +306,28 @@ public class TestImports extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test public void testEmptyGroupImportGroupFileSameDir() throws Exception {
+		/*
+		dir
+			group1.stg		that imports group2.stg in same dir with just filename
+			group2.stg		has c()
+		 */
+		String dir = getRandomDir();
+		String groupFile =
+			"import \"group2.stg\"\n";
+		writeFile(dir, "group1.stg", groupFile);
+
+		groupFile =
+			"c() ::= \"g2 c\"\n";
+		writeFile(dir, "group2.stg", groupFile);
+
+		STGroup group1 = new STGroupFile(dir+"/group1.stg");
+		ST st = group1.getInstanceOf("c"); // should see c()
+		String expected = "g2 c";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testImportGroupFileSameDir() throws Exception {
 		/*
 		dir
