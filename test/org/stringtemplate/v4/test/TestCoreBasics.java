@@ -1053,4 +1053,15 @@ public class TestCoreBasics extends BaseTest {
 		st.impl.dump();
 	}
 
+	@Test public void testPrototype() {
+		ST prototype = new ST("simple template");
+
+		ST st = new ST(prototype);
+		st.add("arg1", "value");
+		assertEquals("simple template", st.render());
+
+		ST st2 = new ST(prototype);
+		st2.add("arg1", "value");
+		assertEquals("simple template", st2.render());
+	}
 }
