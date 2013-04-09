@@ -172,7 +172,7 @@ this.group = lexer.group = $group;
 			}
 			ID ('.' ID)* // might be a.b.c.d
 		)*
-		def[prefix]+
+		def[prefix]*
 		EOF
 	;
 
