@@ -34,7 +34,7 @@ All you need to do is get the StringTemplate jar into your CLASSPATH
 as well as its dependent ANTLR jar. Download the following and put
 into your favorite lib directory such as /usr/local/lib on UNIX:
 
-  * antlr-3.5-complete.jar; http://www.antlr.org/download/antlr-3.5-complete.jar
+  * antlr-3.5-complete.jar; http://www.antlr3.org/download/antlr-3.5-complete.jar
   * ST.jar; see http://www.stringtemplate.org/download/ST-4.0.7.jar
 
 Add to your CLASSPATH. On UNIX that looks like
