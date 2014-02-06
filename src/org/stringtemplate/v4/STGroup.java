@@ -538,7 +538,7 @@ public class STGroup {
 			return;
 		}
 		if ( isTemplateFile ) {
-			g = new STGroup();
+			g = new STGroup(delimiterStartChar, delimiterStopChar);
 			g.setListener(this.getListener());
 			URL fileURL;
 			if ( Misc.urlExists(fileUnderRoot) ) fileURL = fileUnderRoot;
