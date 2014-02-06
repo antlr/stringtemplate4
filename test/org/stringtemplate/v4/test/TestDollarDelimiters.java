@@ -28,6 +28,7 @@
 
 package org.stringtemplate.v4.test;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -130,5 +131,160 @@ public class TestDollarDelimiters extends BaseTest {
 		String expecting = "x=99; // foo";
 		String result = b.render();
 		assertEquals(expecting, result);
+	}
+
+	/**
+	 * This is part of a regression test for antlr/stringtemplate4#66.
+	 * https://github.com/antlr/stringtemplate4/issues/66
+	 */
+	@Test
+	public void testImportTemplatePreservesDelimiters() {
+		String groupFile =
+			"group GenerateHtml;" + newline +
+			"import \"html.st\"" + newline +
+			"entry() ::= <<" + newline +
+			"$html()$" + newline +
+			">>" + newline;
+		String htmlFile =
+			"html() ::= <<" + newline +
+			"<table style=\"stuff\">" + newline +
+			">>" + newline;
+
+		String dir = getRandomDir();
+		writeFile(dir, "GenerateHtml.stg", groupFile);
+		writeFile(dir, "html.st", htmlFile);
+
+		STGroup group = new STGroupFile(dir + "/GenerateHtml.stg", '$', '$');
+
+		// test html template directly
+		ST st = group.getInstanceOf("html");
+		Assert.assertNotNull(st);
+		String expected = "<table style=\"stuff\">";
+		String result = st.render();
+		assertEquals(expected, result);
+
+		// test from entry template
+		st = group.getInstanceOf("entry");
+		Assert.assertNotNull(st);
+		expected = "<table style=\"stuff\">";
+		result = st.render();
+		assertEquals(expected, result);
+	}
+
+	/**
+	 * This is part of a regression test for antlr/stringtemplate4#66.
+	 * https://github.com/antlr/stringtemplate4/issues/66
+	 */
+	@Test
+	public void testImportGroupPreservesDelimiters() {
+		String groupFile =
+			"group GenerateHtml;" + newline +
+			"import \"HtmlTemplates.stg\"" + newline +
+			"entry() ::= <<" + newline +
+			"$html()$" + newline +
+			">>" + newline;
+		String htmlFile =
+			"html() ::= <<" + newline +
+			"<table style=\"stuff\">" + newline +
+			">>" + newline;
+
+		String dir = getRandomDir();
+		writeFile(dir, "GenerateHtml.stg", groupFile);
+		writeFile(dir, "HtmlTemplates.stg", htmlFile);
+
+		STGroup group = new STGroupFile(dir + "/GenerateHtml.stg", '$', '$');
+
+		// test html template directly
+		ST st = group.getInstanceOf("html");
+		Assert.assertNotNull(st);
+		String expected = "<table style=\"stuff\">";
+		String result = st.render();
+		assertEquals(expected, result);
+
+		// test from entry template
+		st = group.getInstanceOf("entry");
+		Assert.assertNotNull(st);
+		expected = "<table style=\"stuff\">";
+		result = st.render();
+		assertEquals(expected, result);
+	}
+
+	/**
+	 * This is part of a regression test for antlr/stringtemplate4#66.
+	 * https://github.com/antlr/stringtemplate4/issues/66
+	 */
+	@Test
+	public void testDelimitersClauseOverridesConstructorDelimiters() {
+		String groupFile =
+			"group GenerateHtml;" + newline +
+			"delimiters \"$\", \"$\"" + newline +
+			"import \"html.st\"" + newline +
+			"entry() ::= <<" + newline +
+			"$html()$" + newline +
+			">>" + newline;
+		String htmlFile =
+			"html() ::= <<" + newline +
+			"<table style=\"stuff\">" + newline +
+			">>" + newline;
+
+		String dir = getRandomDir();
+		writeFile(dir, "GenerateHtml.stg", groupFile);
+		writeFile(dir, "html.st", htmlFile);
+
+		STGroup group = new STGroupFile(dir + "/GenerateHtml.stg", '<', '>');
+
+		// test html template directly
+		ST st = group.getInstanceOf("html");
+		Assert.assertNotNull(st);
+		String expected = "<table style=\"stuff\">";
+		String result = st.render();
+		assertEquals(expected, result);
+
+		// test from entry template
+		st = group.getInstanceOf("entry");
+		Assert.assertNotNull(st);
+		expected = "<table style=\"stuff\">";
+		result = st.render();
+		assertEquals(expected, result);
+	}
+
+	/**
+	 * This is part of a regression test for antlr/stringtemplate4#66.
+	 * https://github.com/antlr/stringtemplate4/issues/66
+	 */
+	@Test
+	public void testDelimitersClauseOverridesInheritedDelimiters() {
+		String groupFile =
+			"group GenerateHtml;" + newline +
+			"delimiters \"<\", \">\"" + newline +
+			"import \"HtmlTemplates.stg\"" + newline +
+			"entry() ::= <<" + newline +
+			"<html()>" + newline +
+			">>" + newline;
+		String htmlFile =
+			"delimiters \"$\", \"$\"" + newline +
+			"html() ::= <<" + newline +
+			"<table style=\"stuff\">" + newline +
+			">>" + newline;
+
+		String dir = getRandomDir();
+		writeFile(dir, "GenerateHtml.stg", groupFile);
+		writeFile(dir, "HtmlTemplates.stg", htmlFile);
+
+		STGroup group = new STGroupFile(dir + "/GenerateHtml.stg");
+
+		// test html template directly
+		ST st = group.getInstanceOf("html");
+		Assert.assertNotNull(st);
+		String expected = "<table style=\"stuff\">";
+		String result = st.render();
+		assertEquals(expected, result);
+
+		// test from entry template
+		st = group.getInstanceOf("entry");
+		Assert.assertNotNull(st);
+		expected = "<table style=\"stuff\">";
+		result = st.render();
+		assertEquals(expected, result);
 	}
 }
