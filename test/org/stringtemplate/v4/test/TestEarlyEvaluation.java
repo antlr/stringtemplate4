@@ -1,13 +1,14 @@
 package org.stringtemplate.v4.test;
 
-import java.awt.Window;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.gui.STViz;
+
+import java.awt.*;
+import java.util.HashMap;
 
 public class TestEarlyEvaluation extends BaseTest {
 	/**
@@ -48,7 +49,7 @@ public class TestEarlyEvaluation extends BaseTest {
 
 	/**
 	 * see
-	 * http://www.antlr.org/pipermail/stringtemplate-interest/2011-May/003476.html
+	 * http://www.antlr3.org/pipermail/stringtemplate-interest/2011-May/003476.html
 	 *
 	 * @throws Exception
 	 */
@@ -81,7 +82,7 @@ public class TestEarlyEvaluation extends BaseTest {
 	/**
 	 * see
 	 * http://www.antlr.org/pipermail/stringtemplate-interest/2011-May/003476.html
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -109,10 +110,10 @@ public class TestEarlyEvaluation extends BaseTest {
 			waitUntilAllWindowsAreClosed();
 		}
 	}
-	
+
 
 	/**
-	 * see http://www.antlr.org/pipermail/stringtemplate-interest/2011-August/003758.html 
+	 * see http://www.antlr3.org/pipermail/stringtemplate-interest/2011-August/003758.html
 	 * @throws Exception
 	 */
 	@Test
@@ -132,12 +133,12 @@ public class TestEarlyEvaluation extends BaseTest {
 		String s = st.render();
 		Assert.assertEquals("Hello", s);
 
-		// Inspecting this template threw an ArrayIndexOutOfBoundsException 
-		// in 4.0.2. 
-		// With the default for x changed to {<t2()>} (i.e. lazy eval) inspect 
-		// works fine. Also removing the " || other" and keeping the early eval 
+		// Inspecting this template threw an ArrayIndexOutOfBoundsException
+		// in 4.0.2.
+		// With the default for x changed to {<t2()>} (i.e. lazy eval) inspect
+		// works fine. Also removing the " || other" and keeping the early eval
 		// works fine with inspect.
-		
+
 		STViz viz = st.inspect();
 		if (interactive) {
 			viz.waitForClose();
@@ -147,5 +148,79 @@ public class TestEarlyEvaluation extends BaseTest {
 			viz.viewFrame.dispose();
 			waitUntilAllWindowsAreClosed();
 		}
-	}	
+	}
+
+	@Test
+	public void testEarlyEvalInIfExpr() throws Exception {
+		String templates = "main(x) ::= << <if((x))>foo<else>bar<endif> >>";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = new STGroupFile(tmpdir + "/t.stg");
+
+		ST st = group.getInstanceOf("main");
+
+		String s = st.render();
+		Assert.assertEquals(" bar ", s);
+
+		st.add("x", "true");
+		s = st.render();
+		Assert.assertEquals(" foo ", s);
+	}
+
+	@Test
+	public void testEarlyEvalOfSubtemplateInIfExpr() throws Exception {
+		String templates = "main(x) ::= << <if(({a<x>b}))>foo<else>bar<endif> >>";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = new STGroupFile(tmpdir + "/t.stg");
+
+		ST st = group.getInstanceOf("main");
+
+		String s = st.render();
+		Assert.assertEquals(" foo ", s);
+	}
+
+	@Test
+	public void testEarlyEvalOfMapInIfExpr() throws Exception {
+		String templates =
+			"m ::= [\n"+
+			"	\"parrt\": \"value\",\n"+
+			"	default: \"other\"\n"+
+			"]\n" +
+			"main(x) ::= << p<x>t: <m.({p<x>t})>, <if(m.({p<x>t}))>if<else>else<endif> >>\n";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = new STGroupFile(tmpdir + "/t.stg");
+
+		ST st = group.getInstanceOf("main");
+
+		st.add("x", null);
+		String s = st.render();
+		Assert.assertEquals(" pt: other, if ", s);
+
+		st.add("x", "arr");
+		s = st.render();
+		Assert.assertEquals(" parrt: value, if ", s);
+	}
+
+	@Test
+	public void testEarlyEvalOfMapInIfExprPassInHashMap() throws Exception {
+		String templates =
+			"main(m,x) ::= << p<x>t: <m.({p<x>t})>, <if(m.({p<x>t}))>if<else>else<endif> >>\n";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroup group = new STGroupFile(tmpdir + "/t.stg");
+
+		ST st = group.getInstanceOf("main");
+		st.add("m", new HashMap() {{put("parrt","value");}});
+
+		st.add("x", null);
+		String s = st.render();
+		Assert.assertEquals(" pt: , else ", s); // m[null] has no default value so else clause
+
+		st.add("x", "arr");
+		s = st.render();
+		Assert.assertEquals(" parrt: value, if ", s);
+	}
+
 }
