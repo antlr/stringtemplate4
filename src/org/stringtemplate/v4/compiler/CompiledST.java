@@ -40,7 +40,7 @@ import java.util.*;
  *  info.  It's the implementation of an ST you might say.  All instances
  *  of the same template share a single implementation ({@link ST#impl} field).
  */
-public class CompiledST {
+public class CompiledST implements Cloneable {
     public String name;
 
 	/**
@@ -121,6 +121,28 @@ public class CompiledST {
         instrs = new byte[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
         sourceMap = new Interval[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
 		template = "";
+	}
+
+	/**
+	 * Cloning the {@link CompiledST} for an {@link ST} instance allows
+	 * {@link ST#add} to be called safely during interpretation for templates
+	 * that do not contain formal arguments.
+	 *
+	 * @return A copy of the current {@link CompiledST} instance. The copy is a
+	 * shallow copy, with the exception of the {@link #formalArguments} field
+	 * which is also cloned.
+	 *
+	 * @exception CloneNotSupportedException If the current instance cannot be
+	 * cloned.
+	 */
+	@Override
+	public CompiledST clone() throws CloneNotSupportedException {
+		CompiledST clone = (CompiledST)super.clone();
+		if (formalArguments != null) {
+			formalArguments = Collections.synchronizedMap(new LinkedHashMap<String,FormalArgument>(formalArguments));
+		}
+
+		return clone;
 	}
 
     public void addImplicitlyDefinedTemplate(CompiledST sub) {
