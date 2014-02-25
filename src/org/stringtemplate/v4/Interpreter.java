@@ -550,36 +550,75 @@ public class Interpreter {
 	}
 
 	void storeArgs(InstanceScope scope, Map<String,Object> attrs, ST st) {
-		if ( attrs!=null && attrs.size()>0 &&
-			 !st.impl.hasFormalArgs && st.impl.formalArguments==null )
-		{
-			st.add(ST.IMPLICIT_ARG_NAME, null); // pretend we have "it" arg
-		}
-		int nformalArgs = 0;
-		if ( st.impl.formalArguments!=null ) nformalArgs = st.impl.formalArguments.size();
-		int nargs = 0;
-		if ( attrs!=null ) nargs = attrs.size();
-
-		if ( nargs < (nformalArgs-st.impl.numberOfArgsWithDefaultValues) ||
-			 nargs > nformalArgs )
-		{
-			errMgr.runTimeError(this, scope,
-								ErrorType.ARGUMENT_COUNT_MISMATCH,
-								nargs,
-								st.impl.name,
-								nformalArgs);
-		}
-
-		for (String argName : attrs.keySet()) {
-			// don't let it throw an exception in rawSetAttribute
-			if ( st.impl.formalArguments==null || !st.impl.formalArguments.containsKey(argName) ) {
-				errMgr.runTimeError(this, scope,
-									ErrorType.NO_SUCH_ATTRIBUTE,
-									argName);
-				continue;
+		if (st.impl.hasFormalArgs) {
+			boolean argumentCountMismatch = false;
+			Map<String, FormalArgument> formalArguments = st.impl.formalArguments;
+			if (formalArguments == null) {
+				formalArguments = Collections.emptyMap();
 			}
-			Object o = attrs.get(argName);
-			st.rawSetAttribute(argName, o);
+
+			// first make sure that all non-default arguments are specified
+			for (Map.Entry<String, FormalArgument> formalArgument : formalArguments.entrySet()) {
+				if (formalArgument.getValue().defaultValueToken != null || formalArgument.getValue().defaultValue != null) {
+					// this argument has a default value, so it doesn't need to appear in attrs
+					continue;
+				}
+
+				if (attrs == null || !attrs.containsKey(formalArgument.getKey())) {
+					argumentCountMismatch = true;
+					break;
+				}
+			}
+
+			// next make sure there aren't too many arguments. note that the names
+			// of arguments are checked below as they are applied to the template
+			// instance, so there's no need to do that here.
+			if (attrs != null && attrs.size() > formalArguments.size()) {
+				argumentCountMismatch = true;
+			}
+
+			if (argumentCountMismatch) {
+				int nargs = attrs != null ? attrs.size() : 0;
+				int nformalArgs = formalArguments.size();
+				errMgr.runTimeError(this, scope,
+									ErrorType.ARGUMENT_COUNT_MISMATCH,
+									nargs,
+									st.impl.name,
+									nformalArgs);
+			}
+		}
+
+		if (attrs != null) {
+			for (Map.Entry<String, Object> argument : attrs.entrySet()) {
+				if (!st.impl.hasFormalArgs) {
+					if (st.impl.formalArguments == null || !st.impl.formalArguments.containsKey(argument.getKey())) {
+						try {
+							// we clone the CompiledST to prevent modifying the original
+							// formalArguments map during interpretation.
+							st.impl = st.impl.clone();
+							st.add(argument.getKey(), argument.getValue());
+						} catch (CloneNotSupportedException ex) {
+							errMgr.runTimeError(this, scope,
+												ErrorType.NO_SUCH_ATTRIBUTE,
+												argument.getKey());
+						}
+					}
+					else {
+						st.rawSetAttribute(argument.getKey(), argument.getValue());
+					}
+				}
+				else {
+					// don't let it throw an exception in rawSetAttribute
+					if ( st.impl.formalArguments==null || !st.impl.formalArguments.containsKey(argument.getKey()) ) {
+						errMgr.runTimeError(this, scope,
+											ErrorType.NO_SUCH_ATTRIBUTE,
+											argument.getKey());
+						continue;
+					}
+
+					st.rawSetAttribute(argument.getKey(), argument.getValue());
+				}
+			}
 		}
 	}
 
