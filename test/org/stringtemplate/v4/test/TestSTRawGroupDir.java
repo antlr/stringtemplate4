@@ -5,6 +5,7 @@ import org.stringtemplate.v4.*;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TestSTRawGroupDir extends BaseTest {
 	@Test public void testSimpleGroup() throws Exception {
@@ -98,5 +99,37 @@ public class TestSTRawGroupDir extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	/**
+	 * This is a regression test for antlr/stringtemplate4#70. "Argument
+	 * initialization for sub-template in template with STRawGroupDir doesn't
+	 * recognize valid parameters"
+	 * https://github.com/antlr/stringtemplate4/issues/70
+	 */
+	@Test
+	public void testRawArgumentPassing() {
+		String dir1 = getRandomDir();
+		String mainRawTemplate = "Hello $name$" + newline +
+			"Then do the footer:" + newline +
+			"$footerRaw(lastLine=veryLastLineRaw())$" + newline;
+		String footerRawTemplate =
+			"Simple footer. And now a last line:" + newline +
+			"$lastLine$";
+		String veryLastLineTemplate =
+			"That's the last line.";
+		writeFile(dir1, "mainRaw.st", mainRawTemplate);
+		writeFile(dir1, "footerRaw.st", footerRawTemplate);
+		writeFile(dir1, "veryLastLineRaw.st", veryLastLineTemplate);
 
+		STGroup group = new STRawGroupDir(dir1, '$', '$');
+		ST st = group.getInstanceOf("mainRaw");
+		assertNotNull(st);
+		st.add("name", "John");
+		String result = st.render();
+		String expected =
+			"Hello John" + newline +
+			"Then do the footer:" + newline +
+			"Simple footer. And now a last line:" + newline +
+			"That's the last line." + newline;
+		assertEquals(expected, result);
+	}
 }
