@@ -212,7 +212,7 @@ public class TestEarlyEvaluation extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir + "/t.stg");
 
 		ST st = group.getInstanceOf("main");
-		st.add("m", new HashMap() {{put("parrt","value");}});
+		st.add("m", new HashMap<String, String>() {{put("parrt","value");}});
 
 		st.add("x", null);
 		String s = st.render();
