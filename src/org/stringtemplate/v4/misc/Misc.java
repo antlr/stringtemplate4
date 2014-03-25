@@ -27,6 +27,7 @@
  */
 package org.stringtemplate.v4.misc;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -175,13 +176,23 @@ public class Misc {
 					return urlClassLoader.findResource(jarURLConnection.getEntryName()) != null;
 				}
 				finally {
-					urlClassLoader.close();
+					if (urlClassLoader instanceof Closeable) {
+						((Closeable)urlClassLoader).close();
+					}
 				}
 			}
 
-			InputStream is = url.openStream();
-			is.close();
-			return true;
+			InputStream is = null;
+			try {
+				is = url.openStream();
+			}
+			finally {
+				if (is != null) {
+					is.close();
+				}
+			}
+
+			return is != null;
 		}
 		catch (IOException ioe) {
 			return false;
