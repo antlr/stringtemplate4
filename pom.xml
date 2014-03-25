@@ -21,7 +21,7 @@
         SNAPSHOT replaced with the the data, time and unique number.
     -->
 
-    <version>4.0.8-SNAPSHOT</version>
+    <version>4.0.8</version>
 
     <!--
         The name of the project as seen by IDEs and release documentation etc.
@@ -113,7 +113,8 @@ There are currently about 600 StringTemplate source downloads a month.
         <url>git://github.com/antlr/stringtemplate4.git</url>
         <connection>scm:git:git://github.com/antlr/stringtemplate4.git</connection>
         <developerConnection>scm:git:git@github.com:antlr/stringtemplate4.git</developerConnection>
-    </scm>
+      <tag>4.0.8</tag>
+  </scm>
 
     <dependencies>
         <dependency>
@@ -126,7 +127,7 @@ There are currently about 600 StringTemplate source downloads a month.
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr-runtime</artifactId>
-            <version>3.5</version>
+            <version>3.5.2</version>
             <scope>compile</scope>
         </dependency>
             
@@ -234,7 +235,7 @@ There are currently about 600 StringTemplate source downloads a month.
            <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr3-maven-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.5.2</version>
                 <configuration>
                     <libDirectory>src/org/stringtemplate/v4/compiler</libDirectory>
                     <sourceDirectory>src</sourceDirectory>
