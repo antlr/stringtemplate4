@@ -1,5 +1,5 @@
-StringTemplate 4.0.7
-January 4, 2013
+StringTemplate 4.0.8
+March 25, 2014
 
 Terence Parr, parrt at cs usfca edu
 ANTLR project lead and supreme dictator for life
@@ -21,7 +21,7 @@ model-view separation, unlike other engines. See:
 
 The documentation is in the wiki:
 
-  http://www.antlr.org/wiki/display/ST4/StringTemplate+4+Documentation
+  https://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+4+Documentation
 
 Per the BSD license in LICENSE.txt, this software is not guaranteed to
 work and might even destroy all life on this planet.
@@ -34,12 +34,12 @@ All you need to do is get the StringTemplate jar into your CLASSPATH
 as well as its dependent ANTLR jar. Download the following and put
 into your favorite lib directory such as /usr/local/lib on UNIX:
 
-  * antlr-3.5-complete.jar; http://www.antlr3.org/download/antlr-3.5-complete.jar
-  * ST.jar; see http://www.stringtemplate.org/download/ST-4.0.7.jar
+  * antlr-3.5.2-complete.jar; http://www.antlr3.org/download/antlr-3.5.2-complete.jar
+  * ST.jar; see http://www.stringtemplate.org/download/ST-4.0.8.jar
 
 Add to your CLASSPATH. On UNIX that looks like
 
-$ export CLASSPATH="/usr/local/lib/antlr-3.5-complete.jar:/usr/local/lib/ST-4.0.7.jar:$CLASSPATH"
+$ export CLASSPATH="/usr/local/lib/antlr-3.5-complete.jar:/usr/local/lib/ST-4.0.8.jar:$CLASSPATH"
 
 Java will now see all the libraries necessary to execute ST stuff.
 
@@ -52,15 +52,15 @@ The source is at github.com:
 If you would like to make changes to ST and build it yourself, just set
 build.properties to the appropriate version of this:
 
-  version=4.0.7
-  antlr3.jar=/usr/local/lib/antlr-3.5-rc-2-complete.jar
+  version=4.0.8
+  antlr3.jar=/usr/local/lib/antlr-3.5.2-complete.jar
   build.sysclasspath=ignore
 
 and then run "ant" from the main directory.
 
 Then, once you're set up with the ant task, go for it. Looks like this:
 
-$ cd /usr/local/ST-4.0.7
+$ cd /usr/local/ST-4.0.8
 $ ant
 Buildfile: /Users/parrt/antlr/code/stringtemplate4/build.xml
 
@@ -85,15 +85,15 @@ compile:
     [javac] Compiling 61 source files to /Users/parrt/antlr/code/stringtemplate4/build/classes
 
 zip-source:
-    [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7
-    [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7/src
-     [copy] Copying 68 files to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7/src
-     [copy] Copying 5 files to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7
-     [copy] Copying 1 file to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7/lib
-      [zip] Building zip: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7-src.zip
+    [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.8
+    [mkdir] Created dir: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.8/src
+     [copy] Copying 68 files to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.8/src
+     [copy] Copying 5 files to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.8
+     [copy] Copying 1 file to /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.8/lib
+      [zip] Building zip: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.8-src.zip
 
 build-jar:
-      [jar] Building jar: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.7.jar
+      [jar] Building jar: /Users/parrt/antlr/code/stringtemplate4/dist/ST-4.0.8.jar
 
 distribute:
 
