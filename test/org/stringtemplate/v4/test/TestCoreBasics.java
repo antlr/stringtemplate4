@@ -953,7 +953,7 @@ public class TestCoreBasics extends BaseTest {
 		assertEquals(expected, result);
 	}
 
-	/** (...) forces early eval to string. early eval <(x)> using new
+	/** (...) forces early eval to string. early eval {@code <(x)>} using new
 	 *  STWriter derived from type of current STWriter. e.g., AutoIndentWriter.
 	 */
     @Test public void testEarlyEvalIndent() throws Exception {
