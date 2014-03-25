@@ -60,12 +60,12 @@ import java.util.Map;
  *  of dynamic scoping, we also need a reference to any enclosing instance. For
  *  example, in a deeply nested template for an HTML page body, we could still
  *  reference the title attribute defined in the outermost page template.
- * <p/>
+ * <p>
  *  To use templates, you create one (usually via {@link STGroup}) and then inject
- *  attributes using {@link #add}. To render its attacks, use {@link ST#render()}.
- * <p/>
+ *  attributes using {@link #add}. To render its attacks, use {@link ST#render()}.</p>
+ * <p>
  *  TODO: {@link ST#locals} is not actually a hash table like the documentation
- *  says.
+ *  says.</p>
  */
 public class ST {
 	public final static String VERSION = "4.0.7-SNAPSHOT";
@@ -201,10 +201,10 @@ public class ST {
 	 *  If you send in a {@link List} and then inject a single value element,
 	 *  {@code add} copies original list and adds the new value. The
 	 *  attribute name cannot be null or contain '.'.
-	 *  <p/>
-	 *  Return {@code this} so we can chain:
-	 *  <p/>
-	 *  {@code t.add("x", 1).add("y", "hi")}
+	 *  <p>
+	 *  Return {@code this} so we can chain:</p>
+	 *  <p>
+	 *  {@code t.add("x", 1).add("y", "hi")}</p>
      */
     public synchronized ST add(String name, Object value) {
 		if ( name==null ) {
@@ -561,9 +561,9 @@ public class ST {
 
 	/**
 	 * <pre>
-	 * ST.format("name, phone | &lt;name>:&lt;phone>", n, p);
-	 * ST.format("&lt;%1>:&lt;%2>", n, p);
-	 * ST.format("&lt;name>:&lt;phone>", "name", x, "phone", y);
+	 * ST.format("name, phone | &lt;name&gt;:&lt;phone&gt;", n, p);
+	 * ST.format("&lt;%1&gt;:&lt;%2&gt;", n, p);
+	 * ST.format("&lt;name&gt;:&lt;phone&gt;", "name", x, "phone", y);
 	 * </pre>
 	 */
 	public static String format(String template, Object... attributes) {

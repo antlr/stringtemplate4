@@ -134,8 +134,8 @@ public class Misc {
         return s;
     }
 
-	/** Replace >\> with >> in s. Replace \>> unless prefix of \>>> with >>.
-	 *  Do NOT replace if it's <\\>
+	/** Replace &gt;\&gt; with &gt;&gt; in s. Replace \&gt;&gt; unless prefix of \&gt;&gt;&gt; with &gt;&gt;.
+	 *  Do NOT replace if it's &lt;\\&gt;
 	 */
 	public static String replaceEscapedRightAngle(String s) {
 		StringBuilder buf = new StringBuilder();

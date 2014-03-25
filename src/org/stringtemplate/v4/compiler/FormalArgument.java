@@ -32,15 +32,16 @@ import org.antlr.runtime.Token;
 /**
  * Represents the name of a formal argument defined in a template:
  * <pre>
- *  test(a,b,x=defaultvalue) ::= "&lt;a> &lt;n> &lt;x>"
+ *  test(a,b,x=defaultvalue) ::= "&lt;a&gt; &lt;n&gt; &lt;x&gt;"
  * </pre> Each template has a set of these formal arguments or sets
  * {@link CompiledST#hasFormalArgs} to {@code false} (indicating that no
  * arguments were specified such as when we create a template with
  * {@code new ST(...)}).
- * <p/>
+ *
+ * <p>
  * Note: originally, I tracked cardinality as well as the name of an attribute.
  * I'm leaving the code here as I suspect something may come of it later.
- * Currently, though, cardinality is not used.
+ * Currently, though, cardinality is not used.</p>
  */
 public class FormalArgument {
 /*

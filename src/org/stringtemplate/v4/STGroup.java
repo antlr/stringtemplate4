@@ -85,28 +85,28 @@ public class STGroup {
      *  {@code toString(Object)} method properly formats a {@link Date} attribute
      *  according to locale.  Or you can have a different renderer object
      *  for each locale.
-     *  <p/>
+     *  <p>
 	 *  Order of addition is recorded and matters.  If more than one
-	 *  renderer works for an object, the first registered has priority.
-	 *  <p/>
-	 *  Renderer associated with type {@code t} works for object {@code o} if
+	 *  renderer works for an object, the first registered has priority.</p>
+	 *  <p>
+	 *  Renderer associated with type {@code t} works for object {@code o} if</p>
 	 *  <pre>
 	 *  t.isAssignableFrom(o.getClass()) // would assignment t = o work?
 	 *  </pre>
 	 *  So it works if {@code o} is subclass or implements {@code t}.
-	 *  <p/>
-     *  This structure is synchronized.
+	 *  <p>
+     *  This structure is synchronized.</p>
      */
     protected Map<Class<?>, AttributeRenderer> renderers;
 
     /** A dictionary that allows people to register a model adaptor for
      *  a particular kind of object (subclass or implementation). Applies
 	 *  for any template evaluated relative to this group.
-	 * <p/>
+	 * <p>
 	 *  ST initializes with model adaptors that know how to pull
-	 *  properties out of {@link Object}s, {@link Map}s, and {@link ST}s.
-	 * <p/>
-	 *  The last one you register gets priority; do least to most specific.
+	 *  properties out of {@link Object}s, {@link Map}s, and {@link ST}s.</p>
+	 * <p>
+	 *  The last one you register gets priority; do least to most specific.</p>
 	 */
 	protected Map<Class<?>, ModelAdaptor> adaptors =
 		Collections.synchronizedMap(
@@ -477,8 +477,8 @@ public class STGroup {
     }
 
     /** Define a map for this group.
-	 * <p/>
-	 * Not thread safe...do not keep adding these while you reference them.
+	 * <p>
+	 * Not thread safe...do not keep adding these while you reference them.</p>
      */
     public void defineDictionary(String name, Map<String,Object> mapping) {
         dictionaries.put(name, mapping);
@@ -486,8 +486,8 @@ public class STGroup {
 
     /**
      * Make this group import templates/dictionaries from {@code g}.
-     *<p/>
-     * On unload imported templates are unloaded but stay in the {@link #imports} list.
+     *<p>
+     * On unload imported templates are unloaded but stay in the {@link #imports} list.</p>
      */
     public void importTemplates(STGroup g) {
         importTemplates(g, false);
@@ -498,19 +498,19 @@ public class STGroup {
 	 *  this, in effect, provides inheritance. Polymorphism is in effect so
 	 *  that if an inherited template references template {@code t()} then we
 	 *  search for {@code t()} in the subgroup first.
-	 *  <p/>
+	 *  <p>
 	 *  Templates are loaded on-demand from import dirs.  Imported groups are
-	 *  loaded on-demand when searching for a template.
-	 *  <p/>
+	 *  loaded on-demand when searching for a template.</p>
+	 *  <p>
 	 *  The listener of this group is passed to the import group so errors
-	 *  found while loading imported element are sent to listener of this group.
-	 *  <p/>
+	 *  found while loading imported element are sent to listener of this group.</p>
+	 *  <p>
 	 *  On unload imported templates are unloaded and removed from the imports
-	 *  list.
-	 *  <p/>
+	 *  list.</p>
+	 *  <p>
 	 *  This method is called when processing import statements specified in
 	 *  group files. Use {@link #importTemplates(STGroup)} to import templates
-	 *  'programmatically'.
+	 *  'programmatically'.</p>
 	 */
 	public void importTemplates(Token fileNameToken) {
 		if ( verbose ) System.out.println("importTemplates("+fileNameToken.getText()+")");
@@ -670,12 +670,12 @@ public class STGroup {
 	 * {@link Object}, {@link Map}, {@link ST}, and {@link Aggregate} model
 	 * adaptors for you first. Adaptors you add have priority over default
 	 * adaptors.
-	 * <p/>
+	 * <p>
 	 * If an adaptor for type {@code T} already exists, it is replaced by the
-	 * {@code adaptor} argument.
-	 * <p/>
+	 * {@code adaptor} argument.</p>
+	 * <p>
 	 * This must invalidate cache entries, so set your adaptors up before
-	 * calling {@link ST#render} for efficiency.
+	 * calling {@link ST#render} for efficiency.</p>
 	 */
 	public void registerModelAdaptor(Class<?> attributeType, ModelAdaptor adaptor) {
 		if ( attributeType.isPrimitive() ) {
@@ -741,7 +741,7 @@ public class STGroup {
 	}
 
 	/** Get renderer for class {@code T} associated with this group.
-	 * <p/>
+	 * <p>
 	 *  For non-imported groups and object-to-render of class {@code T}, use renderer
 	 *  (if any) registered for {@code T}.  For imports, any renderer
 	 *  set on import group is ignored even when using an imported template.
@@ -749,7 +749,7 @@ public class STGroup {
 	 *  you use (or all to be sure).  I look at import groups as
 	 *  "helpers" that should give me templates and nothing else. If you
 	 *  have multiple renderers for {@code String}, say, then just make uber combined
-	 *  renderer with more specific format names.
+	 *  renderer with more specific format names.</p>
 	 */
 	public AttributeRenderer getAttributeRenderer(Class<?> attributeType) {
 		if ( renderers==null ) return null;

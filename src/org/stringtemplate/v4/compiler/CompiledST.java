@@ -51,13 +51,13 @@ public class CompiledST implements Cloneable {
 	 * {@code "/"} is added to the front if you don't specify one. Template
 	 * references within template code, however, uses relative names, unless of
 	 * course the name starts with {@code "/"}.
-	 * <p/>
+	 * <p>
 	 * This has nothing to do with the outer filesystem path to the group dir or
-	 * group file.
-	 * <p/>
-	 * We set this as we load/compile the template.
-	 * <p/>
-	 * Always ends with {@code "/"}.
+	 * group file.</p>
+	 * <p>
+	 * We set this as we load/compile the template.</p>
+	 * <p>
+	 * Always ends with {@code "/"}.</p>
 	 */
 	public String prefix = "/";
 
@@ -101,12 +101,12 @@ public class CompiledST implements Cloneable {
 	/**
 	 * If someone refs {@code <@r()>} in template t, an implicit
 	 *
-	 * <p/>
-	 * {@code @t.r() ::= ""}
-	 * <p/>
+	 * <p>
+	 * {@code @t.r() ::= ""}</p>
+	 * <p>
 	 * is defined, but you can overwrite this def by defining your own. We need
 	 * to prevent more than one manual def though. Between this var and
-	 * {@link #isRegion} we can determine these cases.
+	 * {@link #isRegion} we can determine these cases.</p>
 	 */
     public ST.RegionType regionDefType;
 

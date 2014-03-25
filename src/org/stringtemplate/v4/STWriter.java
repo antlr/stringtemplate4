@@ -31,11 +31,11 @@ import org.stringtemplate.v4.compiler.Bytecode;
 import java.io.IOException;
 
 /** Generic StringTemplate output writer filter.
- * <p/>
+ * <p>
  *  Literals and the elements of expressions are emitted via {@link #write(String)}.
  *  Separators are emitted via {@link #writeSeparator(String)} because they must be
  *  handled specially when wrapping lines (we don't want to wrap
- *  in between an element and it's separator).
+ *  in between an element and it's separator).</p>
  */
 public interface STWriter {
 	public static final int NO_WRAP = -1;
