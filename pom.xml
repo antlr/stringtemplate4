@@ -21,7 +21,7 @@
         SNAPSHOT replaced with the the data, time and unique number.
     -->
 
-    <version>4.0.8</version>
+    <version>4.0.9-SNAPSHOT</version>
 
     <!--
         The name of the project as seen by IDEs and release documentation etc.
@@ -113,7 +113,7 @@ There are currently about 600 StringTemplate source downloads a month.
         <url>git://github.com/antlr/stringtemplate4.git</url>
         <connection>scm:git:git://github.com/antlr/stringtemplate4.git</connection>
         <developerConnection>scm:git:git@github.com:antlr/stringtemplate4.git</developerConnection>
-      <tag>4.0.8</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <dependencies>
