@@ -32,11 +32,13 @@ import java.net.URLEncoder;
 import java.util.Locale;
 
 /** This render knows to perform a few format operations on {@link String} objects:
- *  <li>{@code upper}: Convert to upper case.
- *  <li>{@code lower}: Convert to lower case.
- *  <li>{@code cap}: Convert first character to upper case.
- *  <li>{@code url-encode}:
- *  <li>{@code xml-encode}:
+ * <ul>
+ *  <li>{@code upper}: Convert to upper case.</li>
+ *  <li>{@code lower}: Convert to lower case.</li>
+ *  <li>{@code cap}: Convert first character to upper case.</li>
+ *  <li>{@code url-encode}:</li>
+ *  <li>{@code xml-encode}:</li>
+ * </ul>
  */
 public class StringRenderer implements AttributeRenderer {
     // trim(s) and strlen(s) built-in funcs; these are format options

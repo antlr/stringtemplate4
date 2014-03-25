@@ -44,16 +44,16 @@ import java.util.*;
  * reference to an {@link ST} instance. That instance's {@link ST#impl} field
  * points at a {@link CompiledST}, which contains all of the byte codes and
  * other information relevant to execution.
- * <p/>
+ * <p>
  * This interpreter is a stack-based bytecode interpreter. All operands go onto
- * an operand stack.
- * <p/>
+ * an operand stack.</p>
+ * <p>
  * If {@link #debug} set, we track interpreter events. For now, I am only
  * tracking instance creation events. These are used by {@link STViz} to pair up
- * output chunks with the template expressions that generate them.
- * <p/>
+ * output chunks with the template expressions that generate them.</p>
+ * <p>
  * We create a new interpreter for each invocation of
- * {@link ST#render}, {@link ST#inspect}, or {@link ST#getEvents}.
+ * {@link ST#render}, {@link ST#inspect}, or {@link ST#getEvents}.</p>
  */
 public class Interpreter {
 	public enum Option { ANCHOR, FORMAT, NULL, SEPARATOR, WRAP }
@@ -972,9 +972,9 @@ public class Interpreter {
 	/**
 	 * Return the first attribute if multi-valued, or the attribute itself if
 	 * single-valued.
-	 * <p/>
+	 * <p>
 	 * This method is used for rendering expressions of the form
-	 * {@code <names:first()>}.
+	 * {@code <names:first()>}.</p>
 	 */
 	public Object first(InstanceScope scope, Object v) {
 		if ( v==null ) return null;
@@ -993,9 +993,9 @@ public class Interpreter {
 	 * Return the last attribute if multi-valued, or the attribute itself if
 	 * single-valued. Unless it's a {@link List} or array, this is pretty slow
 	 * as it iterates until the last element.
-	 * <p/>
+	 * <p>
 	 * This method is used for rendering expressions of the form
-	 * {@code <names:last()>}.
+	 * {@code <names:last()>}.</p>
 	 */
 	public Object last(InstanceScope scope, Object v) {
 		if ( v==null ) return null;
@@ -1079,9 +1079,9 @@ public class Interpreter {
 
 	/**
 	 * Return a list with the same elements as {@code v} but in reverse order.
-	 * <p/>
+	 * <p>
 	 * Note that {@code null} values are <i>not</i> stripped out; use
-	 * {@code reverse(strip(v))} to do that.
+	 * {@code reverse(strip(v))} to do that.</p>
 	 */
 	public Object reverse(InstanceScope scope, Object v) {
 		if ( v==null ) return null;
@@ -1098,9 +1098,9 @@ public class Interpreter {
 	/**
 	 * Return the length of a multi-valued attribute or 1 if it is a single
 	 * attribute. If {@code v} is {@code null} return 0.
-	 * <p/>
+	 * <p>
 	 * The implementation treats several common collections and arrays as
-	 * special cases for speed.
+	 * special cases for speed.</p>
 	 */
 	public Object length(Object v) {
 		if ( v == null) return 0;
@@ -1210,8 +1210,8 @@ public class Interpreter {
 	 * Find an attribute via dynamic scoping up enclosing scope chain. Only look
 	 * for a dictionary definition if the attribute is not found, so attributes
 	 * sent in to a template override dictionary names.
-	 * <p/>
-	 * Return {@link ST#EMPTY_ATTR} if found definition but no value.
+	 * <p>
+	 * Return {@link ST#EMPTY_ATTR} if found definition but no value.</p>
 	 */
 	public Object getAttribute(InstanceScope scope, String name) {
 		InstanceScope current = scope;
@@ -1252,9 +1252,9 @@ public class Interpreter {
 	 * Set any default argument values that were not set by the invoking
 	 * template or by {@link ST#add} directly. Note that the default values may
 	 * be templates.
-	 * <p/>
+	 * <p>
 	 * The evaluation context is the {@code invokedST} template itself so
-	 * template default arguments can see other arguments.
+	 * template default arguments can see other arguments.</p>
 	 */
 	public void setDefaultArguments(STWriter out, InstanceScope scope) {
 		final ST invokedST = scope.st;

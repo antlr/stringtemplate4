@@ -56,8 +56,8 @@ public class InstanceScope {
 	 * </ol>
 	 *
 	 * The root ST has the final {@link EvalTemplateEvent} in its list.
-	 * <p/>
-	 * All events get added to the {@link #parent}'s event list.
+	 * <p>
+	 * All events get added to the {@link #parent}'s event list.</p>
 	 */
 	public List<InterpEvent> events = new ArrayList<InterpEvent>();
 

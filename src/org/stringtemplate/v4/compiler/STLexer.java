@@ -50,10 +50,10 @@ import java.util.List;
  * {@link #NEWLINE}. Inside of an expression, this lexer returns all of the
  * tokens needed by {@link STParser}. From the parser's point of view, it can
  * treat a template as a simple stream of elements.
- * <p/>
+ * <p>
  * This class defines the token types and communicates these values to
  * {@code STParser.g} via {@code STLexer.tokens} file (which must remain
- * consistent).
+ * consistent).</p>
  */
 public class STLexer implements TokenSource {
     public static final char EOF = (char)-1;            // EOF char
@@ -192,8 +192,6 @@ public class STLexer implements TokenSource {
 	}
 
     /** Consume if {@code x} is next character on the input stream.
-	 *
-	 * @throws NoViableAltException
 	 */
     public void match(char x) {
         if ( c != x ) {

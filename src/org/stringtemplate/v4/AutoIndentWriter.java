@@ -36,21 +36,21 @@ import java.util.Stack;
 /**
  * Essentially a char filter that knows how to auto-indent output by maintaining
  * a stack of indent levels.
- * <p/>
+ * <p>
  * The indent stack is a stack of strings so we can repeat original indent not
  * just the same number of columns (don't have to worry about tabs vs spaces
  * then). Anchors are char positions (tabs won't work) that indicate where all
  * future wraps should justify to. The wrap position is actually the larger of
- * either the last anchor or the indentation level.
- * <p/>
- * This is a filter on a {@link Writer}.
- * <p/>
+ * either the last anchor or the indentation level.</p>
+ * <p>
+ * This is a filter on a {@link Writer}.</p>
+ * <p>
  * {@code \n} is the proper way to say newline for options and templates.
  * Templates can mix {@code \r\n} and {@code \n} them, but use {@code \n} in
  * options like {@code wrap="\n"}. This writer will render newline characters
  * according to {@link #newline}. The default value is taken from the
  * {@code line.separator} system property, and can be overridden by passing in a
- * {@code String} to the appropriate constructor.
+ * {@code String} to the appropriate constructor.</p>
  */
 public class AutoIndentWriter implements STWriter {
 	/** Stack of indents. Use {@link List} as it's much faster than {@link Stack}. Grows
@@ -167,10 +167,10 @@ public class AutoIndentWriter implements STWriter {
 
 	/**
 	 * Write out a string literal or attribute expression or expression element.
-	 * <p/>
+	 * <p>
 	 * If doing line wrap, then check {@code wrap} before emitting {@code str}.
 	 * If at or beyond desired line width then emit a {@link #newline} and any
-	 * indentation before spitting out {@code str}.
+	 * indentation before spitting out {@code str}.</p>
 	 */
 	@Override
 	public int write(String str, String wrap) throws IOException {

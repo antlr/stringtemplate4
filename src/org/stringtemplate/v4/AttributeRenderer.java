@@ -33,12 +33,14 @@ import java.util.Locale;
  * This interface describes an object that knows how to format or otherwise
  * render an object appropriately. There is one renderer registered per group
  * for a given Java type.
- * <p/>
+ *
+ * <p>
  * If the format string passed to the renderer is not recognized then simply
- * call {@link Object#toString}.
- * <p/>
+ * call {@link Object#toString}.</p>
+ *
+ * <p>
  * {@code formatString} can be {@code null} but {@code locale} will at least be
- * {@link Locale#getDefault}.
+ * {@link Locale#getDefault}.</p>
  */
 public interface AttributeRenderer {
     public String toString(Object o, String formatString, Locale locale);
