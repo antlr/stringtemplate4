@@ -40,28 +40,27 @@ import java.util.Locale;
  *  <li>{@code xml-encode}:</li>
  * </ul>
  */
-public class StringRenderer implements AttributeRenderer {
+public class StringRenderer implements AttributeRenderer<String> {
     // trim(s) and strlen(s) built-in funcs; these are format options
     @Override
-    public String toString(Object o, String formatString, Locale locale) {
-        String s = (String)o;
-        if ( formatString==null ) return s;
-        if ( formatString.equals("upper") ) return s.toUpperCase(locale);
-        if ( formatString.equals("lower") ) return s.toLowerCase(locale);
+    public String toString(String o, String formatString, Locale locale) {
+        if ( formatString==null ) return o;
+        if ( formatString.equals("upper") ) return o.toUpperCase(locale);
+        if ( formatString.equals("lower") ) return o.toLowerCase(locale);
         if ( formatString.equals("cap") ) {
-            return (s.length() > 0) ? Character.toUpperCase(s.charAt(0))+s.substring(1) : s;
+            return (o.length() > 0) ? Character.toUpperCase(o.charAt(0))+o.substring(1) : o;
         }
         if ( formatString.equals("url-encode") ) {
 			try {
-				return URLEncoder.encode(s, "UTF-8");
+				return URLEncoder.encode(o, "UTF-8");
 			} catch (UnsupportedEncodingException ex) {
 				// UTF-8 is standard, should always be available
 			}
         }
         if ( formatString.equals("xml-encode") ) {
-            return escapeHTML(s);
+            return escapeHTML(o);
         }
-        return String.format(locale, formatString, s);
+        return String.format(locale, formatString, o);
     }
 
     public static String escapeHTML(String s) {

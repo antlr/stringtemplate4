@@ -42,6 +42,6 @@ import java.util.Locale;
  * {@code formatString} can be {@code null} but {@code locale} will at least be
  * {@link Locale#getDefault}.</p>
  */
-public interface AttributeRenderer {
-    public String toString(Object o, String formatString, Locale locale);
+public interface AttributeRenderer<T> {
+    public String toString(T o, String formatString, Locale locale);
 }

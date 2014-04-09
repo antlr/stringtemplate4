@@ -56,7 +56,7 @@ public class TestRenderers extends BaseTest {
 				"dateThing(created) ::= \"datetime: <created>\"\n";
 		writeFile(tmpdir, "t.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/t.stg");
-		group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+		group.registerRenderer(GregorianCalendar.class, new CalendarRenderer());
 		ST st = group.getInstanceOf("dateThing");
 		st.add("created", new GregorianCalendar(2005, 07-1, 05));
 		String expecting = "datetime: 7/5/05 12:00 AM";
@@ -69,7 +69,7 @@ public class TestRenderers extends BaseTest {
                 "dateThing(created) ::= << date: <created; format=\"yyyy.MM.dd\"> >>\n";
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+        group.registerRenderer(GregorianCalendar.class, new CalendarRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = " date: 2005.07.05 ";
@@ -82,7 +82,7 @@ public class TestRenderers extends BaseTest {
                 "dateThing(created) ::= << datetime: <created; format=\"short\"> >>\n";
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+        group.registerRenderer(GregorianCalendar.class, new CalendarRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = " datetime: 7/5/05 12:00 AM ";
@@ -95,7 +95,7 @@ public class TestRenderers extends BaseTest {
                 "dateThing(created) ::= << datetime: <created; format=\"full\"> >>\n";
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+        group.registerRenderer(GregorianCalendar.class, new CalendarRenderer());
         ST st = group.getInstanceOf("dateThing");
         TimeZone origTimeZone = TimeZone.getDefault();
         try {
@@ -117,7 +117,7 @@ public class TestRenderers extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+        group.registerRenderer(GregorianCalendar.class, new CalendarRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = " date: Jul 5, 2005 ";
@@ -131,7 +131,7 @@ public class TestRenderers extends BaseTest {
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
-        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+        group.registerRenderer(GregorianCalendar.class, new CalendarRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 07-1, 05));
         String expecting = " time: 12:00:00 AM ";
@@ -351,7 +351,7 @@ public class TestRenderers extends BaseTest {
 	@Test public void testDateRendererWithLocale() {
 		String input = "<date; format=\"dd 'de' MMMMM 'de' yyyy\">";
 		STGroup group = new STGroup();
-		group.registerRenderer(Calendar.class, new DateRenderer());
+		group.registerRenderer(Calendar.class, new CalendarRenderer());
 		ST st = new ST(group, input);
 
 		Calendar cal = Calendar.getInstance();
