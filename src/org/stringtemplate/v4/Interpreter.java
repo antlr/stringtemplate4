@@ -550,6 +550,42 @@ public class Interpreter {
 	}
 
 	void storeArgs(InstanceScope scope, Map<String,Object> attrs, ST st) {
+		boolean noSuchAttributeReported = false;
+		if (attrs != null) {
+			for (Map.Entry<String, Object> argument : attrs.entrySet()) {
+				if (!st.impl.hasFormalArgs) {
+					if (st.impl.formalArguments == null || !st.impl.formalArguments.containsKey(argument.getKey())) {
+						try {
+							// we clone the CompiledST to prevent modifying the original
+							// formalArguments map during interpretation.
+							st.impl = st.impl.clone();
+							st.add(argument.getKey(), argument.getValue());
+						} catch (CloneNotSupportedException ex) {
+							noSuchAttributeReported = true;
+							errMgr.runTimeError(this, scope,
+												ErrorType.NO_SUCH_ATTRIBUTE,
+												argument.getKey());
+						}
+					}
+					else {
+						st.rawSetAttribute(argument.getKey(), argument.getValue());
+					}
+				}
+				else {
+					// don't let it throw an exception in rawSetAttribute
+					if ( st.impl.formalArguments==null || !st.impl.formalArguments.containsKey(argument.getKey()) ) {
+						noSuchAttributeReported = true;
+						errMgr.runTimeError(this, scope,
+											ErrorType.NO_SUCH_ATTRIBUTE,
+											argument.getKey());
+						continue;
+					}
+
+					st.rawSetAttribute(argument.getKey(), argument.getValue());
+				}
+			}
+		}
+
 		if (st.impl.hasFormalArgs) {
 			boolean argumentCountMismatch = false;
 			Map<String, FormalArgument> formalArguments = st.impl.formalArguments;
@@ -558,15 +594,18 @@ public class Interpreter {
 			}
 
 			// first make sure that all non-default arguments are specified
-			for (Map.Entry<String, FormalArgument> formalArgument : formalArguments.entrySet()) {
-				if (formalArgument.getValue().defaultValueToken != null || formalArgument.getValue().defaultValue != null) {
-					// this argument has a default value, so it doesn't need to appear in attrs
-					continue;
-				}
+			// ignore this check if a NO_SUCH_ATTRIBUTE error already occurred
+			if (!noSuchAttributeReported) {
+				for (Map.Entry<String, FormalArgument> formalArgument : formalArguments.entrySet()) {
+					if (formalArgument.getValue().defaultValueToken != null || formalArgument.getValue().defaultValue != null) {
+						// this argument has a default value, so it doesn't need to appear in attrs
+						continue;
+					}
 
-				if (attrs == null || !attrs.containsKey(formalArgument.getKey())) {
-					argumentCountMismatch = true;
-					break;
+					if (attrs == null || !attrs.containsKey(formalArgument.getKey())) {
+						argumentCountMismatch = true;
+						break;
+					}
 				}
 			}
 
@@ -585,39 +624,6 @@ public class Interpreter {
 									nargs,
 									st.impl.name,
 									nformalArgs);
-			}
-		}
-
-		if (attrs != null) {
-			for (Map.Entry<String, Object> argument : attrs.entrySet()) {
-				if (!st.impl.hasFormalArgs) {
-					if (st.impl.formalArguments == null || !st.impl.formalArguments.containsKey(argument.getKey())) {
-						try {
-							// we clone the CompiledST to prevent modifying the original
-							// formalArguments map during interpretation.
-							st.impl = st.impl.clone();
-							st.add(argument.getKey(), argument.getValue());
-						} catch (CloneNotSupportedException ex) {
-							errMgr.runTimeError(this, scope,
-												ErrorType.NO_SUCH_ATTRIBUTE,
-												argument.getKey());
-						}
-					}
-					else {
-						st.rawSetAttribute(argument.getKey(), argument.getValue());
-					}
-				}
-				else {
-					// don't let it throw an exception in rawSetAttribute
-					if ( st.impl.formalArguments==null || !st.impl.formalArguments.containsKey(argument.getKey()) ) {
-						errMgr.runTimeError(this, scope,
-											ErrorType.NO_SUCH_ATTRIBUTE,
-											argument.getKey());
-						continue;
-					}
-
-					st.rawSetAttribute(argument.getKey(), argument.getValue());
-				}
 			}
 		}
 	}
