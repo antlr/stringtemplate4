@@ -139,7 +139,7 @@ public abstract class BaseTest {
 		writeFile(dirName, "Test.java", outputFileST.render());
 	}
 
-	public String java(String mainClassName, String extraCLASSPATH, String workingDirName) {
+	public String java(String mainClassName, String extraCLASSPATH, String workingDirName) throws InterruptedException, IOException {
 		String classpathOption = "-classpath";
 
 		String path = "."+pathSep+CLASSPATH;
@@ -243,33 +243,28 @@ public abstract class BaseTest {
 		assertTrue(ok);
 	}
 
-	public String exec(String[] args, String[] envp, String workingDirName) {
+	public String exec(String[] args, String[] envp, String workingDirName) throws InterruptedException, IOException {
 		String cmdLine = Arrays.toString(args);
 		File workingDir = new File(workingDirName);
-		try {
-			Process process =
-				Runtime.getRuntime().exec(args, envp, workingDir);
-			StreamVacuum stdout = new StreamVacuum(process.getInputStream());
-			StreamVacuum stderr = new StreamVacuum(process.getErrorStream());
-			stdout.start();
-			stderr.start();
-			process.waitFor();
-            stdout.join();
-            stderr.join();
-			if ( stdout.toString().length()>0 ) {
-				return stdout.toString();
-			}
-			if ( stderr.toString().length()>0 ) {
-				System.err.println("compile stderr from: "+cmdLine);
-				System.err.println(stderr);
-			}
-			int ret = process.exitValue();
-			if ( ret!=0 ) System.err.println("failed");
+
+		Process process =
+			Runtime.getRuntime().exec(args, envp, workingDir);
+		StreamVacuum stdout = new StreamVacuum(process.getInputStream());
+		StreamVacuum stderr = new StreamVacuum(process.getErrorStream());
+		stdout.start();
+		stderr.start();
+		process.waitFor();
+		stdout.join();
+		stderr.join();
+		if ( stdout.toString().length()>0 ) {
+			return stdout.toString();
 		}
-		catch (Exception e) {
-			System.err.println("can't exec compilation");
-			e.printStackTrace(System.err);
+		if ( stderr.toString().length()>0 ) {
+			System.err.println("compile stderr from: "+cmdLine);
+			System.err.println(stderr);
 		}
+		int ret = process.exitValue();
+		if ( ret!=0 ) System.err.println("failed");
 		return null;
 	}
 
