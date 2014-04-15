@@ -47,7 +47,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 2:0: mismatched input 'foo' expecting STRING"+newline+
-			"t.stg 2:3: required (...)+ loop did not match anything at input '('"+newline;
+			"t.stg 2:3: missing EOF at '('"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
