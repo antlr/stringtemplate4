@@ -34,10 +34,17 @@ import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.misc.Misc;
 
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 import java.io.*;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public abstract class BaseTest {
@@ -132,7 +139,7 @@ public abstract class BaseTest {
 		writeFile(dirName, "Test.java", outputFileST.render());
 	}
 
-	public String java(String mainClassName, String extraCLASSPATH, String workingDirName) {
+	public String java(String mainClassName, String extraCLASSPATH, String workingDirName) throws InterruptedException, IOException {
 		String classpathOption = "-classpath";
 
 		String path = "."+pathSep+CLASSPATH;
@@ -147,57 +154,117 @@ public abstract class BaseTest {
 		return exec(args, null, workingDirName);
 	}
 
-	public void jar(String fileName, String[] files, String workingDirName) {
-		String[] cmd = {
-			"jar", "cf", fileName
-		};
-		// SO SAD FOR YOU JAVA!!!!
-		List<String> list = new ArrayList<String>();
-		list.addAll(Arrays.asList(cmd));
-		list.addAll(Arrays.asList(files));
-		String[] a = new String[list.size()];
-		list.toArray(a);
-		exec(a, null, workingDirName); // create jar
+	public void jar(String fileName, String[] files, String workingDirName) throws IOException {
+		File workingDir = new File(workingDirName);
+		JarOutputStream stream = new JarOutputStream(new FileOutputStream(new File(workingDir, fileName)));
+		try {
+			for (String inputFileName : files) {
+				File file = new File(workingDirName, inputFileName);
+				addJarFile(file, workingDir, stream);
+			}
+		}
+		finally {
+			stream.close();
+		}
 	}
 
-	public void compile(String fileName, String workingDirName) {
-		String classpathOption = "-classpath";
+	protected void addJarFile(File file, File workingDir, JarOutputStream stream) throws IOException {
+		String name = workingDir.toURI().relativize(file.toURI()).getPath().replace("\\", "/");
+		if (file.isDirectory()) {
+			if (!name.isEmpty()) {
+				if (!name.endsWith("/")) {
+					// the entry for a folder must end with "/"
+					name += "/";
+				}
 
-		String[] args = new String[] {
-					"javac",
-					classpathOption, "."+pathSep+CLASSPATH,
-					fileName
-		};
-		exec(args, null, workingDirName);
+				JarEntry entry = new JarEntry(name);
+				entry.setTime(file.lastModified());
+				stream.putNextEntry(entry);
+				stream.closeEntry();
+			}
+
+			for (File child : file.listFiles()) {
+				addJarFile(child, workingDir, stream);
+			}
+
+			return;
+		}
+
+		JarEntry entry = new JarEntry(name);
+		entry.setTime(file.lastModified());
+		stream.putNextEntry(entry);
+
+		BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
+		try {
+			byte[] buffer = new byte[16 * 1024];
+			while (true) {
+				int count = input.read(buffer);
+				if (count == -1) {
+					break;
+				}
+
+				stream.write(buffer, 0, count);
+			}
+
+			stream.closeEntry();
+		}
+		finally {
+			input.close();
+		}
 	}
 
-	public String exec(String[] args, String[] envp, String workingDirName) {
+	protected void compile(String fileName, String workingDirName) {
+		List<File> files = new ArrayList<File>();
+		files.add(new File(workingDirName, fileName));
+
+		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+
+		StandardJavaFileManager fileManager =
+			compiler.getStandardFileManager(null, null, null);
+
+		Iterable<? extends JavaFileObject> compilationUnits =
+			fileManager.getJavaFileObjectsFromFiles(files);
+
+		Iterable<String> compileOptions =
+			Arrays.asList("-g", "-source", "1.6", "-target", "1.6", "-implicit:class", "-Xlint:-options", "-d", workingDirName, "-cp", workingDirName+pathSep+CLASSPATH);
+
+		JavaCompiler.CompilationTask task =
+			compiler.getTask(null, fileManager, null, compileOptions, null,
+							 compilationUnits);
+		boolean ok = task.call();
+
+		try {
+			fileManager.close();
+		}
+		catch (IOException ioe) {
+			ioe.printStackTrace(System.err);
+		}
+
+		assertTrue(ok);
+	}
+
+	public String exec(String[] args, String[] envp, String workingDirName) throws InterruptedException, IOException {
 		String cmdLine = Arrays.toString(args);
 		File workingDir = new File(workingDirName);
-		try {
-			Process process =
-				Runtime.getRuntime().exec(args, envp, workingDir);
-			StreamVacuum stdout = new StreamVacuum(process.getInputStream());
-			StreamVacuum stderr = new StreamVacuum(process.getErrorStream());
-			stdout.start();
-			stderr.start();
-			process.waitFor();
-            stdout.join();
-            stderr.join();
-			if ( stdout.toString().length()>0 ) {
-				return stdout.toString();
-			}
-			if ( stderr.toString().length()>0 ) {
-				System.err.println("compile stderr from: "+cmdLine);
-				System.err.println(stderr);
-			}
-			int ret = process.exitValue();
-			if ( ret!=0 ) System.err.println("failed");
+
+		Process process =
+			Runtime.getRuntime().exec(args, envp, workingDir);
+		StreamVacuum stdout = new StreamVacuum(process.getInputStream());
+		StreamVacuum stderr = new StreamVacuum(process.getErrorStream());
+		stdout.start();
+		stderr.start();
+		process.waitFor();
+		stdout.join();
+		stderr.join();
+		if ( stdout.toString().length()>0 ) {
+			return stdout.toString();
 		}
-		catch (Exception e) {
-			System.err.println("can't exec compilation");
-			e.printStackTrace(System.err);
+		if ( stderr.toString().length()>0 ) {
+			System.err.println("compile stderr from: "+cmdLine);
+			System.err.println(stderr);
 		}
+		int ret = process.exitValue();
+		if ( ret!=0 ) System.err.println("failed");
 		return null;
 	}
 
