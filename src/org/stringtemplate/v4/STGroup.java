@@ -218,7 +218,7 @@ public class STGroup {
     }
 
 	/** Look up a fully-qualified name. */
-    public CompiledST lookupTemplate(String name) {
+    public synchronized CompiledST lookupTemplate(String name) {
 		if ( name.charAt(0)!='/' ) name = "/"+name;
 		if ( verbose ) System.out.println(getName()+".lookupTemplate("+name+")");
         CompiledST code = rawGetTemplate(name);
@@ -262,7 +262,7 @@ public class STGroup {
     protected CompiledST load(String name) { return null; }
 
     /** Force a load if it makes sense for the group. */
-    public void load() { }
+    public synchronized void load() { }
 
     protected CompiledST lookupImportedTemplate(String name) {
         if ( imports.size()==0 ) return null;
