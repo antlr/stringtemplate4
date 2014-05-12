@@ -39,10 +39,10 @@ import java.net.*;
  *  or an import.
  */
 public class STGroupFile extends STGroup {
-    public String fileName;
-    public URL url;
+    public final String fileName;
+    public final URL url;
 
-    protected boolean alreadyLoaded = false;
+    private boolean alreadyLoaded = false;
 
     /** Load a file relative to current directory or from root or via CLASSPATH. */
 	public STGroupFile(String fileName) { this(fileName, '<', '>'); }
@@ -91,6 +91,7 @@ public class STGroupFile extends STGroup {
 		super(delimiterStartChar, delimiterStopChar);
 		this.url = url;
 		this.encoding = encoding;
+		String filename = null;
 		try {
 			// When group is loaded from jar file the URL starts with
 			// "jar:file:" which cannot be converted into a URI/File.
@@ -99,20 +100,21 @@ public class STGroupFile extends STGroup {
 			if (urlString.startsWith("jar:file:")) {
 				urlString = urlString.substring(4);
 			}
-			this.fileName = new File(new URI(urlString)).getAbsolutePath();
-		} catch (Exception e) {
+			filename = new File(new URI(urlString)).getAbsolutePath();
+		} catch (URISyntaxException e) {
 			// ignore. If this happens (bad url etc.) filename is null
 		}
+		this.fileName = filename;
 	}
 
 	@Override
-	public boolean isDictionary(String name) {
+	public synchronized boolean isDictionary(String name) {
 		if ( !alreadyLoaded ) load();
 		return super.isDictionary(name);
 	}
 
 	@Override
-    public boolean isDefined(String name) {
+    public synchronized boolean isDefined(String name) {
         if ( !alreadyLoaded ) load();
         return super.isDefined(name);
     }
@@ -124,24 +126,24 @@ public class STGroupFile extends STGroup {
 	}
 
 	@Override
-	protected CompiledST load(String name) {
+	protected synchronized CompiledST load(String name) {
         if ( !alreadyLoaded ) load();
         return rawGetTemplate(name);
     }
 
 	@Override
-    public void load() {
+    public synchronized void load() {
         if ( alreadyLoaded ) return;
-        alreadyLoaded = true; // do before actual load to say we're doing it
 		// no prefix since this group file is the entire group, nothing lives
 		// beneath it.
 		if ( verbose ) System.out.println("loading group file "+url.toString());
         loadGroupFile("/", url.toString());
 		if ( verbose ) System.out.println("found "+templates.size()+" templates in "+url.toString()+" = "+templates.keySet());
+        alreadyLoaded = true;
     }
 
 	@Override
-    public String show() {
+    public synchronized String show() {
         if ( !alreadyLoaded ) load();
         return super.show();
     }
