@@ -305,6 +305,43 @@ public class TestImports extends BaseTest {
 		String expected = "subdir b";
 		assertEquals(expected, result);
 	}
+	@Test public void testImportRelativeDirInJarViaCLASSPATHWithDefaultDelimiters() throws Exception {
+		/*
+		org/foo/templates
+			g.stg has a() that imports subdir with relative path
+			subdir
+				a.st
+				b.st
+				c.st
+		 */
+		String root = getRandomDir();
+		System.out.println(root);
+		String dir = root+"/org/foo/templates";
+		String gstr =
+				"import \"subdir\"\n" + // finds subdir in dir
+						"a() ::= <<dir1 a>>\n";
+		writeFile(dir, "g.stg", gstr);
+		
+		String a = "a() ::= <<subdir a>>\n";
+		String b = "b() ::= <<subdir b>>\n";
+		String c = "c() ::= <<subdir b>>\n";
+		writeFile(dir, "subdir/a.st", a);
+		writeFile(dir, "subdir/b.st", b);
+		writeFile(dir, "subdir/c.st", c);
+		
+		jar("test.jar", new String[] {"org"}, root);
+		deleteFile(root + "/org");
+		
+		File path = new File(root + File.separatorChar + "test.jar");
+		assertTrue(path.isFile());
+		URLClassLoader loader = new URLClassLoader(new URL[] { path.toURI().toURL() });
+		STGroup group = new STGroupFile(loader.getResource("org/foo/templates/g.stg"), "UTF-8");
+		ST st = group.getInstanceOf("b");
+		String result = st.render();
+		
+		String expected = "subdir b";
+		assertEquals(expected, result);
+	}
 
 	@Test public void testEmptyGroupImportGroupFileSameDir() throws Exception {
 		/*

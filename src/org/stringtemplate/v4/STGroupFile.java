@@ -85,6 +85,10 @@ public class STGroupFile extends STGroup {
         this.encoding = encoding;
     }
 
+    public STGroupFile(URL url, String encoding) {
+    	this(url, encoding, '<', '>');
+    }
+    
 	public STGroupFile(URL url, String encoding,
 					   char delimiterStartChar, char delimiterStopChar)
 	{
