@@ -39,13 +39,15 @@ import java.net.*;
  *  or an import.
  */
 public class STGroupFile extends STGroup {
+	private static final char DEFAULT_START_DELIMITER = '<';
+	private static final char DEFAULT_STOP_DELIMITER = '>';
     public String fileName;
     public URL url;
 
     protected boolean alreadyLoaded = false;
 
     /** Load a file relative to current directory or from root or via CLASSPATH. */
-	public STGroupFile(String fileName) { this(fileName, '<', '>'); }
+	public STGroupFile(String fileName) { this(fileName, DEFAULT_START_DELIMITER, DEFAULT_STOP_DELIMITER); }
 
 	public STGroupFile(String fileName, char delimiterStartChar, char delimiterStopChar) {
 		super(delimiterStartChar, delimiterStopChar);
@@ -75,7 +77,7 @@ public class STGroupFile extends STGroup {
 	}
 
 	public STGroupFile(String fullyQualifiedFileName, String encoding) {
-        this(fullyQualifiedFileName, encoding, '<', '>');
+        this(fullyQualifiedFileName, encoding, DEFAULT_START_DELIMITER, DEFAULT_STOP_DELIMITER);
     }
 
     public STGroupFile(String fullyQualifiedFileName, String encoding,
@@ -86,7 +88,7 @@ public class STGroupFile extends STGroup {
     }
 
     public STGroupFile(URL url, String encoding) {
-    	this(url, encoding, '<', '>');
+    	this(url, encoding, DEFAULT_START_DELIMITER, DEFAULT_STOP_DELIMITER);
     }
     
 	public STGroupFile(URL url, String encoding,
