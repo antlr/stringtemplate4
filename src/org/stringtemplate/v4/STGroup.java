@@ -44,6 +44,8 @@ import java.util.*;
  *  Name inside must match filename (minus suffix).
  */
 public class STGroup {
+	protected static final char DEFAULT_START_DELIMITER = '<';
+	protected static final char DEFAULT_STOP_DELIMITER = '>';
 	public static final String GROUP_FILE_EXTENSION;
 	public static final String TEMPLATE_FILE_EXTENSION;
 	static {
@@ -65,8 +67,8 @@ public class STGroup {
 
     protected final List<STGroup> importsToClearOnUnload = Collections.synchronizedList(new ArrayList<STGroup>());
 
-    public char delimiterStartChar = '<'; // Use <expr> by default
-    public char delimiterStopChar = '>';
+    public char delimiterStartChar = DEFAULT_START_DELIMITER; // Use <expr> by default
+    public char delimiterStopChar = DEFAULT_STOP_DELIMITER;
 
     /** Maps template name to {@link CompiledST} object. This map is synchronized. */
     protected Map<String, CompiledST> templates =
