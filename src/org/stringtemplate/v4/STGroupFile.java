@@ -39,8 +39,6 @@ import java.net.*;
  *  or an import.
  */
 public class STGroupFile extends STGroup {
-	private static final char DEFAULT_START_DELIMITER = '<';
-	private static final char DEFAULT_STOP_DELIMITER = '>';
     public String fileName;
     public URL url;
 
