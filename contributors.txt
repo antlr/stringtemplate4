@@ -50,3 +50,4 @@ CONTRIBUTORS:
 YYYY/MM/DD, github id, Full name, email
 2012/07/12, parrt, Terence Parr, parrt@antlr.org
 2012/08/13, pgelinas, Pascal Gélinas, pascal.gelinas@polymtl.ca
+2014/06/24, pietrom, Pietro Martinelli, amicofragile@gmail.com
