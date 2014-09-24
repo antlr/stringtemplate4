@@ -50,6 +50,7 @@ import static org.junit.Assert.assertTrue;
 public abstract class BaseTest {
 	public static final String pathSep = System.getProperty("path.separator");
     public static final String tmpdir = System.getProperty("java.io.tmpdir");
+    public static int tmpdirSuffix = 1;
 	public static final boolean interactive = Boolean.parseBoolean(System.getProperty("test.interactive"));
     public static final String newline = Misc.newline;
 
@@ -341,7 +342,8 @@ public abstract class BaseTest {
 	}
 
     public static String getRandomDir() {
-        String randomDir = tmpdir+"dir"+String.valueOf((int)(Math.random()*100000));
+        String randomDir = tmpdir + File.separator + "st-tmp-dir"
+                + File.separator + (tmpdirSuffix++);
         File f = new File(randomDir);
         f.mkdirs();
         return randomDir;
