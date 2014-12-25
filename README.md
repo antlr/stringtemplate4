@@ -1,8 +1,8 @@
-StringTemplate 4.0.8
+StringTemplate 4.0.8  
 March 25, 2014
 
-Terence Parr, parrt at cs usfca edu
-ANTLR project lead and supreme dictator for life
+Terence Parr, parrt at cs usfca edu  
+ANTLR project lead and supreme dictator for life  
 University of San Francisco
 
 ST (StringTemplate) is a java template engine (with ports for C#,
@@ -12,54 +12,59 @@ multi-targeted code generators, multiple site skins, and
 internationalization / localization. It evolved over years of effort
 developing jGuru.com and then ANTLR v3. The main website is:
 
-  http://www.stringtemplate.org
+> http://www.stringtemplate.org
 
 Its distinguishing characteristic is that it strictly enforces
 model-view separation, unlike other engines. See:
 
-  http://www.cs.usfca.edu/~parrt/papers/mvc.templates.pdf
+> http://www.cs.usfca.edu/~parrt/papers/mvc.templates.pdf
 
 The documentation is in the wiki:
 
-  https://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+4+Documentation
+> https://theantlrguy.atlassian.net/wiki/display/ST4/StringTemplate+4+Documentation
 
-Per the BSD license in LICENSE.txt, this software is not guaranteed to
-work and might even destroy all life on this planet.
+Per the BSD license in [LICENSE.txt](LICENSE.txt), this software is not
+guaranteed to work and might even destroy all life on this planet.
 
-See the CHANGES.txt file.
+See the [CHANGES.txt](CHANGES.txt) file.
 
-INSTALLATION
+## INSTALLATION
 
-All you need to do is get the StringTemplate jar into your CLASSPATH
+All you need to do is get the StringTemplate jar into your `CLASSPATH`
 as well as its dependent ANTLR jar. Download the following and put
 into your favorite lib directory such as /usr/local/lib on UNIX:
 
-  * antlr-3.5.2-complete.jar; http://www.antlr3.org/download/antlr-3.5.2-complete.jar
-  * ST.jar; see http://www.stringtemplate.org/download/ST-4.0.8.jar
+* [antlr-3.5.2-complete.jar](http://www.antlr3.org/download/antlr-3.5.2-complete.jar)
+* [ST-4.0.8.jar](http://www.stringtemplate.org/download/ST-4.0.8.jar)
 
-Add to your CLASSPATH. On UNIX that looks like
+Add to your `CLASSPATH`. On UNIX that looks like
 
+```
 $ export CLASSPATH="/usr/local/lib/antlr-3.5-complete.jar:/usr/local/lib/ST-4.0.8.jar:$CLASSPATH"
+```
 
 Java will now see all the libraries necessary to execute ST stuff.
 
-BUILDING FROM SOURCE
+## BUILDING FROM SOURCE
 
 The source is at github.com:
 
-	https://github.com/antlr/stringtemplate4
+> https://github.com/antlr/stringtemplate4
 
 If you would like to make changes to ST and build it yourself, just set
-build.properties to the appropriate version of this:
+**build.properties** to the appropriate version of this:
 
-  version=4.0.8
-  antlr3.jar=/usr/local/lib/antlr-3.5.2-complete.jar
-  build.sysclasspath=ignore
+```
+version=4.0.8
+antlr3.jar=/usr/local/lib/antlr-3.5.2-complete.jar
+build.sysclasspath=ignore
+```
 
-and then run "ant" from the main directory.
+and then run `ant` from the main directory.
 
 Then, once you're set up with the ant task, go for it. Looks like this:
 
+```
 $ cd /usr/local/ST-4.0.8
 $ ant
 Buildfile: /Users/parrt/antlr/code/stringtemplate4/build.xml
@@ -99,3 +104,4 @@ distribute:
 
 BUILD SUCCESSFUL
 Total time: 4 seconds
+```
