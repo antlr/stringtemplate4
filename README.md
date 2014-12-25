@@ -30,6 +30,8 @@ See the [CHANGES.txt](CHANGES.txt) file.
 
 ## INSTALLATION
 
+### Manual Installation
+
 All you need to do is get the StringTemplate jar into your `CLASSPATH`
 as well as its dependent ANTLR jar. Download the following and put
 into your favorite lib directory such as /usr/local/lib on UNIX:
@@ -44,6 +46,20 @@ $ export CLASSPATH="/usr/local/lib/antlr-3.5-complete.jar:/usr/local/lib/ST-4.0.
 ```
 
 Java will now see all the libraries necessary to execute ST stuff.
+
+### Maven
+
+To reference StringTemplate from a project built using Maven, add the following
+to the `<dependencies>` element in your **pom.xml** file.
+
+```xml
+<dependency>
+  <groupId>org.antlr</groupId>
+  <artifactId>ST4</artifactId>
+  <version>4.0.8</version>
+  <scope>compile</scope>
+</dependency>
+```
 
 ## BUILDING FROM SOURCE
 
