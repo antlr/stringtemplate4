@@ -45,7 +45,7 @@ public class STGroupFile extends STGroup {
     protected boolean alreadyLoaded = false;
 
     /** Load a file relative to current directory or from root or via CLASSPATH. */
-	public STGroupFile(String fileName) { this(fileName, '<', '>'); }
+	public STGroupFile(String fileName) { this(fileName, DEFAULT_START_DELIMITER, DEFAULT_STOP_DELIMITER); }
 
 	public STGroupFile(String fileName, char delimiterStartChar, char delimiterStopChar) {
 		super(delimiterStartChar, delimiterStopChar);
@@ -75,7 +75,7 @@ public class STGroupFile extends STGroup {
 	}
 
 	public STGroupFile(String fullyQualifiedFileName, String encoding) {
-        this(fullyQualifiedFileName, encoding, '<', '>');
+        this(fullyQualifiedFileName, encoding, DEFAULT_START_DELIMITER, DEFAULT_STOP_DELIMITER);
     }
 
     public STGroupFile(String fullyQualifiedFileName, String encoding,
@@ -85,6 +85,10 @@ public class STGroupFile extends STGroup {
         this.encoding = encoding;
     }
 
+    public STGroupFile(URL url, String encoding) {
+    	this(url, encoding, DEFAULT_START_DELIMITER, DEFAULT_STOP_DELIMITER);
+    }
+    
 	public STGroupFile(URL url, String encoding,
 					   char delimiterStartChar, char delimiterStopChar)
 	{
