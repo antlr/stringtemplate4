@@ -9,11 +9,11 @@
     </target>
 
     <target name="antlr3-init" depends="basic-init">
-        <property name="antlr3.version" value="3.5"/>
+        <property name="antlr3.version" value="3.5.2"/>
         <property name="antlr3.jar.name" value="antlr-${antlr3.version}-complete.jar"/>
         <property name="antlr3.jar" value="${lib.dir}/${antlr3.jar.name}"/>
         <mkdir dir="${lib.dir}"/>
-        <get src="http://antlr.org/download/${antlr3.jar.name}" dest="${antlr3.jar}" skipexisting="true"/>
+        <get src="http://antlr3.org/download/${antlr3.jar.name}" dest="${antlr3.jar}" skipexisting="true"/>
         <path id="cp.antlr3" path="${antlr3.jar}"/>
 
         <property name="build.antlr3.dir" value="${build.dir}/generated-sources/antlr3" />
@@ -21,7 +21,7 @@
     </target>
 
     <target name="build-init" depends="basic-init">
-        <property name="version" value="4.0.8-dev"/>
+        <property name="version" value="4.0.8"/>
         <property name="build.sysclasspath" value="ignore"/>
         <property name="install.root.dir" value="${dist.dir}/ST-${version}" />
         <property name="jar.file" value="${dist.dir}/ST-${version}.jar" />
@@ -69,13 +69,21 @@
         <attribute name="srcpath"/>
         <element name="args" optional="true"/>
         <sequential>
+            <local name="path.antlr3.local"/>
+            <local name="sources.antlr3.local"/>
+            <path id="path.antlr3.local">
+                <fileset dir="${basedir}/src/@{srcpath}" includes="*.g"/>
+            </path>
+            <pathconvert pathsep=" " property="sources.antlr3.local" refid="path.antlr3.local">
+                <map from="${basedir}/src/@{srcpath}/" to=""/>
+            </pathconvert>
             <mkdir dir="${build.antlr3.dir}/@{srcpath}"/>
             <java classname="org.antlr.Tool" fork="true" failonerror="true" maxmemory="300m"
-                  dir="${src.dir}/@{srcpath}">
+                  dir="${basedir}/src/@{srcpath}">
                 <arg value="-o"/>
                 <arg value="${build.antlr3.dir}/@{srcpath}"/>
                 <args/>
-                <arg value="*.g"/>
+                <arg line="${sources.antlr3.local}"/>
                 <classpath>
                     <path refid="cp.antlr3"/>
                     <pathelement location="${java.class.path}"/>
@@ -103,8 +111,8 @@
         <mkdir dir="${build.dir}/classes"/>
         <javac
                 destdir="${build.dir}/classes"
-                source="1.5"
-                target="1.5"
+                source="1.6"
+                target="1.6"
                 debug="true">
             <compilerarg value="-Xlint"/>
             <compilerarg value="-Xlint:-serial"/>
