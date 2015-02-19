@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseTest {
 	public static final String pathSep = System.getProperty("path.separator");
-    public static final String tmpdir = System.getProperty("java.io.tmpdir");
+    public static final String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 	public static final boolean interactive = Boolean.parseBoolean(System.getProperty("test.interactive"));
     public static final String newline = Misc.newline;
 
