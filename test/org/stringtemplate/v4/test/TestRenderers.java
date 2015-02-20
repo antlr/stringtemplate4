@@ -42,7 +42,6 @@ public class TestRenderers extends BaseTest {
 	@Before
 	@Override
 	public void setUp() {
-		super.setUp();
 		origLocale = Locale.getDefault();
 		Locale.setDefault(Locale.US);
 	}

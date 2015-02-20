@@ -7,12 +7,12 @@
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+	notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+	notice, this list of conditions and the following disclaimer in the
+	documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+	derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -34,12 +34,12 @@
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+	notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+	notice, this list of conditions and the following disclaimer in the
+	documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+	derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -65,20 +65,23 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 
 public class TestCompiler extends BaseTest {
+	@Before
+	@Override
+	public void setUp() { org.stringtemplate.v4.compiler.Compiler.subtemplateCount = 0; }
 
-    @Test public void testAttr() throws Exception {
-        String template = "hi <name>";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected =
-            "write_str 0, " +
-            "load_attr 1, " +
-            "write";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testAttr() throws Exception {
+		String template = "hi <name>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"write_str 0, " +
+			"load_attr 1, " +
+			"write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[hi , name]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
 	@Test public void testInclude() throws Exception {
 		String template = "hi <foo()>";
@@ -219,30 +222,30 @@ public class TestCompiler extends BaseTest {
 		assertEquals(stringsExpected, stringsResult);
 	}
 
-    @Test public void testProp() throws Exception {
-        String template = "hi <a.b>";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected =
-            "write_str 0, load_attr 1, load_prop 2, write";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , a, b]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testProp() throws Exception {
+		String template = "hi <a.b>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"write_str 0, load_attr 1, load_prop 2, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[hi , a, b]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
-    @Test public void testProp2() throws Exception {
-        String template = "<u.id>: <u.name>";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected =
-            "load_attr 0, load_prop 1, write, write_str 2, " +
-            "load_attr 0, load_prop 3, write";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[u, id, : , name]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testProp2() throws Exception {
+		String template = "<u.id>: <u.name>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"load_attr 0, load_prop 1, write, write_str 2, " +
+			"load_attr 0, load_prop 3, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[u, id, : , name]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
 	@Test public void testMap() throws Exception {
 		String template = "<name:bold()>";
@@ -390,166 +393,166 @@ public class TestCompiler extends BaseTest {
 		assertEquals(stringsExpected, stringsResult);
 	}
 
-    @Test public void testIf() throws Exception {
-        String template = "go: <if(name)>hi, foo<endif>";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected =
-            "write_str 0, load_attr 1, brf 12, write_str 2";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[go: , name, hi, foo]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testIf() throws Exception {
+		String template = "go: <if(name)>hi, foo<endif>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"write_str 0, load_attr 1, brf 12, write_str 2";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[go: , name, hi, foo]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
-    @Test public void testIfElse() throws Exception {
-        String template = "go: <if(name)>hi, foo<else>bye<endif>";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected =
-            "write_str 0, " +
-            "load_attr 1, " +
-            "brf 15, " +
-            "write_str 2, " +
-            "br 18, " +
-            "write_str 3";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[go: , name, hi, foo, bye]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testIfElse() throws Exception {
+		String template = "go: <if(name)>hi, foo<else>bye<endif>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"write_str 0, " +
+			"load_attr 1, " +
+			"brf 15, " +
+			"write_str 2, " +
+			"br 18, " +
+			"write_str 3";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[go: , name, hi, foo, bye]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
-    @Test public void testElseIf() throws Exception {
-        String template = "go: <if(name)>hi, foo<elseif(user)>a user<endif>";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected =
-            "write_str 0, " +
-            "load_attr 1, " +
-            "brf 15, " +
-            "write_str 2, " +
-            "br 24, " +
-            "load_attr 3, " +
-            "brf 24, " +
-            "write_str 4";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[go: , name, hi, foo, user, a user]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testElseIf() throws Exception {
+		String template = "go: <if(name)>hi, foo<elseif(user)>a user<endif>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"write_str 0, " +
+			"load_attr 1, " +
+			"brf 15, " +
+			"write_str 2, " +
+			"br 24, " +
+			"load_attr 3, " +
+			"brf 24, " +
+			"write_str 4";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[go: , name, hi, foo, user, a user]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
-    @Test public void testElseIfElse() throws Exception {
-        String template = "go: <if(name)>hi, foo<elseif(user)>a user<else>bye<endif>";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected =
-            "write_str 0, " +
-            "load_attr 1, " +
-            "brf 15, " +
-            "write_str 2, " +
-            "br 30, " +
-            "load_attr 3, " +
-            "brf 27, " +
-            "write_str 4, " +
-            "br 30, " +
-            "write_str 5";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[go: , name, hi, foo, user, a user, bye]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testElseIfElse() throws Exception {
+		String template = "go: <if(name)>hi, foo<elseif(user)>a user<else>bye<endif>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"write_str 0, " +
+			"load_attr 1, " +
+			"brf 15, " +
+			"write_str 2, " +
+			"br 30, " +
+			"load_attr 3, " +
+			"brf 27, " +
+			"write_str 4, " +
+			"br 30, " +
+			"write_str 5";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[go: , name, hi, foo, user, a user, bye]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
-    @Test public void testOption() throws Exception {
-        String template = "hi <name; separator=\"x\">";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected =
-            "write_str 0, load_attr 1, options, load_str 2, store_option 3, write_opt";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, x]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testOption() throws Exception {
+		String template = "hi <name; separator=\"x\">";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"write_str 0, load_attr 1, options, load_str 2, store_option 3, write_opt";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[hi , name, x]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
-    @Test public void testOptionAsTemplate() throws Exception {
-        String template = "hi <name; separator={, }>";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected =
-            "write_str 0, load_attr 1, options, new 2 0, store_option 3, write_opt";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[hi , name, _sub1]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testOptionAsTemplate() throws Exception {
+		String template = "hi <name; separator={, }>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"write_str 0, load_attr 1, options, new 2 0, store_option 3, write_opt";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[hi , name, _sub1]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
-    @Test public void testOptions() throws Exception {
-        String template = "hi <name; anchor, wrap=foo(), separator=\", \">";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected =
-            "write_str 0, " +
-            "load_attr 1, " +
-            "options, " +
-            "load_str 2, " +
-            "store_option 0, " +
-            "new 3 0, " +
-            "store_option 4, " +
-            "load_str 4, " +
-            "store_option 3, " +
-            "write_opt";
-        String stringsExpected = // the ", , ," is the ", " separator string
-            "[hi , name, true, foo, , ]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-    }
+	@Test public void testOptions() throws Exception {
+		String template = "hi <name; anchor, wrap=foo(), separator=\", \">";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected =
+			"write_str 0, " +
+			"load_attr 1, " +
+			"options, " +
+			"load_str 2, " +
+			"store_option 0, " +
+			"new 3 0, " +
+			"store_option 4, " +
+			"load_str 4, " +
+			"store_option 3, " +
+			"write_opt";
+		String stringsExpected = // the ", , ," is the ", " separator string
+			"[hi , name, true, foo, , ]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+	}
 
-    @Test public void testEmptyList() throws Exception {
-        String template = "<[]>";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected = "list, write";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testEmptyList() throws Exception {
+		String template = "<[]>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected = "list, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
-    @Test public void testList() throws Exception {
-        String template = "<[a,b]>";
-        CompiledST code = new Compiler().compile(template);
-        String asmExpected = "list, load_attr 0, add, load_attr 1, add, write";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[a, b]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testList() throws Exception {
+		String template = "<[a,b]>";
+		CompiledST code = new Compiler().compile(template);
+		String asmExpected = "list, load_attr 0, add, load_attr 1, add, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[a, b]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
-    @Test public void testEmbeddedRegion() throws Exception {
-        String template = "<@r>foo<@end>";
-        // compile as if in root dir and in template 'a'
-        CompiledST code = new Compiler().compile("a", template);
-        String asmExpected =
-            "new 0 0, write";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[/region__/a__r]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testEmbeddedRegion() throws Exception {
+		String template = "<@r>foo<@end>";
+		// compile as if in root dir and in template 'a'
+		CompiledST code = new Compiler().compile("a", template);
+		String asmExpected =
+			"new 0 0, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[/region__/a__r]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 
-    @Test public void testRegion() throws Exception {
-        String template = "x:<@r()>";
-        // compile as if in root dir and in template 'a'
-        CompiledST code = new Compiler().compile("a", template);
-        String asmExpected =
-            "write_str 0, new 1 0, write";
-        String asmResult = code.instrs();
-        assertEquals(asmExpected, asmResult);
-        String stringsExpected = "[x:, /region__/a__r]";
-        String stringsResult = Arrays.toString(code.strings);
-        assertEquals(stringsExpected, stringsResult);
-    }
+	@Test public void testRegion() throws Exception {
+		String template = "x:<@r()>";
+		// compile as if in root dir and in template 'a'
+		CompiledST code = new Compiler().compile("a", template);
+		String asmExpected =
+			"write_str 0, new 1 0, write";
+		String asmResult = code.instrs();
+		assertEquals(asmExpected, asmResult);
+		String stringsExpected = "[x:, /region__/a__r]";
+		String stringsResult = Arrays.toString(code.strings);
+		assertEquals(stringsExpected, stringsResult);
+	}
 }

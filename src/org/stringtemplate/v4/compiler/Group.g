@@ -7,12 +7,12 @@
  *  modification, are permitted provided that the following conditions
  *  are met:
  *  1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ *	 notice, this list of conditions and the following disclaimer.
  *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
+ *	 notice, this list of conditions and the following disclaimer in the
+ *	 documentation and/or other materials provided with the distribution.
  *  3. The name of the author may not be used to endorse or promote products
- *     derived from this software without specific prior written permission.
+ *	 derived from this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -45,12 +45,12 @@ tokens {
  *  modification, are permitted provided that the following conditions
  *  are met:
  *  1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ *	 notice, this list of conditions and the following disclaimer.
  *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
+ *	 notice, this list of conditions and the following disclaimer in the
+ *	 documentation and/or other materials provided with the distribution.
  *  3. The name of the author may not be used to endorse or promote products
- *     derived from this software without specific prior written permission.
+ *	 derived from this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -85,12 +85,12 @@ import java.io.File;
  *  modification, are permitted provided that the following conditions
  *  are met:
  *  1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ *	 notice, this list of conditions and the following disclaimer.
  *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
+ *	 notice, this list of conditions and the following disclaimer in the
+ *	 documentation and/or other materials provided with the distribution.
  *  3. The name of the author may not be used to endorse or promote products
- *     derived from this software without specific prior written permission.
+ *	 derived from this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -114,21 +114,21 @@ public STGroup group;
 
 @Override
 public void displayRecognitionError(String[] tokenNames,
-                                    RecognitionException e)
+									RecognitionException e)
 {
-    String msg = getErrorMessage(e, tokenNames);
-    group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
+	String msg = getErrorMessage(e, tokenNames);
+	group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 }
 @Override
 public String getSourceName() {
-    String fullFileName = super.getSourceName();
-    File f = new File(fullFileName); // strip to simple name
-    return f.getName();
+	String fullFileName = super.getSourceName();
+	File f = new File(fullFileName); // strip to simple name
+	return f.getName();
 }
 public void error(String msg) {
-    NoViableAltException e = new NoViableAltException("", 0, 0, input);
-    group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
-    recover(input, null);
+	NoViableAltException e = new NoViableAltException("", 0, 0, input);
+	group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
+	recover(input, null);
 }
 }
 
@@ -137,23 +137,23 @@ public STGroup group;
 
 @Override
 public void reportError(RecognitionException e) {
-    String msg = null;
-    if ( e instanceof NoViableAltException ) {
-        msg = "invalid character '"+(char)input.LA(1)+"'";
-    }
-    else if ( e instanceof MismatchedTokenException && ((MismatchedTokenException)e).expecting=='"' ) {
-        msg = "unterminated string";
-    }
-    else {
-        msg = getErrorMessage(e, getTokenNames());
-    }
-    group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
+	String msg = null;
+	if ( e instanceof NoViableAltException ) {
+		msg = "invalid character '"+(char)input.LA(1)+"'";
+	}
+	else if ( e instanceof MismatchedTokenException && ((MismatchedTokenException)e).expecting=='"' ) {
+		msg = "unterminated string";
+	}
+	else {
+		msg = getErrorMessage(e, getTokenNames());
+	}
+	group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 }
 @Override
 public String getSourceName() {
-    String fullFileName = super.getSourceName();
-    File f = new File(fullFileName); // strip to simple name
-    return f.getName();
+	String fullFileName = super.getSourceName();
+	File f = new File(fullFileName); // strip to simple name
+	return f.getName();
 }
 }
 
@@ -164,7 +164,7 @@ this.group = lexer.group = $group;
 }
 	:	oldStyleHeader?
 		delimiters?
-	    (	'import' STRING {group.importTemplates($STRING);}
+		(	'import' STRING {group.importTemplates($STRING);}
 		|	'import' // common error: name not in string
 			{
 			MismatchedTokenException e = new MismatchedTokenException(STRING, input);
@@ -177,9 +177,9 @@ this.group = lexer.group = $group;
 	;
 
 oldStyleHeader // ignore but lets us use this parser in AW for both v3 and v4
-    :   'group' ID ( ':' ID )?
-	    ( 'implements' ID (',' ID)* )?
-	    ';'
+	:   'group' ID ( ':' ID )?
+		( 'implements' ID (',' ID)* )?
+		';'
 	;
 
 groupName returns [String name]
@@ -188,58 +188,82 @@ groupName returns [String name]
 	;
 
 delimiters
-    :	'delimiters' a=STRING ',' b=STRING
-     	{
-     	group.delimiterStartChar=$a.getText().charAt(1);
-        group.delimiterStopChar=$b.getText().charAt(1);
-        }
-    ;
+	:	'delimiters' a=STRING ',' b=STRING
+	 	{
+	 	group.delimiterStartChar=$a.getText().charAt(1);
+		group.delimiterStopChar=$b.getText().charAt(1);
+		}
+	;
 
 /** Match template and dictionary defs outside of (...)+ loop in group.
  *  The key is catching while still in the loop; must keep prediction of
  *  elements separate from "stay in loop" prediction.
  */
-def[String prefix] : templateDef[prefix] | dictDef ;
+def[String prefix] : templateDefOrRegion[prefix] | dictDef ;
 	catch[RecognitionException re] {
 		// pretend we already saw an error here
 		state.lastErrorIndex = input.index();
 		error("garbled template definition starting at '"+input.LT(1).getText()+"'");
 	}
 
+fragment annotations returns [List<STAnnotation> result]
+@init { result = new ArrayList<STAnnotation>(); }
+	:  (a=annotation { result.add(a); })*
+	;
+
+fragment annotation returns [STAnnotation result]
+	:  '@' name=ID '(' value=STRING ')'
+		{
+			result = new STAnnotation($name.text, $value.text);
+		}
+	;
+
+templateDefOrRegion[String prefix]
+	:	(	'@' enclosing=ID '.' name=ID '(' ')' templateDefOrRegionBody[prefix, $name, $enclosing, null, null]
+		|	templateDef[prefix]
+ 		)
+	;
+
 templateDef[String prefix]
-@init {
-    String template=null;
-    int n=0; // num char to strip from left, right of template def
-}
-	:	(	'@' enclosing=ID '.' name=ID '(' ')'
-		|	name=ID '(' formalArgs ')'
+	:   (
+			a=annotations
+			name=ID '(' formalArgs ')'
+			templateDefOrRegionBody[prefix, $name, null, $formalArgs.args, a]
 		)
-	    '::='
-	    {Token templateToken = input.LT(1);}
-	    (	STRING     {template=$STRING.text; n=1;}
-	    |	BIGSTRING  {template=$BIGSTRING.text; n=2;}
-	    |	BIGSTRING_NO_NL  {template=$BIGSTRING_NO_NL.text; n=2;}
-	    |	{
-	    	template = "";
-	    	String msg = "missing template at '"+input.LT(1).getText()+"'";
-            NoViableAltException e = new NoViableAltException("", 0, 0, input);
-    	    group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
-    	    }
-	    )
-	    {
-	    if ( $name.index >= 0 ) { // if ID missing
+	  	|   alias=ID '::=' target=ID  {group.defineTemplateAlias($alias, $target);}
+
+	;
+
+fragment templateDefOrRegionBody[String prefix, Token name, Token enclosing, List<FormalArgument> formalArgs, List<STAnnotation> annotationList]
+@init {
+	String template=null;
+	int n=0; // num char to strip from left, right of template def
+}
+	:	'::='
+		{Token templateToken = input.LT(1);}
+		(	STRING	 {template=$STRING.text; n=1;}
+		|	BIGSTRING  {template=$BIGSTRING.text; n=2;}
+		|	BIGSTRING_NO_NL  {template=$BIGSTRING_NO_NL.text; n=2;}
+		|	{
+			template = "";
+			String msg = "missing template at '"+input.LT(1).getText()+"'";
+			NoViableAltException e = new NoViableAltException("", 0, 0, input);
+			group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
+			}
+		)
+		{
+		if ((($name != null) ? $name.getTokenIndex() : 0) >= 0) { // if ID missing
 			template = Misc.strip(template, n);
-			String templateName = $name.text;
-			if ( prefix.length()>0 ) templateName = prefix+$name.text;
-			String enclosingTemplateName = $enclosing.text;
+			String templateName = ($name != null) ? $name.getText() : null;
+			if ( prefix.length()>0 ) templateName = prefix + (($name != null) ? $name.getText() : null);
+			String enclosingTemplateName = ($enclosing != null) ? $enclosing.getText() : null;
 			if (enclosingTemplateName != null && enclosingTemplateName.length()>0 && prefix.length()>0) {
 				enclosingTemplateName = prefix + enclosingTemplateName;
 			}
 			group.defineTemplateOrRegion(templateName, enclosingTemplateName, templateToken,
-										 template, $name, $formalArgs.args);
+										 template, $name, $formalArgs, annotationList);
 		}
-	    }
-	|   alias=ID '::=' target=ID  {group.defineTemplateAlias($alias, $target);}
+		}
 	;
 
 formalArgs returns[List<FormalArgument> args = new ArrayList<FormalArgument>()]
@@ -263,30 +287,30 @@ formalArg[List<FormalArgument> args]
 			}
 		)
 		{$args.add(new FormalArgument($ID.text, $a));}
-    ;
+	;
 
 /*
 suffix returns [int cardinality=FormalArgument.REQUIRED]
-    :   OPTIONAL
-    |   STAR
-    |   PLUS
+	:   OPTIONAL
+	|   STAR
+	|   PLUS
 	|
-    ;
-        */
+	;
+		*/
 
 dictDef
 	:	ID '::=' dict
-        {
-        if ( group.rawGetDictionary($ID.text)!=null ) {
+		{
+		if ( group.rawGetDictionary($ID.text)!=null ) {
 			group.errMgr.compileTimeError(ErrorType.MAP_REDEFINITION, null, $ID);
-        }
-        else if ( group.rawGetTemplate($ID.text)!=null ) {
+		}
+		else if ( group.rawGetTemplate($ID.text)!=null ) {
 			group.errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION_AS_MAP, null, $ID);
-        }
-        else {
-            group.defineDictionary($ID.text, $dict.mapping);
-        }
-        }
+		}
+		else {
+			group.defineDictionary($ID.text, $dict.mapping);
+		}
+		}
 	;
 
 dict returns [Map<String,Object> mapping]
@@ -295,10 +319,10 @@ dict returns [Map<String,Object> mapping]
 	;
 
 dictPairs[Map<String,Object> mapping]
-    :	keyValuePair[mapping]
-    	(',' keyValuePair[mapping])* (',' defaultValuePair[mapping])?
-    |	defaultValuePair[mapping]
-    ;
+	:	keyValuePair[mapping]
+		(',' keyValuePair[mapping])* (',' defaultValuePair[mapping])?
+	|	defaultValuePair[mapping]
+	;
  	catch[RecognitionException re] {
 		error("missing dictionary entry at '"+input.LT(1).getText()+"'");
 	}
@@ -335,32 +359,32 @@ STRING
 		|	'\\' ~'"'
 		|	{
 			String msg = "\\n in string";
-    		NoViableAltException e = new NoViableAltException("", 0, 0, input);
+			NoViableAltException e = new NoViableAltException("", 0, 0, input);
 			group.errMgr.groupLexerError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 			}
 			'\n'
 		|	~('\\'|'"'|'\n')
 		)*
 		'"'
-        {
-        String txt = getText().replaceAll("\\\\\"","\"");
+		{
+		String txt = getText().replaceAll("\\\\\"","\"");
 		setText(txt);
 		}
 	;
 
 BIGSTRING_NO_NL // same as BIGSTRING but means ignore newlines later
 	:	'<%' ( . )* '%>'
-        // %\> is the escape to avoid end of string
-        {
-        String txt = getText().replaceAll("\%\\\\>","\%>");
+		// %\> is the escape to avoid end of string
+		{
+		String txt = getText().replaceAll("\%\\\\>","\%>");
 		setText(txt);
 		}
 	;
 
 /** Match <<...>> but also allow <<..<x>>> so we can have tag on end.
-    Escapes: >\> means >> inside of <<...>>.
-    Escapes: \>> means >> inside of <<...>> unless at end like <<...\>>>>.
-    In that case, use <%..>>%> instead.
+	Escapes: >\> means >> inside of <<...>>.
+	Escapes: \>> means >> inside of <<...>> unless at end like <<...\>>>>.
+	In that case, use <%..>>%> instead.
  */
 BIGSTRING
 	:	'<<'
@@ -369,17 +393,17 @@ BIGSTRING
 		|	'\\' ~'>' // allow this but don't collapse in action
 		|	~'\\'
 		)*
-        '>>'
-        {
-        String txt = getText();
-        txt = Misc.replaceEscapedRightAngle(txt); // replace \> with > unless <\\>
+		'>>'
+		{
+		String txt = getText();
+		txt = Misc.replaceEscapedRightAngle(txt); // replace \> with > unless <\\>
 		setText(txt);
 		}
 	;
 
 ANONYMOUS_TEMPLATE
-    :	'{'
-    	{
+	:	'{'
+		{
 		Token templateToken = new CommonToken(input, ANONYMOUS_TEMPLATE, 0, getCharIndex(), getCharIndex());
 		STLexer lexer =
 			new STLexer(group.errMgr, input, templateToken, group.delimiterStartChar, group.delimiterStopChar);
@@ -387,24 +411,24 @@ ANONYMOUS_TEMPLATE
 		Token t = lexer.nextToken();
 		while ( lexer.subtemplateDepth>=1 || t.getType()!=STLexer.RCURLY ) {
 			if ( t.getType()==STLexer.EOF_TYPE ) {
-            	MismatchedTokenException e = new MismatchedTokenException('}', input);
+				MismatchedTokenException e = new MismatchedTokenException('}', input);
 				String msg = "missing final '}' in {...} anonymous template";
-    			group.errMgr.groupLexerError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
+				group.errMgr.groupLexerError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
 				break;
 			}
 			t = lexer.nextToken();
 		}
 		}
-    	// don't match '}' here; our little {...} scanner loop matches it
-    	// to terminate.
-    ;
+		// don't match '}' here; our little {...} scanner loop matches it
+		// to terminate.
+	;
 
 COMMENT
-    :   '/*' ( options {greedy=false;} : . )* '*/' {skip();}
-    ;
+	:   '/*' ( options {greedy=false;} : . )* '*/' {skip();}
+	;
 
 LINE_COMMENT
-    :	'//' ~('\n'|'\r')* '\r'? '\n' {skip();}
-    ;
+	:	'//' ~('\n'|'\r')* '\r'? '\n' {skip();}
+	;
 
 WS  :	(' '|'\r'|'\t'|'\n') {skip();} ;

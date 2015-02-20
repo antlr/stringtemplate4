@@ -7,12 +7,12 @@
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+	notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+	notice, this list of conditions and the following disclaimer in the
+	documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+	derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -28,11 +28,14 @@
 package org.stringtemplate.v4.test;
 
 import org.antlr.runtime.*;
+import org.junit.Assert;
 import org.junit.Before;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.compiler.*;
+import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.misc.STMessage;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -49,10 +52,9 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseTest {
 	public static final String pathSep = System.getProperty("path.separator");
+	public static final String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 	public static final boolean interactive = Boolean.parseBoolean(System.getProperty("test.interactive"));
-    public static final String newline = Misc.newline;
-
-	public String tmpdir = null;
+	public static final String newline = Misc.newline;
 
 	/**
 	 * When runnning from Maven, the junit tests are run via the surefire plugin. It sets the
@@ -102,29 +104,25 @@ public abstract class BaseTest {
 		}
 	}
 
-    @Before
-    public void setUp() {
-        STGroup.defaultGroup = new STGroup();
-        Compiler.subtemplateCount = 0;
+	@Before
+	public void setUp() {
+		STGroup.defaultGroup = new STGroup();
+		Compiler.subtemplateCount = 0;
+	}
 
-        String baseTestDirectory = System.getProperty("java.io.tmpdir");
-        String testDirectory = getClass().getSimpleName() + "-" + System.currentTimeMillis();
-        tmpdir = new File(baseTestDirectory, testDirectory).getAbsolutePath();
-    }
-
-    /**
-     * Creates a file "Test.java" in the directory dirName containing a main
-     * method with content starting as given by main.
-     * <p>
-     * The value of a variable 'result' defined in 'main' is written to
-     * System.out, followed by a newline character.</p>
-     * <p>
-     * The final newline character is just the '\n' character, not the
-     * system specific line separator ({@link #newline}).</p>
-     *
-     * @param main
-     * @param dirName
-     */
+	/**
+	 * Creates a file "Test.java" in the directory dirName containing a main
+	 * method with content starting as given by main.
+	 * <p>
+	 * The value of a variable 'result' defined in 'main' is written to
+	 * System.out, followed by a newline character.</p>
+	 * <p>
+	 * The final newline character is just the '\n' character, not the
+	 * system specific line separator ({@link #newline}).</p>
+	 *
+	 * @param main
+	 * @param dirName
+	 */
 	public void writeTestFile(String main, String dirName) {
 		ST outputFileST = new ST(
 			"import org.antlr.runtime.*;\n" +
@@ -134,10 +132,10 @@ public abstract class BaseTest {
 			"import java.net.*;\n" +
 			"\n" +
 			"public class Test {\n" +
-			"    public static void main(String[] args) throws Exception {\n" +
-			"        <code>\n"+
-			"        System.out.println(result);\n"+
-			"    }\n" +
+			"	public static void main(String[] args) throws Exception {\n" +
+			"		<code>\n"+
+			"		System.out.println(result);\n"+
+			"	}\n" +
 			"}"
 			);
 		outputFileST.add("code", main);
@@ -276,7 +274,7 @@ public abstract class BaseTest {
 	public static void writeFile(String dir, String fileName, String content) {
 		try {
 			File f = new File(dir, fileName);
-            if ( !f.getParentFile().exists() ) f.getParentFile().mkdirs();
+			if ( !f.getParentFile().exists() ) f.getParentFile().mkdirs();
 			FileWriter w = new FileWriter(f);
 			BufferedWriter bw = new BufferedWriter(w);
 			bw.write(content);
@@ -289,16 +287,16 @@ public abstract class BaseTest {
 		}
 	}
 
-    public void checkTokens(String template, String expected) {
-        checkTokens(template, expected, '<', '>');
-    }
+	public void checkTokens(String template, String expected) {
+		checkTokens(template, expected, '<', '>');
+	}
 
 
-    public void checkTokens(String template, String expected,
-                            char delimiterStartChar, char delimiterStopChar)
-    {
-        STLexer lexer =
-            new STLexer(STGroup.DEFAULT_ERR_MGR,
+	public void checkTokens(String template, String expected,
+							char delimiterStartChar, char delimiterStopChar)
+	{
+		STLexer lexer =
+			new STLexer(STGroup.DEFAULT_ERR_MGR,
 						new ANTLRStringStream(template),
 						null,
 						delimiterStartChar,
@@ -307,46 +305,46 @@ public abstract class BaseTest {
 		StringBuilder buf = new StringBuilder();
 		buf.append("[");
 		int i = 1;
-        Token t = tokens.LT(i);
-        while ( t.getType()!=Token.EOF ) {
-            if ( i>1 ) buf.append(", ");
-            buf.append(t);
-            i++;
-            t = tokens.LT(i);
-        }
-        buf.append("]");
-        String result = buf.toString();
-        assertEquals(expected, result);
-    }
-
-    public static class User {
-        public int id;
-        public String name;
-        public User(int id, String name) { this.id = id; this.name = name; }
-		public boolean isManager() { return true; }
-		public boolean hasParkingSpot() { return true; }
-        public String getName() { return name; }
-    }
-
-    public static class HashableUser extends User {
-        public HashableUser(int id, String name) { super(id, name); }
-        @Override
-        public int hashCode() {
-            return id;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if ( o instanceof HashableUser ) {
-                HashableUser hu = (HashableUser)o;
-                return this.id == hu.id && this.name.equals(hu.name);
-            }
-            return false;
-        }
+		Token t = tokens.LT(i);
+		while ( t.getType()!=Token.EOF ) {
+			if ( i>1 ) buf.append(", ");
+			buf.append(t);
+			i++;
+			t = tokens.LT(i);
+		}
+		buf.append("]");
+		String result = buf.toString();
+		assertEquals(expected, result);
 	}
 
-	public String getRandomDir() {
-		File randomDir = new File(tmpdir, "dir" + String.valueOf((int)(Math.random() * 100000)));
+	public static class User {
+		public int id;
+		public String name;
+		public User(int id, String name) { this.id = id; this.name = name; }
+		public boolean isManager() { return true; }
+		public boolean hasParkingSpot() { return true; }
+		public String getName() { return name; }
+	}
+
+	public static class HashableUser extends User {
+		public HashableUser(int id, String name) { super(id, name); }
+		@Override
+		public int hashCode() {
+			return id;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if ( o instanceof HashableUser ) {
+				HashableUser hu = (HashableUser)o;
+				return this.id == hu.id && this.name.equals(hu.name);
+			}
+			return false;
+		}
+	}
+
+	public static String getRandomDir() {
+ 		File randomDir = new File(tmpdir, "dir" + String.valueOf((int)(Math.random() * 100000)));
 		randomDir.mkdirs();
 		return randomDir.getAbsolutePath();
 	}
@@ -379,6 +377,41 @@ public abstract class BaseTest {
 	 */
 	public static void deleteFile(String file) {
 		deleteFile(new File(file));
+	}
+
+	/**
+	 * Builds an error manager to make the tests fail upon any error.
+	 * @return such {@link ErrorManager}.
+	 */
+	protected ErrorManager buildErrorManager() {
+		return
+			new ErrorManager(
+				new STErrorListener()
+				{
+					@Override
+					public void compileTimeError(final STMessage msg)
+					{
+						Assert.fail(msg.toString());
+					}
+
+					@Override
+					public void runTimeError(final STMessage msg)
+					{
+						Assert.fail(msg.toString());
+					}
+
+					@Override
+					public void IOError(final STMessage msg)
+					{
+						Assert.fail(msg.toString());
+					}
+
+					@Override
+					public void internalError(final STMessage msg)
+					{
+						Assert.fail(msg.toString());
+					}
+				});
 	}
 
 }

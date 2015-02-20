@@ -30,6 +30,7 @@ package org.stringtemplate.v4.test;
 import org.junit.*;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.stringtemplate.v4.misc.ErrorManager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -68,7 +69,10 @@ public class TestRegions extends BaseTest {
 		writeFile(dir, "g2.stg", "@a.r() ::= <<foo>>\n");
 
 		STGroup group1 = new STGroupFile(dir+"/g1.stg");
+        ErrorManager errorManager = buildErrorManager();
+        group1.errMgr = errorManager;
 		STGroup group2 = new STGroupFile(dir+"/g2.stg");
+        group2.errMgr = errorManager;
 		group2.importTemplates(group1); // define r in g2
 		ST st = group2.getInstanceOf("a");
 		String expected = "[foo]";
@@ -227,7 +231,7 @@ public class TestRegions extends BaseTest {
 		group.load();
 		String expected = "g.stg 1:3: missing ID at '('"+newline;
 		String result = errors.toString();
-		assertEquals(expected, result);
+		Assert.assertTrue(result.startsWith(expected));
 	}
 
 	@Test public void testIndentBeforeRegionIsIgnored() throws Exception {
