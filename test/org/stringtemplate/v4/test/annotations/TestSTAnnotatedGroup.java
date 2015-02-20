@@ -48,79 +48,79 @@ import org.stringtemplate.v4.test.BaseTest;
  */
 public class TestSTAnnotatedGroup extends BaseTest {
 
-    @Test public void testListsAllAnnotatedTemplates() throws Exception {
-        
-        String templates =
-            "@Main(\"the main template\")\n" +
-            "f() ::= <<foo>>" + Misc.newline +
-            "@Unused(\"this is unused\")\n" +
-            "b() ::= <<bar>>" + Misc.newline;
+	@Test public void testListsAllAnnotatedTemplates() throws Exception {
+		
+		String templates =
+			"@Main(\"the main template\")\n" +
+			"f() ::= <<foo>>" + Misc.newline +
+			"@Unused(\"this is unused\")\n" +
+			"b() ::= <<bar>>" + Misc.newline;
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup stGroup = new STGroupFile(tmpdir+"/"+"t.stg");
-        STAnnotatedGroup group = new STAnnotatedGroup(stGroup);
-        stGroup.errMgr = buildErrorManager();
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup stGroup = new STGroupFile(tmpdir+"/"+"t.stg");
+		STAnnotatedGroup group = new STAnnotatedGroup(stGroup);
+		stGroup.errMgr = buildErrorManager();
 
-        group.show();
-        List<STAnnotation> annotations = group.getAllAnnotations();
-        Assert.assertNotNull(annotations);
-        Assert.assertEquals(2, annotations.size());
-        STAnnotation main = annotations.get(0);
-        Assert.assertNotNull(main);
-        Assert.assertNotNull(main.getName());
-        Assert.assertEquals("Main", main.getName());
-        Assert.assertNotNull(main.getValue());
-        Assert.assertEquals("\"the main template\"", main.getValue());
-        STAnnotation unused = annotations.get(1);
-        Assert.assertNotNull(unused);
-        Assert.assertNotNull(unused.getName());
-        Assert.assertEquals("Unused", unused.getName());
-        Assert.assertNotNull(unused.getValue());
-        Assert.assertEquals("\"this is unused\"", unused.getValue());
-    }
+		group.show();
+		List<STAnnotation> annotations = group.getAllAnnotations();
+		Assert.assertNotNull(annotations);
+		Assert.assertEquals(2, annotations.size());
+		STAnnotation main = annotations.get(0);
+		Assert.assertNotNull(main);
+		Assert.assertNotNull(main.getName());
+		Assert.assertEquals("Main", main.getName());
+		Assert.assertNotNull(main.getValue());
+		Assert.assertEquals("\"the main template\"", main.getValue());
+		STAnnotation unused = annotations.get(1);
+		Assert.assertNotNull(unused);
+		Assert.assertNotNull(unused.getName());
+		Assert.assertEquals("Unused", unused.getName());
+		Assert.assertNotNull(unused.getValue());
+		Assert.assertEquals("\"this is unused\"", unused.getValue());
+	}
 
-    @Test public void testAnnotationMatches() {
-        STAnnotation annotation = new STAnnotation("Main", "\"^the (.*) template$\"");
-        Assert.assertTrue(annotation.matches("the main template"));
-    }
+	@Test public void testAnnotationMatches() {
+		STAnnotation annotation = new STAnnotation("Main", "\"^the (.*) template$\"");
+		Assert.assertTrue(annotation.matches("the main template"));
+	}
 
-    @Test public void testAnnotationRemovesSurroundingQuotes() {
-        Assert.assertEquals(
-            "^the (.*) template$",
-            new STAnnotation("Main", "\"^the (.*) template$\"") {
-                @Override
-                public String removeSurroundingQuotes(String value) {
-                    return super.removeSurroundingQuotes(value);
-                }
-            }.removeSurroundingQuotes("\"^the (.*) template$\""));
-    }
+	@Test public void testAnnotationRemovesSurroundingQuotes() {
+		Assert.assertEquals(
+			"^the (.*) template$",
+			new STAnnotation("Main", "\"^the (.*) template$\"") {
+				@Override
+				public String removeSurroundingQuotes(String value) {
+					return super.removeSurroundingQuotes(value);
+				}
+			}.removeSurroundingQuotes("\"^the (.*) template$\""));
+	}
 
-    @Test public void testMatchingAnnotations() throws Exception {
-        
-        String templates =
-            "@Main(\"^The (.*) template$\")\n" +
-            "f() ::= <<foo>>" + Misc.newline;
+	@Test public void testMatchingAnnotations() throws Exception {
+		
+		String templates =
+			"@Main(\"^The (.*) template$\")\n" +
+			"f() ::= <<foo>>" + Misc.newline;
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup stGroup = new STGroupFile(tmpdir+"/"+"t.stg");
-        STAnnotatedGroup group = new STAnnotatedGroup(stGroup);
-        stGroup.errMgr = buildErrorManager();
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup stGroup = new STGroupFile(tmpdir+"/"+"t.stg");
+		STAnnotatedGroup group = new STAnnotatedGroup(stGroup);
+		stGroup.errMgr = buildErrorManager();
 
-        group.show();
-        List<STAnnotation> annotations = group.getMatchingAnnotations("The main template");
-        Assert.assertNotNull(annotations);
-        Assert.assertEquals(1, annotations.size());
-        STAnnotation main = annotations.get(0);
-        Assert.assertNotNull(main);
-        Assert.assertNotNull(main.getName());
-        Assert.assertEquals("Main", main.getName());
-        Assert.assertNotNull(main.getValue());
-        List<String> parameters = main.getParameters("The main template");
-        Assert.assertNotNull(parameters);
-        Assert.assertEquals(1, parameters.size());
-        String parameter = parameters.get(0);
-        Assert.assertNotNull(parameter);
-        Assert.assertEquals("main", parameter);
-    }
+		group.show();
+		List<STAnnotation> annotations = group.getMatchingAnnotations("The main template");
+		Assert.assertNotNull(annotations);
+		Assert.assertEquals(1, annotations.size());
+		STAnnotation main = annotations.get(0);
+		Assert.assertNotNull(main);
+		Assert.assertNotNull(main.getName());
+		Assert.assertEquals("Main", main.getName());
+		Assert.assertNotNull(main.getValue());
+		List<String> parameters = main.getParameters("The main template");
+		Assert.assertNotNull(parameters);
+		Assert.assertEquals(1, parameters.size());
+		String parameter = parameters.get(0);
+		Assert.assertNotNull(parameter);
+		Assert.assertEquals("main", parameter);
+	}
 }
 

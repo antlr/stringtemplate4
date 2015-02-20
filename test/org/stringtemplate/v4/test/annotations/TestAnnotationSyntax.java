@@ -39,14 +39,14 @@ import java.io.File;
 import org.stringtemplate.v4.test.BaseTest;
 
 public class TestAnnotationSyntax extends BaseTest {
-    @Test public void testAnnotatedTemplate() throws Exception {
-        String templates =
-            "@FactoryImpl(\"^.* uses a (.*) delegate to create a new strategy\")\n" +
-            "t() ::= <<foo>>" + Misc.newline;
+	@Test public void testAnnotatedTemplate() throws Exception {
+		String templates =
+			"@FactoryImpl(\"^.* uses a (.*) delegate to create a new strategy\")\n" +
+			"t() ::= <<foo>>" + Misc.newline;
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-        group.errMgr = buildErrorManager();
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.errMgr = buildErrorManager();
 		String expected =
 			"@FactoryImpl(\"^.* uses a (.*) delegate to create a new strategy\")\n" +
 			"t() ::= <<" + Misc.newline+

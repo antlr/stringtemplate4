@@ -7,12 +7,12 @@
  *  modification, are permitted provided that the following conditions
  *  are met:
  *  1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ *	 notice, this list of conditions and the following disclaimer.
  *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
+ *	 notice, this list of conditions and the following disclaimer in the
+ *	 documentation and/or other materials provided with the distribution.
  *  3. The name of the author may not be used to endorse or promote products
- *     derived from this software without specific prior written permission.
+ *	 derived from this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -41,7 +41,7 @@ import java.util.*;
  *  of the same template share a single implementation ({@link ST#impl} field).
  */
 public class CompiledST implements Cloneable {
-    public String name;
+	public String name;
 
 	/**
 	 * Every template knows where it is relative to the group that loaded it.
@@ -61,11 +61,11 @@ public class CompiledST implements Cloneable {
 	 */
 	public String prefix = "/";
 
-    /** The original, immutable pattern (not really used again after
-     *  initial "compilation"). Useful for debugging.  Even for
+	/** The original, immutable pattern (not really used again after
+	 *  initial "compilation"). Useful for debugging.  Even for
 	 *  subtemplates, this is entire overall template.
-     */
-    public String template;
+	 */
+	public String template;
 
 	/** The token that begins template definition; could be {@code <@r>} of region. */
 	public Token templateDefStartToken;
@@ -76,14 +76,14 @@ public class CompiledST implements Cloneable {
 	/** How do we interpret syntax of template? (debug only) */
 	public CommonTree ast;
 
-    public Map<String, FormalArgument> formalArguments;
+	public Map<String, FormalArgument> formalArguments;
 
 	public boolean hasFormalArgs;
 
 	public int numberOfArgsWithDefaultValues;
 
-    /** A list of all regions and subtemplates. */
-    public List<CompiledST> implicitlyDefinedTemplates;
+	/** A list of all regions and subtemplates. */
+	public List<CompiledST> implicitlyDefinedTemplates;
 
 	/**
 	 * The group that physically defines this {@link ST} definition. We use it
@@ -91,12 +91,12 @@ public class CompiledST implements Cloneable {
 	 * becomes field {@link Interpreter#group} and is fixed until rendering
 	 * completes.
 	 */
-    public STGroup nativeGroup = STGroup.defaultGroup;
+	public STGroup nativeGroup = STGroup.defaultGroup;
 
-    /** Does this template come from a {@code <@region>...<@end>} embedded in
-     *  another template?
-     */
-    public boolean isRegion;
+	/** Does this template come from a {@code <@region>...<@end>} embedded in
+	 *  another template?
+	 */
+	public boolean isRegion;
 
 	/**
 	 * If someone refs {@code <@r()>} in template t, an implicit
@@ -108,20 +108,20 @@ public class CompiledST implements Cloneable {
 	 * to prevent more than one manual def though. Between this var and
 	 * {@link #isRegion} we can determine these cases.</p>
 	 */
-    public ST.RegionType regionDefType;
+	public ST.RegionType regionDefType;
 
-    public boolean isAnonSubtemplate; // {...}
+	public boolean isAnonSubtemplate; // {...}
 
-    public String[] strings;     // string operands of instructions
-    public byte[] instrs;        // byte-addressable code memory.
-    public int codeSize;
-    public Interval[] sourceMap; // maps IP to range in template pattern
+	public String[] strings;	 // string operands of instructions
+	public byte[] instrs;		// byte-addressable code memory.
+	public int codeSize;
+	public Interval[] sourceMap; // maps IP to range in template pattern
 
-    public List<STAnnotation> annotations;
-    
+	public List<STAnnotation> annotations;
+	
 	public CompiledST() {
-        instrs = new byte[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
-        sourceMap = new Interval[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
+		instrs = new byte[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
+		sourceMap = new Interval[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
 		template = "";
 	}
 
@@ -147,14 +147,14 @@ public class CompiledST implements Cloneable {
 		return clone;
 	}
 
-    public void addImplicitlyDefinedTemplate(CompiledST sub) {
+	public void addImplicitlyDefinedTemplate(CompiledST sub) {
 		sub.prefix = this.prefix;
 		if ( sub.name.charAt(0)!='/' ) sub.name = sub.prefix+sub.name;
-        if ( implicitlyDefinedTemplates == null ) {
-            implicitlyDefinedTemplates = new ArrayList<CompiledST>();
-        }
-        implicitlyDefinedTemplates.add(sub);
-    }
+		if ( implicitlyDefinedTemplates == null ) {
+			implicitlyDefinedTemplates = new ArrayList<CompiledST>();
+		}
+		implicitlyDefinedTemplates.add(sub);
+	}
 
 	public void defineArgDefaultValueTemplates(STGroup group) {
 		if ( formalArguments==null ) return;
@@ -212,12 +212,12 @@ public class CompiledST implements Cloneable {
 
 	public void defineImplicitlyDefinedTemplates(STGroup group) {
 		if ( implicitlyDefinedTemplates !=null ) {
-            for (CompiledST sub : implicitlyDefinedTemplates) {
-                group.rawDefineTemplate(sub.name, sub, sub.templateDefStartToken);
-                sub.defineImplicitlyDefinedTemplates(group);
-            }
-        }
-    }
+			for (CompiledST sub : implicitlyDefinedTemplates) {
+				group.rawDefineTemplate(sub.name, sub, sub.templateDefStartToken);
+				sub.defineImplicitlyDefinedTemplates(group);
+			}
+		}
+	}
 
 	public String getTemplateSource() {
 		Interval r = getTemplateRange();
@@ -244,31 +244,31 @@ public class CompiledST implements Cloneable {
 		return new Interval(0, template.length()-1);
 	}
 
-    public String instrs() {
-        BytecodeDisassembler dis = new BytecodeDisassembler(this);
-        return dis.instrs();
-    }
+	public String instrs() {
+		BytecodeDisassembler dis = new BytecodeDisassembler(this);
+		return dis.instrs();
+	}
 
-    public void dump() {
-        BytecodeDisassembler dis = new BytecodeDisassembler(this);
+	public void dump() {
+		BytecodeDisassembler dis = new BytecodeDisassembler(this);
 		System.out.println(name+":");
-        System.out.println(dis.disassemble());
-        System.out.println("Strings:");
-        System.out.println(dis.strings());
-        System.out.println("Bytecode to template map:");
-        System.out.println(dis.sourceMap());
-    }
+		System.out.println(dis.disassemble());
+		System.out.println("Strings:");
+		System.out.println(dis.strings());
+		System.out.println("Bytecode to template map:");
+		System.out.println(dis.sourceMap());
+	}
 
-    public String disasm() {
-        BytecodeDisassembler dis = new BytecodeDisassembler(this);
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        pw.println(dis.disassemble());
-        pw.println("Strings:");
-        pw.println(dis.strings());
-        pw.println("Bytecode to template map:");
-        pw.println(dis.sourceMap());
-        pw.close();
-        return sw.toString();
-    }
+	public String disasm() {
+		BytecodeDisassembler dis = new BytecodeDisassembler(this);
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		pw.println(dis.disassemble());
+		pw.println("Strings:");
+		pw.println(dis.strings());
+		pw.println("Bytecode to template map:");
+		pw.println(dis.sourceMap());
+		pw.close();
+		return sw.toString();
+	}
 }
