@@ -49,9 +49,10 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseTest {
 	public static final String pathSep = System.getProperty("path.separator");
-    public static final String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 	public static final boolean interactive = Boolean.parseBoolean(System.getProperty("test.interactive"));
     public static final String newline = Misc.newline;
+
+	public String tmpdir = null;
 
 	/**
 	 * When runnning from Maven, the junit tests are run via the surefire plugin. It sets the
@@ -105,6 +106,10 @@ public abstract class BaseTest {
     public void setUp() {
         STGroup.defaultGroup = new STGroup();
         Compiler.subtemplateCount = 0;
+
+        String baseTestDirectory = System.getProperty("java.io.tmpdir");
+        String testDirectory = getClass().getSimpleName() + "-" + System.currentTimeMillis();
+        tmpdir = new File(baseTestDirectory, testDirectory).getAbsolutePath();
     }
 
     /**
@@ -340,12 +345,11 @@ public abstract class BaseTest {
         }
 	}
 
-    public static String getRandomDir() {
-        String randomDir = tmpdir+"dir"+String.valueOf((int)(Math.random()*100000));
-        File f = new File(randomDir);
-        f.mkdirs();
-        return randomDir;
-    }
+	public String getRandomDir() {
+		File randomDir = new File(tmpdir, "dir" + String.valueOf((int)(Math.random() * 100000)));
+		randomDir.mkdirs();
+		return randomDir.getAbsolutePath();
+	}
 
 	/**
 	 * Removes the specified file or directory, and all subdirectories.
