@@ -28,11 +28,14 @@
 package org.stringtemplate.v4.test;
 
 import org.antlr.runtime.*;
+import org.junit.Assert;
 import org.junit.Before;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.compiler.*;
+import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.misc.STMessage;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -49,10 +52,9 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseTest {
 	public static final String pathSep = System.getProperty("path.separator");
+    public static final String tmpdir = System.getProperty("java.io.tmpdir") + File.separator;
 	public static final boolean interactive = Boolean.parseBoolean(System.getProperty("test.interactive"));
     public static final String newline = Misc.newline;
-
-	public String tmpdir = null;
 
 	/**
 	 * When runnning from Maven, the junit tests are run via the surefire plugin. It sets the
@@ -106,10 +108,6 @@ public abstract class BaseTest {
     public void setUp() {
         STGroup.defaultGroup = new STGroup();
         Compiler.subtemplateCount = 0;
-
-        String baseTestDirectory = System.getProperty("java.io.tmpdir");
-        String testDirectory = getClass().getSimpleName() + "-" + System.currentTimeMillis();
-        tmpdir = new File(baseTestDirectory, testDirectory).getAbsolutePath();
     }
 
     /**
@@ -345,11 +343,11 @@ public abstract class BaseTest {
         }
 	}
 
-	public String getRandomDir() {
-		File randomDir = new File(tmpdir, "dir" + String.valueOf((int)(Math.random() * 100000)));
+    public static String getRandomDir() {
+ 		File randomDir = new File(tmpdir, "dir" + String.valueOf((int)(Math.random() * 100000)));
 		randomDir.mkdirs();
 		return randomDir.getAbsolutePath();
-	}
+    }
 
 	/**
 	 * Removes the specified file or directory, and all subdirectories.
@@ -380,5 +378,40 @@ public abstract class BaseTest {
 	public static void deleteFile(String file) {
 		deleteFile(new File(file));
 	}
+
+    /**
+     * Builds an error manager to make the tests fail upon any error.
+     * @return such {@link ErrorManager}.
+     */
+    protected ErrorManager buildErrorManager() {
+        return
+            new ErrorManager(
+                new STErrorListener()
+                {
+                    @Override
+                    public void compileTimeError(final STMessage msg)
+                    {
+                        Assert.fail(msg.toString());
+                    }
+
+                    @Override
+                    public void runTimeError(final STMessage msg)
+                    {
+                        Assert.fail(msg.toString());
+                    }
+
+                    @Override
+                    public void IOError(final STMessage msg)
+                    {
+                        Assert.fail(msg.toString());
+                    }
+
+                    @Override
+                    public void internalError(final STMessage msg)
+                    {
+                        Assert.fail(msg.toString());
+                    }
+                });
+    }
 
 }

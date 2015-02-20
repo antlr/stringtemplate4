@@ -117,6 +117,8 @@ public class CompiledST implements Cloneable {
     public int codeSize;
     public Interval[] sourceMap; // maps IP to range in template pattern
 
+    public List<STAnnotation> annotations;
+    
 	public CompiledST() {
         instrs = new byte[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
         sourceMap = new Interval[Compiler.TEMPLATE_INITIAL_CODE_SIZE];

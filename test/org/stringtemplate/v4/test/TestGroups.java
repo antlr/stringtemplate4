@@ -219,6 +219,7 @@ public class TestGroups extends BaseTest {
 			"b ::= a\n";
 		writeFile(dir, "group.stg", groupFile);
 		STGroupFile group = new STGroupFile(dir+"/group.stg");
+        group.errMgr = buildErrorManager();
 		ST st = group.getInstanceOf("b");
 		String expected = "bar";
 		String result = st.render();
@@ -232,6 +233,7 @@ public class TestGroups extends BaseTest {
 			"b ::= a\n";
 		writeFile(dir, "group.stg", groupFile);
 		STGroupFile group = new STGroupFile(dir+"/group.stg");
+        group.errMgr = buildErrorManager();
 		ST st = group.getInstanceOf("b");
 		st.add("x", 1);
 		st.add("y", 2);

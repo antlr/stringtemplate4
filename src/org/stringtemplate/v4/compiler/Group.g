@@ -199,22 +199,47 @@ delimiters
  *  The key is catching while still in the loop; must keep prediction of
  *  elements separate from "stay in loop" prediction.
  */
-def[String prefix] : templateDef[prefix] | dictDef ;
+def[String prefix] : templateDefOrRegion[prefix] | dictDef ;
 	catch[RecognitionException re] {
 		// pretend we already saw an error here
 		state.lastErrorIndex = input.index();
 		error("garbled template definition starting at '"+input.LT(1).getText()+"'");
 	}
 
+fragment annotations returns [List<STAnnotation> result]
+@init { result = new ArrayList<STAnnotation>(); }
+    :  (a=annotation { result.add(a); })*
+    ;
+
+fragment annotation returns [STAnnotation result]
+    :  '@' name=ID '(' value=STRING ')'
+        {
+            result = new STAnnotation($name.text, $value.text);
+        }
+    ;
+
+templateDefOrRegion[String prefix]
+	:	(	'@' enclosing=ID '.' name=ID '(' ')' templateDefOrRegionBody[prefix, $name, $enclosing, null, null]
+		|	templateDef[prefix]
+ 		)
+    ;
+
 templateDef[String prefix]
+    :   (
+            a=annotations
+            name=ID '(' formalArgs ')'
+            templateDefOrRegionBody[prefix, $name, null, $formalArgs.args, a]
+        )
+      	|   alias=ID '::=' target=ID  {group.defineTemplateAlias($alias, $target);}
+
+    ;
+
+fragment templateDefOrRegionBody[String prefix, Token name, Token enclosing, List<FormalArgument> formalArgs, List<STAnnotation> annotationList]
 @init {
     String template=null;
     int n=0; // num char to strip from left, right of template def
 }
-	:	(	'@' enclosing=ID '.' name=ID '(' ')'
-		|	name=ID '(' formalArgs ')'
-		)
-	    '::='
+	:	'::='
 	    {Token templateToken = input.LT(1);}
 	    (	STRING     {template=$STRING.text; n=1;}
 	    |	BIGSTRING  {template=$BIGSTRING.text; n=2;}
@@ -227,19 +252,18 @@ templateDef[String prefix]
     	    }
 	    )
 	    {
-	    if ( $name.index >= 0 ) { // if ID missing
+	    if ((($name != null) ? $name.getTokenIndex() : 0) >= 0) { // if ID missing
 			template = Misc.strip(template, n);
-			String templateName = $name.text;
-			if ( prefix.length()>0 ) templateName = prefix+$name.text;
-			String enclosingTemplateName = $enclosing.text;
+			String templateName = ($name != null) ? $name.getText() : null;
+			if ( prefix.length()>0 ) templateName = prefix + (($name != null) ? $name.getText() : null);
+			String enclosingTemplateName = ($enclosing != null) ? $enclosing.getText() : null;
 			if (enclosingTemplateName != null && enclosingTemplateName.length()>0 && prefix.length()>0) {
 				enclosingTemplateName = prefix + enclosingTemplateName;
 			}
 			group.defineTemplateOrRegion(templateName, enclosingTemplateName, templateToken,
-										 template, $name, $formalArgs.args);
+										 template, $name, $formalArgs, annotationList);
 		}
 	    }
-	|   alias=ID '::=' target=ID  {group.defineTemplateAlias($alias, $target);}
 	;
 
 formalArgs returns[List<FormalArgument> args = new ArrayList<FormalArgument>()]

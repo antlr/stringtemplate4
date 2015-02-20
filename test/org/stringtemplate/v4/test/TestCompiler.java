@@ -65,6 +65,9 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 
 public class TestCompiler extends BaseTest {
+    @Before
+	@Override
+    public void setUp() { org.stringtemplate.v4.compiler.Compiler.subtemplateCount = 0; }
 
     @Test public void testAttr() throws Exception {
         String template = "hi <name>";
