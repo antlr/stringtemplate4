@@ -255,7 +255,6 @@ There are currently about 600 StringTemplate source downloads a month.
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <sourceDirectory>src</sourceDirectory>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
                     <compilerArgs>
@@ -312,7 +311,6 @@ There are currently about 600 StringTemplate source downloads a month.
                 <version>2.5.3</version>
                 <configuration>
                     <findbugsXmlOutput>true</findbugsXmlOutput>
-                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
                     <xmlOutput>true</xmlOutput>
                 </configuration>
             </plugin>
