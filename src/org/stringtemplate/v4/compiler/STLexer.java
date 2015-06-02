@@ -78,7 +78,7 @@ public class STLexer implements TokenSource {
             String txt = getText();
             if ( txt!=null ) txt = Misc.replaceEscapes(txt);
             else txt = "<no text>";
-			String tokenName = null;
+			String tokenName;
 			if ( type==EOF_TYPE ) tokenName = "EOF";
 			else tokenName = STParser.tokenNames[type];
 			return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+ tokenName +">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
@@ -360,7 +360,7 @@ public class STLexer implements TokenSource {
 		startCharPositionInLine = input.getCharPositionInLine();
 		consume(); // kill \\
 		if ( c=='u') return UNICODE();
-		String text = null;
+		String text;
         switch ( c ) {
             case '\\' : LINEBREAK(); return SKIP;
 			case 'n'  : text = "\n"; break;

@@ -99,7 +99,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 
 		synchronized (membersCache) {
 			Map<String, Member> members = membersCache.get(clazz);
-			Member member = null;
+			Member member;
 			if (members != null) {
 				member = members.get(memberName);
 				if (member != null) {
