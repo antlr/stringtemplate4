@@ -406,7 +406,7 @@ public class STGroup {
 				errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, null, defT);
 				return;
 			}
-			if ( prev.isRegion ) {
+			else {
 				if ( code.regionDefType!=ST.RegionType.IMPLICIT &&
 					 prev.regionDefType==ST.RegionType.EMBEDDED )
 				{

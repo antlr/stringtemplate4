@@ -61,7 +61,7 @@ public class JTreeScopeStackModel implements TreeModel {
 
 		@Override
 		public String toString() {
-			if ( !isNil() ) return text.toString();
+			if ( !isNil() ) return text;
 			return "nil";
 		}
 	}
