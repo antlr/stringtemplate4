@@ -38,7 +38,7 @@ import java.io.IOException;
  *  in between an element and it's separator).</p>
  */
 public interface STWriter {
-	public static final int NO_WRAP = -1;
+	int NO_WRAP = -1;
 
     void pushIndentation(String indent);
 

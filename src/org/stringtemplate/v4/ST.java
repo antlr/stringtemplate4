@@ -71,7 +71,7 @@ public class ST {
 	public final static String VERSION = "4.0.8";
 
 	/** {@code <@r()>}, {@code <@r>...<@end>}, and {@code @t.r() ::= "..."} defined manually by coder */
-    public static enum RegionType {
+    public enum RegionType {
 		/** {@code <@r()>} */
 		IMPLICIT,
 		/** {@code <@r>...<@end>} */
