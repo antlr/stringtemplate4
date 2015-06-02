@@ -28,7 +28,6 @@
  */
 package org.stringtemplate.v4.misc;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

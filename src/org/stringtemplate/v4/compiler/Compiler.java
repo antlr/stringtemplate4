@@ -28,7 +28,6 @@
 package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.*;
-import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ST;
