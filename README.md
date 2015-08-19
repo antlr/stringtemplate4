@@ -1,16 +1,11 @@
 StringTemplate 4.0.8  
 March 25, 2014
 
-Terence Parr, parrt at cs usfca edu  
-ANTLR project lead and supreme dictator for life  
-University of San Francisco
+ST (StringTemplate) is a java template engine (with ports for C#, Python, and Objective-C coming) for generating source code, web pages, emails, or any other formatted text output. ST is particularly good at multi-targeted code generators, multiple site skins, and internationalization / localization.  It evolved over years of effort developing jGuru.com and then ANTLR v3. 
 
-ST (StringTemplate) is a java template engine (with ports for C#,
-Python, and Objective-C coming) for generating source code, web pages,
-emails, or any other formatted text output. ST is particularly good at
-multi-targeted code generators, multiple site skins, and
-internationalization / localization. It evolved over years of effort
-developing jGuru.com and then ANTLR v3. The main website is:
+*Given day-job constraints, my time working on this project is limited so I'll have to focus first on fixing bugs rather than changing/improving the feature set. Likely I'll do it in bursts every few months. Please do not be offended if your bug or pull request does not yield a response! --parrt*
+
+The main website is:
 
 > http://www.stringtemplate.org
 
