@@ -15,8 +15,7 @@ Notes: To add to or improve this documentation, <a href=https://help.github.com/
 ## Introductory material
 
 * [Introduction](introduction.md)
-* [Ports: Java (reference implementation), C#, Python, Objective-C]()
-* [StringTemplate cheat sheet]()
+* [StringTemplate cheat sheet](cheatsheet.md)
 * [Motivation and philosophy]()
 
 ## Groups
