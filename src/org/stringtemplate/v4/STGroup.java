@@ -195,7 +195,7 @@ public class STGroup {
 	/** Create singleton template for use with dictionary values. */
 	public ST createSingleton(Token templateToken) {
 		String template;
-		if ( templateToken.getType()==GroupParser.BIGSTRING ) {
+		if ( templateToken.getType()==GroupParser.BIGSTRING || templateToken.getType()==GroupParser.BIGSTRING_NO_NL ) {
 			template = Misc.strip(templateToken.getText(),2);
 		}
 		else {

@@ -492,4 +492,29 @@ public class TestDictionaries extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	/**
+	 * This is a regression test for antlr/stringtemplate4#114. 
+	 * "dictionary value using <% %> is broken"
+	 * Before the fix the following test would return %hi%
+	 * https://github.com/antlr/stringtemplate4/issues/114
+	 */
+	@Test
+	public void testDictionaryBehaviorNoNewlineTemplate() throws Exception {
+		String templates =
+			"d ::= [\n" +
+			"	\"x\" : <%hi%>\n" +
+			"]\n" +
+			"\n" +
+			"t() ::= <<\n" +
+			"<d.x>\n" +
+			">>\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+		ST st = group.getInstanceOf("t");
+		String expected = "hi";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 }
