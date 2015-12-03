@@ -27,19 +27,33 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.antlr.runtime.*;
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.Token;
 import org.junit.Before;
-import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.compiler.Compiler;
-import org.stringtemplate.v4.compiler.*;
+import org.stringtemplate.v4.compiler.STLexer;
 import org.stringtemplate.v4.misc.Misc;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
@@ -129,14 +143,26 @@ public abstract class BaseTest {
 		ST outputFileST = new ST(
 			"import org.antlr.runtime.*;\n" +
 			"import org.stringtemplate.v4.*;\n" +
+			"import org.stringtemplate.v4.misc.STMessage;\n"+
 			"import org.antlr.runtime.tree.*;\n" +
 			"import java.io.*;\n" +
 			"import java.net.*;\n" +
 			"\n" +
 			"public class Test {\n" +
 			"    public static void main(String[] args) throws Exception {\n" +
+			"        final StringBuilder errors = new StringBuilder();" +
+			"        STErrorListener listener = new STErrorListener() {\n"+
+			"            public void compileTimeError(STMessage stMessage) { error(stMessage); }\n"+
+			"            public void runTimeError(STMessage stMessage) { error(stMessage); }\n"+
+			"            public void IOError(STMessage stMessage) { error(stMessage); }\n"+
+			"            public void internalError(STMessage stMessage) { error(stMessage); }\n"+
+			"            protected void error(STMessage stMessage) {\n"+
+			"                errors.append(stMessage.toString());\n" +
+			"            }\n"+
+			"        };\n"+
 			"        <code>\n"+
 			"        System.out.println(result);\n"+
+			"        if ( errors.length()>0 ) System.out.println(\"errors: \"+errors);\n"+
 			"    }\n" +
 			"}"
 			);

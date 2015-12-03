@@ -28,14 +28,19 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STErrorListener;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupDir;
+import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-
-import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestImports extends BaseTest {
 	@Test public void testImportDir() throws Exception {
@@ -86,6 +91,7 @@ public class TestImports extends BaseTest {
 
 		writeTestFile(
 			"STGroup group = new STGroupFile(\"sub/g.stg\");\n" +
+			"group.setListener(listener);\n"+
 			"ST st = group.getInstanceOf(\"b\");\n"+ // visible only if import worked
 			"String result = st.render();\n",
 			root);
@@ -121,12 +127,49 @@ public class TestImports extends BaseTest {
 
 		writeTestFile(
 			"STGroup group = new STGroupFile(\"org/foo/templates/main.stg\");\n" +
+			"group.setListener(listener);\n"+
 			"ST st = group.getInstanceOf(\"a\");\n"+
 			"String result = st.render();\n",
 			root);
 		compile("Test.java", root);
 		jar("test.jar", new String[] {"org", "Test.class"}, root);
 		deleteFile(root+"/org");
+		String result = java("Test", "test.jar", root);
+
+		String expected = "main a calls lib bold!\n";
+		assertEquals(expected, result);
+	}
+
+	/** A test for https://github.com/antlr/stringtemplate4/issues/124 */
+	@Test public void testImportGroupAtTopLevelInJar() throws Exception {
+		/*
+			main-group.stg imports lib.stg
+			lib.stg
+		 */
+		String root = getRandomDir();
+		System.out.println(root);
+		String dir = root;
+		String main =
+			"import \"lib.stg\"\n" + // should see in same dir as main.stg
+			"a() ::= <<main a calls <bold()>!>>\n"+
+			"b() ::= <<main b>>\n";
+		writeFile(dir, "main.stg", main);
+
+		String lib =
+			"bold() ::= <<lib bold>>\n";
+		writeFile(dir, "lib.stg", lib);
+
+		writeTestFile(
+			"STGroup group = new STGroupFile(\"main.stg\");\n" +
+			"group.setListener(listener);\n"+
+			"group.setListener(listener);\n"+
+			"ST st = group.getInstanceOf(\"a\");\n"+
+			"String result = st.render();\n",
+			root);
+		compile("Test.java", root);
+		jar("test.jar", new String[] {"main.stg", "lib.stg", "Test.class"}, root);
+		deleteFile(root+"/main.stg");
+		deleteFile(root+"/lib.stg");
 		String result = java("Test", "test.jar", root);
 
 		String expected = "main a calls lib bold!\n";
@@ -155,6 +198,7 @@ public class TestImports extends BaseTest {
 		writeTestFile(
 			"URL url = new STGroup().getURL(\"org/foo/templates/main.stg\");\n" +
 			"STGroup group = new STGroupFile(url,\"UTF-8\",'<','>');\n" +
+			"group.setListener(listener);\n"+
 			"ST st = group.getInstanceOf(\"a\");\n"+
 			"String result = st.render();\n",
 			root);
@@ -190,6 +234,7 @@ public class TestImports extends BaseTest {
 
 		writeTestFile(
 			"STGroup group = new STGroupFile(\"org/foo/templates/main.stg\");\n" +
+			"group.setListener(listener);\n"+
 			"ST st = group.getInstanceOf(\"a\");\n"+
 			"String result = st.render();\n",
 			root);
@@ -223,6 +268,7 @@ public class TestImports extends BaseTest {
 
 		writeTestFile(
 			"STGroup group = new STGroupFile(\"org/foo/templates/main.stg\");\n" +
+			"group.setListener(listener);\n"+
 			"ST st = group.getInstanceOf(\"a\");\n"+
 			"String result = st.render();\n",
 			root);
