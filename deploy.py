@@ -40,7 +40,7 @@ if not os.path.exists("bilder.py"):
 # assumes bilder.py is in current directory
 from bilder import *
 
-VERSION = "4.0.8"
+VERSION = "4.0.9"
 
 def mvn_snapshot():  # assumes that you have ~/.m2/settings.xml set up
     binjar = uniformpath("dist/ST4-%s.jar" % VERSION)
