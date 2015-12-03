@@ -102,6 +102,7 @@ def tests():
 
 
 def install(): # mvn installed locally in ~/.m2, java jar to /usr/local/lib if present
+    clean()
     require(_mkjar)
     require(mksrc)
     require(mkdoc)
@@ -158,7 +159,7 @@ def clean():
 
 
 def all():
-    clean(True)
+    clean()
     _mkjar()
     tests()
     mkdoc()
