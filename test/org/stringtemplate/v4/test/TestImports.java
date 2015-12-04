@@ -28,14 +28,19 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STErrorListener;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupDir;
+import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
-
-import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestImports extends BaseTest {
 	@Test public void testImportDir() throws Exception {
@@ -61,7 +66,7 @@ public class TestImports extends BaseTest {
 		STGroup group = new STGroupFile(dir1+"/g.stg");
 		ST st = group.getInstanceOf("b"); // visible only if import worked
 		String expected = "dir2 b";
-		String result = st.render();
+		String result = st!=null ? st.render() : null;
 		assertEquals(expected, result);
 	}
 
@@ -86,8 +91,9 @@ public class TestImports extends BaseTest {
 
 		writeTestFile(
 			"STGroup group = new STGroupFile(\"sub/g.stg\");\n" +
+			"group.setListener(listener);\n"+
 			"ST st = group.getInstanceOf(\"b\");\n"+ // visible only if import worked
-			"String result = st.render();\n",
+			"String result = st!=null ? st.render() : null;\n",
 			root);
 		compile("Test.java", root);
 		// jar has sub, base as dirs in CLASSPATH
@@ -121,12 +127,48 @@ public class TestImports extends BaseTest {
 
 		writeTestFile(
 			"STGroup group = new STGroupFile(\"org/foo/templates/main.stg\");\n" +
+			"group.setListener(listener);\n"+
 			"ST st = group.getInstanceOf(\"a\");\n"+
-			"String result = st.render();\n",
+			"String result = st!=null ? st.render() : null;\n",
 			root);
 		compile("Test.java", root);
 		jar("test.jar", new String[] {"org", "Test.class"}, root);
 		deleteFile(root+"/org");
+		String result = java("Test", "test.jar", root);
+
+		String expected = "main a calls lib bold!\n";
+		assertEquals(expected, result);
+	}
+
+	/** A test for https://github.com/antlr/stringtemplate4/issues/124 */
+	@Test public void testImportGroupAtTopLevelInJar() throws Exception {
+		/*
+			main-group.stg imports lib.stg
+			lib.stg
+		 */
+		String root = getRandomDir();
+		System.out.println(root);
+		String dir = root;
+		String main =
+			"import \"lib.stg\"\n" + // should see in same dir as main.stg
+			"a() ::= <<main a calls <bold()>!>>\n"+
+			"b() ::= <<main b>>\n";
+		writeFile(dir, "main.stg", main);
+
+		String lib =
+			"bold() ::= <<lib bold>>\n";
+		writeFile(dir, "lib.stg", lib);
+
+		writeTestFile(
+			"STGroup group = new STGroupFile(\"main.stg\");\n" +
+			"group.setListener(listener);\n"+
+			"ST st = group.getInstanceOf(\"a\");\n"+
+			"String result = st!=null ? st.render() : null;\n",
+			root);
+		compile("Test.java", root);
+		jar("test.jar", new String[] {"main.stg", "lib.stg", "Test.class"}, root);
+		deleteFile(root+"/main.stg");
+		deleteFile(root+"/lib.stg");
 		String result = java("Test", "test.jar", root);
 
 		String expected = "main a calls lib bold!\n";
@@ -155,8 +197,9 @@ public class TestImports extends BaseTest {
 		writeTestFile(
 			"URL url = new STGroup().getURL(\"org/foo/templates/main.stg\");\n" +
 			"STGroup group = new STGroupFile(url,\"UTF-8\",'<','>');\n" +
+			"group.setListener(listener);\n"+
 			"ST st = group.getInstanceOf(\"a\");\n"+
-			"String result = st.render();\n",
+			"String result = st!=null ? st.render() : null;\n",
 			root);
 		compile("Test.java", root);
 		jar("test.jar", new String[] {"org", "Test.class"}, root);
@@ -190,8 +233,9 @@ public class TestImports extends BaseTest {
 
 		writeTestFile(
 			"STGroup group = new STGroupFile(\"org/foo/templates/main.stg\");\n" +
+			"group.setListener(listener);\n"+
 			"ST st = group.getInstanceOf(\"a\");\n"+
-			"String result = st.render();\n",
+			"String result = st!=null ? st.render() : null;\n",
 			root);
 		compile("Test.java", root);
 		jar("test.jar", new String[] {"org", "Test.class"}, root);
@@ -223,8 +267,9 @@ public class TestImports extends BaseTest {
 
 		writeTestFile(
 			"STGroup group = new STGroupFile(\"org/foo/templates/main.stg\");\n" +
+			"group.setListener(listener);\n"+
 			"ST st = group.getInstanceOf(\"a\");\n"+
-			"String result = st.render();\n",
+			"String result = st!=null ? st.render() : null;\n",
 			root);
 		compile("Test.java", root);
 		jar("test.jar", new String[] {"org", "Test.class"}, root);
@@ -260,7 +305,7 @@ public class TestImports extends BaseTest {
 		STGroup group = new STGroupFile(dir +"/g.stg");
 		ST st = group.getInstanceOf("b"); // visible only if import worked
 		String expected = "subdir b";
-		String result = st.render();
+		String result = st!=null ? st.render() : null;
 		assertEquals(expected, result);
 		st = group.getInstanceOf("c");
 		result = st.render();
@@ -300,7 +345,7 @@ public class TestImports extends BaseTest {
 		URLClassLoader loader = new URLClassLoader(new URL[] { path.toURI().toURL() });
 		STGroup group = new STGroupFile(loader.getResource("org/foo/templates/g.stg"), "UTF-8", '<', '>');
 		ST st = group.getInstanceOf("b");
-		String result = st.render();
+		String result = st!=null ? st.render() : null;
 
 		String expected = "subdir b";
 		assertEquals(expected, result);
@@ -324,7 +369,7 @@ public class TestImports extends BaseTest {
 		STGroup group1 = new STGroupFile(dir+"/group1.stg");
 		ST st = group1.getInstanceOf("c"); // should see c()
 		String expected = "g2 c";
-		String result = st.render();
+		String result = st!=null ? st.render() : null;
 		assertEquals(expected, result);
 	}
 
@@ -348,7 +393,7 @@ public class TestImports extends BaseTest {
 		STGroup group1 = new STGroupFile(dir+"/group1.stg");
 		ST st = group1.getInstanceOf("c"); // should see c()
 		String expected = "g2 c";
-		String result = st.render();
+		String result = st!=null ? st.render() : null;
 		assertEquals(expected, result);
 	}
 
@@ -373,7 +418,7 @@ public class TestImports extends BaseTest {
 		STGroup group1 = new STGroupFile(dir+"/group1.stg");
 		ST st = group1.getInstanceOf("c"); // should see c()
 		String expected = "g2 c";
-		String result = st.render();
+		String result = st!=null ? st.render() : null;
 		assertEquals(expected, result);
 	}
 
@@ -394,7 +439,7 @@ public class TestImports extends BaseTest {
 		STGroup group1 = new STGroupFile(dir+"/group1.stg");
 		ST st = group1.getInstanceOf("c"); // should see c()
 		String expected = "c";
-		String result = st.render();
+		String result = st!=null ? st.render() : null;
 		assertEquals(expected, result);
 	}
 
@@ -419,7 +464,7 @@ public class TestImports extends BaseTest {
 		STGroup group1 = new STGroupFile(dir+"/group1.stg");
 		ST st = group1.getInstanceOf("c"); // should see c()
 		String expected = "c";
-		String result = st.render();
+		String result = st!=null ? st.render() : null;
 		assertEquals(expected, result);
 	}
 
@@ -447,7 +492,7 @@ public class TestImports extends BaseTest {
 		group2.importTemplates(group1);
 		ST st = group2.getInstanceOf("b");
 		String expected = "dir1 b";
-		String result = st.render();
+		String result = st!=null ? st.render() : null;
 		assertEquals(expected, result);
 
 		// do it again, but make a template ref imported template
@@ -478,7 +523,7 @@ public class TestImports extends BaseTest {
         group1.importTemplates(group2);
         ST st = group1.getInstanceOf("a");
         String expected = " group file b ";
-        String result = st.render();
+        String result = st!=null ? st.render() : null;
         assertEquals(expected, result);
     }
 
@@ -499,7 +544,7 @@ public class TestImports extends BaseTest {
         group1.importTemplates(group2);
         ST st = group1.getInstanceOf("b");
         String expected = "g2 c";
-        String result = st.render();
+        String result = st!=null ? st.render() : null;
         assertEquals(expected, result);
     }
 
@@ -514,7 +559,7 @@ public class TestImports extends BaseTest {
         group1.importTemplates(group2);
         ST st = group1.getInstanceOf("/subdir/a");
         String expected = " x's subdir/b ";
-        String result = st.render();
+        String result = st!=null ? st.render() : null;
         assertEquals(expected, result);
     }
 
@@ -533,7 +578,7 @@ public class TestImports extends BaseTest {
         group1.importTemplates(group2);
         ST st = group1.getInstanceOf("subdir/a");
         String expected = " group file: b ";
-        String result = st.render();
+        String result = st!=null ? st.render() : null;
         assertEquals(expected, result);
     }
 
@@ -554,7 +599,7 @@ public class TestImports extends BaseTest {
         // normal lookup; a created from dir2 calls dir2.b
         ST st = group2.getInstanceOf("a");
         String expected = " dir2 b ";
-        String result = st.render();
+        String result = st!=null ? st.render() : null;
         assertEquals(expected, result);
 
         // polymorphic lookup; a created from dir1 calls dir2.a which calls dir1.b
@@ -579,7 +624,7 @@ public class TestImports extends BaseTest {
         group2.importTemplates(group1);
         ST st = group2.getInstanceOf("a");
         String expected = " [dir1 a] ";
-        String result = st.render();
+        String result = st!=null ? st.render() : null;
         assertEquals(expected, result);
     }
 
@@ -607,7 +652,7 @@ public class TestImports extends BaseTest {
 		assertEquals(originalHashCode==newHashCode, false); // diff objects
 
 		String expected = " dir1 b ";
-		String result = st.render();
+		String result = st!=null ? st.render() : null;
 		assertEquals(expected, result);
 
 		st = group2.getInstanceOf("b");
@@ -679,7 +724,7 @@ public class TestImports extends BaseTest {
 		STGroup group = new STGroupFile(dir +"/g.stg");
 		ST st = group.getInstanceOf("a");
 		String expected = "a: b: subdir c";
-		String result = st.render();
+		String result = st!=null ? st.render() : null;
 		assertEquals(expected, result);
 	}
 }
