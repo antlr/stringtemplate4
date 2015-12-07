@@ -16,7 +16,7 @@ Notes: To add to or improve this documentation, <a href=https://help.github.com/
 
 * [Introduction](introduction.md)
 * [StringTemplate cheat sheet](cheatsheet.md)
-* [Motivation and philosophy]()
+* [Motivation and philosophy](motivation.md)
 
 ## Groups
 
