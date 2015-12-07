@@ -21,8 +21,8 @@ Notes: To add to or improve this documentation, <a href=https://help.github.com/
 ## Groups
 
 * [Group file syntax](groups.md)
-* [Group inheritance]()
-* [Template regions]()
+* [Group inheritance](inheritance.md)
+* [Template regions](regions.md)
 
 ## Templates
 
