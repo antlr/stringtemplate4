@@ -502,7 +502,7 @@ public class STViz {
         st.add("type", "float");
         st.add("name", "foo");
         st.add("locals", 3);
-        st.add("args", (Object)new String[] {"x", "y", "z"});
+        st.add("args", new String[] {"x", "y", "z"});
         ST s1 = group.getInstanceOf("assign");
         ST paren = group.getInstanceOf("paren");
         paren.add("x", "x");

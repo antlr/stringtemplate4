@@ -28,7 +28,6 @@
 package org.stringtemplate.v4.compiler;
 
 import org.antlr.runtime.*;
-import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ST;
@@ -110,7 +109,7 @@ public class Compiler {
 	{
 		ANTLRStringStream is = new ANTLRStringStream(template);
 		is.name = srcName!=null ? srcName : name;
-		STLexer lexer = null;
+		STLexer lexer;
 		if ( templateToken!=null &&
 			 templateToken.getType() == GroupParser.BIGSTRING_NO_NL )
 		{
@@ -135,7 +134,7 @@ public class Compiler {
 		}
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		STParser p = new STParser(tokens, group.errMgr, templateToken);
-		STParser.templateAndEOF_return r = null;
+		STParser.templateAndEOF_return r;
 		try {
 			r = p.templateAndEOF();
 		}

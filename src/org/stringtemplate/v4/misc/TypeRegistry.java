@@ -28,7 +28,6 @@
  */
 package org.stringtemplate.v4.misc;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,12 +62,12 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
 			return false;
 		}
 
-		return get((Class<?>)key) != null;
+		return get(key) != null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public boolean containsValue(Object value) {
-		return values().contains((V)value);
+		return values().contains(value);
 	}
 
 	/**

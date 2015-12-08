@@ -31,8 +31,8 @@ import org.stringtemplate.v4.misc.STMessage;
 
 /** How to handle messages. */
 public interface STErrorListener {
-    public void compileTimeError(STMessage msg);
-    public void runTimeError(STMessage msg);
-    public void IOError(STMessage msg);
-    public void internalError(STMessage msg);
+    void compileTimeError(STMessage msg);
+    void runTimeError(STMessage msg);
+    void IOError(STMessage msg);
+    void internalError(STMessage msg);
 }

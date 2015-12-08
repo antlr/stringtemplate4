@@ -156,7 +156,7 @@ public class TestSyntaxErrors extends BaseTest {
             "foo() ::= \"hi <name:{[<aaa.bb!>]}> mom\"\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -171,7 +171,7 @@ public class TestSyntaxErrors extends BaseTest {
 			"foo() ::= \"hi <name\"";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -187,7 +187,7 @@ public class TestSyntaxErrors extends BaseTest {
 			"foo() ::= \"hi <name:{x|[<aaa.bb>]}\"\n";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -202,7 +202,7 @@ public class TestSyntaxErrors extends BaseTest {
 			"foo() ::= << <f(\"foo>>\n";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -218,7 +218,7 @@ public class TestSyntaxErrors extends BaseTest {
 			"foo() ::= << <!foo> >>";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -234,7 +234,7 @@ public class TestSyntaxErrors extends BaseTest {
 			"foo() ::= \"hi <foo(>\"\n";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -249,7 +249,7 @@ public class TestSyntaxErrors extends BaseTest {
 			"foo() ::= \"<a,b:t(),u()>\"\n";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);

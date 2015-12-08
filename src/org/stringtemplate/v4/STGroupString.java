@@ -70,7 +70,7 @@ public class STGroupString extends STGroup {
     public void load() {
 		if (alreadyLoaded) return;
 		alreadyLoaded = true;
-		GroupParser parser = null;
+		GroupParser parser;
 		try {
 			ANTLRStringStream fs = new ANTLRStringStream(text);
 			fs.name = sourceName;

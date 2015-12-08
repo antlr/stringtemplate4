@@ -117,8 +117,8 @@ public class BytecodeDisassembler {
         if ( poolIndex<code.strings.length ) {
             if ( code.strings[poolIndex]==null ) s = "null";
             else {
-                s = code.strings[poolIndex].toString();
-                if ( code.strings[poolIndex] instanceof String ) {
+                s = code.strings[poolIndex];
+                if (code.strings[poolIndex] != null) {
                     s = Misc.replaceEscapes(s);
                     s='"'+s+'"';
                 }
