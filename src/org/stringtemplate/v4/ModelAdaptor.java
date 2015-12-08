@@ -53,6 +53,6 @@ public interface ModelAdaptor {
 	 * any key type. If we need to convert to {@code String}, then it's done by
 	 * {@code ST} and passed in here.</p>
 	 */
-	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
+	Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 		throws STNoSuchPropertyException;
 }

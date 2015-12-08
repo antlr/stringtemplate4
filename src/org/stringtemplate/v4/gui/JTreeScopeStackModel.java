@@ -38,7 +38,6 @@ import org.stringtemplate.v4.debug.AddAttributeEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +60,7 @@ public class JTreeScopeStackModel implements TreeModel {
 
 		@Override
 		public String toString() {
-			if ( !isNil() ) return text.toString();
+			if ( !isNil() ) return text;
 			return "nil";
 		}
 	}
@@ -82,7 +81,7 @@ public class JTreeScopeStackModel implements TreeModel {
 		Map<String, Object> attrs = st.getAttributes();
 		if ( attrs==null ) return;
 		for (String a : attrs.keySet()) {
-			String descr = null;
+			String descr;
 			if ( st.debugState!=null && st.debugState.addAttrEvents!=null ) {
 				List<AddAttributeEvent> events = st.debugState.addAttrEvents.get(a);
 				StringBuilder locations = new StringBuilder();

@@ -27,15 +27,44 @@
  */
 package org.stringtemplate.v4;
 
-import org.antlr.runtime.*;
-import org.stringtemplate.v4.compiler.*;
+import org.antlr.runtime.ANTLRFileStream;
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
+import org.stringtemplate.v4.compiler.CompiledST;
 import org.stringtemplate.v4.compiler.Compiler;
+import org.stringtemplate.v4.compiler.FormalArgument;
+import org.stringtemplate.v4.compiler.GroupLexer;
+import org.stringtemplate.v4.compiler.GroupParser;
+import org.stringtemplate.v4.compiler.STException;
 import org.stringtemplate.v4.gui.STViz;
-import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.misc.Aggregate;
+import org.stringtemplate.v4.misc.AggregateModelAdaptor;
+import org.stringtemplate.v4.misc.ErrorManager;
+import org.stringtemplate.v4.misc.ErrorType;
+import org.stringtemplate.v4.misc.MapModelAdaptor;
+import org.stringtemplate.v4.misc.Misc;
+import org.stringtemplate.v4.misc.ObjectModelAdaptor;
+import org.stringtemplate.v4.misc.STModelAdaptor;
+import org.stringtemplate.v4.misc.TypeRegistry;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /** A directory or directory tree of {@code .st} template files and/or group files.
  *  Individual template files contain formal template definitions. In a sense,
@@ -195,7 +224,7 @@ public class STGroup {
 	/** Create singleton template for use with dictionary values. */
 	public ST createSingleton(Token templateToken) {
 		String template;
-		if ( templateToken.getType()==GroupParser.BIGSTRING ) {
+		if ( templateToken.getType()==GroupParser.BIGSTRING || templateToken.getType()==GroupParser.BIGSTRING_NO_NL ) {
 			template = Misc.strip(templateToken.getText(),2);
 		}
 		else {
@@ -406,7 +435,7 @@ public class STGroup {
 				errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, null, defT);
 				return;
 			}
-			if ( prev.isRegion ) {
+			else {
 				if ( code.regionDefType!=ST.RegionType.IMPLICIT &&
 					 prev.regionDefType==ST.RegionType.EMBEDDED )
 				{

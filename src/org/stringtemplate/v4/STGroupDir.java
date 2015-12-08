@@ -27,12 +27,18 @@
  */
 package org.stringtemplate.v4;
 
-import org.antlr.runtime.*;
-import org.stringtemplate.v4.compiler.*;
-import org.stringtemplate.v4.misc.*;
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.Token;
+import org.stringtemplate.v4.compiler.CompiledST;
+import org.stringtemplate.v4.compiler.STException;
+import org.stringtemplate.v4.misc.ErrorType;
+import org.stringtemplate.v4.misc.Misc;
 
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 // TODO: caching?
 
@@ -117,7 +123,7 @@ public class STGroupDir extends STGroup {
 //            return loadTemplateFile("/", name+TEMPLATE_FILE_EXTENSION); // load t.st file
 //    	}
 
-        URL groupFileURL = null;
+        URL groupFileURL;
         try { // see if parent of template name is a group file
             groupFileURL = new URL(root+parent+GROUP_FILE_EXTENSION);
         }
@@ -152,7 +158,7 @@ public class STGroupDir extends STGroup {
 	public CompiledST loadTemplateFile(String prefix, String unqualifiedFileName) {
 		if ( verbose ) System.out.println("loadTemplateFile("+unqualifiedFileName+") in groupdir "+
 										  "from "+root+" prefix="+prefix);
-		URL f = null;
+		URL f;
 		try {
 			f = new URL(root+prefix+unqualifiedFileName);
 		}

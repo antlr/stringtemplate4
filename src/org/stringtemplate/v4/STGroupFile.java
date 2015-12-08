@@ -27,11 +27,14 @@
  */
 package org.stringtemplate.v4;
 
-import org.stringtemplate.v4.compiler.*;
-import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.compiler.CompiledST;
+import org.stringtemplate.v4.compiler.STException;
+import org.stringtemplate.v4.misc.ErrorType;
+import org.stringtemplate.v4.misc.Misc;
 
 import java.io.File;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /** The internal representation of a single group file (which must end in
  *  ".stg").  If we fail to find a group file, look for it via the
@@ -39,7 +42,14 @@ import java.net.*;
  *  or an import.
  */
 public class STGroupFile extends STGroup {
+	/** Just records how user "spelled" the file name they wanted to load.
+	 *  The url is the key field here for loading content.
+	 *
+	 *  If they use ctor with URL arg, this field is null.
+	 */
     public String fileName;
+
+	/** Where to find the group file. NonNull. */
     public URL url;
 
     protected boolean alreadyLoaded = false;
@@ -85,24 +95,16 @@ public class STGroupFile extends STGroup {
         this.encoding = encoding;
     }
 
+	/** Pass in a URL with the location of a group file. E.g.,
+	 * 	STGroup g = new STGroupFile(loader.getResource("org/foo/templates/g.stg"), "UTF-8", '<', '>');
+	  */
 	public STGroupFile(URL url, String encoding,
 					   char delimiterStartChar, char delimiterStopChar)
 	{
 		super(delimiterStartChar, delimiterStopChar);
 		this.url = url;
 		this.encoding = encoding;
-		try {
-			// When group is loaded from jar file the URL starts with
-			// "jar:file:" which cannot be converted into a URI/File.
-			// Remove the "jar:" prefix to enable the conversion.
-			String urlString = url.toString();
-			if (urlString.startsWith("jar:file:")) {
-				urlString = urlString.substring(4);
-			}
-			this.fileName = new File(new URI(urlString)).getAbsolutePath();
-		} catch (Exception e) {
-			// ignore. If this happens (bad url etc.) filename is null
-		}
+		this.fileName = null;
 	}
 
 	@Override
@@ -147,16 +149,27 @@ public class STGroupFile extends STGroup {
     }
 
 	@Override
-    public String getName() { return Misc.getFileNameNoSuffix(fileName); }
+    public String getName() { return Misc.getFileNameNoSuffix(getFileName()); }
+
 	@Override
-	public String getFileName() { return fileName; }
+	public String getFileName() {
+		if ( fileName!=null ) {
+			return fileName;
+		}
+		return url.getFile();
+	}
 
 	@Override
 	public URL getRootDirURL() {
-		//System.out.println("url of "+fileName+" is "+url.toString());
+//		System.out.println("url of "+fileName+" is "+url.toString());
 		String parent = Misc.stripLastPathElement(url.toString());
+		if ( parent.endsWith(".jar!") ) {
+			parent = parent + "/."; // whooops. at the root so add "current dir" after jar spec
+		}
 		try {
-			return new URL(parent);
+			URL parentURL = new URL(parent);
+//			System.out.println("parent URL "+parentURL.toString());
+			return parentURL;
 		}
 		catch (MalformedURLException mue) {
 			errMgr.runTimeError(null, null, ErrorType.INVALID_TEMPLATE_NAME,

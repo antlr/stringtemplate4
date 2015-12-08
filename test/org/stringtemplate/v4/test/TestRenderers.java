@@ -27,10 +27,22 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
-import org.stringtemplate.v4.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.stringtemplate.v4.DateRenderer;
+import org.stringtemplate.v4.NumberRenderer;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.StringRenderer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 
@@ -59,7 +71,7 @@ public class TestRenderers extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir+"/t.stg");
 		group.registerRenderer(GregorianCalendar.class, new DateRenderer());
 		ST st = group.getInstanceOf("dateThing");
-		st.add("created", new GregorianCalendar(2005, 07-1, 05));
+		st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
 		String expecting = "datetime: 7/5/05 12:00 AM";
 		String result = st.render();
 		assertEquals(expecting, result);
@@ -72,7 +84,7 @@ public class TestRenderers extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
-        st.add("created", new GregorianCalendar(2005, 07-1, 05));
+        st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
         String expecting = " date: 2005.07.05 ";
         String result = st.render();
         assertEquals(expecting, result);
@@ -85,7 +97,7 @@ public class TestRenderers extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
-        st.add("created", new GregorianCalendar(2005, 07-1, 05));
+        st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
         String expecting = " datetime: 7/5/05 12:00 AM ";
         String result = st.render();
         assertEquals(expecting, result);
@@ -102,7 +114,7 @@ public class TestRenderers extends BaseTest {
         try {
         	// set Timezone to "PDT"
         	TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
-        	st.add("created", new GregorianCalendar(2005, 07-1, 05));
+        	st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
         	String expecting = " datetime: Tuesday, July 5, 2005 12:00:00 AM PDT ";
         	String result = st.render();
         	assertEquals(expecting, result);
@@ -120,7 +132,7 @@ public class TestRenderers extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
-        st.add("created", new GregorianCalendar(2005, 07-1, 05));
+        st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
         String expecting = " date: Jul 5, 2005 ";
         String result = st.render();
         assertEquals(expecting, result);
@@ -134,7 +146,7 @@ public class TestRenderers extends BaseTest {
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
-        st.add("created", new GregorianCalendar(2005, 07-1, 05));
+        st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
         String expecting = " time: 12:00:00 AM ";
         String result = st.render();
         assertEquals(expecting, result);
