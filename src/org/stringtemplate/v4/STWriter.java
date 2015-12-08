@@ -28,6 +28,7 @@
 package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.Bytecode;
+
 import java.io.IOException;
 
 /** Generic StringTemplate output writer filter.

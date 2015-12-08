@@ -38,7 +38,6 @@ import org.stringtemplate.v4.debug.AddAttributeEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;

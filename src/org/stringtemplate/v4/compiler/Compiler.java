@@ -27,7 +27,13 @@
  */
 package org.stringtemplate.v4.compiler;
 
-import org.antlr.runtime.*;
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.NoViableAltException;
+import org.antlr.runtime.Parser;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ST;
