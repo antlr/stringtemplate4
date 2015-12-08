@@ -27,6 +27,7 @@ See [Template expressions](templates.md#expressions)
 |`<\\>`|Ignore the immediately following newline char. Allows you to put a newline in the template to better format it without actually inserting a newline into the output|
 |`<! comment !>`|Comments, ignored by StringTemplate.|
 
+<a name="functions"></a>
 ## Functions
 
 |Syntax|Description|
