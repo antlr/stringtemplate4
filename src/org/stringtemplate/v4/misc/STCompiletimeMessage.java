@@ -27,7 +27,6 @@
  */
 package org.stringtemplate.v4.misc;
 
-import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.stringtemplate.v4.compiler.GroupParser;
 
@@ -63,7 +62,6 @@ public class STCompiletimeMessage extends STMessage {
 
 	@Override
     public String toString() {
-        RecognitionException re = (RecognitionException)cause;
 		int line = 0;
 		int charPos = -1;
 		if ( token!=null ) {

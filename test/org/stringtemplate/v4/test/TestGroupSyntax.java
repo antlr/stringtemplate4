@@ -286,7 +286,7 @@ public class TestGroupSyntax extends BaseTest {
 			">>\n";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);

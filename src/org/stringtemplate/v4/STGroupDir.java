@@ -117,7 +117,7 @@ public class STGroupDir extends STGroup {
 //            return loadTemplateFile("/", name+TEMPLATE_FILE_EXTENSION); // load t.st file
 //    	}
 
-        URL groupFileURL = null;
+        URL groupFileURL;
         try { // see if parent of template name is a group file
             groupFileURL = new URL(root+parent+GROUP_FILE_EXTENSION);
         }
@@ -152,7 +152,7 @@ public class STGroupDir extends STGroup {
 	public CompiledST loadTemplateFile(String prefix, String unqualifiedFileName) {
 		if ( verbose ) System.out.println("loadTemplateFile("+unqualifiedFileName+") in groupdir "+
 										  "from "+root+" prefix="+prefix);
-		URL f = null;
+		URL f;
 		try {
 			f = new URL(root+prefix+unqualifiedFileName);
 		}

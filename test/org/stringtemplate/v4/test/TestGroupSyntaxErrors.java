@@ -72,7 +72,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 			"foo() ::= \n";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -87,7 +87,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 			"foo() ::= {";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -103,7 +103,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "foo( ::= << >>\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -118,7 +118,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "foo() ::= \"\nfoo\"\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -134,7 +134,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "bar() ::= <<bar>>\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -149,7 +149,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "foo(a,) ::= << >>\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		STErrorListener errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -164,7 +164,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "foo(a,,) ::= << >>\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -181,7 +181,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 			"foo(a b) ::= << >>\n";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -197,7 +197,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 			"foo(a={hi}, b) ::= << >>\n";
 		writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -213,7 +213,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "foo(a) ::= \"<a b>\"\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -228,7 +228,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "d ::= []\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -243,7 +243,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "d ::= [\"k\":]\n";
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -258,7 +258,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "d ::= [\"k\":{dfkj}}]\n"; // extra }
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
@@ -273,7 +273,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "f() ::= \""; // extra }
         writeFile(tmpdir, "t.stg", templates);
 
-		STGroupFile group = null;
+		STGroupFile group;
 		ErrorBuffer errors = new ErrorBuffer();
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);

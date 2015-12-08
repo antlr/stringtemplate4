@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -215,21 +216,21 @@ public class TestNullAndEmptyValues extends BaseTest {
 
 	@Test public void testSingleValued() throws Exception {
 		List<T> failed = testMatrix(singleValuedTests);
-		List<T> expecting = new ArrayList<T>();
+		List<T> expecting = Collections.emptyList();
 		assertArrayEquals("failed tests "+failed,
 						  expecting.toArray(), failed.toArray());
 	}
 
 	@Test public void testMultiValued() throws Exception {
 		List<T> failed = testMatrix(multiValuedTests);
-		List<T> expecting = new ArrayList<T>();
+		List<T> expecting = Collections.emptyList();
 		assertArrayEquals("failed tests "+failed,
 						  expecting.toArray(), failed.toArray());
 	}
 
 	@Test public void testLists() throws Exception {
 		List<T> failed = testMatrix(listTests);
-		List<T> expecting = new ArrayList<T>();
+		List<T> expecting = Collections.emptyList();
 		assertArrayEquals("failed tests "+failed,
 						  expecting.toArray(), failed.toArray());
 	}

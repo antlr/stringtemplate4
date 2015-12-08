@@ -36,8 +36,6 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ObjectModelAdaptor implements ModelAdaptor {
 	protected static final Member INVALID_MEMBER;
@@ -99,7 +97,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 
 		synchronized (membersCache) {
 			Map<String, Member> members = membersCache.get(clazz);
-			Member member = null;
+			Member member;
 			if (members != null) {
 				member = members.get(memberName);
 				if (member != null) {
