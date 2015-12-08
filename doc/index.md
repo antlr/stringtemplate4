@@ -52,6 +52,7 @@ Notes: To add to or improve this documentation, <a href=https://help.github.com/
 
 * [StringTemplate Inspector GUI](inspect.md)
 
-## Implementation
+## Misc
 
 * [Template to Bytecode mapping](bytecode.md)
+* [Differences between v3 and v4](3to4.md)
