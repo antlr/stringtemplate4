@@ -30,7 +30,7 @@ Notes: To add to or improve this documentation, <a href=https://help.github.com/
 * [Expressions](templates.md#expressions)
 * [Template includes](templates.md#includes)
 * [Expression options](expr-options.md)
-* [Conditionals](templates.md#)
+* [Conditionals](templates.md#conditionals)
 * [Anonymous templates](templates.md#subtemplates)
 * [Map operations](templates.md#map)
 * [Functions](templates.md#functions)
@@ -39,14 +39,14 @@ Notes: To add to or improve this documentation, <a href=https://help.github.com/
 
 ## Whitespace and formatting
 
-* [Auto-indentation]()
-* [Automatic line wrapping]()
+* [Auto-indentation](indent.md)
+* [Automatic line wrapping](wrapping.md)
 
 ## Customizing StringTemplate behavior
 
-* [Error listeners]()
-* [Renderers]()
-* [Model adaptors]()
+* [Error listeners](listeners.md)
+* [Renderers](renderers.md)
+* [Model adaptors](adaptors.md)
 
 ## Debugging
 
