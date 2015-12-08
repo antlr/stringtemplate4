@@ -28,12 +28,15 @@
 package org.stringtemplate.v4.test;
 
 import org.junit.Test;
-import org.stringtemplate.v4.*;
-import org.stringtemplate.v4.misc.*;
-
-import static org.junit.Assert.assertEquals;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.stringtemplate.v4.misc.Misc;
 
 import java.io.File;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestGroupSyntax extends BaseTest {
     @Test public void testSimpleGroup() throws Exception {
