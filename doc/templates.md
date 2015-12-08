@@ -34,7 +34,7 @@ StringTemplate has the following literals.
 |------|-----------|
 |`true`| Boolean true value|
 |`false`|Boolean false value|
-|`char`| char → space | \n | \r | \t | \uXXXX|
+|`char`| char → space &#124; \n &#124; \r &#124; \t &#124; \uXXXX|
 |`\\`|Ignore the immediately following newline char. Allows you to put a newline in the template to better format it without actually inserting a newline into the output|
 |`"`*string*`"`|A string of output characters|
 |`{`*template*`}`|An anonymous subtemplate|
