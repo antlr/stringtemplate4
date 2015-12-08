@@ -25,6 +25,7 @@ Attribute expressions combine canonical operations that are limited to operate o
 * conditional include<br>`<if(trace)>print("enter function");<endif>`
 * template application (i.e., map operation)<br> `<vars:decl()>`
 
+<a name="literals"></a>
 ## Expression literals
 
 StringTemplate has the following literals.
@@ -53,6 +54,7 @@ For more on list semantics, see [The real story on null vs empty](null-vs-empty.
 | *expr*`.p`|Get property p of expr. expr is typically just an attribute; e.g., in expression <user.name>, expr is user and p is name. Looks for p as a property (C#), then accessor methods getProperty() or isProperty() or hasProperty(). If that fails, StringTemplate looks for a raw field of the attribute called p. Evaluates to the empty string if no such property is found. See also Introduction#properties|
 |*expr1*`.(`*expr2*`)`|Evaluate expr2 to a string and use that as the name of a property, reducing this case to the previous.|
 
+<a name="includes"></a>
 ## Template include
 
 ### Syntax
@@ -75,6 +77,7 @@ Normally, formal argument definitions hide any attributes visible above in the e
 
 To include another template, just reference that template like a function call with any arguments you need. Note that *expr* is either a template name or a parenthesized expression that evaluates to the name of a template; e.g., `(templateName)()`. It is an error if there is a mismatch between the number of values passed into *t* and *t*'s formal arguments.
 
+<a name=map></a>
 ## Applying (mapping) templates across attributes
 
 ### Syntax
@@ -131,6 +134,7 @@ where presumably `blueListItem` template is an HTML `<table>` or something that 
 
 This is like the Python zip function that creates a list of tuples from multiple lists.
 
+<a name="conditionals"></a>
 ## Conditionals
 
 ### Syntax
@@ -159,6 +163,7 @@ The conditional expressions test of the presence or absence of an attribute. Str
 
 Boolean expressions can use "or" and "and" operators though, again, I feel that it's a violation of model view separation. I decided to yield to lobbying efforts because we can already simulate these operators with nested conditionals. Use at your peril.
 
+<a name="subtemplates"></a>
 ## Anonymous subtemplates
 
 ### Syntax
@@ -209,10 +214,12 @@ void f() {
 
 Because of dynamic scoping, the snippet can see attribute name to fill in the string of the printf.
 
+<a name=functions></a>
 ## Functions
 
 StringTemplate has a number of side-effect free built-in functions that operate on attributes. Each function takes a single attribute and returns a single value. For the complete list of functions, see [StringTemplate cheat sheet](cheatsheet.md#functions).
 
+<a name=lazy></a>
 ## Lazy evaluation
 
 There is usually an order mismatch between convenient, efficient computation of data attributes and the order in which the results must be emitted according to the output language. The developer’s choice of controller and data structures has extensive design ramiﬁcations. If the developer decides to have the templates embody both view and controller, then the order of the output constructs drives output generation. This implies that the order of attribute ai references in the view dictates the order in which the model must compute those values, which may or may not be convenient. If the output language requires that n attributes be emitted in order a0..an−1, a single forward computation dependency, ai = f(aj) for i < j, represents a hazard. Each ai computation must manually trigger computations for each attribute upon which it is dependent. A simple change in the attribute reference order in the output templates can introduce new dependencies and unforeseen side-effects that will cause bad output or even generator crashes. This approach of having the templates drive generation by triggering computations and pulling attributes from the model is not only dangerous but may also make the computations inconvenient and inefﬁcient.
