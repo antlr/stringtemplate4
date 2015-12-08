@@ -50,12 +50,8 @@ Notes: To add to or improve this documentation, <a href=https://help.github.com/
 
 ## Debugging
 
-* [StringTemplate Inspector GUI]()
+* [StringTemplate Inspector GUI](inspect.md)
 
 ## Implementation
 
-* [Template to Bytecode mapping]()
-
-## Notes
-
-* [The real story on null vs empty](null-vs-empty-previous.md)
+* [Template to Bytecode mapping](bytecode.md)
