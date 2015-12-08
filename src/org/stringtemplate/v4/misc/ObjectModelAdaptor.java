@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ObjectModelAdaptor implements ModelAdaptor {
+public class ObjectModelAdaptor implements ModelAdaptor<Object> {
 	protected static final Member INVALID_MEMBER;
 	static {
 		Member invalidMember;

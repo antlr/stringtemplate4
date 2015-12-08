@@ -37,7 +37,7 @@ import java.util.*;
  * assumes {@code "short"} format. A prefix of {@code "date:"} or
  * {@code "time:"} shows only those components of the time object.
  */
-public class DateRenderer implements AttributeRenderer {
+public class DateRenderer implements AttributeRenderer<Date> {
     public static final Map<String,Integer> formatToInt =
         new HashMap<String,Integer>() {
             {
@@ -59,11 +59,8 @@ public class DateRenderer implements AttributeRenderer {
         };
 
 	@Override
-    public String toString(Object o, String formatString, Locale locale) {
-        Date d;
+    public String toString(Date o, String formatString, Locale locale) {
         if ( formatString==null ) formatString = "short";
-        if ( o instanceof Calendar ) d = ((Calendar)o).getTime();
-        else d = (Date)o;
         Integer styleI = formatToInt.get(formatString);
         DateFormat f;
         if ( styleI==null ) f = new SimpleDateFormat(formatString, locale);
@@ -73,6 +70,6 @@ public class DateRenderer implements AttributeRenderer {
             else if ( formatString.startsWith("time:") ) f = DateFormat.getTimeInstance(style, locale);
             else f = DateFormat.getDateTimeInstance(style, style, locale);
         }
-        return f.format(d);
+        return f.format(o);
     }
 }

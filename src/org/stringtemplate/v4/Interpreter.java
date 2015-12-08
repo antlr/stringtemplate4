@@ -786,7 +786,7 @@ public class Interpreter {
 		String formatString = null;
 		if ( options!=null ) formatString = options[Option.FORMAT.ordinal()];
 		// ask the native group defining the surrounding template for the renderer
-		AttributeRenderer r = scope.st.impl.nativeGroup.getAttributeRenderer(o.getClass());
+		AttributeRenderer<? super Object> r = scope.st.impl.nativeGroup.getAttributeRenderer(o.getClass());
 		String v;
 		if ( r!=null ) v = r.toString(o, formatString, locale);
 		else v = o.toString();
@@ -799,7 +799,7 @@ public class Interpreter {
 		}
 		return n;
 	}
-
+	
 	protected int getExprStartChar(InstanceScope scope) {
 		Interval templateLocation = scope.st.impl.sourceMap[scope.ip];
 		if ( templateLocation!=null ) return templateLocation.a;
@@ -1205,7 +1205,7 @@ public class Interpreter {
 
 		try {
 			final ST self = scope.st;
-			ModelAdaptor adap = self.groupThatCreatedThisInstance.getModelAdaptor(o.getClass());
+			ModelAdaptor<? super Object> adap = self.groupThatCreatedThisInstance.getModelAdaptor(o.getClass());
 			return adap.getProperty(this, self, o, property, toString(out,scope,property));
 		}
 		catch (STNoSuchPropertyException e) {

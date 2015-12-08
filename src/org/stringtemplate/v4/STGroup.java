@@ -97,7 +97,7 @@ public class STGroup {
 	 *  <p>
      *  This structure is synchronized.</p>
      */
-    protected Map<Class<?>, AttributeRenderer> renderers;
+    protected Map<Class<?>, AttributeRenderer<?>> renderers;
 
     /** A dictionary that allows people to register a model adaptor for
      *  a particular kind of object (subclass or implementation). Applies
@@ -108,9 +108,9 @@ public class STGroup {
 	 * <p>
 	 *  The last one you register gets priority; do least to most specific.</p>
 	 */
-	protected final Map<Class<?>, ModelAdaptor> adaptors;
+	protected final Map<Class<?>, ModelAdaptor<?>> adaptors;
 	{
-		TypeRegistry<ModelAdaptor> registry = new TypeRegistry<ModelAdaptor>();
+		TypeRegistry<ModelAdaptor<?>> registry = new TypeRegistry<ModelAdaptor<?>>();
 		registry.put(Object.class, new ObjectModelAdaptor());
 		registry.put(ST.class, new STModelAdaptor());
 		registry.put(Map.class, new MapModelAdaptor());
@@ -670,7 +670,7 @@ public class STGroup {
 	 * This must invalidate cache entries, so set your adaptors up before
 	 * calling {@link ST#render} for efficiency.</p>
 	 */
-	public void registerModelAdaptor(Class<?> attributeType, ModelAdaptor adaptor) {
+	public <M> void registerModelAdaptor(Class<M> attributeType, ModelAdaptor<? super M> adaptor) {
 		if ( attributeType.isPrimitive() ) {
 			throw new IllegalArgumentException("can't register ModelAdaptor for primitive type "+
 											   attributeType.getSimpleName());
@@ -679,8 +679,9 @@ public class STGroup {
 		adaptors.put(attributeType, adaptor);
 	}
 
-	public ModelAdaptor getModelAdaptor(Class<?> attributeType) {
-		return adaptors.get(attributeType);
+	@SuppressWarnings("unchecked")
+    public <M> ModelAdaptor<? super M> getModelAdaptor(Class<? extends M> attributeType) {
+		return (ModelAdaptor<? super M>) adaptors.get(attributeType);
 	}
 
     /** Register a renderer for all objects of a particular "kind" for all
@@ -688,18 +689,18 @@ public class STGroup {
 	 *  object in question is an instance of {@code attributeType}.  Recursively
 	 *  set renderer into all import groups.
      */
-    public void registerRenderer(Class<?> attributeType, AttributeRenderer r) {
+    public <T> void registerRenderer(Class<T> attributeType, AttributeRenderer<? super T> r) {
 		registerRenderer(attributeType, r, true);
 	}
 
-	public void registerRenderer(Class<?> attributeType, AttributeRenderer r, boolean recursive) {
+	public <T> void registerRenderer(Class<T> attributeType, AttributeRenderer<? super T> r, boolean recursive) {
 		if ( attributeType.isPrimitive() ) {
 			throw new IllegalArgumentException("can't register renderer for primitive type "+
 											   attributeType.getSimpleName());
 		}
 
 		if ( renderers == null ) {
-			renderers = Collections.synchronizedMap(new TypeRegistry<AttributeRenderer>());
+			renderers = Collections.synchronizedMap(new TypeRegistry<AttributeRenderer<?>>());
 		}
 
 		renderers.put(attributeType, r);
@@ -723,12 +724,13 @@ public class STGroup {
 	 *  have multiple renderers for {@code String}, say, then just make uber combined
 	 *  renderer with more specific format names.</p>
 	 */
-	public AttributeRenderer getAttributeRenderer(Class<?> attributeType) {
+	@SuppressWarnings("unchecked")
+    public <T> AttributeRenderer<? super T> getAttributeRenderer(Class<? extends T> attributeType) {
 		if ( renderers==null ) {
 			return null;
 		}
 
-		return renderers.get(attributeType);
+		return (AttributeRenderer<? super T>) renderers.get(attributeType);
 	}
 
 	public ST createStringTemplate(CompiledST impl) {
