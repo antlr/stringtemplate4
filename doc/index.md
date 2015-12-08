@@ -56,3 +56,16 @@ Notes: To add to or improve this documentation, <a href=https://help.github.com/
 
 * [Template to Bytecode mapping](bytecode.md)
 * [Differences between v3 and v4](3to4.md)
+
+## Release Notes
+
+For just 4.0.0 - 4.0.7. Now look at [github for release notes](https://github.com/antlr/stringtemplate4/releases).
+
+* [4.0 Release Notes](release-notes/4.0.md)
+* [4.0.1 Release Notes](release-notes/4.0.1.md)
+* [4.0.2 Release Notes](release-notes/4.0.2.md)
+* [4.0.3 Release Notes](release-notes/4.0.3.md)
+* [4.0.4 Release Notes](release-notes/4.0.4.md)
+* [4.0.5 Release Notes](release-notes/4.0.5.md)
+* [4.0.6 Release Notes](release-notes/4.0.6.md)
+* [4.0.7 Release Notes](release-notes/4.0.7.md)
