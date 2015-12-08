@@ -27,4 +27,4 @@ The option values are all full expressions, which can include references to temp
 <ul>$name; separator=bulletSeparator(foo=" ")+"&nbsp;"$</ul>
 ```
 
-The wrap and anchor options are implemented via the [Output Filters](filters.md). The others are handled during interpretation by ST. Well, the filters also are notified that a separator vs regular string is coming out to prevent newlines between real elements and separators.
+The wrap and anchor options are implemented via the [STWriter class](https://github.com/antlr/stringtemplate4/blob/master/src/org/stringtemplate/v4/STWriter.java). The others are handled during interpretation by ST. Well, the filters also are notified that a separator vs regular string is coming out to prevent newlines between real elements and separators.

@@ -50,7 +50,7 @@ Notes: To add to or improve this documentation, <a href=https://help.github.com/
 
 ## Debugging
 
-* [StringTemplate Inspector GUI](inspect.md)
+* [StringTemplate Inspector GUI](inspector.md)
 
 ## Misc
 
