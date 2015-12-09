@@ -14,9 +14,6 @@ See [Template expressions](templates.md#expressions)
 |`<multi-valued-attribute; separator=expr>`|Concatenation element string values separated by expr.|
 |`<[mine, yours]>`|Creates a new multi-valued attribute (a list) with elements of mine first then all of yours.|
 |`<template(argument-list)>`|Include template. The argument-list is a list of attribute expressions or attribute assignments where each assignment is of the form arg-of-template=expr. expr is evaluated in the context of the surrounding template not of the invoked template. Example, bold(name) or bold(item=name) of item is an argument of template bold. The sole argument or the final argument, if argument assignments syntax is used, can be the "pass through" argument `...`|
-
-|Syntax|Description|
-|------|-----------|
 |`<(expr)(argument-list)>`|Include template whose name is computed via expr. The argument-list is a list of attribute expressions or attribute assignments where each assignment is of the form attribute=expr. Example `<(whichFormat)()>` looks up whichFormat's value and uses that as template name. Can also apply an indirect template to an attribute.|
 |`<attribute:template(argument-list)>`|Apply template to attribute with optional argument-list.  Example: `<name:bold()>` applies bold() to name's value. The first argument of the template gets the iterated value. The template is not applied to null values.|
 |`<attribute:(expr)(argument-list)>`|Apply a template, whose name is computed from expr, to each value of attribute. Example `<data:(name)()>` looks up name's value and uses that as template name to apply to data.|
