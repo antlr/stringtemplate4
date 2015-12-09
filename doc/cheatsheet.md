@@ -23,7 +23,7 @@ See [Template expressions](templates.md#expressions)
 |`<attribute:t1(),t2(),`...`,tN()>`|Apply an alternating list of templates to the elements of attribute. The template names may include argument lists.|
 |`\< or \>`|escaped delimiter prevents < or > from starting an attribute expression and results in that single character.|
 |`<\ >, <\n>, <\t>, <\r>`|special character(s): space, newline, tab, carriage return. Can have multiple in single <...> expression.|
-<\uXXXX>`|Unicode character(s). Can have multiple in single <...> expression.|
+|`<\uXXXX>`|Unicode character(s). Can have multiple in single `<...>` expression.|
 |`<\\>`|Ignore the immediately following newline char. Allows you to put a newline in the template to better format it without actually inserting a newline into the output|
 |`<! comment !>`|Comments, ignored by StringTemplate.|
 
