@@ -9,7 +9,7 @@ See [Template expressions](templates.md#expressions)
 |`<attribute>`|Evaluates to the string value of attribute (toString(), ToString(), \_str\_()) if it exists else empty string.|
 |`<i>, <i0>`|The iteration number indexed from one and from zero, respectively, when referenced within a template being applied to an attribute or attributes. Is only visible to the template being applied to the iterator values.|
 |`<attribute.property>`|Looks for property of attribute as a property (C#), then accessor methods like getProperty() or isProperty() or hasProperty(). If that fails, StringTemplate looks for a raw field of the attribute called property. Evaluates to the empty string if no such property is found.|
-|`<attribute.(expr)>`|Indirect property lookup. Same as attribute.property except use the value of expr as the property_ name. Evaluates to the empty string if no such property is found.|
+|`<attribute.(expr)>`|Indirect property lookup. Same as attribute.property except use the value of expr as the property name. Evaluates to the empty string if no such property is found.|
 |`<multi-valued-attribute>`|Concatenation of string values of the elements. If multi-valued-attribute is missing, it evaluates to the empty string.|
 |`<multi-valued-attribute; separator=expr>`|Concatenation element string values separated by expr.|
 |`<[mine, yours]>`|Creates a new multi-valued attribute (a list) with elements of mine first then all of yours.|
@@ -21,7 +21,7 @@ See [Template expressions](templates.md#expressions)
 |`<attribute:{x | anonymous-template}>`|Apply an anonymous template to each element of attribute.  The iterated value is set to argument x. The anonymous template references ﻿`<x>` to access the iterator value.|
 |`<a1,a2,...,aN:{argument-list | anonymous-template}>`|Parallel list iteration. March through the values of the attributes a1..aN, setting the values to the arguments in argument-list in the same order. Apply the anonymous template.|
 |`<attribute:t1(),t2(),`...`,tN()>`|Apply an alternating list of templates to the elements of attribute. The template names may include argument lists.|
-|`\< or \>`|escaped delimiter prevents `<` or `>` from starting an attribute expression and results in that single character.|
+|`\<` or `\>`|escaped delimiter prevents `<` or `>` from starting an attribute expression and results in that single character.|
 |`<\ >, <\n>, <\t>, <\r>`|special character(s): space, newline, tab, carriage return. Can have multiple in single `<...>` expression.|
 |`<\uXXXX>`|Unicode character(s). Can have multiple in single `<...>` expression.|
 |`<\\>`|Ignore the immediately following newline char. Allows you to put a newline in the template to better format it without actually inserting a newline into the output|
