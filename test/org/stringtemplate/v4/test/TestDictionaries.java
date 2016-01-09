@@ -237,7 +237,7 @@ public class TestDictionaries extends BaseTest {
      */
     @Test public void testDictDefaultStringAsKey() throws Exception {
         String templates =
-                "typeInit ::= [\"default\":\"foo\"] "+newline+
+                "typeInit ::= [\"default\":\"foo\", default:key] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
                 ;
         writeFile(tmpdir, "test.stg", templates);

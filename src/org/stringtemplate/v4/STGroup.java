@@ -80,9 +80,11 @@ public class STGroup {
 		TEMPLATE_FILE_EXTENSION = ".st";
 	}
 
-    /** When we use key as a value in a dictionary, this is how we signify. */
-    public static final String DICT_KEY = "key";
-    public static final String DEFAULT_KEY = "default";
+    /** When we use key as a value in a dictionary, this is how we signify.
+     *  Magic suffix is used to distinguish "default" string literal and "default" key
+     *  End part is the date of this suffix adding. */
+    public static final String DICT_KEY = "key_st4_magic_suffix_2016/01/10";
+    public static final String DEFAULT_KEY = "default_st4_magic_suffix_2016/01/10";
 
     /** The encoding to use for loading files. Defaults to UTF-8. */
     public String encoding = "UTF-8";
