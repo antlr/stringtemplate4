@@ -18,7 +18,7 @@ This table shows the result of evaluating the indicated expression given the val
 |`<x:t()>`|	""|	""|	""	|""|
 |`<x; null="y">`|	y	|y|	""|	""|
 |`<x:t(); null="y">`	|y|	y|	""|	""|
-|`<if(x)>y<endif>`	""|	""|	y	|""|
+|`<if(x)>y<endif>`	|""|	""|	y	|""|
 |`<if(x)>y<else>z<endif>`	|z|	z|	y|	z|
 
 For that, I assume that x.y where x and/or y are undefined is also considered the same as plain x is undefined or null.
@@ -37,7 +37,7 @@ We must distinguish between a list, array, or other Iteratable passed in as an a
 |`<x; null="y", separator=",">`|  ""|     a|      a,b|    y|      y,b|    a,y|    a,y,b|
 |`<if(x)>y<endif>`|       ""|     y|      y|      y|      y|      y|      y|
 |`<x:{it | <it>}>`|       ""|     a|      ab|     ""|     b|      a|      ab|
-|`<x:{it | <it>}; null="y">`|     ""|     y|      ab|     y|      yb ay|  ayb|
+|`<x:{it | <it>}; null="y">`|     ""|     y|      ab|     y|      yb | ay|  ayb|
 |`<x:{it | <i>.<it>}>`|   ""|     1.a|    1.a2.b  |""|    1.b|    1.a|    1.a2.b|
 |`<x:{it | <i>.<it>}; null="y">`| ""|     1.a|    1.a2.b| y|      y2.b|   1.ay|   1.ay3.b|
 |`<x:{it | x<if(!it)>y<endif>}; null="z">`|       ""|     x|      xx|     z|      zx|     xz|     xzx|
