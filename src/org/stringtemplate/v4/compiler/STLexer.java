@@ -185,7 +185,7 @@ public class STLexer implements TokenSource {
 	@Override
 	public Token nextToken() {
 		Token t;
-		if ( tokens.size()>0 ) { t = tokens.remove(0); }
+		if (!tokens.isEmpty()) { t = tokens.remove(0); }
 		else t = _nextToken();
 //		System.out.println(t);
 		return t;

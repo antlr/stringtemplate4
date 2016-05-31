@@ -294,7 +294,7 @@ public class STGroup {
     public void load() { }
 
     protected CompiledST lookupImportedTemplate(String name) {
-        if ( imports.size()==0 ) return null;
+        if (imports.isEmpty()) return null;
         for (STGroup g : imports) {
 			if ( verbose ) System.out.println("checking "+g.getName()+" for imported "+name);
             CompiledST code = g.lookupTemplate(name);
@@ -813,7 +813,7 @@ public class STGroup {
 
     public String show() {
         StringBuilder buf = new StringBuilder();
-        if ( imports.size()!=0 ) buf.append(" : "+imports);
+        if (!imports.isEmpty()) buf.append(" : "+imports);
         for (String name : templates.keySet()) {
 			CompiledST c = rawGetTemplate(name);
 			if ( c.isAnonSubtemplate || c==NOT_FOUND_ST ) continue;

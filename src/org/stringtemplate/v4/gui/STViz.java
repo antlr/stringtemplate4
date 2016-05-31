@@ -213,7 +213,7 @@ public class STViz {
 		viewFrame.output.addCaretListener(caretListenerLabel);
 
         // ADD ERRORS
-        if ( errors==null || errors.size()==0 ) {
+        if ( errors==null || errors.isEmpty()) {
             viewFrame.errorScrollPane.setVisible(false); // don't show unless errors
         }
         else {

@@ -878,7 +878,7 @@ public class Interpreter {
 	 */
 	// todo: i, i0 not set unless mentioned? map:{k,v | ..}?
 	protected ST.AttributeList zip_map(InstanceScope scope, List<Object> exprs, ST prototype) {
-		if ( exprs==null || prototype==null || exprs.size()==0 ) {
+		if ( exprs==null || prototype==null || exprs.isEmpty()) {
 			return null; // do not apply if missing templates or empty values
 		}
 		// make everything iterable
@@ -1187,8 +1187,8 @@ public class Interpreter {
 	protected boolean testAttributeTrue(Object a) {
 		if ( a==null ) return false;
 		if ( a instanceof Boolean ) return (Boolean)a;
-		if ( a instanceof Collection ) return ((Collection<?>)a).size()>0;
-		if ( a instanceof Map ) return ((Map<?, ?>)a).size()>0;
+		if ( a instanceof Collection ) return !((Collection<?>) a).isEmpty();
+		if ( a instanceof Map ) return !((Map<?, ?>) a).isEmpty();
 		if ( a instanceof Iterable ) {
 			return ((Iterable<?>)a).iterator().hasNext();
 		}
