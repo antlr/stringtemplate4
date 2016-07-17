@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.stringtemplate.v4.*;
 
 import static org.junit.Assert.assertEquals;
+import org.stringtemplate.v4.misc.ErrorBuffer;
+import org.stringtemplate.v4.misc.Misc;
 
 public class TestTemplateNames extends BaseTest {
 	@Test public void testAbsoluteTemplateRefFromOutside() throws Exception {
@@ -99,6 +101,30 @@ public class TestTemplateNames extends BaseTest {
 		writeFile(dir+"/subdir", "c.st", "c() ::= << <b()> >>\n");
 		STGroup group = new STGroupDir(dir);
 		assertEquals("  bar  ", group.getInstanceOf("a").render());
+	}
+
+	/**
+	 * This is a regression test for antlr/stringtemplate4#94.
+	 */
+	@Test public void testIdWithHyphens() throws Exception {
+		String templates =
+			"template-a(x-1) ::= \"[<x-1>]\"" + Misc.newline +
+			"template-b(x-2) ::= <<" + Misc.newline +
+			"<template-a(x-2)>" + Misc.newline +
+			">>" + Misc.newline +
+			"t-entry(x-3) ::= <<[<template-b(x-3)>]>>" + Misc.newline;
+
+		writeFile(tmpdir, "t.stg", templates);
+		ErrorBuffer errors = new ErrorBuffer();
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		ST template = group.getInstanceOf("t-entry");
+		template.add("x-3", "x");
+		String expected = "[[x]]";
+		String result = template.render();
+		assertEquals(expected, result);
+
+		assertEquals("[]", errors.errors.toString());
 	}
 
 	// TODO: test <a/b()> is RELATIVE NOT ABSOLUTE
