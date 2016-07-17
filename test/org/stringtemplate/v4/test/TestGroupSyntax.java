@@ -37,6 +37,7 @@ import org.stringtemplate.v4.misc.Misc;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TestGroupSyntax extends BaseTest {
     @Test public void testSimpleGroup() throws Exception {
@@ -301,5 +302,30 @@ public class TestGroupSyntax extends BaseTest {
 						  " context [/main /f] 1:1 attribute x isn't defined]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
+	}
+
+	/**
+	 * This is a regression test for antlr/stringtemplate4#138.
+	 */
+	@Test public void testIndentedComment() throws Exception {
+		String templates =
+			"t() ::= <<" + Misc.newline +
+			"  <! a comment !>" + Misc.newline +
+			">>" + Misc.newline;
+
+		writeFile(tmpdir, "t.stg", templates);
+		ErrorBuffer errors = new ErrorBuffer();
+		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		ST template = group.getInstanceOf("t");
+
+		assertEquals("[]", errors.errors.toString());
+		assertNotNull(template);
+
+		String expected = "";
+		String result = template.render();
+		assertEquals(expected, result);
+
+		assertEquals("[]", errors.errors.toString());
 	}
 }

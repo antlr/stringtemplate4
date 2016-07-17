@@ -157,7 +157,7 @@ chunk
 element
 	:	^(INDENTED_EXPR INDENT compoundElement[$INDENT]) // ignore indent in front of IF and region blocks
 	|	compoundElement[null]
-	|	^(INDENTED_EXPR INDENT {$template::state.indent($INDENT);} singleElement {$template::state.emit(Bytecode.INSTR_DEDENT);})
+	|	^(INDENTED_EXPR INDENT {$template::state.indent($INDENT);} singleElement? {$template::state.emit(Bytecode.INSTR_DEDENT);})
 	|	singleElement
 	;
 
