@@ -130,6 +130,18 @@ public void error(String msg) {
     group.errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, getSourceName(), e, msg);
     recover(input, null);
 }
+
+public void addArgument(List<FormalArgument> args, Token t, Token defaultValueToken) {
+	String name = t.getText();
+	for (FormalArgument arg : args) {
+		if (arg.name.equals(name)) {
+			group.errMgr.compileTimeError(ErrorType.PARAMETER_REDEFINITION, null, t, name);
+			return;
+		}
+	}
+
+	args.add(new FormalArgument(name, defaultValueToken));
+}
 }
 
 @lexer::members {
@@ -262,7 +274,7 @@ formalArg[List<FormalArgument> args]
 			}
 			}
 		)
-		{$args.add(new FormalArgument($ID.text, $a));}
+		{addArgument($args, $ID, $a);}
     ;
 
 /*
