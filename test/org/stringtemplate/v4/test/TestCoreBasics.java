@@ -1064,4 +1064,12 @@ public class TestCoreBasics extends BaseTest {
 		st2.add("arg1", "value");
 		assertEquals("simple template", st2.render());
 	}
+
+	@Test public void testFormat_PositionalArguments() {
+		String n = "n";
+		String p = "p";
+		String expected = "n:p";
+		String actual = ST.format("<%1>:<%2>", n, p);
+		assertEquals(expected, actual);
+	}
 }
