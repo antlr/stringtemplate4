@@ -414,7 +414,8 @@ public class Interpreter {
 					break;
 				case Bytecode.INSTR_NEWLINE :
 					try {
-						if ( prevOpcode==Bytecode.INSTR_NEWLINE ||
+						if ( (prevOpcode==0 && !self.isAnonSubtemplate() && !self.impl.isRegion) ||
+							prevOpcode==Bytecode.INSTR_NEWLINE ||
 							prevOpcode==Bytecode.INSTR_INDENT ||
 							nwline>0 )
 						{
