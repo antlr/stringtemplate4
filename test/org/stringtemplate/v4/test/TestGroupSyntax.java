@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.STGroupString;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.Misc;
 
@@ -97,12 +98,38 @@ public class TestGroupSyntax extends BaseTest {
 			"ta(x) ::= \"[<x>]\"" + Misc.newline;
 
 		writeFile(tmpdir, "t.stg", templates);
+		ErrorBuffer errors = new ErrorBuffer();
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
 		ST st = group.getInstanceOf("ta");
 		st.add("x", "hi");
 		String expected = "[hi]";
 		String result = st.render();
 		assertEquals(expected, result);
+
+		assertEquals("[]", errors.errors.toString());
+	}
+
+	/**
+	 * This is a regression test for antlr/stringtemplate4#131.
+	 */
+	@Test public void testSetDefaultDelimiters_STGroupString() throws Exception {
+		String templates =
+			"delimiters \"<\", \">\"" + Misc.newline +
+			"chapter(title) ::= <<" + Misc.newline +
+			"chapter <title>" + Misc.newline +
+			">>" + Misc.newline;
+
+		ErrorBuffer errors = new ErrorBuffer();
+		STGroup group = new STGroupString(templates);
+		group.setListener(errors);
+		ST st = group.getInstanceOf("chapter");
+		st.add("title", "hi");
+		String expected = "chapter hi";
+		String result = st.render();
+		assertEquals(expected, result);
+
+		assertEquals("[]", errors.errors.toString());
 	}
 
 	@Test public void testSetNonDefaultDelimiters() throws Exception {
