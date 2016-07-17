@@ -121,6 +121,7 @@ public class STLexer implements TokenSource {
 	public static final int TRUE=35;
 	public static final int FALSE=36;
 	public static final int COMMENT=37;
+	public static final int SLASH=38;
 
 
     /** The char which delimits the start of an expression. */
@@ -270,6 +271,7 @@ public class STLexer implements TokenSource {
                 case ']' : consume(); return newToken(RBRACK);
 				case '=' : consume(); return newToken(EQUALS);
                 case '!' : consume(); return newToken(BANG);
+				case '/' : consume(); return newToken(SLASH);
                 case '@' :
                     consume();
                     if ( c=='e' && input.LA(2)=='n' && input.LA(3)=='d' ) {
@@ -549,7 +551,7 @@ public class STLexer implements TokenSource {
     }
 
     public static boolean isIDStartLetter(char c) { return isIDLetter(c); }
-	public static boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9' || c=='-' || c=='_' || c=='/'; }
+	public static boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9' || c=='-' || c=='_'; }
     public static boolean isWS(char c) { return c==' ' || c=='\t' || c=='\n' || c=='\r'; }
     public static boolean isUnicodeLetter(char c) { return c>='a'&&c<='f' || c>='A'&&c<='F' || c>='0'&&c<='9'; }
 
