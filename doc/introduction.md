@@ -4,13 +4,13 @@ First, to learn more about StringTemplate's philosophy, you can check out the ve
 
 Most programs that emit source code or other text output are unstructured blobs of generation logic interspersed with print statements. The primary reason is the lack of suitable tools and formalisms. The proper formalism is that of an output grammar because you are not generating random characters--you are generating sentences in an output language. This is analogous to using a grammar to describe the structure of input sentences. Rather than building a parser by hand, most programmers will use a parser generator. Similarly, we need some form of *unparser generator* to generate text. The most convenient manifestation of the output grammar is a template engine such as StringTemplate.
 
-A template engine is simply a code generator that emits text using templates, which are really just "documents with holes" in them where you can stick values called attributes. An attribute is either a program object such as a string or VarSymbol object, a template instance, or sequence of attributes including other sequences. Template engines are domain-specific languages for generating structured text. StringTemplate breaks up your template into chunks of text and attribute expressions, which are by default enclosed in angle brackets <attribute-expression> (but you can use whatever single character start and stop delimiters you want). StringTemplate ignores everything outside of attribute expressions, treating it as just text to spit out. To evaluate a template and generate text, we "render" it with a method call:
+A template engine is simply a code generator that emits text using templates, which are really just documents with "holes" in them where you can stick values called attributes. An attribute is either a program object such as a string or `VarSymbol` object, a template instance, or a sequence of attributes including other sequences. Template engines are domain-specific languages for generating structured text. StringTemplate breaks up your template into chunks of text and attribute expressions, which are by default enclosed in angle brackets <attribute-expression> (but you can use whatever single character start and stop delimiters you want). StringTemplate ignores everything outside of attribute expressions, treating it as just text to spit out. To evaluate a template and generate text, we "render" it with a method call:
 
 ```java
 ST.render()
 ```
 
-For example, the following template has two chunks, a literal and a reference to attribute name:
+For example, the following template has two chunks, a literal and a reference to attribute `name`:
 
 ```
 Hello, <name>
@@ -68,11 +68,11 @@ If you would like to keep just the template text and not the formal template def
 
 That makes it easier for graphics designers and HTML people to work with template files, although the formal parameter definitions are okay for people using these to generate source code as they will usually be programmers not graphics people.
 
-This example demonstrates some key syntax and features. Template definitions look very similar to function definitions except that the bodies are strings. Template decl takes three arguments by reference as only two of them directly. Instead of expanding value immediately, invokes/includes template init instead with an argument of value. Alternatively, Template init could take no arguments. It would still see attribute value though because of *dynamic scoping*. That essentially means that a template can reference the attributes of any invoking template.
+This example demonstrates some key syntax and features. Template definitions look very similar to function definitions except that the bodies are strings. Template `decl` takes three arguments by reference but uses only two of them directly. Instead of expanding `value` immediately, it invokes/includes template `init` with `value` as the argument. Alternatively, template `init` could be given no arguments, and it would still see attribute `value` because of *dynamic scoping*. That essentially means that a template can reference the attributes of any invoking template.
 
-Note, that to get the spacing correct, there is no space between expression `<name>` and `<init()>`. If we do not inject a declaration initialization (attribute value), we don't want to space between the name and the `;`. Template init emits ` = <v>` only if the controller code injects a value, which we do here (0). In this case, we have injected two strings and one integer, but we can send in any object we want; more on that below.
+Note, that to get the spacing correct, there is no space between expression `<name>` and `<init()>`. If we do not inject a declaration initialization (attribute value), we don't want to space between the name and the `;`. Template `init` emits ` = <v>` only if the controller code injects a value, which we do here (0). In this case, we have injected two strings and one integer, but we can send in any object we want; more on that below.
 
-Sometimes it's more convenient to collect templates together into a single unit called the group file. For example, we can collected the template .st files into a single .stg group file:
+Sometimes it's more convenient to collect templates together into a single unit called the group file. For example, we can collect the definitions in the separate template .st files into an equivalent .stg group file:
 
 ```
 // file /tmp/test.stg
