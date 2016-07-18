@@ -144,14 +144,16 @@ test(name) ::= "<name:bracket()>" // apply bracket template to each name
 bracket(x) ::= "[<x>]"            // surround parameter with square brackets
 ```
 
-Injecting our list of names as attribute name into template test yields `[parrt][tombu]`. Combining with the separator operator yields `[parrt], [tombu]`:
+Injecting our list of names as attribute name into template test yields `[parrt][tombu]`. StringTemplate sets the first parameter of the template it's applying (`x` in this case) to the iterated value.
+
+Combining with the separator operator yields `[parrt], [tombu]`:
 
 ```
 test(name) ::= "<name:bracket(); separator=\", \">"
 bracket(x) ::= "[<x>]"
 ```
 
-StringTemplate is dynamically typed in the sense that it doesn't care about the types of the elements except when we access properties. For example, we could pass in a list of `User` objects, `User(999,"parrt")` and `User(1000,"tombu")`, and the templates would work without alteration. StringTemplate would use the "to string" evaluation function appropriate for the implementation language to evaluate `<x>`. The output we'd get is `[999:parrt], [1000:tombu]`. StringTemplate sets the first parameter of the template it's applying to the iterated value (`x` in this case).
+StringTemplate is dynamically typed in the sense that it doesn't care about the types of the elements except when we access properties. For example, we could pass in a list of `User` objects, `User(999,"parrt")` and `User(1000,"tombu")`, and the templates would work without alteration. StringTemplate would use the "to string" evaluation function appropriate for the implementation language to evaluate `<x>`. The output we'd get is `[999:parrt], [1000:tombu]`.
 
 Sometimes creating a separate template definition is too much effort for a one-off template or a really small one. In those cases, we can use anonymous templates (or subtemplates). Anonymous templates are templates without a name enclosed in curly braces. They can have arguments, though, just like a regular template. For example, we can redo the above example as follows.
 
@@ -163,7 +165,8 @@ Anonymous template `{x | [<x>]}` is the in-lined version of `bracket()`. Argumen
 
 StringTemplate will iterate across any object that it can reasonably interpret as a collection of elements such as arrays, lists, dictionaries and, in statically typed ports, objects satisfying iterable or enumeration interfaces.
 
-General use of StringTemplate for formatting
+### General use of StringTemplate for formatting
+
 The `ST.format()` method is great for general use in general code.
 
 ```java
