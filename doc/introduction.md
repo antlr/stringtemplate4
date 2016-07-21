@@ -36,7 +36,7 @@ StringTemplate is not a "system" or "engine" or "server". It is designed to be e
 
 The primary classes of interest are `ST`, `STGroupDir`, and `STGroupFile`. You can directly create a template in code, you can load templates from a directory, and you can load a file containing a collection templates (a template group file). Group files behave like zips or jars of template directories.
 
-For example, let's assume we have two templates in files decl.st and init.st in directory /tmp:
+For example, let's assume we have two templates in files `decl.st` and `init.st` in directory `/tmp`:
 
 ```
 // file /tmp/decl.st
@@ -48,7 +48,7 @@ decl(type, name, value) ::= "<type> <name><init(value)>;"
 init(v) ::= "<if(v)> = <v><endif>"
 ```
 
-We can access those templates by creating a STGroupDir object. We then ask for an instance with getInstanceOf() and inject attributes with add():
+We can access those templates by creating a `STGroupDir` object. We then ask for an instance with `getInstanceOf()` and inject attributes with `add()`:
  
 ```java
 STGroup group = new STGroupDir("/tmp");
@@ -59,7 +59,7 @@ st.add("value", 0);
 String result = st.render(); // yields "int x = 0;"
 ```
 
-If you would like to keep just the template text and not the formal template definition around the template text, you can use STRawGroupDir. Then, decl.st would hold just the following:
+If you would like to keep just the template text and not the formal template definition around the template text, you can use `STRawGroupDir`. Then, `decl.st` would hold just the following:
 
 ```
 // file /tmp/decl.st
@@ -72,7 +72,7 @@ This example demonstrates some key syntax and features. Template definitions loo
 
 Note, that to get the spacing correct, there is no space between expression `<name>` and `<init()>`. If we do not inject a declaration initialization (attribute value), we don't want to space between the name and the `;`. Template `init` emits ` = <v>` only if the controller code injects a value, which we do here (0). In this case, we have injected two strings and one integer, but we can send in any object we want; more on that below.
 
-Sometimes it's more convenient to collect templates together into a single unit called the group file. For example, we can collect the definitions in the separate template .st files into an equivalent .stg group file:
+Sometimes it's more convenient to collect templates together into a single unit called the group file. For example, we can collect the definitions in the separate template `.st` files into an equivalent `.stg` group file:
 
 ```
 // file /tmp/test.stg
@@ -80,7 +80,7 @@ decl(type, name, value) ::= "<type> <name><init(value)>;"
 init(v) ::= "<if(v)> = <v><endif>"
 ```
 
-To pull templates from this file instead of a directory, all we have to do is change our constructor to use STGroupFile:
+To pull templates from this file instead of a directory, all we have to do is change our constructor to use `STGroupFile`:
  
 ```java
 STGroup group = new STGroupFile("/tmp/test.stg");
@@ -107,7 +107,7 @@ public static class User {
 }
 ```
  
-We can inject instances of `User` just like predefined objects like strings and can refer to properties using the `.` dot property access operator. StringTemplate interprets `o.p` by looking for property `p` within object `o`. The lookup rules differ slightly between language ports, but in general they follow the old JavaBeans naming convention. StringTemplate looks for methods `getP()`, `isP()`, `hasP()` first. If it fails to find one of those methods, it looks for a field called `p`. In the following example, we access properties id and name. Also note that the template uses `$...$` delimiters, which makes more sense since we are generating HTML.
+We can inject instances of `User` just like predefined objects like strings and can refer to properties using the `.` dot property access operator. StringTemplate interprets `o.p` by looking for property `p` within object `o`. The lookup rules differ slightly between language ports, but in general they follow the old JavaBeans naming convention. StringTemplate looks for methods `getP()`, `isP()`, `hasP()` first. If it fails to find one of those methods, it looks for a field called `p`. In the following example, we access properties `id` and `name`. Also note that the template uses `$...$` delimiters, which makes more sense since we are generating HTML.
  
 ```java
 ST st = new ST("<b>$u.id$</b>: $u.name$", '$', '$');
@@ -121,7 +121,7 @@ StringTemplate renders all injected attributes and any reference properties to t
 
 ### Injecting data aggregate attributes
 
-Being able to pass in objects and access their fields is very convenient but often we don't have a handy object to inject. Creating one-off data aggregates is a pain, you have to define a new class just to associate two pieces of data. StringTemplate makes it easy to group data during add() calls. You may pass in an aggregrate attribute name to add() with the data to aggregate. The syntax of the attribute name describes the properties. For example `a.{p1,p2,p3}` describes an attribute called a that has three properties `p1`, `p2`, `p3`. Here's an example:
+Being able to pass in objects and access their fields is very convenient but often we don't have a handy object to inject. Creating one-off data aggregates is a pain, you have to define a new class just to associate two pieces of data. StringTemplate makes it easy to group data during `add()` calls. You may pass in an aggregrate attribute name to `add()` with the data to aggregate. The syntax of the attribute name describes the properties. For example `a.{p1,p2,p3}` describes an attribute called a that has three properties `p1`, `p2`, `p3`. Here's an example:
 
  
 ```java
