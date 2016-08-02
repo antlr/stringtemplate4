@@ -16,7 +16,7 @@ $values; null="-1", separator=", "$
 emits:<br>
 ```
 9, 6, -1, 2, -1
-```<br>
+```
 See Expressions
 * `wrap`. Tell ST that it is okay to wrapped lines to get too long. The wrap option may also take an argument but it's default is simply a newline string. You must specify an integer width using the `render(int)` method to get ST to actually wrap expressions modified with this option. For example, given a list of names and expression `<names; wrap>`, a call to `render(72)` will emit the names until it surpasses 72 characters in with and then inserts a new line and begins emitting names again. Naturally this can be used in conjunction with the `separator` option. ST never breaks in between a real element and the separator; the wrap occurs only after a separator. See [Automatic line wrapping](wrapping.md).
 * `anchor`. Line up all wrapped lines with left edge of expression when wrapping. Default is `anchor="true"` (any non-null value means anchor). See [Automatic line wrapping](wrapping.md).
