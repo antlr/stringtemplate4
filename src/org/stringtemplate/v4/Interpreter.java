@@ -444,7 +444,7 @@ public class Interpreter {
 					strIndex = getShort(code, ip);
 					ip += Bytecode.OPND_SIZE_IN_BYTES;
 					o = self.impl.strings[strIndex];
-					n1 = writeObjectNoOptions(out, scope, o);
+					n1 = writeString(out, scope, o);
 					n += n1;
 					nwline += n1;
 					break;
@@ -798,6 +798,26 @@ public class Interpreter {
 			n = out.write(v);
 		}
 		return n;
+	}
+
+	protected int writeString(STWriter out, InstanceScope scope, Object object) {
+		int start = out.index(); // track char we're about to write
+		int charsWritten = 0;
+		try {
+			charsWritten = out.write(object.toString());
+		} catch (IOException e) {
+			errMgr.IOError(scope.st, ErrorType.WRITE_IO_ERROR, e, object);
+		}
+
+		if (debug) {
+			EvalExprEvent e = new EvalExprEvent(scope,
+					start, out.index() - 1,
+					getExprStartChar(scope),
+					getExprStopChar(scope));
+			trackDebugEvent(scope, e);
+		}
+
+		return charsWritten;
 	}
 
 	protected int getExprStartChar(InstanceScope scope) {
