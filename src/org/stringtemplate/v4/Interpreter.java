@@ -28,6 +28,7 @@
 package org.stringtemplate.v4;
 
 import org.stringtemplate.v4.compiler.*;
+import org.stringtemplate.v4.compiler.Bytecode.Instruction;
 import org.stringtemplate.v4.compiler.Compiler;
 import org.stringtemplate.v4.debug.*;
 import org.stringtemplate.v4.gui.STViz;
@@ -59,6 +60,8 @@ public class Interpreter {
 	public enum Option { ANCHOR, FORMAT, NULL, SEPARATOR, WRAP }
 	public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
+	private static Map<Short, CustomFunction> customFuncs = new HashMap<Short, CustomFunction>();
+	
 	public static final Set<String> predefinedAnonSubtemplateAttributes =
 		new HashSet<String>() { { add("i"); add("i0"); } };
 
@@ -175,6 +178,17 @@ public class Interpreter {
 			//count[opcode]++;
 			scope.ip = ip;
 			ip++; //jump to next instruction or first byte of operand
+			if (opcode > Bytecode.MAX_BYTECODE && opcode < 255) {
+				CustomFunction fn = customFuncs.get(opcode);
+				if (fn != null) {
+					operands[sp] = fn.execute(operands[sp]);
+				} else {
+					errMgr.runTimeError(this, scope, ErrorType.NO_SUCH_FUNCTION, Bytecode.instructions[opcode].name);
+					operands[sp] = null;
+				}
+				prevOpcode = opcode;
+				continue;
+			}
 			switch (opcode) {
 				case Bytecode.INSTR_LOAD_STR :
 					// just testing...
@@ -1355,6 +1369,18 @@ public class Interpreter {
 		return stack;
 	}
 
+	public static void registerCustomFunction(String name, CustomFunction function) {
+		short functionIdx = (short) Bytecode.instructions.length;
+		
+		List<Instruction> instructions = new ArrayList<Instruction>(Arrays.asList(Bytecode.instructions));
+		instructions.add(new Instruction(name));
+		Bytecode.instructions = instructions.toArray(new Instruction[0]);
+		
+		customFuncs.put(functionIdx, function);
+
+		Compiler.funcs.put(name, functionIdx);
+	}
+
 	protected void trace(InstanceScope scope, int ip) {
 		final ST self = scope.st;
 		StringBuilder tr = new StringBuilder();
@@ -1435,5 +1461,7 @@ public class Interpreter {
 	protected static class ArgumentsMap extends HashMap<String, Object> {
 	}
 
+	public static interface CustomFunction {
+		public Object execute(Object arg);
+	}	
 }
-
