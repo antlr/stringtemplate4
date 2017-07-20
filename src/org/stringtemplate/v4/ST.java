@@ -43,6 +43,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -53,6 +54,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
 /** An instance of the StringTemplate. It consists primarily of
  *  a {@linkplain ST#impl reference} to its implementation (shared among all
@@ -68,7 +70,25 @@ import java.util.Map;
  *  says.</p>
  */
 public class ST {
-	public final static String VERSION = "4.0.8";
+	public final static String VERSION;
+	static {
+		String version;
+		try {
+			Properties properties = new Properties();
+			InputStream inputStream = ST.class.getClassLoader().getResourceAsStream(ST.class.getPackage().getName().replace('.', '/') + "/version.properties");
+			try {
+				properties.load(inputStream);
+			} finally {
+				inputStream.close();
+			}
+
+			version = properties.getProperty("version");
+		} catch (Throwable ex) {
+			version = "4.x";
+		}
+
+		VERSION = version;
+	}
 
 	/** {@code <@r()>}, {@code <@r>...<@end>}, and {@code @t.r() ::= "..."} defined manually by coder */
     public enum RegionType {
