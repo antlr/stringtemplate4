@@ -34,7 +34,7 @@ StringTemplate is not a "system" or "engine" or "server". It is designed to be e
 
 ## Groups of templates
 
-The primary classes of interest are `ST`, `STGroupDir`, and `STGroupFile`. You can directly create a template in code, you can load templates from a directory, and you can load a file containing a collection templates (a template group file). Group files behave like zips or jars of template directories.
+The primary classes of interest are `ST`, `STGroupDir`, and `STGroupFile`. You can directly create a template in code, you can load templates from a directory, and you can load a file containing a collection of templates (a template group file). Group files behave like zips or jars of template directories.
 
 For example, let's assume we have two templates in files decl.st and init.st in directory /tmp:
 
