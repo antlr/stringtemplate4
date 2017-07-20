@@ -1,16 +1,13 @@
 
 # Templates
 
-
 Templates are essentially exemplars of the desired output with "holes" where the programmer may stick untyped values called attributes or other template instances. To enforce model-view separation, templates may not test nor compute with attribute values and, consequently, attributes have no need for type information. Templates may, however, know the data is structured in a particular manner such as a tree structure.
 
 A template is a sequence of text and expression elements, optionally interspersed with comments. At the coarsest level, the basic elements are:
 
-<pre>
-<i>text</i>
-&lt;<i>expr</i>>
-&lt;! <i>comment</i> !>
-</pre>
+    text
+    <expr>
+    <! comment !>
 
 Escape delimiters with a backslash character: `\<` or `\>`.
 
