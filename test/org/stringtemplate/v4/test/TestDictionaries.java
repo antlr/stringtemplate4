@@ -517,4 +517,73 @@ public class TestDictionaries extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	@Test
+	public void testDictionarySpecialValues() throws Exception {
+		String templates =
+			"t(id) ::= <<\n" +
+			"<identifier.(id)>\n" +
+			">>\n" +
+			"\n" +
+			"identifier ::= [\n" +
+			"	\"keyword\" : \"@keyword\",\n" +
+			"	default : key\n" +
+			"]\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroupFile group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+
+		// try with mapped values
+		ST template = group.getInstanceOf("t").add("id", "keyword");
+		assertEquals("@keyword", template.render());
+
+		// try with non-mapped values
+		template = group.getInstanceOf("t").add("id", "nonkeyword");
+		assertEquals("nonkeyword", template.render());
+
+		// try with non-mapped values that might break (Substring here guarantees unique instances)
+		template = group.getInstanceOf("t").add("id", "_default".substring(1));
+		assertEquals("default", template.render());
+
+		template = group.getInstanceOf("t").add("id", "_keys".substring(1));
+		assertEquals("keyworddefault", template.render());
+
+		template = group.getInstanceOf("t").add("id", "_values".substring(1));
+		assertEquals("@keywordkey", template.render());
+	}
+
+	@Test
+	public void testDictionarySpecialValuesOverride() throws Exception {
+		String templates =
+			"t(id) ::= <<\n" +
+			"<identifier.(id)>\n" +
+			">>\n" +
+			"\n" +
+			"identifier ::= [\n" +
+			"	\"keyword\" : \"@keyword\",\n" +
+			"	\"keys\" : \"keys\",\n" +
+			"	\"values\" : \"values\",\n" +
+			"	default : key\n" +
+			"]\n";
+
+		writeFile(tmpdir, "t.stg", templates);
+		STGroupFile group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+
+		// try with mapped values
+		ST template = group.getInstanceOf("t").add("id", "keyword");
+		assertEquals("@keyword", template.render());
+
+		// try with non-mapped values
+		template = group.getInstanceOf("t").add("id", "nonkeyword");
+		assertEquals("nonkeyword", template.render());
+
+		// try with non-mapped values that might break (Substring here guarantees unique instances)
+		template = group.getInstanceOf("t").add("id", "_default".substring(1));
+		assertEquals("default", template.render());
+
+		template = group.getInstanceOf("t").add("id", "_keys".substring(1));
+		assertEquals("keys", template.render());
+
+		template = group.getInstanceOf("t").add("id", "_values".substring(1));
+		assertEquals("values", template.render());
+	}
 }
