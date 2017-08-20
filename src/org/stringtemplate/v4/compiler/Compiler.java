@@ -50,40 +50,38 @@ public class Compiler {
 
     public static final int TEMPLATE_INITIAL_CODE_SIZE = 15;
 
-    public static final Map<String, Interpreter.Option> supportedOptions =
-        new HashMap<String, Interpreter.Option>() {
-            {
-                put("anchor",       Interpreter.Option.ANCHOR);
-                put("format",       Interpreter.Option.FORMAT);
-                put("null",         Interpreter.Option.NULL);
-                put("separator",    Interpreter.Option.SEPARATOR);
-                put("wrap",         Interpreter.Option.WRAP);
-            }
-        };
+    public static final Map<String, Interpreter.Option> supportedOptions = new HashMap<String, Interpreter.Option>();
+
+    static {
+        supportedOptions.put("anchor", Interpreter.Option.ANCHOR);
+        supportedOptions.put("format", Interpreter.Option.FORMAT);
+        supportedOptions.put("null", Interpreter.Option.NULL);
+        supportedOptions.put("separator", Interpreter.Option.SEPARATOR);
+        supportedOptions.put("wrap", Interpreter.Option.WRAP);
+    }
 
     public static final int NUM_OPTIONS = supportedOptions.size();
 
-    public static final Map<String,String> defaultOptionValues =
-        new HashMap<String,String>() {
-            {
-                put("anchor", "true");
-                put("wrap",   "\n");
-            }
-        };
+    public static final Map<String, String> defaultOptionValues = new HashMap<String, String>();
 
-    public static Map<String, Short> funcs = new HashMap<String, Short>() {
-        {
-            put("first", Bytecode.INSTR_FIRST);
-            put("last", Bytecode.INSTR_LAST);
-            put("rest", Bytecode.INSTR_REST);
-            put("trunc", Bytecode.INSTR_TRUNC);
-            put("strip", Bytecode.INSTR_STRIP);
-            put("trim", Bytecode.INSTR_TRIM);
-            put("length", Bytecode.INSTR_LENGTH);
-            put("strlen", Bytecode.INSTR_STRLEN);
-            put("reverse", Bytecode.INSTR_REVERSE);
-        }
-    };
+    static {
+        defaultOptionValues.put("anchor", "true");
+        defaultOptionValues.put("wrap", "\n");
+    }
+
+    public static Map<String, Short> funcs = new HashMap<String, Short>();
+
+    static {
+        funcs.put("first", Bytecode.INSTR_FIRST);
+        funcs.put("last", Bytecode.INSTR_LAST);
+        funcs.put("rest", Bytecode.INSTR_REST);
+        funcs.put("trunc", Bytecode.INSTR_TRUNC);
+        funcs.put("strip", Bytecode.INSTR_STRIP);
+        funcs.put("trim", Bytecode.INSTR_TRIM);
+        funcs.put("length", Bytecode.INSTR_LENGTH);
+        funcs.put("strlen", Bytecode.INSTR_STRLEN);
+        funcs.put("reverse", Bytecode.INSTR_REVERSE);
+    }
 
 	/** Name subtemplates {@code _sub1}, {@code _sub2}, ... */
 	public static int subtemplateCount = 0;
