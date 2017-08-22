@@ -204,8 +204,8 @@ public class CompiledST implements Cloneable {
 		if ( formalArguments==null ) {
 			formalArguments = Collections.synchronizedMap(new LinkedHashMap<String,FormalArgument>());
 		}
-		a.index = formalArguments.size();
 		formalArguments.put(a.name, a);
+		a.index = formalArguments.size() -1;
 	}
 
 	public void defineImplicitlyDefinedTemplates(STGroup group) {
