@@ -43,7 +43,7 @@ public class ErrorBuffer implements STErrorListener {
 
 	@Override
     public void runTimeError(STMessage msg) {
-        if ( msg.error != ErrorType.NO_SUCH_PROPERTY ) { // ignore these
+        if ( msg.error != ErrorType.NO_SUCH_PROPERTY && msg.error != ErrorType.NO_SUCH_ATTRIBUTE ) { // ignore these
             errors.add(msg);
         }
     }

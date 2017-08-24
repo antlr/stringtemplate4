@@ -183,7 +183,7 @@ public class TestInterptimeErrors extends BaseTest {
 		group.setListener(errors);
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [/t /u] 1:1 attribute x isn't defined"+newline;
+        String expected = "";
 		String result = errors.toString();
         assertEquals(expected, result);
     }

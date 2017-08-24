@@ -296,9 +296,7 @@ public class TestGroupSyntax extends BaseTest {
 		ST st = group.getInstanceOf("main");
 		st.render();
 
-		String expected = "[context [/main] 1:1 attribute x isn't defined," +
-						  " context [/main] 1:1 passed 1 arg(s) to template /f with 0 declared arg(s)," +
-						  " context [/main /f] 1:1 attribute x isn't defined]";
+		String expected = "[context [/main] 1:1 passed 1 arg(s) to template /f with 0 declared arg(s)]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}

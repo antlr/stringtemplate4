@@ -540,7 +540,7 @@ public class TestGroups extends BaseTest {
 		group.setListener(errors);
 		ST st = group.getInstanceOf("g");
 		st.render();
-		String expected = "context [/g] 1:1 attribute z isn't defined"+newline;
+		String expected = "";
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
