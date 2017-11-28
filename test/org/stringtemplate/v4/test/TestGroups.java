@@ -39,7 +39,14 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -778,4 +785,63 @@ public class TestGroups extends BaseTest {
 		assertEquals(err, "URL to group file cannot be null");
 	}
 
+  public void doMultipleThreadInvoke(Callable<Object> task) throws InterruptedException, ExecutionException {
+    ExecutorService pool = Executors.newFixedThreadPool(20);
+    List<Callable<Object>> tasks = new ArrayList<Callable<Object>>(100);
+    for (int i = 0; i < 100; i++) {
+      tasks.add(task);
+    }
+
+    List<Future<Object>> futures = pool.invokeAll(tasks);
+    pool.shutdown();
+
+    for (Future<Object> future : futures) {
+      future.get();
+    }
+  }
+
+  public void testGroupString(STGroup group) throws Exception {
+
+    assertTrue(group.isDefined("stat"));
+
+    ST b = group.getInstanceOf("stat");
+    b.add("name", "foo");
+    String expecting = "x=99; // foo";
+    String result = b.render();
+    assertEquals(expecting, result);
+  }
+
+
+  @Test public void testGroupStringMultipleThreads() throws Exception {
+    String templates =
+        "stat(name,value={99}) ::= \"x=<value>; // <name>\"" + newline;
+    final STGroup group = new STGroupString(templates);
+
+    doMultipleThreadInvoke(new Callable<Object>() {
+      public Object call() throws Exception {
+        testGroupString(group);
+        return null;
+      }
+    });
+  }
+
+  public void testGroupFile(STGroup group) throws Exception {
+    assertTrue(group.isDefined("a"));
+    assertEquals("foo", group.getInstanceOf("a").render());
+  }
+
+  @Test public void testGroupFileMultipleThreads() throws Exception {
+    // /randomdir/a and /randomdir/group.stg with b and c templates
+    String dir = getRandomDir();
+    writeFile(dir, "a.stg", "a(x) ::= <<foo>>");
+
+    final STGroup group = new STGroupFile(dir + "/a.stg");
+
+     doMultipleThreadInvoke(new Callable<Object>() {
+      public Object call() throws Exception {
+        testGroupFile(group);
+        return null;
+      }
+    });
+  }
 }
