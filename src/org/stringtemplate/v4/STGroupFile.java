@@ -57,6 +57,8 @@ public class STGroupFile extends STGroup {
     /** Load a file relative to current directory or from root or via CLASSPATH. */
 	public STGroupFile(String fileName) { this(fileName, '<', '>'); }
 
+	public STGroupFile(URL url) { this(url, "UTF-8",'<', '>'); }
+
 	public STGroupFile(String fileName, char delimiterStartChar, char delimiterStopChar) {
 		super(delimiterStartChar, delimiterStopChar);
 		if ( !fileName.endsWith(GROUP_FILE_EXTENSION) ) {
@@ -138,7 +140,7 @@ public class STGroupFile extends STGroup {
 		// no prefix since this group file is the entire group, nothing lives
 		// beneath it.
 		if ( verbose ) System.out.println("loading group file "+url.toString());
-        loadGroupFile("/", url.toString());
+        loadGroupURL("/", url);
 		if ( verbose ) System.out.println("found "+templates.size()+" templates in "+url.toString()+" = "+templates.keySet());
     }
 

@@ -626,23 +626,32 @@ public class STGroup {
 
 	public List<STGroup> getImportedGroups() { return imports; }
 
-	/** Load a group file with full path {@code fileName}; it's relative to root by {@code prefix}. */
-	public void loadGroupFile(String prefix, String fileName) {
-		if ( verbose ) System.out.println(this.getClass().getSimpleName()+
-										  ".loadGroupFile(group-file-prefix="+prefix+", fileName="+fileName+")");
+	public void loadGroupURL(String prefix, URL url) {
 		GroupParser parser;
 		try {
-			URL f = new URL(fileName);
-			ANTLRInputStream fs = new ANTLRInputStream(f.openStream(), encoding);
+			ANTLRInputStream fs = new ANTLRInputStream(url.openStream(), encoding);
 			GroupLexer lexer = new GroupLexer(fs);
-			fs.name = fileName;
+			fs.name = url.toString();
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			parser = new GroupParser(tokens);
 			parser.group(this, prefix);
 		}
 		catch (Exception e) {
+			errMgr.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, url.toString());
+		}
+	}
+
+	/** Load a group file with full path {@code fileName}; it's relative to root by {@code prefix}. */
+	public void loadGroupFile(String prefix, String fileName) {
+		if ( verbose ) System.out.println(this.getClass().getSimpleName()+
+										  ".loadGroupFile(group-file-prefix="+prefix+", fileName="+fileName+")");
+		try {
+			URL url = new URL(fileName);
+			loadGroupURL(prefix, url);
+		} catch (Exception e) {
 			errMgr.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, fileName);
 		}
+
 	}
 
 	/** Load template file into this group using absolute {@code fileName}. */
