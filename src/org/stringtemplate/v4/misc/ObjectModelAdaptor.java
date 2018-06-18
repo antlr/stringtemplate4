@@ -27,6 +27,7 @@
  */
 package org.stringtemplate.v4.misc;
 
+import javafx.beans.property.Property;
 import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
@@ -73,7 +74,11 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 		if ( member!=null ) {
 			try {
 				if (member instanceof Method) {
-					return ((Method)member).invoke(o);
+					Object result = ((Method)member).invoke(o);
+					if (result instanceof Property) {
+						return ((Property) result).getValue();
+					}
+					return result;
 				}
 				else if (member instanceof Field) {
 					return ((Field)member).get(o);
@@ -118,6 +123,9 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 				member = tryGetMethod(clazz, "is" + methodSuffix);
 				if (member == null) {
 					member = tryGetMethod(clazz, "has" + methodSuffix);
+					if (member == null) {
+						member = tryGetMethod(clazz, memberName + "Property");
+					}
 				}
 			}
 
