@@ -568,7 +568,7 @@ public class STGroup {
 			if ( fileURL!=null ) {
 				try {
 					InputStream s = fileURL.openStream();
-					ANTLRInputStream templateStream = new ANTLRInputStream(s);
+					ANTLRInputStream templateStream = new ANTLRInputStream(s,encoding);
 					templateStream.name = fileName;
 					CompiledST code = g.loadTemplateFile("/", fileName, templateStream);
 					if ( code==null ) g = null;
