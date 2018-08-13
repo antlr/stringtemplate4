@@ -422,6 +422,27 @@ public class TestImports extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+    	@Test public void testImportUtfTemplateFileSameDir() throws Exception {
+		/*
+		dir
+			group1.stg		(that imports c.st)
+			c.st
+		 */
+		String dir = getRandomDir();
+		String groupFile =
+			"import \"c.st\"\n" +
+			"a() ::= \"g1 a\"\n"+
+			"b() ::= \"<c()>\"\n";
+		writeFile(dir, "group1.stg", groupFile);
+		writeFile(dir, "c.st", "c() ::= \"2∏r\"\n");
+
+		STGroup group1 = new STGroupFile(dir+"/group1.stg");
+		ST st = group1.getInstanceOf("c"); // should see c()
+		String expected = "2∏r";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testImportTemplateFileSameDir() throws Exception {
 		/*
 		dir
