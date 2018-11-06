@@ -18,8 +18,8 @@ See [Template expressions](templates.md#expressions)
 |`<attribute:template(argument-list)>`|Apply template to attribute with optional argument-list.  Example: `<name:bold()>` applies bold() to name's value. The first argument of the template gets the iterated value. The template is not applied to null values.|
 |`<attribute:(expr)(argument-list)>`|Apply a template, whose name is computed from expr, to each value of attribute. Example `<data:(name)()>` looks up name's value and uses that as template name to apply to data.|
 |`<attribute:t1(argument-list): ... :tN(argument-list)>`|Apply multiple templates in order from left to right. The result of a template application upon a multi-valued attribute is another multi-valued attribute. The overall expression evaluates to the concatenation of all elements of the final multi-valued attribute resulting from templateN's application.|
-|`<attribute:{x | anonymous-template}>`|Apply an anonymous template to each element of attribute.  The iterated value is set to argument x. The anonymous template references ﻿`<x>` to access the iterator value.|
-|`<a1,a2,...,aN:{argument-list | anonymous-template}>`|Parallel list iteration. March through the values of the attributes a1..aN, setting the values to the arguments in argument-list in the same order. Apply the anonymous template.|
+|`<attribute:{x \| anonymous-template}>`|Apply an anonymous template to each element of attribute.  The iterated value is set to argument x. The anonymous template references ﻿`<x>` to access the iterator value.|
+|`<a1,a2,...,aN:{argument-list \| anonymous-template}>`|Parallel list iteration. March through the values of the attributes a1..aN, setting the values to the arguments in argument-list in the same order. Apply the anonymous template.|
 |`<attribute:t1(),t2(),`...`,tN()>`|Apply an alternating list of templates to the elements of attribute. The template names may include argument lists.|
 |`\<` or `\>`|escaped delimiter prevents `<` or `>` from starting an attribute expression and results in that single character.|
 |`<\ >, <\n>, <\t>, <\r>`|special character(s): space, newline, tab, carriage return. Can have multiple in single `<...>` expression.|
@@ -33,19 +33,13 @@ See [Template expressions](templates.md#expressions)
 |Syntax|Description|
 |------|-----------|
 |`<first(attr)>`|The first or only element of attr. You can combine operations to say things like first(rest(names)) to get second element.|
-|`<length(attr)>`|Return the length of a mult-valued attribute or 1 if it is single attribute. If attribute is null return 0. Strings are not special; i.e., length("foo") is 1 meaning "1 attribute". Nulls are counted in lists so a list of 300 nulls is length 300. If you don't want to count nulls, use length(strip(list)).
-|`<strlen(attr)>`|
-Return the length of a string attribute; runtime error if not string.
-|`<last(attr)>`|
-The last or only element of attr.
-|`<rest(attr)>`|
-All but the first element of attr. Returns nothing if <attr> is single valued.
-|`<reverse(attr)>`|
-Return a list with the same elements as v but in reverse order. null values are NOT stripped out. use reverse(strip(v)) to do that.
-|`<trunc(attr)>`|
-returns all elements but last element
-|`<strip(attr)>`|
-Return a new list w/o null values.
+|`<length(attr)>`|Return the length of a mult-valued attribute or 1 if it is single attribute. If attribute is null return 0. Strings are not special; i.e., length("foo") is 1 meaning "1 attribute". Nulls are counted in lists so a list of 300 nulls is length 300. If you don't want to count nulls, use length(strip(list)).|
+|`<strlen(attr)>`|Return the length of a string attribute; runtime error if not string.|
+|`<last(attr)>`|The last or only element of attr.|
+|`<rest(attr)>`|All but the first element of attr. Returns nothing if <attr> is single valued.|
+|`<reverse(attr)>`|Return a list with the same elements as v but in reverse order. null values are NOT stripped out. Use reverse(strip(v)) to do that.|
+|`<trunc(attr)>`|Returns all elements but last element.|
+|`<strip(attr)>`|Return a new list w/o null values.|
 |`<trim(attr)>`|Trim whitespace from back/front of a string; runtime error if not string.|
 
 ## Statements

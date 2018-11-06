@@ -561,9 +561,7 @@ public class ST {
 
 	/**
 	 * <pre>
-	 * ST.format("name, phone | &lt;name&gt;:&lt;phone&gt;", n, p);
 	 * ST.format("&lt;%1&gt;:&lt;%2&gt;", n, p);
-	 * ST.format("&lt;name&gt;:&lt;phone&gt;", "name", x, "phone", y);
 	 * </pre>
 	 */
 	public static String format(String template, Object... attributes) {
