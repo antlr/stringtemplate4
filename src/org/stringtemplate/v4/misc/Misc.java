@@ -27,13 +27,10 @@
  */
 package org.stringtemplate.v4.misc;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.JarURLConnection;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.Iterator;
 
@@ -166,33 +163,24 @@ public class Misc {
 		return buf.toString();
 	}
 
+
 	public static boolean urlExists(URL url) {
 		try {
-			URLConnection connection = url.openConnection();
-			if (connection instanceof JarURLConnection) {
-				JarURLConnection jarURLConnection = (JarURLConnection)connection;
-				URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarURLConnection.getJarFileURL() });
-				try {
-					return urlClassLoader.findResource(jarURLConnection.getEntryName()) != null;
-				}
-				finally {
-					if (urlClassLoader instanceof Closeable) {
-						((Closeable)urlClassLoader).close();
-					}
-				}
-			}
-
-			InputStream is = null;
+			// In Spring Boot context the URL can be like this:
+			// jar:file:/path/to/myapp.jar!/BOOT-INF/lib/mylib.jar!/org/foo/templates/g.stg
+			// This url cannot be processed using standard URLClassLoader
+			URLConnection con = url.openConnection();
+			InputStream is = con.getInputStream();
 			try {
-				is = url.openStream();
+				is.close();
+			} catch (Throwable e) {
+				// Closing the input stream may throw an exception. See bug below. Most probabaly it was
+				// the true reason for this commit: 
+				// https://github.com/antlr/stringtemplate4/commit/21484ed46f1b20b2cdaec49f9d5a626fb26a493c				
+				// https://bugs.openjdk.java.net/browse/JDK-8080094
+//				e.printStackTrace();
 			}
-			finally {
-				if (is != null) {
-					is.close();
-				}
-			}
-
-			return is != null;
+			return true;
 		}
 		catch (IOException ioe) {
 			return false;
