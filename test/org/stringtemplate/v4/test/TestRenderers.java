@@ -72,7 +72,7 @@ public class TestRenderers extends BaseTest {
 		group.registerRenderer(GregorianCalendar.class, new DateRenderer());
 		ST st = group.getInstanceOf("dateThing");
 		st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
-		String expecting = "datetime: 7/5/05 12:00 AM";
+		String expecting = "datetime: 7/5/05, 12:00 AM";
 		String result = st.render();
 		assertEquals(expecting, result);
 	}
@@ -98,7 +98,7 @@ public class TestRenderers extends BaseTest {
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
-        String expecting = " datetime: 7/5/05 12:00 AM ";
+        String expecting = " datetime: 7/5/05, 12:00 AM ";
         String result = st.render();
         assertEquals(expecting, result);
     }
@@ -115,7 +115,7 @@ public class TestRenderers extends BaseTest {
         	// set Timezone to "PDT"
         	TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
         	st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
-        	String expecting = " datetime: Tuesday, July 5, 2005 12:00:00 AM PDT ";
+        	String expecting = " datetime: Tuesday, July 5, 2005 at 12:00:00 AM Pacific Daylight Time ";
         	String result = st.render();
         	assertEquals(expecting, result);
         } finally {
@@ -371,6 +371,6 @@ public class TestRenderers extends BaseTest {
 		cal.set(2012, Calendar.JUNE, 12);
 		st.add("date", cal);
 
-		assertEquals("12 de Junho de 2012", st.render(new Locale("pt")));
+		assertEquals("12 de junho de 2012", st.render(new Locale("pt")));
 	}
 }
