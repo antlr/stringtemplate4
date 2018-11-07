@@ -182,9 +182,17 @@ public class ST {
 	 *  which creates {@link ConstructionEvent}.
 	 */
 	public ST(ST proto) {
-		this.impl = proto.impl;
+		try {
+			// Because add() can fake a formal arg def, make sure to clone impl
+			// entire impl so formalArguments list is cloned as well. Don't want
+			// further derivations altering previous arg defs. See
+			// testRedefOfKeyInCloneAfterAddingAttribute().
+			this.impl = proto.impl.clone();
+		}
+		catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 		if ( proto.locals!=null ) {
-			//this.locals = Arrays.copyOf(proto.locals, proto.locals.length);
 			this.locals = new Object[proto.locals.length];
 			System.arraycopy(proto.locals, 0, this.locals, 0, proto.locals.length);
 		}
@@ -235,7 +243,6 @@ public class ST {
 				arg = new FormalArgument(name);
 				impl.addArg(arg);
 				if ( locals==null ) locals = new Object[1];
-				//else locals = Arrays.copyOf(locals, impl.formalArguments.size());
 				else {
 					Object[] copy = new Object[impl.formalArguments.size()];
 					System.arraycopy(locals, 0, copy, 0,
