@@ -45,7 +45,12 @@ public class NumberRenderer implements AttributeRenderer {
         // o will be instanceof Number
         if ( formatString==null ) return o.toString();
         Formatter f = new Formatter(locale);
-        f.format(formatString, o);
-        return f.toString();
+        try {
+            f.format(formatString, o);
+            return f.toString();
+        }
+        finally {
+            f.close();
+        }
     }
 }
