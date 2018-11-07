@@ -727,4 +727,24 @@ public class TestImports extends BaseTest {
 		String result = st!=null ? st.render() : null;
 		assertEquals(expected, result);
 	}
+
+	@Test public void testImportUtfTemplateFileSameDir() throws Exception {
+		/*
+		dir
+			group.stg		(that imports c.st)
+			c.st
+		 */
+		String dir = getRandomDir();
+		String groupFile =
+			"import \"c.st\"\n" +
+			"b() ::= \"foo\"\n";
+		writeFile(dir, "group.stg", groupFile);
+		writeFile(dir, "c.st", "c() ::= \"2∏r\"\n");
+
+		STGroup group = new STGroupFile(dir+"/group.stg");
+		ST st = group.getInstanceOf("c"); // should see c()
+		String expected = "2∏r";
+		String result = st.render();
+		assertEquals(expected, result);
+	}
 }
