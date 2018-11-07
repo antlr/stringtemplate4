@@ -204,6 +204,10 @@ public class CompiledST implements Cloneable {
 		if ( formalArguments==null ) {
 			formalArguments = Collections.synchronizedMap(new LinkedHashMap<String,FormalArgument>());
 		}
+		else if (formalArguments.containsKey(a.name)) {
+			throw new IllegalArgumentException(String.format("Formal argument %s already exists.", a.name));
+		}
+
 		a.index = formalArguments.size();
 		formalArguments.put(a.name, a);
 	}

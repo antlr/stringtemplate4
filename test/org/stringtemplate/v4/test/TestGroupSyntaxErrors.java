@@ -171,7 +171,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group.load(); // force load
 		String expected =
 			"[t.stg 1:6: missing ID at ',', " +
-			"t.stg 1:7: missing ID at ')']";
+			"t.stg 1:7: missing ID at ')', " +
+			"t.stg 1:7: redefinition of parameter <missing ID>]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
@@ -204,6 +205,41 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group.load(); // force load
 		String expected =
 			"[t.stg 1:12: required parameters (b) must appear before optional parameters]";
+		String result = errors.errors.toString();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testArgumentRedefinition() throws Exception {
+		String templates =
+			"foo(a,b,a) ::= << >>\n";
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroupFile group;
+		ErrorBuffer errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		group.load(); // force load
+		String expected =
+			"[t.stg 1:8: redefinition of parameter a]";
+		String result = errors.errors.toString();
+		assertEquals(expected, result);
+	}
+
+	@Test public void testArgumentRedefinitionInSubtemplate() throws Exception {
+		String templates =
+			"foo(names) ::= <<" + newline +
+			"<names, names, names:{a,b,a|}>" + newline +
+			">>" + newline;
+		writeFile(tmpdir, "t.stg", templates);
+
+		STGroupFile group;
+		ErrorBuffer errors = new ErrorBuffer();
+		group = new STGroupFile(tmpdir+"/"+"t.stg");
+		group.setListener(errors);
+		group.load(); // force load
+		String expected =
+			"[t.stg 1:43: redefinition of parameter a, " +
+			"t.stg 1:38: anonymous template has 2 arg(s) but mapped across 3 value(s)]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}

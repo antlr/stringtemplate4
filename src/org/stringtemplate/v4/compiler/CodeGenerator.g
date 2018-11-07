@@ -81,6 +81,18 @@ import org.stringtemplate.v4.*;
 		this.templateToken = templateToken;
 	}
 
+	public void addArgument(List<FormalArgument> args, Token t) {
+		String name = t.getText();
+		for (FormalArgument arg : args) {
+			if (arg.name.equals(name)) {
+				errMgr.compileTimeError(ErrorType.PARAMETER_REDEFINITION, templateToken, t, name);
+				return;
+			}
+		}
+
+		args.add(new FormalArgument(name));
+	}
+
 	// convience funcs to hide offensive sending of emit messages to
 	// CompilationState temp data object.
 
@@ -225,7 +237,7 @@ subtemplate returns [String name, int nargs]
 	List<FormalArgument> args = new ArrayList<FormalArgument>();
 }
 	:	^(	SUBTEMPLATE
-			(^(ARGS (ID {args.add(new FormalArgument($ID.text));})+))*
+			(^(ARGS (ID {addArgument(args, $ID.token);})+))*
 			{$nargs = args.size();}
 			template[$name,args]
 			{
