@@ -3,6 +3,9 @@ package org.stringtemplate.v4.test;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.assertTrue;
 
 public class TestAttributes extends BaseTest {
@@ -32,5 +35,15 @@ public class TestAttributes extends BaseTest {
 		ST c = new ST(a);
 		c.add("x", "bar");
 		assertTrue(true); // should not get exception
+	}
+
+	@Test
+	public void testF() {
+		ST proto = new ST("<arg.x>");
+		ST st = new ST(proto);
+		Map map = new HashMap();
+		map.put("x", 3);
+		st.add("arg", map);
+		st.render();
 	}
 }

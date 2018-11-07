@@ -198,6 +198,7 @@ public class ST {
 		}
 		else if (impl.formalArguments != null && !impl.formalArguments.isEmpty()) {
 			this.locals = new Object[impl.formalArguments.size()];
+			Arrays.fill(this.locals, EMPTY_ATTR);
 		}
 		this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
 	}
