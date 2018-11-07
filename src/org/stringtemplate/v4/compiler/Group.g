@@ -67,7 +67,7 @@ package org.stringtemplate.v4.compiler;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import org.stringtemplate.v4.misc.*;
@@ -290,7 +290,7 @@ dictDef
 	;
 
 dict returns [Map<String,Object> mapping]
-@init {mapping=new HashMap<String,Object>();}
+@init {mapping=new LinkedHashMap<String,Object>();}
 	:   '[' dictPairs[mapping] ']'
 	;
 

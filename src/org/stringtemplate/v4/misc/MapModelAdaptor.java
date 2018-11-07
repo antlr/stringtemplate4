@@ -42,12 +42,12 @@ public class MapModelAdaptor implements ModelAdaptor {
 		Object value;
 		Map<?, ?> map = (Map<?, ?>)o;
 		if ( property==null ) value = map.get(STGroup.DEFAULT_KEY);
-		else if ( property.equals("keys") ) value = map.keySet();
-		else if ( property.equals("values") ) value = map.values();
 		else if ( map.containsKey(property) ) value = map.get(property);
 		else if ( map.containsKey(propertyName) ) { // if can't find the key, try toString version
 			value = map.get(propertyName);
 		}
+		else if ( property.equals("keys") ) value = map.keySet();
+		else if ( property.equals("values") ) value = map.values();
 		else value = map.get(STGroup.DEFAULT_KEY); // not found, use default
 		if ( value == STGroup.DICT_KEY ) {
 			value = property;
