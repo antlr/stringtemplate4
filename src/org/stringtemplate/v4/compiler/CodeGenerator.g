@@ -343,14 +343,14 @@ prop:	^(PROP expr ID)						{emit1($PROP, Bytecode.INSTR_LOAD_PROP, $ID.text);}
 	;
 
 mapTemplateRef[int num_exprs]
-	:	^(	INCLUDE ID
+	:	^(	INCLUDE qualifiedId
 			{for (int i=1; i<=$num_exprs; i++) emit($INCLUDE,Bytecode.INSTR_NULL);}
 			args
 		)
 		{
-		if ( $args.passThru ) emit1($start, Bytecode.INSTR_PASSTHRU, $ID.text);
-		if ( $args.namedArgs ) emit1($INCLUDE, Bytecode.INSTR_NEW_BOX_ARGS, $ID.text);
-		else emit2($INCLUDE, Bytecode.INSTR_NEW, $ID.text, $args.n+$num_exprs);
+		if ( $args.passThru ) emit1($start, Bytecode.INSTR_PASSTHRU, $qualifiedId.text);
+		if ( $args.namedArgs ) emit1($INCLUDE, Bytecode.INSTR_NEW_BOX_ARGS, $qualifiedId.text);
+		else emit2($INCLUDE, Bytecode.INSTR_NEW, $qualifiedId.text, $args.n+$num_exprs);
 		}
 	|	subtemplate
 		{
@@ -378,11 +378,11 @@ mapTemplateRef[int num_exprs]
 
 includeExpr
 	:	^(EXEC_FUNC ID expr?)		{func($ID);}
-	|	^(INCLUDE ID args)
+	|	^(INCLUDE qualifiedId args)
 		{
-		if ( $args.passThru ) emit1($start, Bytecode.INSTR_PASSTHRU, $ID.text);
-		if ( $args.namedArgs ) emit1($INCLUDE, Bytecode.INSTR_NEW_BOX_ARGS, $ID.text);
-		else emit2($INCLUDE, Bytecode.INSTR_NEW, $ID.text, $args.n);
+		if ( $args.passThru ) emit1($start, Bytecode.INSTR_PASSTHRU, $qualifiedId.text);
+		if ( $args.namedArgs ) emit1($INCLUDE, Bytecode.INSTR_NEW_BOX_ARGS, $qualifiedId.text);
+		else emit2($INCLUDE, Bytecode.INSTR_NEW, $qualifiedId.text, $args.n);
 		}
 	|	^(INCLUDE_SUPER ID args)
 		{
@@ -417,6 +417,12 @@ primary
 			args        {emit1($INCLUDE_IND, Bytecode.INSTR_NEW_IND, $args.n);}
 		 )
 	|	^(TO_STR expr)	{emit($TO_STR, Bytecode.INSTR_TOSTR);}
+	;
+
+qualifiedId
+	:	^(SLASH qualifiedId ID)
+	|	^(SLASH ID)
+	|	ID
 	;
 
 arg : expr ;

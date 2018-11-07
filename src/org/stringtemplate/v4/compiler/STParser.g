@@ -207,7 +207,7 @@ expr:{arg | ...}     apply subtemplate to expr
 expr:(e)(args)       convert e to a string template name and apply to expr
 */
 mapTemplateRef
-	:	ID '(' args ')'							-> ^(INCLUDE ID args?)
+	:	qualifiedId '(' args ')'							-> ^(INCLUDE qualifiedId args?)
 	|	subtemplate
 	|	lp='(' mapExpr rp=')' '(' argExprList? ')' -> ^(INCLUDE_IND mapExpr argExprList?)
 	;
@@ -224,7 +224,7 @@ options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
 	:	{Compiler.funcs.containsKey(input.LT(1).getText())}? // predefined function
 		ID '(' expr? ')'						-> ^(EXEC_FUNC ID expr?)
 	|	'super' '.' ID '(' args ')'				-> ^(INCLUDE_SUPER ID args?)
-	|	ID '(' args ')'							-> ^(INCLUDE ID args?)
+	|	qualifiedId '(' args ')'				-> ^(INCLUDE qualifiedId args?)
 	|	'@' 'super' '.' ID '(' rp=')'			-> ^(INCLUDE_SUPER_REGION ID)
 	|	'@' ID '(' rp=')'						-> ^(INCLUDE_REGION ID)
 	|	primary
@@ -242,6 +242,14 @@ primary
 		(	'(' argExprList? ')'		        -> ^(INCLUDE_IND[$lp] expr argExprList?)
 		|										-> ^(TO_STR[$lp] expr)
 		)
+	;
+
+qualifiedId
+	:	(	ID									-> ID
+		|	'/' ID								-> ^('/' ID)
+		)
+		(	'/' r=ID							-> ^('/' $qualifiedId $r)
+		)*
 	;
 
 args:	argExprList
