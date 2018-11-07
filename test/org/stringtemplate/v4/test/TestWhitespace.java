@@ -62,6 +62,16 @@ public class TestWhitespace extends BaseTest {
 		assertEquals(expected, result);
 	}
 
+	/**
+	 * This is a regression test for antlr/stringtemplate4#93.
+	 */
+	@Test public void testNoTrimmedNewlinesBeforeAfterInCodedTemplate() throws Exception {
+		ST st = new ST(newline + "foo" + newline);
+		String expected = newline + "foo" + newline;
+		String result = st.render();
+		assertEquals(expected, result);
+	}
+
 	@Test public void testDontTrimJustSpaceBeforeAfterInTemplate() throws Exception {
 		String templates =
 			"a(x) ::= << foo >>\n";
