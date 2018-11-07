@@ -102,6 +102,9 @@ public class STGroupFile extends STGroup {
 					   char delimiterStartChar, char delimiterStopChar)
 	{
 		super(delimiterStartChar, delimiterStopChar);
+		if ( url==null ) {
+			throw new IllegalArgumentException("URL to group file cannot be null");
+		}
 		this.url = url;
 		this.encoding = encoding;
 		this.fileName = null;

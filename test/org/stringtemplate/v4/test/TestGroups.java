@@ -38,6 +38,7 @@ import org.stringtemplate.v4.STGroupString;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -764,6 +765,17 @@ public class TestGroups extends BaseTest {
 		String expected = "";
 		String result = st.render();
 		assertEquals(expected, result);
+	}
+
+	@Test public void testNullURL() {
+		String err = null;
+		try {
+			new STGroupFile((URL) null, "UTF-8", '<', '>');
+		}
+		catch (IllegalArgumentException e) {
+			err =  e.getMessage();
+		}
+		assertEquals(err, "URL to group file cannot be null");
 	}
 
 }
