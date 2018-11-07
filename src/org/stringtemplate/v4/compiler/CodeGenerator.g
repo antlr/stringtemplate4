@@ -112,6 +112,18 @@ import org.stringtemplate.v4.*;
 	public void func(CommonTree id) { $template::state.func(templateToken, id); }
 	public void refAttr(CommonTree id) { $template::state.refAttr(templateToken, id); }
 	public int defineString(String s) { return $template::state.defineString(s); }
+
+	@Override
+	public void displayRecognitionError(String[] tokenNames, RecognitionException e) {
+		Token tokenWithPosition = e.token;
+		if (tokenWithPosition.getInputStream() == null) {
+			tokenWithPosition = input.getTreeAdaptor().getToken(input.LT(-1));
+		}
+
+		String hdr = getErrorHeader(e);
+		String msg = getErrorMessage(e, tokenNames);
+		errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, tokenWithPosition, hdr + " " + msg);
+	}
 }
 
 templateAndEOF : template[null,null] EOF; // hush warning; ignore
@@ -145,7 +157,7 @@ chunk
 element
 	:	^(INDENTED_EXPR INDENT compoundElement[$INDENT]) // ignore indent in front of IF and region blocks
 	|	compoundElement[null]
-	|	^(INDENTED_EXPR INDENT {$template::state.indent($INDENT);} singleElement {$template::state.emit(Bytecode.INSTR_DEDENT);})
+	|	^(INDENTED_EXPR INDENT {$template::state.indent($INDENT);} singleElement? {$template::state.emit(Bytecode.INSTR_DEDENT);})
 	|	singleElement
 	;
 
