@@ -190,8 +190,23 @@ groupName returns [String name]
 delimiters
     :	'delimiters' a=STRING ',' b=STRING
      	{
-     	group.delimiterStartChar=$a.getText().charAt(1);
-        group.delimiterStopChar=$b.getText().charAt(1);
+		boolean supported = true;
+		char startCharacter = $a.getText().charAt(1);
+		if (STGroup.isReservedCharacter(startCharacter)) {
+			group.errMgr.compileTimeError(ErrorType.UNSUPPORTED_DELIMITER, null, $a, String.valueOf(startCharacter));
+			supported = false;
+		}
+
+		char stopCharacter = $b.getText().charAt(1);
+		if (STGroup.isReservedCharacter(stopCharacter)) {
+			group.errMgr.compileTimeError(ErrorType.UNSUPPORTED_DELIMITER, null, $b, String.valueOf(stopCharacter));
+			supported = false;
+		}
+
+		if (supported) {
+			group.delimiterStartChar=$a.getText().charAt(1);
+			group.delimiterStopChar=$b.getText().charAt(1);
+		}
         }
     ;
 

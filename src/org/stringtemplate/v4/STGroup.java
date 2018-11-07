@@ -80,6 +80,25 @@ public class STGroup {
 		TEMPLATE_FILE_EXTENSION = ".st";
 	}
 
+	private static final boolean[] RESERVED_CHARACTERS = new boolean[127];
+	static {
+		for (char c = 'a'; c <= 'z'; c++) {
+			RESERVED_CHARACTERS[c] = true;
+		}
+
+		for (char c = 'A'; c <= 'Z'; c++) {
+			RESERVED_CHARACTERS[c] = true;
+		}
+
+		for (char c = '0'; c <= '9'; c++) {
+			RESERVED_CHARACTERS[c] = true;
+		}
+
+		RESERVED_CHARACTERS['@'] = true;
+		RESERVED_CHARACTERS['-'] = true;
+		RESERVED_CHARACTERS['_'] = true;
+	}
+
     /** When we use key as a value in a dictionary, this is how we signify. */
     public static final String DICT_KEY = "key";
     public static final String DEFAULT_KEY = "default";
@@ -292,6 +311,22 @@ public class STGroup {
 
     /** Force a load if it makes sense for the group. */
     public void load() { }
+
+	/**
+	 * Determines if a specified character may be used as a user-specified delimiter.
+	 *
+	 * @param c The character
+	 * @return {@code true} if the character is reserved by the StringTemplate
+	 * language; otherwise, {@code false} if the character may be used as a
+	 * delimiter.
+	 *
+	 * @since 4.0.9
+	 */
+	public static boolean isReservedCharacter(char c) {
+		return c >= 0
+			&& c < RESERVED_CHARACTERS.length
+			&& RESERVED_CHARACTERS[c];
+	}
 
     protected CompiledST lookupImportedTemplate(String name) {
         if ( imports.size()==0 ) return null;

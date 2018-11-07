@@ -59,6 +59,7 @@ public enum ErrorType {
 	INVALID_TEMPLATE_NAME("invalid template name or path: %s"),
 	ANON_ARGUMENT_MISMATCH("anonymous template has %s arg(s) but mapped across %s value(s)"),
 	REQUIRED_PARAMETER_AFTER_OPTIONAL("required parameters (%s) must appear before optional parameters"),
+	UNSUPPORTED_DELIMITER("unsupported delimiter character: %s"),
 
     // INTERNAL ERRORS
     INTERNAL_ERROR("%s"),
