@@ -51,6 +51,7 @@ public class JTreeSTModel implements TreeModel {
 
 		@Override
 		public boolean equals(Object o) {
+			if ( o == null ) return false;
 			//System.out.println(event+"=="+((Wrapper)o).event+" is "+(this.event == ((Wrapper)o).event));
 			return this.event == ((Wrapper)o).event;
 		}
