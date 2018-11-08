@@ -64,13 +64,13 @@ public class STGroupString extends STGroup {
     }
 
 	@Override
-	protected CompiledST load(String name) {
+	protected synchronized CompiledST load(String name) {
 		if ( !alreadyLoaded ) load();
         return rawGetTemplate(name);
     }
 
 	@Override
-    public void load() {
+    public synchronized void load() {
 		if (alreadyLoaded) return;
 		alreadyLoaded = true;
 		GroupParser parser;

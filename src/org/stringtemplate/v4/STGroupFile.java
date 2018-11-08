@@ -129,13 +129,13 @@ public class STGroupFile extends STGroup {
 	}
 
 	@Override
-	protected CompiledST load(String name) {
+	protected synchronized CompiledST load(String name) {
         if ( !alreadyLoaded ) load();
         return rawGetTemplate(name);
     }
 
 	@Override
-    public void load() {
+    public synchronized void load() {
         if ( alreadyLoaded ) return;
         alreadyLoaded = true; // do before actual load to say we're doing it
 		// no prefix since this group file is the entire group, nothing lives
