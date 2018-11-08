@@ -48,6 +48,8 @@ import static org.junit.Assert.assertEquals;
 
 public class TestRenderers extends BaseTest {
 
+	String javaVersion = System.getProperty("java.version");
+
 	// Make sure to use the US Locale during the tests
 	private Locale origLocale;
 
@@ -73,6 +75,9 @@ public class TestRenderers extends BaseTest {
 		ST st = group.getInstanceOf("dateThing");
 		st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
 		String expecting = "datetime: 7/5/05, 12:00 AM";
+		if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
+			expecting = "datetime: 7/5/05 12:00 AM";
+		}
 		String result = st.render();
 		assertEquals(expecting, result);
 	}
@@ -99,7 +104,10 @@ public class TestRenderers extends BaseTest {
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
         String expecting = " datetime: 7/5/05, 12:00 AM ";
-        String result = st.render();
+	    if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
+		    expecting = " datetime: 7/5/05 12:00 AM ";
+	    }
+	    String result = st.render();
         assertEquals(expecting, result);
     }
 
@@ -116,9 +124,13 @@ public class TestRenderers extends BaseTest {
         	TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
         	st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
         	String expecting = " datetime: Tuesday, July 5, 2005 at 12:00:00 AM Pacific Daylight Time ";
-        	String result = st.render();
+	        if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
+		        expecting = " datetime: Tuesday, July 5, 2005 12:00:00 AM PDT ";
+	        }
+	        String result = st.render();
         	assertEquals(expecting, result);
-        } finally {
+        }
+        finally {
            	// Restore original Timezone
            	TimeZone.setDefault(origTimeZone);
         }
@@ -371,6 +383,10 @@ public class TestRenderers extends BaseTest {
 		cal.set(2012, Calendar.JUNE, 12);
 		st.add("date", cal);
 
-		assertEquals("12 de junho de 2012", st.render(new Locale("pt")));
+		String expected = "12 de junho de 2012";
+		if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
+			expected = "12 de Junho de 2012";
+		}
+		assertEquals(expected, st.render(new Locale("pt")));
 	}
 }
