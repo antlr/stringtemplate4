@@ -97,6 +97,8 @@ public class STGroup {
 		RESERVED_CHARACTERS['@'] = true;
 		RESERVED_CHARACTERS['-'] = true;
 		RESERVED_CHARACTERS['_'] = true;
+		RESERVED_CHARACTERS['['] = true;
+		RESERVED_CHARACTERS[']'] = true;
 	}
 
     /** When we use key as a value in a dictionary, this is how we signify. */
