@@ -110,6 +110,9 @@ public class STGroupFile extends STGroup {
 		this.fileName = null;
 	}
 
+	/** Convenience ctor */
+	public STGroupFile(URL url) { this(url, "UTF-8",'<', '>'); }
+
 	@Override
 	public boolean isDictionary(String name) {
 		if ( !alreadyLoaded ) load();
