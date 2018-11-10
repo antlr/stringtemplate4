@@ -2,7 +2,7 @@
 
 ## Github
 
-Create a pre-release or full release at github
+Create a pre-release or full release at github. 
 
 ### Delete existing release tag
 
@@ -141,18 +141,42 @@ But I think just this on front of mvn works:
 export JAVA_HOME=`/usr/libexec/java_home -v 1.7`; mvn ...
 ```
 
-You should see 0x33 in generated .class files after 0xCAFEBABE; see [Java SE 7 = 51 (0x33 hex)](https://en.wikipedia.org/wiki/Java_class_file):
-
-```bash
-beast:/tmp/org/antlr/v4 $ od -h Tool.class |head -1
-0000000      feca    beba    0000    3300    fa04    0207    0ab8    0100
-```
-
 It will start out by asking you the version number:
 
 ```
 ...
+What is the release version for "StringTemplate 4"? (org.antlr:ST4) 4.1: : 
+What is SCM release tag or label for "StringTemplate 4"? (org.antlr:ST4) ST4-4.1: : 4.1           
+What is the new development version for "StringTemplate 4"? (org.antlr:ST4) 4.2-SNAPSHOT: : 4.2.1-SNAPSHOT
 ...
 ```
 
-IN PROGRESS
+Now release
+
+```bash
+export JAVA_HOME=`/usr/libexec/java_home -v 1.7`; mvn release:perform -Darguments="-DskipTests"
+```
+
+Maven will use git to push pom.xml changes.
+
+Now, go here:
+
+&nbsp;&nbsp;&nbsp;&nbsp;[https://oss.sonatype.org/#welcome](https://oss.sonatype.org/#welcome)
+
+and on the left click "Staging Repositories". You click the staging repo and close it, then you refresh, click it and release it. It's done when you see it here:
+
+&nbsp;&nbsp;&nbsp;&nbsp;[http://repo1.maven.org/maven2/org/antlr/ST4/](http://repo1.maven.org/maven2/org/antlr/ST4/)
+
+
+Seems to take a while to propogate.
+
+# Update website
+
+Copy the jars to stringtemplate.org site and update download/index.html
+
+```bash
+cp ~/.m2/repository/org/antlr/ST4/4.1/ST4-4.1.jar ~/antlr/sites/website-st4/download/ST-4.1.jar
+cd ~/antlr/sites/website-st4/download
+git add ST-4.1.jar
+```
+
