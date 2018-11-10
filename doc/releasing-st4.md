@@ -170,6 +170,15 @@ and on the left click "Staging Repositories". You click the staging repo and clo
 
 Seems to take a while to propogate.
 
+## Javadoc
+
+```bash
+export JAVA_HOME=`/usr/libexec/java_home -v 1.7`; mvn javadoc:javadoc
+```
+
+```bash
+cp -r ~/antlr/code/stringtemplate4/target/site/apidocs/* ~/antlr/sites/website-st4/api```
+
 # Update website
 
 Copy the jars to stringtemplate.org site and update download/index.html
@@ -179,4 +188,5 @@ cp ~/.m2/repository/org/antlr/ST4/4.1/ST4-4.1.jar ~/antlr/sites/website-st4/down
 cd ~/antlr/sites/website-st4/download
 git add ST-4.1.jar
 ```
+
 
