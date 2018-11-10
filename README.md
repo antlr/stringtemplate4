@@ -33,7 +33,7 @@ to the `<dependencies>` element in your **pom.xml** file.
 <dependency>
   <groupId>org.antlr</groupId>
   <artifactId>ST4</artifactId>
-  <version>4.0.8</version>
+  <version>4.1</version>
   <scope>compile</scope>
 </dependency>
 ```
