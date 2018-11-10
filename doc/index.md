@@ -56,6 +56,7 @@ Notes: To add to or improve this documentation, <a href=https://help.github.com/
 
 * [Template to Bytecode mapping](bytecode.md)
 * [Differences between v3 and v4](3to4.md)
+* [Releasing ST4](releasing-st4.md)
 
 ## Release Notes
 
