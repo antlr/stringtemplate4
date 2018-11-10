@@ -10,7 +10,7 @@
 	<artifactId>ST4</artifactId>
 	<packaging>jar</packaging>
 
-	<version>4.1-SNAPSHOT</version>
+	<version>4.1</version>
 
 	<name>StringTemplate 4</name>
 	<description>StringTemplate is a java template engine for generating source code,
@@ -33,7 +33,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -82,4 +82,11 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<scm>
+		<url>https://github.com/antlr/stringtemplate4/tree/master</url>
+		<connection>scm:git:git://github.com/antlr/stringtemplate4.git</connection>
+		<developerConnection>scm:git:git@github.com:antlr/stringtemplate4.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 </project>
