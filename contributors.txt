@@ -57,3 +57,4 @@ YYYY/MM/DD, github id, Full name, email
 2018/11/06, drealeed , Drea Leed, drealeed2@yahoo.com
 2018/11/08, leonlee, Leon Lee, blackicebird@gmail.com
 2018/11/11, adityanarkar, Aditya Narkar, aditya.narkar25@gmail.com
+2019/01/21, cfraizer, Colin Frazier, colin.fraizer@gmail.com
