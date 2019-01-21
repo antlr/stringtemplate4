@@ -35,7 +35,7 @@ StringTemplate has the following literals.
 |`\\`|Ignore the immediately following newline char. Allows you to put a newline in the template to better format it without actually inserting a newline into the output|
 |`"`*string*`"`|A string of output characters|
 |`{`*template*`}`|An anonymous subtemplate|
-|`{`*args* `|` *template*`}`|An anonymous subtemplate with arguments|
+|`{`*args* `\|` *template*`}`|An anonymous subtemplate with arguments|
 |`[]`|An an empty list.|
 |`[`*expr1*`,` *expr2*`,` ...`,` *exprN*`]`|A list with N values. It behaves like an array or list injected from controller code.|
 
