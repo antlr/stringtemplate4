@@ -8,6 +8,8 @@ import org.stringtemplate.v4.misc.STRuntimeMessage;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.TreeMap;
+
 public class TestModelAdaptors extends BaseTest {
 	static class UserAdaptor implements ModelAdaptor {
 		@Override
@@ -124,6 +126,36 @@ public class TestModelAdaptors extends BaseTest {
 		st.add("x", new SuperUser(100, "parrt"));
 		expecting = "const id value: const name value"; // sees UserAdaptorConst
 		result = st.render();
+		assertEquals(expecting, result);
+	}
+
+	// https://github.com/antlr/stringtemplate4/issues/214
+	@Test public void testHandlesNullKeys() {
+		String templates =
+			"foo(x, y) ::= \"<x.(y); null={NULL}>\"";
+		writeFile(tmpdir, "foo.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/foo.stg");
+		ST st = group.getInstanceOf("foo");
+		st.add("x", new TreeMap<String, String>());
+		st.add("y", null);
+		String expecting = "NULL";
+		String result = st.render();
+		assertEquals(expecting, result);
+	}
+
+	// https://github.com/antlr/stringtemplate4/issues/214
+	@Test public void testHandlesKeysNotComparableToString() {
+		String templates =
+			"foo(x) ::= \"<x.keys>\"";
+		writeFile(tmpdir, "foo.stg", templates);
+		STGroup group = new STGroupFile(tmpdir+"/foo.stg");
+		ST st = group.getInstanceOf("foo");
+
+		TreeMap<Integer, String> x = new TreeMap<Integer, String>();
+		x.put(1, "value");
+		st.add("x", x);
+		String expecting = "1";
+		String result = st.render();
 		assertEquals(expecting, result);
 	}
 }
