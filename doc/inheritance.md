@@ -28,7 +28,7 @@ class <name> {
  
 constants(typename, names) ::= "<names:{n | <constant(n,i)>}; separator={<\n>}>"
  
-constant(n) ::= "public static final int <typename>_<n>=<i>;"
+constant(n, i) ::= "public static final int <typename>_<n>=<i>;"
 ```
 
 Instead of copying and altering the entire group for Java 1.5, we can import the 1.4 group and alter just the part that changes, template `constants`:
