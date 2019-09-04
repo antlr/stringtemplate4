@@ -27,6 +27,7 @@
  */
 package org.stringtemplate.v4.compiler;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.NoViableAltException;
@@ -86,7 +87,7 @@ public class Compiler {
     };
 
 	/** Name subtemplates {@code _sub1}, {@code _sub2}, ... */
-	public static int subtemplateCount = 0;
+	public static AtomicInteger subtemplateCount = new AtomicInteger(0);
 
 	public STGroup group;
 
@@ -188,8 +189,8 @@ public class Compiler {
 	}
 
 	public static String getNewSubtemplateName() {
-		subtemplateCount++;
-		return SUBTEMPLATE_PREFIX+subtemplateCount;
+		int count = subtemplateCount.incrementAndGet();
+		return SUBTEMPLATE_PREFIX+count;
 	}
 
 	protected void reportMessageAndThrowSTException(TokenStream tokens, Token templateToken,

@@ -27,6 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
@@ -119,7 +120,7 @@ public abstract class BaseTest {
     @Before
     public void setUp() {
         STGroup.defaultGroup = new STGroup();
-        Compiler.subtemplateCount = 0;
+        Compiler.subtemplateCount = new AtomicInteger(0);
 
         String baseTestDirectory = System.getProperty("java.io.tmpdir");
         String testDirectory = getClass().getSimpleName() + "-" + System.currentTimeMillis();
