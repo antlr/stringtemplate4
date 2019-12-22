@@ -29,14 +29,14 @@ package org.stringtemplate.v4.debug;
 
 public class AddAttributeEvent extends ConstructionEvent {
     String name;
-	/** Reserved for future use. */
+    /** Reserved for future use. */
     Object value;
     public AddAttributeEvent(String name, Object value) {
         this.name = name;
         this.value = value;
     }
 
-	@Override
+    @Override
     public String toString() {
         return "addEvent{" +
             ", name='" + name + '\'' +

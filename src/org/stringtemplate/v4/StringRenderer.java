@@ -52,11 +52,11 @@ public class StringRenderer implements AttributeRenderer {
             return (s.length() > 0) ? Character.toUpperCase(s.charAt(0))+s.substring(1) : s;
         }
         if ( formatString.equals("url-encode") ) {
-			try {
-				return URLEncoder.encode(s, "UTF-8");
-			} catch (UnsupportedEncodingException ex) {
-				// UTF-8 is standard, should always be available
-			}
+            try {
+                return URLEncoder.encode(s, "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                // UTF-8 is standard, should always be available
+            }
         }
         if ( formatString.equals("xml-encode") ) {
             return escapeHTML(s);

@@ -61,7 +61,7 @@ public class DateRenderer implements AttributeRenderer {
         formatToInt = Collections.unmodifiableMap(map);
     }
 
-	@Override
+    @Override
     public String toString(Object o, String formatString, Locale locale) {
         Date d;
         if ( formatString==null ) formatString = "short";

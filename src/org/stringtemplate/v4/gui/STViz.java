@@ -70,98 +70,98 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class STViz {
-	protected static final String WINDOWS_LINE_ENDINGS = "WINDOWS_LINE_ENDINGS";
+    protected static final String WINDOWS_LINE_ENDINGS = "WINDOWS_LINE_ENDINGS";
 
-	//public ST currentST; // current ST selected in template tree
-	public EvalTemplateEvent root;
-	public InterpEvent currentEvent;
-	public InstanceScope currentScope;
-	public List<InterpEvent> allEvents;
-	public JTreeSTModel tmodel;
-	public ErrorManager errMgr;
-	public Interpreter interp;
-	public String output;
-	public List<String> trace;
-	public List<STMessage> errors;
+    //public ST currentST; // current ST selected in template tree
+    public EvalTemplateEvent root;
+    public InterpEvent currentEvent;
+    public InstanceScope currentScope;
+    public List<InterpEvent> allEvents;
+    public JTreeSTModel tmodel;
+    public ErrorManager errMgr;
+    public Interpreter interp;
+    public String output;
+    public List<String> trace;
+    public List<STMessage> errors;
 
-	public STViewFrame viewFrame;
+    public STViewFrame viewFrame;
 
-	private final AtomicInteger updateDepth = new AtomicInteger();
+    private final AtomicInteger updateDepth = new AtomicInteger();
 
     public STViz(ErrorManager errMgr,
-				 EvalTemplateEvent root,
-				 String output,
-				 Interpreter interp,
+                 EvalTemplateEvent root,
+                 String output,
+                 Interpreter interp,
                  List<String> trace,
                  List<STMessage> errors)
     {
-		this.errMgr = errMgr;
-		this.currentEvent = root;
-		this.currentScope = root.scope;
-		this.output = output;
-		this.interp = interp;
+        this.errMgr = errMgr;
+        this.currentEvent = root;
+        this.currentScope = root.scope;
+        this.output = output;
+        this.interp = interp;
         this.allEvents = interp.getEvents();
-		this.trace = trace;
+        this.trace = trace;
         this.errors = errors;
-	}
+    }
 
-	public void open() {
+    public void open() {
         viewFrame = new STViewFrame();
         updateStack(currentScope, viewFrame);
         updateAttributes(currentScope, viewFrame);
 
-		List<InterpEvent> events = currentScope.events;
-		tmodel = new JTreeSTModel(interp, (EvalTemplateEvent)events.get(events.size()-1));
+        List<InterpEvent> events = currentScope.events;
+        tmodel = new JTreeSTModel(interp, (EvalTemplateEvent)events.get(events.size()-1));
         viewFrame.tree.setModel(tmodel);
         viewFrame.tree.addTreeSelectionListener(
             new TreeSelectionListener() {
-				@Override
+                @Override
                 public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
-					int depth = updateDepth.incrementAndGet();
-					try {
-						if (depth != 1) {
-							return;
-						}
+                    int depth = updateDepth.incrementAndGet();
+                    try {
+                        if (depth != 1) {
+                            return;
+                        }
 
-						currentEvent = ((JTreeSTModel.Wrapper)viewFrame.tree.getLastSelectedPathComponent()).event;
-						currentScope = currentEvent.scope;
-						updateCurrentST(viewFrame);
-					}
-					finally {
-						updateDepth.decrementAndGet();
-					}
+                        currentEvent = ((JTreeSTModel.Wrapper)viewFrame.tree.getLastSelectedPathComponent()).event;
+                        currentScope = currentEvent.scope;
+                        updateCurrentST(viewFrame);
+                    }
+                    finally {
+                        updateDepth.decrementAndGet();
+                    }
                 }
             }
         );
 
-		JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
-		viewFrame.ast.setModel(astModel);
-		viewFrame.ast.addTreeSelectionListener(
-			new TreeSelectionListener() {
-				@Override
-				public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
-					int depth = updateDepth.incrementAndGet();
-					try {
-						if (depth != 1) {
-							return;
-						}
+        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
+        viewFrame.ast.setModel(astModel);
+        viewFrame.ast.addTreeSelectionListener(
+            new TreeSelectionListener() {
+                @Override
+                public void valueChanged(TreeSelectionEvent treeSelectionEvent) {
+                    int depth = updateDepth.incrementAndGet();
+                    try {
+                        if (depth != 1) {
+                            return;
+                        }
 
-						TreePath path = treeSelectionEvent.getNewLeadSelectionPath();
-						if ( path==null ) return;
-						CommonTree node = (CommonTree)treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
-						//System.out.println("select AST: "+node);
-						CommonToken a = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStartIndex());
-						CommonToken b = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStopIndex());
-						highlight(viewFrame.template, a.getStartIndex(), b.getStopIndex());
-					}
-					finally {
-						updateDepth.decrementAndGet();
-					}
-				}
-			}
-		);
+                        TreePath path = treeSelectionEvent.getNewLeadSelectionPath();
+                        if ( path==null ) return;
+                        CommonTree node = (CommonTree)treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
+                        //System.out.println("select AST: "+node);
+                        CommonToken a = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStartIndex());
+                        CommonToken b = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStopIndex());
+                        highlight(viewFrame.template, a.getStartIndex(), b.getStopIndex());
+                    }
+                    finally {
+                        updateDepth.decrementAndGet();
+                    }
+                }
+            }
+        );
 
-		// Track selection of attr but do nothing for now
+        // Track selection of attr but do nothing for now
 //        viewFrame.attributes.addListSelectionListener(
 //            new ListSelectionListener() {
 //                public void valueChanged(ListSelectionEvent e) {
@@ -177,40 +177,40 @@ public class STViz {
 //        );
 
         CaretListener caretListenerLabel = new CaretListener() {
-			@Override
+            @Override
             public void caretUpdate(CaretEvent e) {
-				int depth = updateDepth.incrementAndGet();
-				try {
-					if (depth != 1) {
-						return;
-					}
+                int depth = updateDepth.incrementAndGet();
+                try {
+                    if (depth != 1) {
+                        return;
+                    }
 
-					int dot = toEventPosition((JTextComponent)e.getSource(), e.getDot());
-					currentEvent = findEventAtOutputLocation(allEvents, dot);
-					if ( currentEvent==null ) currentScope = tmodel.root.event.scope;
-					else currentScope = currentEvent.scope;
+                    int dot = toEventPosition((JTextComponent)e.getSource(), e.getDot());
+                    currentEvent = findEventAtOutputLocation(allEvents, dot);
+                    if ( currentEvent==null ) currentScope = tmodel.root.event.scope;
+                    else currentScope = currentEvent.scope;
 
-					// update tree view of template hierarchy
-					// compute path from root to currentST, create TreePath for tree widget
-					List<EvalTemplateEvent> stack = Interpreter.getEvalTemplateEventStack(currentScope, true);
-					//System.out.println("\nselect path="+stack);
-					Object[] path = new Object[stack.size()];
-					int j = 0;
-					for (EvalTemplateEvent s : stack) {
-						path[j++] = new JTreeSTModel.Wrapper(s);
-					}
-					TreePath p = new TreePath(path);
-					viewFrame.tree.setSelectionPath(p);
-					viewFrame.tree.scrollPathToVisible(p);
-					updateCurrentST(viewFrame);
-				}
-				finally {
-					updateDepth.decrementAndGet();
-				}
-			}
-		};
+                    // update tree view of template hierarchy
+                    // compute path from root to currentST, create TreePath for tree widget
+                    List<EvalTemplateEvent> stack = Interpreter.getEvalTemplateEventStack(currentScope, true);
+                    //System.out.println("\nselect path="+stack);
+                    Object[] path = new Object[stack.size()];
+                    int j = 0;
+                    for (EvalTemplateEvent s : stack) {
+                        path[j++] = new JTreeSTModel.Wrapper(s);
+                    }
+                    TreePath p = new TreePath(path);
+                    viewFrame.tree.setSelectionPath(p);
+                    viewFrame.tree.scrollPathToVisible(p);
+                    updateCurrentST(viewFrame);
+                }
+                finally {
+                    updateDepth.decrementAndGet();
+                }
+            }
+        };
 
-		viewFrame.output.addCaretListener(caretListenerLabel);
+        viewFrame.output.addCaretListener(caretListenerLabel);
 
         // ADD ERRORS
         if ( errors==null || errors.size()==0 ) {
@@ -226,59 +226,59 @@ public class STViz {
 
         viewFrame.errorList.addListSelectionListener(
             new ListSelectionListener() {
-				@Override
+                @Override
                 public void valueChanged(ListSelectionEvent e) {
-					int depth = updateDepth.incrementAndGet();
-					try {
-						if (depth != 1) {
-							return;
-						}
+                    int depth = updateDepth.incrementAndGet();
+                    try {
+                        if (depth != 1) {
+                            return;
+                        }
 
-						int minIndex = viewFrame.errorList.getMinSelectionIndex();
-						int maxIndex = viewFrame.errorList.getMaxSelectionIndex();
-						int i = minIndex;
-						while ( i <= maxIndex ) {
-							if (viewFrame.errorList.isSelectedIndex(i)) break;
-							i++;
-						}
-						ListModel model = viewFrame.errorList.getModel();
-						STMessage msg = (STMessage)model.getElementAt(i);
-						if ( msg instanceof STRuntimeMessage ) {
-							STRuntimeMessage rmsg = (STRuntimeMessage)msg;
-							Interval I = rmsg.self.impl.sourceMap[rmsg.ip];
-							currentEvent = null;
-							currentScope = ((STRuntimeMessage) msg).scope;
-							updateCurrentST(viewFrame);
-							if ( I!=null ) { // highlight template
-								highlight(viewFrame.template, I.a, I.b);
-							}
-						}
-					}
-					finally {
-						updateDepth.decrementAndGet();
-					}
+                        int minIndex = viewFrame.errorList.getMinSelectionIndex();
+                        int maxIndex = viewFrame.errorList.getMaxSelectionIndex();
+                        int i = minIndex;
+                        while ( i <= maxIndex ) {
+                            if (viewFrame.errorList.isSelectedIndex(i)) break;
+                            i++;
+                        }
+                        ListModel model = viewFrame.errorList.getModel();
+                        STMessage msg = (STMessage)model.getElementAt(i);
+                        if ( msg instanceof STRuntimeMessage ) {
+                            STRuntimeMessage rmsg = (STRuntimeMessage)msg;
+                            Interval I = rmsg.self.impl.sourceMap[rmsg.ip];
+                            currentEvent = null;
+                            currentScope = ((STRuntimeMessage) msg).scope;
+                            updateCurrentST(viewFrame);
+                            if ( I!=null ) { // highlight template
+                                highlight(viewFrame.template, I.a, I.b);
+                            }
+                        }
+                    }
+                    finally {
+                        updateDepth.decrementAndGet();
+                    }
                 }
             }
         );
 
-		Border empty = BorderFactory.createEmptyBorder();
-		viewFrame.treeContentSplitPane.setBorder(empty);
-		viewFrame.outputTemplateSplitPane.setBorder(empty);
-		viewFrame.templateBytecodeTraceTabPanel.setBorder(empty);
-		viewFrame.treeAttributesSplitPane.setBorder(empty);
+        Border empty = BorderFactory.createEmptyBorder();
+        viewFrame.treeContentSplitPane.setBorder(empty);
+        viewFrame.outputTemplateSplitPane.setBorder(empty);
+        viewFrame.templateBytecodeTraceTabPanel.setBorder(empty);
+        viewFrame.treeAttributesSplitPane.setBorder(empty);
 
 
-		viewFrame.treeContentSplitPane.setOneTouchExpandable(true);
-		viewFrame.outputTemplateSplitPane.setOneTouchExpandable(true);
-		viewFrame.treeContentSplitPane.setDividerSize(10);
-		viewFrame.outputTemplateSplitPane.setDividerSize(8);
-		viewFrame.treeContentSplitPane.setContinuousLayout(true);
-		viewFrame.treeAttributesSplitPane.setContinuousLayout(true);
-		viewFrame.outputTemplateSplitPane.setContinuousLayout(true);
+        viewFrame.treeContentSplitPane.setOneTouchExpandable(true);
+        viewFrame.outputTemplateSplitPane.setOneTouchExpandable(true);
+        viewFrame.treeContentSplitPane.setDividerSize(10);
+        viewFrame.outputTemplateSplitPane.setDividerSize(8);
+        viewFrame.treeContentSplitPane.setContinuousLayout(true);
+        viewFrame.treeAttributesSplitPane.setContinuousLayout(true);
+        viewFrame.outputTemplateSplitPane.setContinuousLayout(true);
 
-		viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		viewFrame.pack();
-		viewFrame.setSize(900, 700);
+        viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        viewFrame.pack();
+        viewFrame.setSize(900, 700);
 
         setText(viewFrame.output, output);
         setText(viewFrame.template, currentScope.st.impl.template);
@@ -288,185 +288,185 @@ public class STViz {
         viewFrame.setVisible(true);
     }
 
-	public void waitForClose() throws InterruptedException {
-		final Object lock = new Object();
+    public void waitForClose() throws InterruptedException {
+        final Object lock = new Object();
 
-		Thread t = new Thread() {
-			@Override
-			public void run() {
-				synchronized (lock) {
-					while (viewFrame.isVisible()) {
-						try {
-							lock.wait();
-						} catch (InterruptedException e) {
-						}
-					}
-				}
-			}
-		};
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                synchronized (lock) {
+                    while (viewFrame.isVisible()) {
+                        try {
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                }
+            }
+        };
 
-		t.start();
+        t.start();
 
-		viewFrame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent arg0) {
-				synchronized (lock) {
-					viewFrame.setVisible(false);
-					lock.notify();
-				}
-			}
-		});
+        viewFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent arg0) {
+                synchronized (lock) {
+                    viewFrame.setVisible(false);
+                    lock.notify();
+                }
+            }
+        });
 
-		t.join();
-	}
+        t.join();
+    }
 
-	private void updateCurrentST(STViewFrame m) {
-//		System.out.println("updateCurrentST(): currentScope.st="+currentScope.st);
-		// update all views according to currentScope.st
-		updateStack(currentScope, m); 					   // STACK
-		updateAttributes(currentScope, m); 			 	   // ATTRIBUTES
+    private void updateCurrentST(STViewFrame m) {
+//      System.out.println("updateCurrentST(): currentScope.st="+currentScope.st);
+        // update all views according to currentScope.st
+        updateStack(currentScope, m);                      // STACK
+        updateAttributes(currentScope, m);                 // ATTRIBUTES
         setText(m.bytecode, currentScope.st.impl.disasm()); // BYTECODE DIS.
-		setText(m.template, currentScope.st.impl.template); // TEMPLATE SRC
-		JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
-		viewFrame.ast.setModel(astModel);
+        setText(m.template, currentScope.st.impl.template); // TEMPLATE SRC
+        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
+        viewFrame.ast.setModel(astModel);
 
-		// highlight output text and, if {...} subtemplate, region in ST src
-		// get last event for currentScope.st; it's the event that captures ST eval
-		if (currentEvent instanceof EvalExprEvent) {
-			EvalExprEvent exprEvent = (EvalExprEvent)currentEvent;
-			highlight(m.output, exprEvent.outputStartChar, exprEvent.outputStopChar);
-			highlight(m.template, exprEvent.exprStartChar, exprEvent.exprStopChar);
-		}
-		else {
-			EvalTemplateEvent templateEvent;
-			if (currentEvent instanceof EvalTemplateEvent) {
-				templateEvent = (EvalTemplateEvent)currentEvent;
-			}
-			else {
-				List<InterpEvent> events = currentScope.events;
-				templateEvent = (EvalTemplateEvent)events.get(events.size() - 1);
-			}
+        // highlight output text and, if {...} subtemplate, region in ST src
+        // get last event for currentScope.st; it's the event that captures ST eval
+        if (currentEvent instanceof EvalExprEvent) {
+            EvalExprEvent exprEvent = (EvalExprEvent)currentEvent;
+            highlight(m.output, exprEvent.outputStartChar, exprEvent.outputStopChar);
+            highlight(m.template, exprEvent.exprStartChar, exprEvent.exprStopChar);
+        }
+        else {
+            EvalTemplateEvent templateEvent;
+            if (currentEvent instanceof EvalTemplateEvent) {
+                templateEvent = (EvalTemplateEvent)currentEvent;
+            }
+            else {
+                List<InterpEvent> events = currentScope.events;
+                templateEvent = (EvalTemplateEvent)events.get(events.size() - 1);
+            }
 
-			if (templateEvent != null) {
-				highlight(m.output, templateEvent.outputStartChar, templateEvent.outputStopChar);
-			}
+            if (templateEvent != null) {
+                highlight(m.output, templateEvent.outputStartChar, templateEvent.outputStopChar);
+            }
 
-			if ( currentScope.st.isAnonSubtemplate() ) {
-				Interval r = currentScope.st.impl.getTemplateRange();
-				//System.out.println("currentScope.st src range="+r);
-				//m.template.moveCaretPosition(r.a);
-				highlight(m.template, r.a, r.b);
-			}
-		}
-	}
+            if ( currentScope.st.isAnonSubtemplate() ) {
+                Interval r = currentScope.st.impl.getTemplateRange();
+                //System.out.println("currentScope.st src range="+r);
+                //m.template.moveCaretPosition(r.a);
+                highlight(m.template, r.a, r.b);
+            }
+        }
+    }
 
-	protected void setText(JEditorPane component, String text) {
-		List<Integer> windowsLineEndingsList = new ArrayList<Integer>();
-		for (int i = 0; i < text.length(); i += 2) {
-			i = text.indexOf("\r\n", i);
-			if (i < 0) {
-				break;
-			}
+    protected void setText(JEditorPane component, String text) {
+        List<Integer> windowsLineEndingsList = new ArrayList<Integer>();
+        for (int i = 0; i < text.length(); i += 2) {
+            i = text.indexOf("\r\n", i);
+            if (i < 0) {
+                break;
+            }
 
-			windowsLineEndingsList.add(i);
-		}
+            windowsLineEndingsList.add(i);
+        }
 
-		int[] windowsLineEndings = new int[windowsLineEndingsList.size()];
-		for (int i = 0; i < windowsLineEndingsList.size(); i++) {
-			windowsLineEndings[i] = windowsLineEndingsList.get(i);
-		}
+        int[] windowsLineEndings = new int[windowsLineEndingsList.size()];
+        for (int i = 0; i < windowsLineEndingsList.size(); i++) {
+            windowsLineEndings[i] = windowsLineEndingsList.get(i);
+        }
 
-		component.setText(text);
-		component.getDocument().putProperty(WINDOWS_LINE_ENDINGS, windowsLineEndings);
-	}
+        component.setText(text);
+        component.getDocument().putProperty(WINDOWS_LINE_ENDINGS, windowsLineEndings);
+    }
 
-	protected int toComponentPosition(JTextComponent component, int position) {
-		int[] windowsLineEndings = (int[])component.getDocument().getProperty(WINDOWS_LINE_ENDINGS);
-		if (windowsLineEndings == null || windowsLineEndings.length == 0) {
-			return position;
-		}
+    protected int toComponentPosition(JTextComponent component, int position) {
+        int[] windowsLineEndings = (int[])component.getDocument().getProperty(WINDOWS_LINE_ENDINGS);
+        if (windowsLineEndings == null || windowsLineEndings.length == 0) {
+            return position;
+        }
 
-		int index = Arrays.binarySearch(windowsLineEndings, position);
-		if (index >= 0) {
-			return position - index;
-		}
+        int index = Arrays.binarySearch(windowsLineEndings, position);
+        if (index >= 0) {
+            return position - index;
+        }
 
-		return position - (-index - 1);
-	}
+        return position - (-index - 1);
+    }
 
-	protected int toEventPosition(JTextComponent component, int position) {
-		int result = position;
-		while (toComponentPosition(component, result) < position) {
-			result++;
-		}
+    protected int toEventPosition(JTextComponent component, int position) {
+        int result = position;
+        while (toComponentPosition(component, result) < position) {
+            result++;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	protected final void highlight(JTextComponent comp, int i, int j) {
-		highlight(comp, i, j, true);
-	}
+    protected final void highlight(JTextComponent comp, int i, int j) {
+        highlight(comp, i, j, true);
+    }
 
-	protected void highlight(JTextComponent comp, int i, int j, boolean scroll) {
-		Highlighter highlighter = comp.getHighlighter();
-		highlighter.removeAllHighlights();
+    protected void highlight(JTextComponent comp, int i, int j, boolean scroll) {
+        Highlighter highlighter = comp.getHighlighter();
+        highlighter.removeAllHighlights();
 
-		try {
-			i = toComponentPosition(comp, i);
-			j = toComponentPosition(comp, j);
-			highlighter.addHighlight(i, j+1, DefaultHighlighter.DefaultPainter);
-			if (scroll) {
-				if (comp.getCaretPosition() < i || comp.getCaretPosition() > j) {
-					comp.moveCaretPosition(i);
-					comp.scrollRectToVisible(comp.modelToView(i));
-				}
-			}
-		}
-		catch (BadLocationException ble) {
-			errMgr.internalError(tmodel.root.event.scope.st, "bad highlight location", ble);
-		}
-	}
+        try {
+            i = toComponentPosition(comp, i);
+            j = toComponentPosition(comp, j);
+            highlighter.addHighlight(i, j+1, DefaultHighlighter.DefaultPainter);
+            if (scroll) {
+                if (comp.getCaretPosition() < i || comp.getCaretPosition() > j) {
+                    comp.moveCaretPosition(i);
+                    comp.scrollRectToVisible(comp.modelToView(i));
+                }
+            }
+        }
+        catch (BadLocationException ble) {
+            errMgr.internalError(tmodel.root.event.scope.st, "bad highlight location", ble);
+        }
+    }
 
-	protected void updateAttributes(final InstanceScope scope, final STViewFrame m) {
-		//System.out.println("updateAttributes: "+Interpreter.getEnclosingInstanceStackString(scope) );
-		m.attributes.setModel( new JTreeScopeStackModel(scope) );
-		m.attributes.setRootVisible(false);
-		m.attributes.setShowsRootHandles(true);
-		//System.out.println("add events="+ st.addAttrEvents);
-//		ST st = scope.st;
-//		final DefaultListModel attrModel = new DefaultListModel();
-//		final Map<String,Object> attrs = st.getAttributes();
-//		if ( attrs!=null ) {
-//			for (String a : attrs.keySet()) {
-//				if ( st.debugState!=null && st.debugState.addAttrEvents!=null ) {
-//					List<AddAttributeEvent> events = st.debugState.addAttrEvents.get(a);
-//					StringBuilder locations = new StringBuilder();
-//					int i = 0;
-//					if ( events!=null ) {
-//						for (AddAttributeEvent ae : events) {
-//							if ( i>0 ) locations.append(", ");
-//							locations.append(ae.getFileName()+":"+ae.getLine());
-//							i++;
-//						}
-//					}
-//					if ( locations.length()>0 ) {
-//						attrModel.addElement(a+" = "+attrs.get(a)+" @ "+locations.toString());
-//					}
-//					else {
-//						attrModel.addElement(a+" = "+attrs.get(a));
-//					}
-//				}
-//				else {
-//					attrModel.addElement(a+" = "+attrs.get(a));
-//				}
-//			}
-//		}
-//		m.attributes.setModel(attrModel);
-	}
+    protected void updateAttributes(final InstanceScope scope, final STViewFrame m) {
+        //System.out.println("updateAttributes: "+Interpreter.getEnclosingInstanceStackString(scope) );
+        m.attributes.setModel( new JTreeScopeStackModel(scope) );
+        m.attributes.setRootVisible(false);
+        m.attributes.setShowsRootHandles(true);
+        //System.out.println("add events="+ st.addAttrEvents);
+//      ST st = scope.st;
+//      final DefaultListModel attrModel = new DefaultListModel();
+//      final Map<String,Object> attrs = st.getAttributes();
+//      if ( attrs!=null ) {
+//          for (String a : attrs.keySet()) {
+//              if ( st.debugState!=null && st.debugState.addAttrEvents!=null ) {
+//                  List<AddAttributeEvent> events = st.debugState.addAttrEvents.get(a);
+//                  StringBuilder locations = new StringBuilder();
+//                  int i = 0;
+//                  if ( events!=null ) {
+//                      for (AddAttributeEvent ae : events) {
+//                          if ( i>0 ) locations.append(", ");
+//                          locations.append(ae.getFileName()+":"+ae.getLine());
+//                          i++;
+//                      }
+//                  }
+//                  if ( locations.length()>0 ) {
+//                      attrModel.addElement(a+" = "+attrs.get(a)+" @ "+locations.toString());
+//                  }
+//                  else {
+//                      attrModel.addElement(a+" = "+attrs.get(a));
+//                  }
+//              }
+//              else {
+//                  attrModel.addElement(a+" = "+attrs.get(a));
+//              }
+//          }
+//      }
+//      m.attributes.setModel(attrModel);
+    }
 
-	protected void updateStack(InstanceScope scope, STViewFrame m) {
-		List<ST> stack = Interpreter.getEnclosingInstanceStack(scope, true);
-		m.setTitle("STViz - ["+ Misc.join(stack.iterator()," ")+"]");
+    protected void updateStack(InstanceScope scope, STViewFrame m) {
+        List<ST> stack = Interpreter.getEnclosingInstanceStack(scope, true);
+        m.setTitle("STViz - ["+ Misc.join(stack.iterator()," ")+"]");
 //        // also do source stack
 //        StackTraceElement[] trace = st.newSTEvent.stack.getStackTrace();
 //        StringWriter sw = new StringWriter();
@@ -479,33 +479,33 @@ public class STViz {
                                                  int charIndex)
     {
         for (InterpEvent e : events) {
-			if (e.scope.earlyEval) {
-				continue;
-			}
+            if (e.scope.earlyEval) {
+                continue;
+            }
 
             if ( charIndex>=e.outputStartChar && charIndex<=e.outputStopChar) return e;
         }
         return null;
-	}
+    }
 
     public static void main(String[] args) throws IOException { // test rig
-		if ( args.length>0 && args[0].equals("1") ) test1();
-		else if ( args.length>0 && args[0].equals("2") ) test2();
-		else if ( args.length>0 && args[0].equals("3") ) test3();
-		else if ( args.length>0 && args[0].equals("4") ) test4();
-	}
+        if ( args.length>0 && args[0].equals("1") ) test1();
+        else if ( args.length>0 && args[0].equals("2") ) test2();
+        else if ( args.length>0 && args[0].equals("3") ) test3();
+        else if ( args.length>0 && args[0].equals("4") ) test4();
+    }
 
-	public static void test1() throws IOException { // test rig
+    public static void test1() throws IOException { // test rig
         String templates =
-			"method(type,name,locals,args,stats) ::= <<\n" +
-			"public <type> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
-			"    <if(locals)>int locals[<locals>];<endif>\n"+
-			"    <stats;separator=\"\\n\">\n" +
-			"}\n" +
-			">>\n"+
-			"assign(a,b) ::= \"<a> = <b>;\"\n"+
-			"return(x) ::= <<return <x>;>>\n" +
-			"paren(x) ::= \"(<x>)\"\n";
+            "method(type,name,locals,args,stats) ::= <<\n" +
+            "public <type> <name>(<args:{a| int <a>}; separator=\", \">) {\n" +
+            "    <if(locals)>int locals[<locals>];<endif>\n"+
+            "    <stats;separator=\"\\n\">\n" +
+            "}\n" +
+            ">>\n"+
+            "assign(a,b) ::= \"<a> = <b>;\"\n"+
+            "return(x) ::= <<return <x>;>>\n" +
+            "paren(x) ::= \"(<x>)\"\n";
 
         String tmpdir = System.getProperty("java.io.tmpdir");
         writeFile(tmpdir, "t.stg", templates);
@@ -530,25 +530,25 @@ public class STViz {
         st.add("stats", s2);
         st.add("stats", s3);
 
-		STViz viz = st.inspect();
-		System.out.println(st.render()); // should not mess up ST event lists
+        STViz viz = st.inspect();
+        System.out.println(st.render()); // should not mess up ST event lists
     }
 
-	public static void test2() throws IOException { // test rig
+    public static void test2() throws IOException { // test rig
         String templates =
-			"t1(q1=\"Some\\nText\") ::= <<\n" +
-			"<q1>\n" +
-			">>\n" +
-			"\n" +
-			"t2(p1) ::= <<\n" +
-			"<p1>\n" +
-			">>\n" +
-			"\n" +
-			"main() ::= <<\n" +
-			"START-<t1()>-END\n" +
-			"\n" +
-			"START-<t2(p1=\"Some\\nText\")>-END\n" +
-			">>\n";
+            "t1(q1=\"Some\\nText\") ::= <<\n" +
+            "<q1>\n" +
+            ">>\n" +
+            "\n" +
+            "t2(p1) ::= <<\n" +
+            "<p1>\n" +
+            ">>\n" +
+            "\n" +
+            "main() ::= <<\n" +
+            "START-<t1()>-END\n" +
+            "\n" +
+            "START-<t2(p1=\"Some\\nText\")>-END\n" +
+            ">>\n";
 
         String tmpdir = System.getProperty("java.io.tmpdir");
         writeFile(tmpdir, "t.stg", templates);
@@ -557,11 +557,11 @@ public class STViz {
         STViz viz = st.inspect();
     }
 
-	public static void test3() throws IOException {
+    public static void test3() throws IOException {
         String templates =
-			"main() ::= <<\n" +
-			"Foo: <{bar};format=\"lower\">\n" +
-			">>\n";
+            "main() ::= <<\n" +
+            "Foo: <{bar};format=\"lower\">\n" +
+            ">>\n";
 
         String tmpdir = System.getProperty("java.io.tmpdir");
         writeFile(tmpdir, "t.stg", templates);
@@ -570,23 +570,23 @@ public class STViz {
         st.inspect();
     }
 
-	public static void test4() throws IOException {
+    public static void test4() throws IOException {
         String templates =
-			"main(t) ::= <<\n" +
-			"hi: <t>\n" +
-			">>\n" +
-			"foo(x,y={hi}) ::= \"<bar(x,y)>\"\n" +
-			"bar(x,y) ::= << <y> >>\n" +
-			"ignore(m) ::= \"<m>\"\n";
+            "main(t) ::= <<\n" +
+            "hi: <t>\n" +
+            ">>\n" +
+            "foo(x,y={hi}) ::= \"<bar(x,y)>\"\n" +
+            "bar(x,y) ::= << <y> >>\n" +
+            "ignore(m) ::= \"<m>\"\n";
 
         STGroup group = new STGroupString(templates);
         ST st = group.getInstanceOf("main");
-		ST foo = group.getInstanceOf("foo");
-		st.add("t", foo);
-		ST ignore = group.getInstanceOf("ignore");
-		ignore.add("m", foo); // embed foo twice!
+        ST foo = group.getInstanceOf("foo");
+        st.add("t", foo);
+        ST ignore = group.getInstanceOf("ignore");
+        ignore.add("m", foo); // embed foo twice!
         st.inspect();
-		st.render();
+        st.render();
     }
 
     public static void writeFile(String dir, String fileName, String content) {

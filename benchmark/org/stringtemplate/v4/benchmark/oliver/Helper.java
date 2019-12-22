@@ -35,34 +35,34 @@ import java.util.*;
 
 public class Helper {
 
-	public static String unifyNewlines(String source) {
-		final String regex = "\\r?\\n";
-		final String clearedSource = source.replaceAll(regex, "\n");
-		return clearedSource;
-	}
+    public static String unifyNewlines(String source) {
+        final String regex = "\\r?\\n";
+        final String clearedSource = source.replaceAll(regex, "\n");
+        return clearedSource;
+    }
 
-	public static Order order;
-	static {
-		Calendar instance = GregorianCalendar.getInstance(Locale.GERMAN);
-		instance.set(2011, Calendar.JANUARY, 28);
-		Date orderDate = instance.getTime();
+    public static Order order;
+    static {
+        Calendar instance = GregorianCalendar.getInstance(Locale.GERMAN);
+        instance.set(2011, Calendar.JANUARY, 28);
+        Date orderDate = instance.getTime();
 
-		Customer customer = new Customer("Oliver", "Zeigermann",
-				"Gaußstraße 180\n" + "22765 Hamburg\n" + "GERMANY");
-		order = new Order(customer, orderDate);
+        Customer customer = new Customer("Oliver", "Zeigermann",
+                "Gaußstraße 180\n" + "22765 Hamburg\n" + "GERMANY");
+        order = new Order(customer, orderDate);
 
-		Article article1 = new Article("How to become famous", new BigDecimal(
-				"17.80"));
-		order.getItems().add(new Item(1, article1));
+        Article article1 = new Article("How to become famous", new BigDecimal(
+                "17.80"));
+        order.getItems().add(new Item(1, article1));
 
-		Article article2 = new Article("Cool stuff", new BigDecimal("1.00"));
-		order.getItems().add(new Item(2, article2));
-	}
+        Article article2 = new Article("Cool stuff", new BigDecimal("1.00"));
+        order.getItems().add(new Item(2, article2));
+    }
 
-	public static Map<String, Object> model = new HashMap<String, Object>();
-	static {
-		model.put("order", Helper.order);
-		model.put("separator", "----------------");
-	}
+    public static Map<String, Object> model = new HashMap<String, Object>();
+    static {
+        model.put("order", Helper.order);
+        model.put("separator", "----------------");
+    }
 
 }

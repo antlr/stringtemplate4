@@ -62,47 +62,47 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testDefineRegionInSubgroup() throws Exception {
-		String dir = getRandomDir();
-		writeFile(dir, "g1.stg", "a() ::= <<[<@r()>]>>\n");
-		writeFile(dir, "g2.stg", "@a.r() ::= <<foo>>\n");
+    @Test public void testDefineRegionInSubgroup() throws Exception {
+        String dir = getRandomDir();
+        writeFile(dir, "g1.stg", "a() ::= <<[<@r()>]>>\n");
+        writeFile(dir, "g2.stg", "@a.r() ::= <<foo>>\n");
 
-		STGroup group1 = new STGroupFile(dir+"/g1.stg");
-		STGroup group2 = new STGroupFile(dir+"/g2.stg");
-		group2.importTemplates(group1); // define r in g2
-		ST st = group2.getInstanceOf("a");
-		String expected = "[foo]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        STGroup group1 = new STGroupFile(dir+"/g1.stg");
+        STGroup group2 = new STGroupFile(dir+"/g2.stg");
+        group2.importTemplates(group1); // define r in g2
+        ST st = group2.getInstanceOf("a");
+        String expected = "[foo]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testDefineRegionInSubgroupOneInSubdir() throws Exception {
-		String dir = getRandomDir();
-		writeFile(dir, "g1.stg", "a() ::= <<[<@r()>]>>\n");
-		writeFile(dir+"/subdir", "g2.stg", "@a.r() ::= <<foo>>\n");
+    @Test public void testDefineRegionInSubgroupOneInSubdir() throws Exception {
+        String dir = getRandomDir();
+        writeFile(dir, "g1.stg", "a() ::= <<[<@r()>]>>\n");
+        writeFile(dir+"/subdir", "g2.stg", "@a.r() ::= <<foo>>\n");
 
-		STGroup group1 = new STGroupFile(dir+"/g1.stg");
-		STGroup group2 = new STGroupFile(dir+"/subdir/g2.stg");
-		group2.importTemplates(group1); // define r in g2
-		ST st = group2.getInstanceOf("a");
-		String expected = "[foo]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        STGroup group1 = new STGroupFile(dir+"/g1.stg");
+        STGroup group2 = new STGroupFile(dir+"/subdir/g2.stg");
+        group2.importTemplates(group1); // define r in g2
+        ST st = group2.getInstanceOf("a");
+        String expected = "[foo]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testDefineRegionInSubgroupBothInSubdir() throws Exception {
-		String dir = getRandomDir();
-		writeFile(dir+"/subdir", "g1.stg", "a() ::= <<[<@r()>]>>\n");
-		writeFile(dir+"/subdir", "g2.stg", "@a.r() ::= <<foo>>\n");
+    @Test public void testDefineRegionInSubgroupBothInSubdir() throws Exception {
+        String dir = getRandomDir();
+        writeFile(dir+"/subdir", "g1.stg", "a() ::= <<[<@r()>]>>\n");
+        writeFile(dir+"/subdir", "g2.stg", "@a.r() ::= <<foo>>\n");
 
-		STGroup group1 = new STGroupFile(dir+"/subdir/g1.stg");
-		STGroup group2 = new STGroupFile(dir+"/subdir/g2.stg");
-		group2.importTemplates(group1); // define r in g2
-		ST st = group2.getInstanceOf("a");
-		String expected = "[foo]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        STGroup group1 = new STGroupFile(dir+"/subdir/g1.stg");
+        STGroup group2 = new STGroupFile(dir+"/subdir/g2.stg");
+        group2.importTemplates(group1); // define r in g2
+        ST st = group2.getInstanceOf("a");
+        String expected = "[foo]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testDefineRegionInSubgroupThatRefsSuper() throws Exception {
         String dir = getRandomDir();
@@ -149,37 +149,37 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testAnonymousTemplateInRegion() throws Exception {
-		String dir = getRandomDir();
-		String g = "a() ::= <<[<@r()>]>>\n" +
-				   "@a.r() ::= <<\n" +
-				   "<[\"foo\"]:{x|<x>}>\n" +
-				   ">>\n";
-		writeFile(dir, "g.stg", g);
+    @Test public void testAnonymousTemplateInRegion() throws Exception {
+        String dir = getRandomDir();
+        String g = "a() ::= <<[<@r()>]>>\n" +
+                   "@a.r() ::= <<\n" +
+                   "<[\"foo\"]:{x|<x>}>\n" +
+                   ">>\n";
+        writeFile(dir, "g.stg", g);
 
-		STGroup group = new STGroupFile(dir+"/g.stg");
-		ST st = group.getInstanceOf("a");
-		String expected = "[foo]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        STGroup group = new STGroupFile(dir+"/g.stg");
+        ST st = group.getInstanceOf("a");
+        String expected = "[foo]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testAnonymousTemplateInRegionInSubdir() throws Exception {
-		//fails since it makes region name /region__/g/a/_r
-		String dir = getRandomDir();
-		String g = "a() ::= <<[<@r()>]>>\n" +
-				   "@a.r() ::= <<\n" +
-				   "<[\"foo\"]:{x|<x>}>\n" +
-				   ">>\n";
-		writeFile(dir, "g.stg", g);
+    @Test public void testAnonymousTemplateInRegionInSubdir() throws Exception {
+        //fails since it makes region name /region__/g/a/_r
+        String dir = getRandomDir();
+        String g = "a() ::= <<[<@r()>]>>\n" +
+                   "@a.r() ::= <<\n" +
+                   "<[\"foo\"]:{x|<x>}>\n" +
+                   ">>\n";
+        writeFile(dir, "g.stg", g);
 
-		STGroup.verbose = true;
-		STGroup group = new STGroupDir(dir);
-		ST st = group.getInstanceOf("g/a");
-		String expected = "[foo]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        STGroup.verbose = true;
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("g/a");
+        String expected = "[foo]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testCantDefineEmbeddedRegionAgain() throws Exception {
         String dir = getRandomDir();
@@ -196,79 +196,79 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testCantDefineEmbeddedRegionAgainInTemplate() throws Exception {
-		String dir = getRandomDir();
-		String g =
-			"a() ::= <<\n" +
-			"[\n" +
-			"<@r>foo<@end>\n" +
-			"<@r()>" +
-			"]\n" +
-			">>\n"; // error; dup
-		writeFile(dir, "g.stg", g);
+    @Test public void testCantDefineEmbeddedRegionAgainInTemplate() throws Exception {
+        String dir = getRandomDir();
+        String g =
+            "a() ::= <<\n" +
+            "[\n" +
+            "<@r>foo<@end>\n" +
+            "<@r()>" +
+            "]\n" +
+            ">>\n"; // error; dup
+        writeFile(dir, "g.stg", g);
 
-		STGroupFile group = new STGroupFile(dir+"/g.stg");
-		ErrorBuffer errors = new ErrorBuffer();
-		group.setListener(errors);
-		group.load();
-		String expected = "g.stg 3:2: redefinition of region /a.r"+newline;
-		String result = errors.toString();
-		assertEquals(expected, result);
-	}
+        STGroupFile group = new STGroupFile(dir+"/g.stg");
+        ErrorBuffer errors = new ErrorBuffer();
+        group.setListener(errors);
+        group.load();
+        String expected = "g.stg 3:2: redefinition of region /a.r"+newline;
+        String result = errors.toString();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testMissingRegionName() throws Exception {
-		String dir = getRandomDir();
-		String g = "@t.() ::= \"\"\n";
-		writeFile(dir, "g.stg", g);
+    @Test public void testMissingRegionName() throws Exception {
+        String dir = getRandomDir();
+        String g = "@t.() ::= \"\"\n";
+        writeFile(dir, "g.stg", g);
 
-		STGroupFile group = new STGroupFile(dir+"/g.stg");
-		ErrorBuffer errors = new ErrorBuffer();
-		group.setListener(errors);
-		group.load();
-		String expected = "g.stg 1:3: missing ID at '('"+newline;
-		String result = errors.toString();
-		assertEquals(expected, result);
-	}
+        STGroupFile group = new STGroupFile(dir+"/g.stg");
+        ErrorBuffer errors = new ErrorBuffer();
+        group.setListener(errors);
+        group.load();
+        String expected = "g.stg 1:3: missing ID at '('"+newline;
+        String result = errors.toString();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testIndentBeforeRegionIsIgnored() throws Exception {
-		String dir = getRandomDir();
-		String g = "a() ::= <<[\n" +
-				   "  <@r>\n" +
-				   "  foo\n" +
-				   "  <@end>\n" +
-				   "]>>\n";
-		writeFile(dir, "g.stg", g);
+    @Test public void testIndentBeforeRegionIsIgnored() throws Exception {
+        String dir = getRandomDir();
+        String g = "a() ::= <<[\n" +
+                   "  <@r>\n" +
+                   "  foo\n" +
+                   "  <@end>\n" +
+                   "]>>\n";
+        writeFile(dir, "g.stg", g);
 
-		STGroupFile group = new STGroupFile(dir+"/g.stg");
-		ST st = group.getInstanceOf("a");
-		String expected = "[" + newline +
-						  "  foo" + newline +
-						  "]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        STGroupFile group = new STGroupFile(dir+"/g.stg");
+        ST st = group.getInstanceOf("a");
+        String expected = "[" + newline +
+                          "  foo" + newline +
+                          "]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testRegionOverrideStripsNewlines() throws Exception {
-		String dir = getRandomDir();
-		String g =
-				"a() ::= \"X<@r()>Y\"" +
-				"@a.r() ::= <<\n" +
-				"foo\n" +
-				">>\n";
-		writeFile(dir, "g.stg", g);
-		STGroupFile group = new STGroupFile(dir+"/g.stg");
+    @Test public void testRegionOverrideStripsNewlines() throws Exception {
+        String dir = getRandomDir();
+        String g =
+                "a() ::= \"X<@r()>Y\"" +
+                "@a.r() ::= <<\n" +
+                "foo\n" +
+                ">>\n";
+        writeFile(dir, "g.stg", g);
+        STGroupFile group = new STGroupFile(dir+"/g.stg");
 
-		String sub =
-				"@a.r() ::= \"A<@super.r()>B\"" +newline;
-		writeFile(dir, "sub.stg", sub);
-		STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
-		subGroup.importTemplates(group);
+        String sub =
+                "@a.r() ::= \"A<@super.r()>B\"" +newline;
+        writeFile(dir, "sub.stg", sub);
+        STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
+        subGroup.importTemplates(group);
 
-		ST st = subGroup.getInstanceOf("a");
-		String result = st.render();
-		String expecting = "XAfooBY";
-		assertEquals(expecting, result);
-	}
+        ST st = subGroup.getInstanceOf("a");
+        String result = st.render();
+        String expecting = "XAfooBY";
+        assertEquals(expecting, result);
+    }
 
     //
 
@@ -292,50 +292,50 @@ public class TestRegions extends BaseTest {
         assertEquals(expecting, result);
     }
 
-	@Test public void testRegionOverrideRefSuperRegion2Levels() throws Exception {
-		String g =
-				"a() ::= \"X<@r()>Y\"\n" +
-				"@a.r() ::= \"foo\"\n";
-		STGroup group = new STGroupString(g);
+    @Test public void testRegionOverrideRefSuperRegion2Levels() throws Exception {
+        String g =
+                "a() ::= \"X<@r()>Y\"\n" +
+                "@a.r() ::= \"foo\"\n";
+        STGroup group = new STGroupString(g);
 
-		String sub =
-				"@a.r() ::= \"<@super.r()>2\"\n";
-		STGroup subGroup = new STGroupString(sub);
-		subGroup.importTemplates(group);
+        String sub =
+                "@a.r() ::= \"<@super.r()>2\"\n";
+        STGroup subGroup = new STGroupString(sub);
+        subGroup.importTemplates(group);
 
-		ST st = subGroup.getInstanceOf("a");
+        ST st = subGroup.getInstanceOf("a");
 
-		String result = st.render();
-		String expecting = "Xfoo2Y";
-		assertEquals(expecting, result);
-	}
+        String result = st.render();
+        String expecting = "Xfoo2Y";
+        assertEquals(expecting, result);
+    }
 
-	@Test public void testRegionOverrideRefSuperRegion3Levels() throws Exception {
-		String dir = getRandomDir();
-		String g =
-				"a() ::= \"X<@r()>Y\"" +
-				"@a.r() ::= \"foo\"" +newline;
-		writeFile(dir, "g.stg", g);
-		STGroupFile group = new STGroupFile(dir+"/g.stg");
+    @Test public void testRegionOverrideRefSuperRegion3Levels() throws Exception {
+        String dir = getRandomDir();
+        String g =
+                "a() ::= \"X<@r()>Y\"" +
+                "@a.r() ::= \"foo\"" +newline;
+        writeFile(dir, "g.stg", g);
+        STGroupFile group = new STGroupFile(dir+"/g.stg");
 
-		String sub =
-				"@a.r() ::= \"<@super.r()>2\"" +newline;
-		writeFile(dir, "sub.stg", sub);
-		STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
-		subGroup.importTemplates(group);
+        String sub =
+                "@a.r() ::= \"<@super.r()>2\"" +newline;
+        writeFile(dir, "sub.stg", sub);
+        STGroupFile subGroup = new STGroupFile(dir+"/sub.stg");
+        subGroup.importTemplates(group);
 
-		String subsub =
-				"@a.r() ::= \"<@super.r()>3\"" +newline;
-		writeFile(dir, "subsub.stg", subsub);
-		STGroupFile subSubGroup = new STGroupFile(dir+"/subsub.stg");
-		subSubGroup.importTemplates(subGroup);
+        String subsub =
+                "@a.r() ::= \"<@super.r()>3\"" +newline;
+        writeFile(dir, "subsub.stg", subsub);
+        STGroupFile subSubGroup = new STGroupFile(dir+"/subsub.stg");
+        subSubGroup.importTemplates(subGroup);
 
-		ST st = subSubGroup.getInstanceOf("a");
+        ST st = subSubGroup.getInstanceOf("a");
 
-		String result = st.render();
-		String expecting = "Xfoo23Y";
-		assertEquals(expecting, result);
-	}
+        String result = st.render();
+        String expecting = "Xfoo23Y";
+        assertEquals(expecting, result);
+    }
 
     @Test public void testRegionOverrideRefSuperImplicitRegion() throws Exception {
         String dir = getRandomDir();
@@ -366,7 +366,7 @@ public class TestRegions extends BaseTest {
         STErrorListener errors = new ErrorBuffer();
         writeFile(dir, "g.stg", g);
         STGroupFile group = new STGroupFile(dir+"/g.stg");
-		group.setListener(errors);
+        group.setListener(errors);
         ST st = group.getInstanceOf("a");
         st.render();
         String result = errors.toString();
@@ -396,57 +396,57 @@ public class TestRegions extends BaseTest {
         assertEquals(expecting, result);
     }
 
-	@Test public void testEmbeddedRegionOnOneLine() throws Exception {
-		String dir = getRandomDir();
-		String groupFile =
-			"a() ::= <<\n" +
-			"[\n" +
-			"  <@r>bar<@end>\n" +
-			"]\n" +
-			">>\n";
-		writeFile(dir, "group.stg", groupFile);
-		STGroup group = new STGroupFile(dir+"/group.stg");
-		ST st = group.getInstanceOf("a");
-		st.impl.dump();
-		String expected = "["+newline+"  bar"+newline+"]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testEmbeddedRegionOnOneLine() throws Exception {
+        String dir = getRandomDir();
+        String groupFile =
+            "a() ::= <<\n" +
+            "[\n" +
+            "  <@r>bar<@end>\n" +
+            "]\n" +
+            ">>\n";
+        writeFile(dir, "group.stg", groupFile);
+        STGroup group = new STGroupFile(dir+"/group.stg");
+        ST st = group.getInstanceOf("a");
+        st.impl.dump();
+        String expected = "["+newline+"  bar"+newline+"]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testEmbeddedRegionTagsOnSeparateLines() throws Exception {
-		String dir = getRandomDir();
-		String groupFile =
-			"a() ::= <<\n" +
-			"[\n" +
-			"  <@r>\n" +
-			"  bar\n" +
-			"  <@end>\n" +
-			"]\n" +
-			">>\n";
-		writeFile(dir, "group.stg", groupFile);
-		STGroup group = new STGroupFile(dir+"/group.stg");
-		ST st = group.getInstanceOf("a");
-		String expected = "["+newline+"  bar"+newline+"]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testEmbeddedRegionTagsOnSeparateLines() throws Exception {
+        String dir = getRandomDir();
+        String groupFile =
+            "a() ::= <<\n" +
+            "[\n" +
+            "  <@r>\n" +
+            "  bar\n" +
+            "  <@end>\n" +
+            "]\n" +
+            ">>\n";
+        writeFile(dir, "group.stg", groupFile);
+        STGroup group = new STGroupFile(dir+"/group.stg");
+        ST st = group.getInstanceOf("a");
+        String expected = "["+newline+"  bar"+newline+"]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Ignore("will revisit the behavior of indented expressions spanning multiple lines for a future release")
-	@Test public void testEmbeddedSubtemplate() throws Exception {
-		String dir = getRandomDir();
-		String groupFile =
-			"a() ::= <<\n" +
-			"[\n" +
-			"  <{\n" +
-			"  bar\n" +
-			"  }>\n" +
-			"]\n" +
-			">>\n";
-		writeFile(dir, "group.stg", groupFile);
-		STGroup group = new STGroupFile(dir+"/group.stg");
-		ST st = group.getInstanceOf("a");
-		String expected = "["+newline+"  bar"+newline+"]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Ignore("will revisit the behavior of indented expressions spanning multiple lines for a future release")
+    @Test public void testEmbeddedSubtemplate() throws Exception {
+        String dir = getRandomDir();
+        String groupFile =
+            "a() ::= <<\n" +
+            "[\n" +
+            "  <{\n" +
+            "  bar\n" +
+            "  }>\n" +
+            "]\n" +
+            ">>\n";
+        writeFile(dir, "group.stg", groupFile);
+        STGroup group = new STGroupFile(dir+"/group.stg");
+        ST st = group.getInstanceOf("a");
+        String expected = "["+newline+"  bar"+newline+"]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 }

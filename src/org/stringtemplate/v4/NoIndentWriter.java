@@ -36,9 +36,9 @@ public class NoIndentWriter extends AutoIndentWriter {
         super(out);
     }
 
-	@Override
+    @Override
     public int write(String str) throws IOException {
-	    out.write(str);
-		return str.length();
+        out.write(str);
+        return str.length();
     }
 }

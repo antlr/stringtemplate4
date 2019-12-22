@@ -60,24 +60,24 @@ public class Bytecode {
     public static final short INSTR_LOAD_LOCAL      = 3; // load stuff like it, i, i0
     public static final short INSTR_LOAD_PROP       = 4;
     public static final short INSTR_LOAD_PROP_IND   = 5;
-	public static final short INSTR_STORE_OPTION    = 6;
-	public static final short INSTR_STORE_ARG		= 7;
+    public static final short INSTR_STORE_OPTION    = 6;
+    public static final short INSTR_STORE_ARG       = 7;
     public static final short INSTR_NEW             = 8;  // create new template instance
-	public static final short INSTR_NEW_IND         = 9;  // create new instance using value on stack
-	public static final short INSTR_NEW_BOX_ARGS    = 10; // create new instance using args in Map on stack
+    public static final short INSTR_NEW_IND         = 9;  // create new instance using value on stack
+    public static final short INSTR_NEW_BOX_ARGS    = 10; // create new instance using args in Map on stack
     public static final short INSTR_SUPER_NEW       = 11;  // create new instance using value on stack
-	public static final short INSTR_SUPER_NEW_BOX_ARGS = 12; // create new instance using args in Map on stack
+    public static final short INSTR_SUPER_NEW_BOX_ARGS = 12; // create new instance using args in Map on stack
     public static final short INSTR_WRITE           = 13;
-	public static final short INSTR_WRITE_OPT       = 14;
+    public static final short INSTR_WRITE_OPT       = 14;
     public static final short INSTR_MAP             = 15;  // <a:b()>, <a:b():c()>, <a:{...}>
     public static final short INSTR_ROT_MAP         = 16;  // <a:b(),c()>
     public static final short INSTR_ZIP_MAP         = 17;  // <names,phones:{n,p | ...}>
     public static final short INSTR_BR              = 18;
     public static final short INSTR_BRF             = 19;
-	public static final short INSTR_OPTIONS         = 20;  // push options map
-	public static final short INSTR_ARGS 			= 21;  // push args map
-	public static final short INSTR_PASSTHRU        = 22;
-	//public static final short INSTR_PASSTHRU_IND    = 23;
+    public static final short INSTR_OPTIONS         = 20;  // push options map
+    public static final short INSTR_ARGS            = 21;  // push args map
+    public static final short INSTR_PASSTHRU        = 22;
+    //public static final short INSTR_PASSTHRU_IND    = 23;
     public static final short INSTR_LIST            = 24;
     public static final short INSTR_ADD             = 25;
     public static final short INSTR_TOSTR           = 26;
@@ -93,26 +93,26 @@ public class Bytecode {
     public static final short INSTR_STRLEN          = 34;
     public static final short INSTR_REVERSE         = 35;
 
-	public static final short INSTR_NOT             = 36;
-	public static final short INSTR_OR              = 37;
-	public static final short INSTR_AND             = 38;
+    public static final short INSTR_NOT             = 36;
+    public static final short INSTR_OR              = 37;
+    public static final short INSTR_AND             = 38;
 
-	public static final short INSTR_INDENT          = 39;
+    public static final short INSTR_INDENT          = 39;
     public static final short INSTR_DEDENT          = 40;
     public static final short INSTR_NEWLINE         = 41;
 
     public static final short INSTR_NOOP            = 42; // do nothing
-	public static final short INSTR_POP             = 43;
-	public static final short INSTR_NULL            = 44; // push null value
-	public static final short INSTR_TRUE            = 45; // push true value
-	public static final short INSTR_FALSE           = 46;
+    public static final short INSTR_POP             = 43;
+    public static final short INSTR_NULL            = 44; // push null value
+    public static final short INSTR_TRUE            = 45; // push true value
+    public static final short INSTR_FALSE           = 46;
 
-	// combined instructions
+    // combined instructions
 
-	public static final short INSTR_WRITE_STR       = 47; // load_str n, write
-	public static final short INSTR_WRITE_LOCAL     = 48; // TODO load_local n, write
+    public static final short INSTR_WRITE_STR       = 47; // load_str n, write
+    public static final short INSTR_WRITE_LOCAL     = 48; // TODO load_local n, write
 
-	public static final short MAX_BYTECODE          = 48;
+    public static final short MAX_BYTECODE          = 48;
 
     /** Used for assembly/disassembly; describes instruction set */
     public static Instruction[] instructions = new Instruction[] {
@@ -122,48 +122,48 @@ public class Bytecode {
         new Instruction("load_local",OperandType.INT),
         new Instruction("load_prop",OperandType.STRING),
         new Instruction("load_prop_ind"),
-		new Instruction("store_option",OperandType.INT),
-		new Instruction("store_arg",OperandType.STRING),
+        new Instruction("store_option",OperandType.INT),
+        new Instruction("store_arg",OperandType.STRING),
         new Instruction("new",OperandType.STRING,OperandType.INT),
-		new Instruction("new_ind",OperandType.INT),
-		new Instruction("new_box_args",OperandType.STRING),
+        new Instruction("new_ind",OperandType.INT),
+        new Instruction("new_box_args",OperandType.STRING),
         new Instruction("super_new",OperandType.STRING,OperandType.INT),
-		new Instruction("super_new_box_args",OperandType.STRING),
+        new Instruction("super_new_box_args",OperandType.STRING),
         new Instruction("write"),
-		new Instruction("write_opt"),
+        new Instruction("write_opt"),
         new Instruction("map"),
         new Instruction("rot_map", OperandType.INT),
         new Instruction("zip_map", OperandType.INT),
-		new Instruction("br", OperandType.ADDR),
-		new Instruction("brf", OperandType.ADDR),
-		new Instruction("options"),
-		new Instruction("args"),
-		new Instruction("passthru", OperandType.STRING),
-		null, //new Instruction("passthru_ind", OperandType.INT),
-		new Instruction("list"),
-		new Instruction("add"),
-		new Instruction("tostr"),
-		new Instruction("first"),
-		new Instruction("last"),
-		new Instruction("rest"),
-		new Instruction("trunc"),
+        new Instruction("br", OperandType.ADDR),
+        new Instruction("brf", OperandType.ADDR),
+        new Instruction("options"),
+        new Instruction("args"),
+        new Instruction("passthru", OperandType.STRING),
+        null, //new Instruction("passthru_ind", OperandType.INT),
+        new Instruction("list"),
+        new Instruction("add"),
+        new Instruction("tostr"),
+        new Instruction("first"),
+        new Instruction("last"),
+        new Instruction("rest"),
+        new Instruction("trunc"),
         new Instruction("strip"),
         new Instruction("trim"),
         new Instruction("length"),
         new Instruction("strlen"),
-		new Instruction("reverse"),
-		new Instruction("not"),
-		new Instruction("or"),
-		new Instruction("and"),
-		new Instruction("indent", OperandType.STRING),
+        new Instruction("reverse"),
+        new Instruction("not"),
+        new Instruction("or"),
+        new Instruction("and"),
+        new Instruction("indent", OperandType.STRING),
         new Instruction("dedent"),
         new Instruction("newline"),
         new Instruction("noop"),
-		new Instruction("pop"),
-		new Instruction("null"),
-		new Instruction("true"),
-		new Instruction("false"),
-		new Instruction("write_str", OperandType.STRING),
-		new Instruction("write_local",OperandType.INT),
+        new Instruction("pop"),
+        new Instruction("null"),
+        new Instruction("true"),
+        new Instruction("false"),
+        new Instruction("write_str", OperandType.STRING),
+        new Instruction("write_local",OperandType.INT),
     };
 }
