@@ -59,3 +59,4 @@ YYYY/MM/DD, github id, Full name, email
 2018/11/11, adityanarkar, Aditya Narkar, aditya.narkar25@gmail.com
 2019/01/21, cfraizer, Colin Frazier, colin.fraizer@gmail.com
 2019/09/09, seanabraham, Sean Abraham, Sean.A208@gmail.com
+2019/12/22, Clashsoft, Adrian Kunz, clashsoft at hotmail dot com
