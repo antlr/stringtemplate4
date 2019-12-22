@@ -59,8 +59,14 @@ public class Interpreter {
 	public enum Option { ANCHOR, FORMAT, NULL, SEPARATOR, WRAP }
 	public static final int DEFAULT_OPERAND_STACK_SIZE = 100;
 
-	public static final Set<String> predefinedAnonSubtemplateAttributes =
-		new HashSet<String>() { { add("i"); add("i0"); } };
+	public static final Set<String> predefinedAnonSubtemplateAttributes;
+
+	static {
+		final Set<String> set = new HashSet<String>();
+		set.add("i");
+		set.add("i0");
+		predefinedAnonSubtemplateAttributes = Collections.unmodifiableSet(set);
+	}
 
 	/** Operand stack, grows upwards. */
 	Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
@@ -814,7 +820,7 @@ public class Interpreter {
 	}
 
 	protected void map(InstanceScope scope, Object attr, final ST st) {
-		rot_map(scope, attr, new ArrayList<ST>() {{add(st);}});
+		rot_map(scope, attr, Collections.singletonList(st));
 	}
 
 	/**
