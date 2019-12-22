@@ -27,6 +27,7 @@
  */
 package org.stringtemplate.v4.compiler;
 
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -51,40 +52,44 @@ public class Compiler {
 
     public static final int TEMPLATE_INITIAL_CODE_SIZE = 15;
 
-    public static final Map<String, Interpreter.Option> supportedOptions =
-        new HashMap<String, Interpreter.Option>() {
-            {
-                put("anchor",       Interpreter.Option.ANCHOR);
-                put("format",       Interpreter.Option.FORMAT);
-                put("null",         Interpreter.Option.NULL);
-                put("separator",    Interpreter.Option.SEPARATOR);
-                put("wrap",         Interpreter.Option.WRAP);
-            }
-        };
+    public static final Map<String, Interpreter.Option> supportedOptions;
+
+    static {
+	    final Map<String, Interpreter.Option> map = new HashMap<String, Interpreter.Option>();
+	    map.put("anchor",    Interpreter.Option.ANCHOR);
+	    map.put("format",    Interpreter.Option.FORMAT);
+	    map.put("null",      Interpreter.Option.NULL);
+	    map.put("separator", Interpreter.Option.SEPARATOR);
+	    map.put("wrap",      Interpreter.Option.WRAP);
+	    supportedOptions = Collections.unmodifiableMap(map);
+    }
 
     public static final int NUM_OPTIONS = supportedOptions.size();
 
-    public static final Map<String,String> defaultOptionValues =
-        new HashMap<String,String>() {
-            {
-                put("anchor", "true");
-                put("wrap",   "\n");
-            }
-        };
+    public static final Map<String,String> defaultOptionValues;
 
-    public static Map<String, Short> funcs = new HashMap<String, Short>() {
-        {
-            put("first", Bytecode.INSTR_FIRST);
-            put("last", Bytecode.INSTR_LAST);
-            put("rest", Bytecode.INSTR_REST);
-            put("trunc", Bytecode.INSTR_TRUNC);
-            put("strip", Bytecode.INSTR_STRIP);
-            put("trim", Bytecode.INSTR_TRIM);
-            put("length", Bytecode.INSTR_LENGTH);
-            put("strlen", Bytecode.INSTR_STRLEN);
-            put("reverse", Bytecode.INSTR_REVERSE);
-        }
-    };
+    static {
+	    final Map<String, String> map = new HashMap<String, String>();
+	    map.put("anchor", "true");
+	    map.put("wrap",   "\n");
+	    defaultOptionValues = Collections.unmodifiableMap(map);
+    }
+
+    public static Map<String, Short> funcs;
+
+    static {
+	    final Map<String, Short> map = new HashMap<String, Short>();
+	    map.put("first", Bytecode.INSTR_FIRST);
+	    map.put("last", Bytecode.INSTR_LAST);
+	    map.put("rest", Bytecode.INSTR_REST);
+	    map.put("trunc", Bytecode.INSTR_TRUNC);
+	    map.put("strip", Bytecode.INSTR_STRIP);
+	    map.put("trim", Bytecode.INSTR_TRIM);
+	    map.put("length", Bytecode.INSTR_LENGTH);
+	    map.put("strlen", Bytecode.INSTR_STRLEN);
+	    map.put("reverse", Bytecode.INSTR_REVERSE);
+	    funcs = Collections.unmodifiableMap(map);
+    }
 
 	/** Name subtemplates {@code _sub1}, {@code _sub2}, ... */
 	public static AtomicInteger subtemplateCount = new AtomicInteger(0);
