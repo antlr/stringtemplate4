@@ -820,9 +820,7 @@ public class Interpreter {
 	}
 
 	protected void map(InstanceScope scope, Object attr, final ST st) {
-		final List<ST> prototypes = new ArrayList<ST>();
-		prototypes.add(st);
-		rot_map(scope, attr, prototypes);
+		rot_map(scope, attr, Collections.singletonList(st));
 	}
 
 	/**
