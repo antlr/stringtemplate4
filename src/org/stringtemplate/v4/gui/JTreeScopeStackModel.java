@@ -47,112 +47,112 @@ import java.util.Set;
  *  to scope.  Then show each scope's (ST's) attributes as children.
  */
 public class JTreeScopeStackModel implements TreeModel {
-	CommonTree root;
+    CommonTree root;
 
-	public static class StringTree extends CommonTree {
-		String text;
-		public StringTree(String text) {this.text = text;}
+    public static class StringTree extends CommonTree {
+        String text;
+        public StringTree(String text) {this.text = text;}
 
-		@Override
-		public boolean isNil() {
-			return text==null;
-		}
+        @Override
+        public boolean isNil() {
+            return text==null;
+        }
 
-		@Override
-		public String toString() {
-			if ( !isNil() ) return text;
-			return "nil";
-		}
-	}
+        @Override
+        public String toString() {
+            if ( !isNil() ) return text;
+            return "nil";
+        }
+    }
 
-	public JTreeScopeStackModel(InstanceScope scope) {
-		root = new StringTree("Scope stack:");
-		Set<String> names = new HashSet<String>();
-		List<InstanceScope> stack = Interpreter.getScopeStack(scope, false);
-		for (InstanceScope s : stack) {
-			StringTree templateNode = new StringTree(s.st.getName());
-			root.insertChild(0, templateNode);
-			addAttributeDescriptions(s.st, templateNode, names);
-		}
-		//System.out.println(root.toStringTree());
-	}
+    public JTreeScopeStackModel(InstanceScope scope) {
+        root = new StringTree("Scope stack:");
+        Set<String> names = new HashSet<String>();
+        List<InstanceScope> stack = Interpreter.getScopeStack(scope, false);
+        for (InstanceScope s : stack) {
+            StringTree templateNode = new StringTree(s.st.getName());
+            root.insertChild(0, templateNode);
+            addAttributeDescriptions(s.st, templateNode, names);
+        }
+        //System.out.println(root.toStringTree());
+    }
 
-	public void addAttributeDescriptions(ST st, StringTree node, Set<String> names) {
-		Map<String, Object> attrs = st.getAttributes();
-		if ( attrs==null ) return;
-		for (String a : attrs.keySet()) {
-			String descr;
-			if ( st.debugState!=null && st.debugState.addAttrEvents!=null ) {
-				List<AddAttributeEvent> events = st.debugState.addAttrEvents.get(a);
-				StringBuilder locations = new StringBuilder();
-				int i = 0;
-				if ( events!=null ) {
-					for (AddAttributeEvent ae : events) {
-						if ( i>0 ) locations.append(", ");
-						locations.append(ae.getFileName()+":"+ae.getLine());
-						i++;
-					}
-				}
-				if ( locations.length()>0 ) {
-					descr = a+" = "+attrs.get(a)+" @ "+locations.toString();
-				}
-				else {
-					descr = a + " = " +attrs.get(a);
-				}
-			}
-			else {
-				descr = a + " = " +attrs.get(a);
-			}
+    public void addAttributeDescriptions(ST st, StringTree node, Set<String> names) {
+        Map<String, Object> attrs = st.getAttributes();
+        if ( attrs==null ) return;
+        for (String a : attrs.keySet()) {
+            String descr;
+            if ( st.debugState!=null && st.debugState.addAttrEvents!=null ) {
+                List<AddAttributeEvent> events = st.debugState.addAttrEvents.get(a);
+                StringBuilder locations = new StringBuilder();
+                int i = 0;
+                if ( events!=null ) {
+                    for (AddAttributeEvent ae : events) {
+                        if ( i>0 ) locations.append(", ");
+                        locations.append(ae.getFileName()+":"+ae.getLine());
+                        i++;
+                    }
+                }
+                if ( locations.length()>0 ) {
+                    descr = a+" = "+attrs.get(a)+" @ "+locations.toString();
+                }
+                else {
+                    descr = a + " = " +attrs.get(a);
+                }
+            }
+            else {
+                descr = a + " = " +attrs.get(a);
+            }
 
-			if (!names.add(a)) {
-				StringBuilder builder = new StringBuilder();
-				builder.append("<html><font color=\"gray\">");
-				builder.append(StringRenderer.escapeHTML(descr));
-				builder.append("</font></html>");
-				descr = builder.toString();
-			}
+            if (!names.add(a)) {
+                StringBuilder builder = new StringBuilder();
+                builder.append("<html><font color=\"gray\">");
+                builder.append(StringRenderer.escapeHTML(descr));
+                builder.append("</font></html>");
+                descr = builder.toString();
+            }
 
-			node.addChild( new StringTree(descr) );
-		}
-	}
+            node.addChild( new StringTree(descr) );
+        }
+    }
 
-	@Override
-	public Object getRoot() {
-		return root;
-	}
+    @Override
+    public Object getRoot() {
+        return root;
+    }
 
-	@Override
-	public Object getChild(Object parent, int i) {
-		StringTree t = (StringTree)parent;
-		return t.getChild(i);
-	}
+    @Override
+    public Object getChild(Object parent, int i) {
+        StringTree t = (StringTree)parent;
+        return t.getChild(i);
+    }
 
-	@Override
-	public int getChildCount(Object parent) {
-		StringTree t = (StringTree)parent;
-		return t.getChildCount();
-	}
+    @Override
+    public int getChildCount(Object parent) {
+        StringTree t = (StringTree)parent;
+        return t.getChildCount();
+    }
 
-	@Override
-	public boolean isLeaf(Object node) {
-		return getChildCount(node) == 0;
-	}
+    @Override
+    public boolean isLeaf(Object node) {
+        return getChildCount(node) == 0;
+    }
 
-	@Override
-	public int getIndexOfChild(Object parent, Object child) {
-		StringTree c = (StringTree)child;
-		return c.getChildIndex();
-	}
+    @Override
+    public int getIndexOfChild(Object parent, Object child) {
+        StringTree c = (StringTree)child;
+        return c.getChildIndex();
+    }
 
-	@Override
-	public void valueForPathChanged(TreePath treePath, Object o) {
-	}
+    @Override
+    public void valueForPathChanged(TreePath treePath, Object o) {
+    }
 
-	@Override
-	public void addTreeModelListener(TreeModelListener treeModelListener) {
-	}
+    @Override
+    public void addTreeModelListener(TreeModelListener treeModelListener) {
+    }
 
-	@Override
-	public void removeTreeModelListener(TreeModelListener treeModelListener) {
-	}
+    @Override
+    public void removeTreeModelListener(TreeModelListener treeModelListener) {
+    }
 }

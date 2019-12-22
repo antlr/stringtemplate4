@@ -68,14 +68,14 @@ public class BytecodeDisassembler {
 
     public int disassembleInstruction(StringBuilder buf, int ip) {
         int opcode = code.instrs[ip];
-		if ( ip>=code.codeSize ) {
-			throw new IllegalArgumentException("ip out of range: "+ip);
-		}
+        if ( ip>=code.codeSize ) {
+            throw new IllegalArgumentException("ip out of range: "+ip);
+        }
         Bytecode.Instruction I =
             Bytecode.instructions[opcode];
         if ( I==null ) {
             throw new IllegalArgumentException("no such instruction "+opcode+
-				" at address "+ip);
+                " at address "+ip);
         }
         String instrName = I.name;
         buf.append( String.format("%04d:\t%-14s", ip, instrName) );
@@ -123,7 +123,7 @@ public class BytecodeDisassembler {
                     s='"'+s+'"';
                 }
             }
-		}
+        }
         buf.append(":");
         buf.append(s);
         return buf.toString();
@@ -137,21 +137,21 @@ public class BytecodeDisassembler {
     }
 
     public String strings() {
-		StringBuilder buf = new StringBuilder();
-		int addr = 0;
-		if ( code.strings!=null ) {
-			for (Object o : code.strings) {
-				if ( o instanceof String ) {
-					String s = (String)o;
-					s = Misc.replaceEscapes(s);
-					buf.append( String.format("%04d: \"%s\"\n", addr, s) );
-				}
-				else {
-					buf.append( String.format("%04d: %s\n", addr, o) );
-				}
-				addr++;
-			}
-		}
+        StringBuilder buf = new StringBuilder();
+        int addr = 0;
+        if ( code.strings!=null ) {
+            for (Object o : code.strings) {
+                if ( o instanceof String ) {
+                    String s = (String)o;
+                    s = Misc.replaceEscapes(s);
+                    buf.append( String.format("%04d: \"%s\"\n", addr, s) );
+                }
+                else {
+                    buf.append( String.format("%04d: %s\n", addr, o) );
+                }
+                addr++;
+            }
+        }
         return buf.toString();
     }
 

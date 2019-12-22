@@ -42,20 +42,20 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class TestDictionaries extends BaseTest {
-	@Test public void testDict() throws Exception {
-		String templates =
-				"typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
-				"var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
-				;
-		writeFile(tmpdir, "test.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
-		ST st = group.getInstanceOf("var");
-		st.add("type", "int");
-		st.add("name", "x");
-		String expecting = "int x = 0;";
-		String result = st.render();
-		assertEquals(expecting, result);
-	}
+    @Test public void testDict() throws Exception {
+        String templates =
+                "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
+                "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
+                ;
+        writeFile(tmpdir, "test.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+        ST st = group.getInstanceOf("var");
+        st.add("type", "int");
+        st.add("name", "x");
+        String expecting = "int x = 0;";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
 
     @Test public void testDictValuesAreTemplates() throws Exception {
         String templates =
@@ -65,7 +65,7 @@ public class TestDictionaries extends BaseTest {
         writeFile(tmpdir, "test.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
-		st.impl.dump();
+        st.impl.dump();
         st.add("w", "L");
         st.add("type", "int");
         st.add("name", "x");
@@ -110,37 +110,37 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-	@Test public void testDictMissingDefaultValueIsEmpty() throws Exception {
-		String templates =
-				"typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
-				"var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
-				;
-		writeFile(tmpdir, "test.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
-		ST st = group.getInstanceOf("var");
-		st.add("w", "L");
-		st.add("type", "double"); // double not in typeInit map
-		st.add("name", "x");
-		String expecting = "double x = ;";
-		String result = st.render();
-		assertEquals(expecting, result);
-	}
+    @Test public void testDictMissingDefaultValueIsEmpty() throws Exception {
+        String templates =
+                "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
+                "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
+                ;
+        writeFile(tmpdir, "test.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+        ST st = group.getInstanceOf("var");
+        st.add("w", "L");
+        st.add("type", "double"); // double not in typeInit map
+        st.add("name", "x");
+        String expecting = "double x = ;";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
 
-	@Test public void testDictMissingDefaultValueIsEmptyForNullKey() throws Exception {
-		String templates =
-				"typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
-				"var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
-				;
-		writeFile(tmpdir, "test.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
-		ST st = group.getInstanceOf("var");
-		st.add("w", "L");
-		st.add("type", null); // double not in typeInit map
-		st.add("name", "x");
-		String expecting = " x = ;";
-		String result = st.render();
-		assertEquals(expecting, result);
-	}
+    @Test public void testDictMissingDefaultValueIsEmptyForNullKey() throws Exception {
+        String templates =
+                "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
+                "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
+                ;
+        writeFile(tmpdir, "test.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+        ST st = group.getInstanceOf("var");
+        st.add("w", "L");
+        st.add("type", null); // double not in typeInit map
+        st.add("name", "x");
+        String expecting = " x = ;";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
 
     @Test public void testDictHiddenByFormalArg() throws Exception {
         String templates =
@@ -172,35 +172,35 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-	@Test public void testDictDefaultValue() throws Exception {
-		String templates =
-				"typeInit ::= [\"int\":\"0\", default:\"null\"] "+newline+
-				"var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
-				;
-		writeFile(tmpdir, "test.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
-		ST st = group.getInstanceOf("var");
-		st.add("type", "UserRecord");
-		st.add("name", "x");
-		String expecting = "UserRecord x = null;";
-		String result = st.render();
-		assertEquals(expecting, result);
-	}
+    @Test public void testDictDefaultValue() throws Exception {
+        String templates =
+                "typeInit ::= [\"int\":\"0\", default:\"null\"] "+newline+
+                "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
+                ;
+        writeFile(tmpdir, "test.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+        ST st = group.getInstanceOf("var");
+        st.add("type", "UserRecord");
+        st.add("name", "x");
+        String expecting = "UserRecord x = null;";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
 
-	@Test public void testDictNullKeyGetsDefaultValue() throws Exception {
-		String templates =
-				"typeInit ::= [\"int\":\"0\", default:\"null\"] "+newline+
-				"var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
-				;
-		writeFile(tmpdir, "test.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
-		ST st = group.getInstanceOf("var");
-		// missing or set to null: st.add("type", null);
-		st.add("name", "x");
-		String expecting = " x = null;";
-		String result = st.render();
-		assertEquals(expecting, result);
-	}
+    @Test public void testDictNullKeyGetsDefaultValue() throws Exception {
+        String templates =
+                "typeInit ::= [\"int\":\"0\", default:\"null\"] "+newline+
+                "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
+                ;
+        writeFile(tmpdir, "test.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
+        ST st = group.getInstanceOf("var");
+        // missing or set to null: st.add("type", null);
+        st.add("name", "x");
+        String expecting = " x = null;";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
 
     @Test public void testDictEmptyDefaultValue() throws Exception {
         String templates =
@@ -210,7 +210,7 @@ public class TestDictionaries extends BaseTest {
         writeFile(tmpdir, "test.stg", templates);
         ErrorBuffer errors = new ErrorBuffer();
         STGroupFile group = new STGroupFile(tmpdir+"/"+"test.stg");
-		group.setListener(errors);
+        group.setListener(errors);
         group.load();
         String expected = "[test.stg 1:33: missing value for key at ']']";
         String result = errors.errors.toString();
@@ -300,290 +300,290 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-	@Test public void TestAccessDictionaryFromAnonymousTemplate() {
-		String dir = tmpdir;
-		String g =
-			"a() ::= <<[<[\"foo\",\"a\"]:{x|<if(values.(x))><x><endif>}>]>>\n" +
-			"values ::= [\n" +
-			"    \"a\":false,\n" +
-			"    default:true\n" +
-			"]\n";
-		writeFile(dir, "g.stg", g);
+    @Test public void TestAccessDictionaryFromAnonymousTemplate() {
+        String dir = tmpdir;
+        String g =
+            "a() ::= <<[<[\"foo\",\"a\"]:{x|<if(values.(x))><x><endif>}>]>>\n" +
+            "values ::= [\n" +
+            "    \"a\":false,\n" +
+            "    default:true\n" +
+            "]\n";
+        writeFile(dir, "g.stg", g);
 
-		STGroup group = new STGroupFile(tmpdir+"/"+"g.stg");
-		ST st = group.getInstanceOf("a");
-		String expected = "[foo]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        STGroup group = new STGroupFile(tmpdir+"/"+"g.stg");
+        ST st = group.getInstanceOf("a");
+        String expected = "[foo]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void TestAccessDictionaryFromAnonymousTemplateInRegion() {
-		String dir = tmpdir;
-		String g =
-			"a() ::= <<[<@r()>]>>\n" +
-			"@a.r() ::= <<\n" +
-			"<[\"foo\",\"a\"]:{x|<if(values.(x))><x><endif>}>\n" +
-			">>\n" +
-			"values ::= [\n" +
-			"    \"a\":false,\n" +
-			"    default:true\n" +
-			"]\n";
-		writeFile(dir, "g.stg", g);
+    @Test public void TestAccessDictionaryFromAnonymousTemplateInRegion() {
+        String dir = tmpdir;
+        String g =
+            "a() ::= <<[<@r()>]>>\n" +
+            "@a.r() ::= <<\n" +
+            "<[\"foo\",\"a\"]:{x|<if(values.(x))><x><endif>}>\n" +
+            ">>\n" +
+            "values ::= [\n" +
+            "    \"a\":false,\n" +
+            "    default:true\n" +
+            "]\n";
+        writeFile(dir, "g.stg", g);
 
-		STGroup group = new STGroupFile(tmpdir+"/"+"g.stg");
-		ST st = group.getInstanceOf("a");
-		String expected = "[foo]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        STGroup group = new STGroupFile(tmpdir+"/"+"g.stg");
+        ST st = group.getInstanceOf("a");
+        String expected = "[foo]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testImportDictionary() throws Exception {
-		String Root =
-			"d ::= [\"a\":\"b\"]\n";
+    @Test public void testImportDictionary() throws Exception {
+        String Root =
+            "d ::= [\"a\":\"b\"]\n";
 
-		String Sub =
-			"t() ::= <<\n" +
-			"<d.a>\n" +
-			">>\n";
-		STGroup r = new STGroupString(Root);
-		STGroup s = new STGroupString(Sub);
-		s.importTemplates(r);
-		ST st = s.getInstanceOf("t"); // visible only if we can see inherited dicts
-		String expected = "b";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        String Sub =
+            "t() ::= <<\n" +
+            "<d.a>\n" +
+            ">>\n";
+        STGroup r = new STGroupString(Root);
+        STGroup s = new STGroupString(Sub);
+        s.importTemplates(r);
+        ST st = s.getInstanceOf("t"); // visible only if we can see inherited dicts
+        String expected = "b";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testStringsInDictionary() throws Exception {
-		String templates =
-			"auxMap ::= [\n" +
-			"   \"E\": \"electric <field>\",\n" +
-			"   \"I\": \"in <field> between\",\n" +
-			"   \"F\": \"<field> force\",\n" +
-			"   default: \"<field>\"\n" +
-			"]\n" +
-			"\n" +
-			"makeTmpl(type, field) ::= <<\n" +
-			"<auxMap.(type)>\n" +
-			">>\n" +
-			"\n" +
-			"top() ::= <<\n" +
-			"  <makeTmpl(\"E\", \"foo\")>\n" +
-			"  <makeTmpl(\"F\", \"foo\")>\n" +
-			"  <makeTmpl(\"I\", \"foo\")>\n" +
-			">>\n";
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
-		ST st = group.getInstanceOf("top");
-		Assert.assertNotNull(st);
-		String expecting =
-			"  electric <field>" + newline +
-			"  <field> force" + newline +
-			"  in <field> between";
-		Assert.assertEquals(expecting, st.render());
-	}
+    @Test public void testStringsInDictionary() throws Exception {
+        String templates =
+            "auxMap ::= [\n" +
+            "   \"E\": \"electric <field>\",\n" +
+            "   \"I\": \"in <field> between\",\n" +
+            "   \"F\": \"<field> force\",\n" +
+            "   default: \"<field>\"\n" +
+            "]\n" +
+            "\n" +
+            "makeTmpl(type, field) ::= <<\n" +
+            "<auxMap.(type)>\n" +
+            ">>\n" +
+            "\n" +
+            "top() ::= <<\n" +
+            "  <makeTmpl(\"E\", \"foo\")>\n" +
+            "  <makeTmpl(\"F\", \"foo\")>\n" +
+            "  <makeTmpl(\"I\", \"foo\")>\n" +
+            ">>\n";
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+        ST st = group.getInstanceOf("top");
+        Assert.assertNotNull(st);
+        String expecting =
+            "  electric <field>" + newline +
+            "  <field> force" + newline +
+            "  in <field> between";
+        Assert.assertEquals(expecting, st.render());
+    }
 
-	@Test public void testTemplatesInDictionary() throws Exception {
-		String templates =
-			"auxMap ::= [\n" +
-			"   \"E\": {electric <field>},\n" +
-			"   \"I\": {in <field> between},\n" +
-			"   \"F\": {<field> force},\n" +
-			"   default: {<field>}\n" +
-			"]\n" +
-			"\n" +
-			"makeTmpl(type, field) ::= <<\n" +
-			"<auxMap.(type)>\n" +
-			">>\n" +
-			"\n" +
-			"top() ::= <<\n" +
-			"  <makeTmpl(\"E\", \"foo\")>\n" +
-			"  <makeTmpl(\"F\", \"foo\")>\n" +
-			"  <makeTmpl(\"I\", \"foo\")>\n" +
-			">>\n";
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
-		ST st = group.getInstanceOf("top");
-		Assert.assertNotNull(st);
-		String expecting =
-			"  electric foo" + newline +
-			"  foo force" + newline +
-			"  in foo between";
-		Assert.assertEquals(expecting, st.render());
-	}
+    @Test public void testTemplatesInDictionary() throws Exception {
+        String templates =
+            "auxMap ::= [\n" +
+            "   \"E\": {electric <field>},\n" +
+            "   \"I\": {in <field> between},\n" +
+            "   \"F\": {<field> force},\n" +
+            "   default: {<field>}\n" +
+            "]\n" +
+            "\n" +
+            "makeTmpl(type, field) ::= <<\n" +
+            "<auxMap.(type)>\n" +
+            ">>\n" +
+            "\n" +
+            "top() ::= <<\n" +
+            "  <makeTmpl(\"E\", \"foo\")>\n" +
+            "  <makeTmpl(\"F\", \"foo\")>\n" +
+            "  <makeTmpl(\"I\", \"foo\")>\n" +
+            ">>\n";
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+        ST st = group.getInstanceOf("top");
+        Assert.assertNotNull(st);
+        String expecting =
+            "  electric foo" + newline +
+            "  foo force" + newline +
+            "  in foo between";
+        Assert.assertEquals(expecting, st.render());
+    }
 
-	@Test
-	public void testDictionaryBehaviorTrue() throws Exception {
-		String templates =
-			"d ::= [\n" +
-			"	\"x\" : true,\n" +
-			"	default : false,\n" +
-			"]\n" +
-			"\n" +
-			"t() ::= <<\n" +
-			"<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
-			">>\n";
+    @Test
+    public void testDictionaryBehaviorTrue() throws Exception {
+        String templates =
+            "d ::= [\n" +
+            "   \"x\" : true,\n" +
+            "   default : false,\n" +
+            "]\n" +
+            "\n" +
+            "t() ::= <<\n" +
+            "<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
+            ">>\n";
 
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
-		ST st = group.getInstanceOf("t");
-		String expected = "true+";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+        ST st = group.getInstanceOf("t");
+        String expected = "true+";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test
-	public void testDictionaryBehaviorFalse() throws Exception {
-		String templates =
-			"d ::= [\n" +
-			"	\"x\" : false,\n" +
-			"	default : false,\n" +
-			"]\n" +
-			"\n" +
-			"t() ::= <<\n" +
-			"<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
-			">>\n";
+    @Test
+    public void testDictionaryBehaviorFalse() throws Exception {
+        String templates =
+            "d ::= [\n" +
+            "   \"x\" : false,\n" +
+            "   default : false,\n" +
+            "]\n" +
+            "\n" +
+            "t() ::= <<\n" +
+            "<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
+            ">>\n";
 
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
-		ST st = group.getInstanceOf("t");
-		String expected = "false-";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+        ST st = group.getInstanceOf("t");
+        String expected = "false-";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test
-	public void testDictionaryBehaviorEmptyTemplate() throws Exception {
-		String templates =
-			"d ::= [\n" +
-			"	\"x\" : {},\n" +
-			"	default : false,\n" +
-			"]\n" +
-			"\n" +
-			"t() ::= <<\n" +
-			"<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
-			">>\n";
+    @Test
+    public void testDictionaryBehaviorEmptyTemplate() throws Exception {
+        String templates =
+            "d ::= [\n" +
+            "   \"x\" : {},\n" +
+            "   default : false,\n" +
+            "]\n" +
+            "\n" +
+            "t() ::= <<\n" +
+            "<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
+            ">>\n";
 
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
-		ST st = group.getInstanceOf("t");
-		String expected = "+";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+        ST st = group.getInstanceOf("t");
+        String expected = "+";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test
-	public void testDictionaryBehaviorEmptyList() throws Exception {
-		String templates =
-			"d ::= [\n" +
-			"	\"x\" : [],\n" +
-			"	default : false\n" +
-			"]\n" +
-			"\n" +
-			"t() ::= <<\n" +
-			"<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
-			">>\n";
+    @Test
+    public void testDictionaryBehaviorEmptyList() throws Exception {
+        String templates =
+            "d ::= [\n" +
+            "   \"x\" : [],\n" +
+            "   default : false\n" +
+            "]\n" +
+            "\n" +
+            "t() ::= <<\n" +
+            "<d.(\"x\")><if(d.(\"x\"))>+<else>-<endif>\n" +
+            ">>\n";
 
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
-		ST st = group.getInstanceOf("t");
-		String expected = "-";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+        ST st = group.getInstanceOf("t");
+        String expected = "-";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	/**
-	 * This is a regression test for antlr/stringtemplate4#114. 
-	 * "dictionary value using <% %> is broken"
-	 * Before the fix the following test would return %hi%
-	 * https://github.com/antlr/stringtemplate4/issues/114
-	 */
-	@Test
-	public void testDictionaryBehaviorNoNewlineTemplate() throws Exception {
-		String templates =
-			"d ::= [\n" +
-			"	\"x\" : <%hi%>\n" +
-			"]\n" +
-			"\n" +
-			"t() ::= <<\n" +
-			"<d.x>\n" +
-			">>\n";
+    /**
+     * This is a regression test for antlr/stringtemplate4#114. 
+     * "dictionary value using <% %> is broken"
+     * Before the fix the following test would return %hi%
+     * https://github.com/antlr/stringtemplate4/issues/114
+     */
+    @Test
+    public void testDictionaryBehaviorNoNewlineTemplate() throws Exception {
+        String templates =
+            "d ::= [\n" +
+            "   \"x\" : <%hi%>\n" +
+            "]\n" +
+            "\n" +
+            "t() ::= <<\n" +
+            "<d.x>\n" +
+            ">>\n";
 
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
-		ST st = group.getInstanceOf("t");
-		String expected = "hi";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+        ST st = group.getInstanceOf("t");
+        String expected = "hi";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test
-	public void testDictionarySpecialValues() throws Exception {
-		String templates =
-			"t(id) ::= <<\n" +
-			"<identifier.(id)>\n" +
-			">>\n" +
-			"\n" +
-			"identifier ::= [\n" +
-			"	\"keyword\" : \"@keyword\",\n" +
-			"	default : key\n" +
-			"]\n";
+    @Test
+    public void testDictionarySpecialValues() throws Exception {
+        String templates =
+            "t(id) ::= <<\n" +
+            "<identifier.(id)>\n" +
+            ">>\n" +
+            "\n" +
+            "identifier ::= [\n" +
+            "   \"keyword\" : \"@keyword\",\n" +
+            "   default : key\n" +
+            "]\n";
 
-		writeFile(tmpdir, "t.stg", templates);
-		STGroupFile group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+        writeFile(tmpdir, "t.stg", templates);
+        STGroupFile group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
 
-		// try with mapped values
-		ST template = group.getInstanceOf("t").add("id", "keyword");
-		assertEquals("@keyword", template.render());
+        // try with mapped values
+        ST template = group.getInstanceOf("t").add("id", "keyword");
+        assertEquals("@keyword", template.render());
 
-		// try with non-mapped values
-		template = group.getInstanceOf("t").add("id", "nonkeyword");
-		assertEquals("nonkeyword", template.render());
+        // try with non-mapped values
+        template = group.getInstanceOf("t").add("id", "nonkeyword");
+        assertEquals("nonkeyword", template.render());
 
-		// try with non-mapped values that might break (Substring here guarantees unique instances)
-		template = group.getInstanceOf("t").add("id", "_default".substring(1));
-		assertEquals("default", template.render());
+        // try with non-mapped values that might break (Substring here guarantees unique instances)
+        template = group.getInstanceOf("t").add("id", "_default".substring(1));
+        assertEquals("default", template.render());
 
-		template = group.getInstanceOf("t").add("id", "_keys".substring(1));
-		assertEquals("keyworddefault", template.render());
+        template = group.getInstanceOf("t").add("id", "_keys".substring(1));
+        assertEquals("keyworddefault", template.render());
 
-		template = group.getInstanceOf("t").add("id", "_values".substring(1));
-		assertEquals("@keywordkey", template.render());
-	}
+        template = group.getInstanceOf("t").add("id", "_values".substring(1));
+        assertEquals("@keywordkey", template.render());
+    }
 
-	@Test
-	public void testDictionarySpecialValuesOverride() throws Exception {
-		String templates =
-			"t(id) ::= <<\n" +
-			"<identifier.(id)>\n" +
-			">>\n" +
-			"\n" +
-			"identifier ::= [\n" +
-			"	\"keyword\" : \"@keyword\",\n" +
-			"	\"keys\" : \"keys\",\n" +
-			"	\"values\" : \"values\",\n" +
-			"	default : key\n" +
-			"]\n";
+    @Test
+    public void testDictionarySpecialValuesOverride() throws Exception {
+        String templates =
+            "t(id) ::= <<\n" +
+            "<identifier.(id)>\n" +
+            ">>\n" +
+            "\n" +
+            "identifier ::= [\n" +
+            "   \"keyword\" : \"@keyword\",\n" +
+            "   \"keys\" : \"keys\",\n" +
+            "   \"values\" : \"values\",\n" +
+            "   default : key\n" +
+            "]\n";
 
-		writeFile(tmpdir, "t.stg", templates);
-		STGroupFile group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
+        writeFile(tmpdir, "t.stg", templates);
+        STGroupFile group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
 
-		// try with mapped values
-		ST template = group.getInstanceOf("t").add("id", "keyword");
-		assertEquals("@keyword", template.render());
+        // try with mapped values
+        ST template = group.getInstanceOf("t").add("id", "keyword");
+        assertEquals("@keyword", template.render());
 
-		// try with non-mapped values
-		template = group.getInstanceOf("t").add("id", "nonkeyword");
-		assertEquals("nonkeyword", template.render());
+        // try with non-mapped values
+        template = group.getInstanceOf("t").add("id", "nonkeyword");
+        assertEquals("nonkeyword", template.render());
 
-		// try with non-mapped values that might break (Substring here guarantees unique instances)
-		template = group.getInstanceOf("t").add("id", "_default".substring(1));
-		assertEquals("default", template.render());
+        // try with non-mapped values that might break (Substring here guarantees unique instances)
+        template = group.getInstanceOf("t").add("id", "_default".substring(1));
+        assertEquals("default", template.render());
 
-		template = group.getInstanceOf("t").add("id", "_keys".substring(1));
-		assertEquals("keys", template.render());
+        template = group.getInstanceOf("t").add("id", "_keys".substring(1));
+        assertEquals("keys", template.render());
 
-		template = group.getInstanceOf("t").add("id", "_values".substring(1));
-		assertEquals("values", template.render());
-	}
+        template = group.getInstanceOf("t").add("id", "_values".substring(1));
+        assertEquals("values", template.render());
+    }
 }

@@ -53,174 +53,174 @@ import java.util.Stack;
  * {@code String} to the appropriate constructor.</p>
  */
 public class AutoIndentWriter implements STWriter {
-	/** Stack of indents. Use {@link List} as it's much faster than {@link Stack}. Grows
-	 *  from 0..n-1.
-	 */
-	public List<String> indents = new ArrayList<String>();
+    /** Stack of indents. Use {@link List} as it's much faster than {@link Stack}. Grows
+     *  from 0..n-1.
+     */
+    public List<String> indents = new ArrayList<String>();
 
-	/** Stack of integer anchors (char positions in line); avoid {@link Integer}
-	 *  creation overhead.
-	 */
-	public int[] anchors = new int[10];
-	public int anchors_sp = -1;
+    /** Stack of integer anchors (char positions in line); avoid {@link Integer}
+     *  creation overhead.
+     */
+    public int[] anchors = new int[10];
+    public int anchors_sp = -1;
 
-	/** {@code \n} or {@code \r\n}? */
-	public String newline;
+    /** {@code \n} or {@code \r\n}? */
+    public String newline;
 
-	public Writer out = null;
+    public Writer out = null;
     public boolean atStartOfLine = true;
 
-	/**
-	 * Track char position in the line (later we can think about tabs). Indexed
-	 * from 0. We want to keep {@code charPosition <= }{@link #lineWidth}.
-	 * This is the position we are <em>about</em> to write, not the position
-	 * last written to.
-	 */
+    /**
+     * Track char position in the line (later we can think about tabs). Indexed
+     * from 0. We want to keep {@code charPosition <= }{@link #lineWidth}.
+     * This is the position we are <em>about</em> to write, not the position
+     * last written to.
+     */
     public int charPosition = 0;
 
     /** The absolute char index into the output of the next char to be written. */
     public int charIndex = 0;
 
-	public int lineWidth = NO_WRAP;
+    public int lineWidth = NO_WRAP;
 
-	public AutoIndentWriter(Writer out, String newline) {
-		this.out = out;
-		indents.add(null); // s oftart with no indent
-		this.newline = newline;
-	}
+    public AutoIndentWriter(Writer out, String newline) {
+        this.out = out;
+        indents.add(null); // s oftart with no indent
+        this.newline = newline;
+    }
 
-	public AutoIndentWriter(Writer out) {
-		this(out, System.getProperty("line.separator"));
-	}
+    public AutoIndentWriter(Writer out) {
+        this(out, System.getProperty("line.separator"));
+    }
 
-	@Override
-	public void setLineWidth(int lineWidth) {
-		this.lineWidth = lineWidth;
-	}
+    @Override
+    public void setLineWidth(int lineWidth) {
+        this.lineWidth = lineWidth;
+    }
 
-	@Override
+    @Override
     public void pushIndentation(String indent) {
         indents.add(indent);
     }
 
-	@Override
+    @Override
     public String popIndentation() {
         return indents.remove(indents.size()-1);
     }
 
-	@Override
-	public void pushAnchorPoint() {
-		if ( (anchors_sp +1)>=anchors.length ) {
-			int[] a = new int[anchors.length*2];
-			System.arraycopy(anchors, 0, a, 0, anchors.length-1);
-			anchors = a;
-		}
-		anchors_sp++;
-		anchors[anchors_sp] = charPosition;
-	}
+    @Override
+    public void pushAnchorPoint() {
+        if ( (anchors_sp +1)>=anchors.length ) {
+            int[] a = new int[anchors.length*2];
+            System.arraycopy(anchors, 0, a, 0, anchors.length-1);
+            anchors = a;
+        }
+        anchors_sp++;
+        anchors[anchors_sp] = charPosition;
+    }
 
-	@Override
-	public void popAnchorPoint() {
-		anchors_sp--;
-	}
+    @Override
+    public void popAnchorPoint() {
+        anchors_sp--;
+    }
 
-	@Override
+    @Override
     public int index() { return charIndex; }
 
-	/** Write out a string literal or attribute expression or expression element. */
-	@Override
-	public int write(String str) throws IOException {
-		int n = 0;
-		int nll = newline.length();
-		int sl = str.length();
-		for (int i=0; i<sl; i++) {
-			char c = str.charAt(i);
-			// found \n or \r\n newline?
-			if ( c=='\r' ) continue;
+    /** Write out a string literal or attribute expression or expression element. */
+    @Override
+    public int write(String str) throws IOException {
+        int n = 0;
+        int nll = newline.length();
+        int sl = str.length();
+        for (int i=0; i<sl; i++) {
+            char c = str.charAt(i);
+            // found \n or \r\n newline?
+            if ( c=='\r' ) continue;
             if ( c=='\n' ) {
-				atStartOfLine = true;
-				charPosition = -nll; // set so the write below sets to 0
-				out.write(newline);
-				n += nll;
-				charIndex += nll;
-				charPosition += n; // wrote n more char
-				continue;
-			}
-			// normal character
-			// check to see if we are at the start of a line; need indent if so
-			if ( atStartOfLine ) {
+                atStartOfLine = true;
+                charPosition = -nll; // set so the write below sets to 0
+                out.write(newline);
+                n += nll;
+                charIndex += nll;
+                charPosition += n; // wrote n more char
+                continue;
+            }
+            // normal character
+            // check to see if we are at the start of a line; need indent if so
+            if ( atStartOfLine ) {
                 n+=indent();
                 atStartOfLine = false;
-			}
-			n++;
-			out.write(c);
-			charPosition++;
-			charIndex++;
-		}
-		return n;
-	}
+            }
+            n++;
+            out.write(c);
+            charPosition++;
+            charIndex++;
+        }
+        return n;
+    }
 
-	@Override
+    @Override
     public int writeSeparator(String str) throws IOException {
-		return write(str);
-	}
+        return write(str);
+    }
 
-	/**
-	 * Write out a string literal or attribute expression or expression element.
-	 * <p>
-	 * If doing line wrap, then check {@code wrap} before emitting {@code str}.
-	 * If at or beyond desired line width then emit a {@link #newline} and any
-	 * indentation before spitting out {@code str}.</p>
-	 */
-	@Override
-	public int write(String str, String wrap) throws IOException {
-		int n = writeWrap(wrap);
-		return n + write(str);
-	}
+    /**
+     * Write out a string literal or attribute expression or expression element.
+     * <p>
+     * If doing line wrap, then check {@code wrap} before emitting {@code str}.
+     * If at or beyond desired line width then emit a {@link #newline} and any
+     * indentation before spitting out {@code str}.</p>
+     */
+    @Override
+    public int write(String str, String wrap) throws IOException {
+        int n = writeWrap(wrap);
+        return n + write(str);
+    }
 
-	@Override
-	public int writeWrap(String wrap) throws IOException {
-		int n = 0;
-		// if want wrap and not already at start of line (last char was \n)
-		// and we have hit or exceeded the threshold
-		if ( lineWidth!=NO_WRAP && wrap!=null && !atStartOfLine &&
-			 charPosition >= lineWidth )
-		{
-			// ok to wrap
-			// Walk wrap string and look for A\nB.  Spit out A\n
-			// then spit indent or anchor, whichever is larger
-			// then spit out B.
-			for (int i=0; i<wrap.length(); i++) {
-				char c = wrap.charAt(i);
-				if ( c=='\r' ) {
-					continue;
-				} else if ( c=='\n' ) {
-					out.write(newline);
+    @Override
+    public int writeWrap(String wrap) throws IOException {
+        int n = 0;
+        // if want wrap and not already at start of line (last char was \n)
+        // and we have hit or exceeded the threshold
+        if ( lineWidth!=NO_WRAP && wrap!=null && !atStartOfLine &&
+             charPosition >= lineWidth )
+        {
+            // ok to wrap
+            // Walk wrap string and look for A\nB.  Spit out A\n
+            // then spit indent or anchor, whichever is larger
+            // then spit out B.
+            for (int i=0; i<wrap.length(); i++) {
+                char c = wrap.charAt(i);
+                if ( c=='\r' ) {
+                    continue;
+                } else if ( c=='\n' ) {
+                    out.write(newline);
                     n += newline.length();
-					charPosition = 0;
+                    charPosition = 0;
                     charIndex += newline.length();
                     n += indent();
-					// continue writing any chars out
-				}
-				else {  // write A or B part
-					n++;
-					out.write(c);
-					charPosition++;
+                    // continue writing any chars out
+                }
+                else {  // write A or B part
+                    n++;
+                    out.write(c);
+                    charPosition++;
                     charIndex++;
-				}
-			}
-		}
-		return n;
-	}
+                }
+            }
+        }
+        return n;
+    }
 
-	public int indent() throws IOException {
-		int n = 0;
-		for (String ind : indents) {
-			if (ind != null) {
-				n += ind.length();
-				out.write(ind);
-			}
-		}
+    public int indent() throws IOException {
+        int n = 0;
+        for (String ind : indents) {
+            if (ind != null) {
+                n += ind.length();
+                out.write(ind);
+            }
+        }
 
         // If current anchor is beyond current indent width, indent to anchor
         // *after* doing indents (might tabs in there or whatever)
@@ -233,6 +233,6 @@ public class AutoIndentWriter implements STWriter {
 
         charPosition += n;
         charIndex += n;
-		return n;
-	}
+        return n;
+    }
 }

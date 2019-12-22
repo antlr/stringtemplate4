@@ -35,11 +35,11 @@ import java.util.Map;
 
 /** Deal with structs created via {@link ST#addAggr}{@code ("structname.{prop1, prop2}", ...);}. */
 public class AggregateModelAdaptor extends MapModelAdaptor {
-	@Override
-	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
-		throws STNoSuchPropertyException
-	{
-		Map<?, ?> map = ((Aggregate)o).properties;
-		return super.getProperty(interp, self, map, property, propertyName);
-	}
+    @Override
+    public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
+        throws STNoSuchPropertyException
+    {
+        Map<?, ?> map = ((Aggregate)o).properties;
+        return super.getProperty(interp, self, map, property, propertyName);
+    }
 }

@@ -66,19 +66,19 @@ public class FormalArgument {
 
     public String name;
 
-	public int index; // which argument is it? from 0..n-1
+    public int index; // which argument is it? from 0..n-1
 
-	/** If they specified default value {@code x=y}, store the token here */
-	public Token defaultValueToken;
-	public Object defaultValue; // x="str", x=true, x=false
-	public CompiledST compiledDefaultValue; // x={...}
+    /** If they specified default value {@code x=y}, store the token here */
+    public Token defaultValueToken;
+    public Object defaultValue; // x="str", x=true, x=false
+    public CompiledST compiledDefaultValue; // x={...}
 
     public FormalArgument(String name) { this.name = name; }
 
-	public FormalArgument(String name, Token defaultValueToken) {
-		this.name = name;
-		this.defaultValueToken = defaultValueToken;
-	}
+    public FormalArgument(String name, Token defaultValueToken) {
+        this.name = name;
+        this.defaultValueToken = defaultValueToken;
+    }
 
     /*
     public static String getCardinalityName(int cardinality) {
@@ -92,28 +92,28 @@ public class FormalArgument {
     }
     */
 
-	@Override
+    @Override
     public int hashCode() {
         return name.hashCode() + defaultValueToken.hashCode();
     }
 
-	@Override
+    @Override
     public boolean equals(Object o) {
-		if ( o==null || !(o instanceof FormalArgument) ) {
-			return false;
-		}
-		FormalArgument other = (FormalArgument)o;
-		if ( !this.name.equals(other.name) ) {
-			return false;
-		}
-		// only check if there is a default value; that's all
-		return !((this.defaultValueToken != null && other.defaultValueToken == null) ||
-			   (this.defaultValueToken == null && other.defaultValueToken != null));
-	}
+        if ( o==null || !(o instanceof FormalArgument) ) {
+            return false;
+        }
+        FormalArgument other = (FormalArgument)o;
+        if ( !this.name.equals(other.name) ) {
+            return false;
+        }
+        // only check if there is a default value; that's all
+        return !((this.defaultValueToken != null && other.defaultValueToken == null) ||
+               (this.defaultValueToken == null && other.defaultValueToken != null));
+    }
 
-	@Override
+    @Override
     public String toString() {
-		if ( defaultValueToken!=null ) return name+"="+defaultValueToken.getText();
+        if ( defaultValueToken!=null ) return name+"="+defaultValueToken.getText();
         return name;
     }
 }

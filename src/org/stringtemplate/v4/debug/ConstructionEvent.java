@@ -33,14 +33,14 @@ public class ConstructionEvent {
     public ConstructionEvent() { stack = new Throwable(); }
 
     public String getFileName() { return getSTEntryPoint().getFileName(); }
-	public int getLine() { return getSTEntryPoint().getLineNumber(); }
-	
-	public StackTraceElement getSTEntryPoint() {
-		StackTraceElement[] trace = stack.getStackTrace();
-		for (StackTraceElement e : trace) {
-			String name = e.toString();
-			if ( !name.startsWith("org.stringtemplate.v4") ) return e;
-		}
-		return trace[0];
-	}
+    public int getLine() { return getSTEntryPoint().getLineNumber(); }
+    
+    public StackTraceElement getSTEntryPoint() {
+        StackTraceElement[] trace = stack.getStackTrace();
+        for (StackTraceElement e : trace) {
+            String name = e.toString();
+            if ( !name.startsWith("org.stringtemplate.v4") ) return e;
+        }
+        return trace[0];
+    }
 }
