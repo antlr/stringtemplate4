@@ -33,23 +33,23 @@ package org.stringtemplate.v4.benchmark.oliver;
 import java.math.BigDecimal;
 
 public class Article {
-	public final String name;
-	public final BigDecimal price;
+    public final String name;
+    public final BigDecimal price;
 
-	public Article(String name, BigDecimal price) {
-		super();
-		this.name = name;
-		this.price = price;
-	}
+    public Article(String name, BigDecimal price) {
+        super();
+        this.name = name;
+        this.price = price;
+    }
 
-	// all getters created for freemarker as it can not access the fields
-	// directly (JMTE and ST can)
-	public String getName() {
-		return name;
-	}
+    // all getters created for freemarker as it can not access the fields
+    // directly (JMTE and ST can)
+    public String getName() {
+        return name;
+    }
 
-	public BigDecimal getPrice() {
-		return price;
-	}
+    public BigDecimal getPrice() {
+        return price;
+    }
 
 }

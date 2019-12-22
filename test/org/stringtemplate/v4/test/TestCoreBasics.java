@@ -57,23 +57,23 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testAttr() throws Exception {
-		String template = "hi <name>!";
-		ST st = new ST(template);
-		st.add("name", "Ter");
-		String expected = "hi Ter!";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testAttr() throws Exception {
+        String template = "hi <name>!";
+        ST st = new ST(template);
+        st.add("name", "Ter");
+        String expected = "hi Ter!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testChainAttr() throws Exception {
-		String template = "<x>:<names>!";
-		ST st = new ST(template);
-		st.add("names", "Ter").add("names", "Tom").add("x", 1);
-		String expected = "1:TerTom!";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testChainAttr() throws Exception {
+        String template = "<x>:<names>!";
+        ST st = new ST(template);
+        st.add("names", "Ter").add("names", "Tom").add("x", 1);
+        String expected = "1:TerTom!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testSetUnknownAttr() throws Exception {
         String templates =
@@ -81,15 +81,15 @@ public class TestCoreBasics extends BaseTest {
         ErrorBuffer errors = new ErrorBuffer();
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		group.setListener(errors);
+        group.setListener(errors);
         ST st = group.getInstanceOf("t");
         String result = null;
-		try {
-			st.add("name", "Ter");
-		}
-		catch (IllegalArgumentException iae) {
-			result = iae.getMessage();
-		}
+        try {
+            st.add("name", "Ter");
+        }
+        catch (IllegalArgumentException iae) {
+            result = iae.getMessage();
+        }
         String expected = "no such attribute: name";
         assertEquals(expected, result);
     }
@@ -130,116 +130,116 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testProp() throws Exception {
-		String template = "<u.id>: <u.name>"; // checks field and method getter
-		ST st = new ST(template);
-		st.add("u", new User(1, "parrt"));
-		String expected = "1: parrt";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testProp() throws Exception {
+        String template = "<u.id>: <u.name>"; // checks field and method getter
+        ST st = new ST(template);
+        st.add("u", new User(1, "parrt"));
+        String expected = "1: parrt";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testPropWithNoAttr() throws Exception {
-		String template = "<foo.a>: <ick>";
-		ST st = new ST(template);
-		st.add("foo", new HashMap<String, String>() {{put("a","b");}});
-		String expected = "b: ";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testPropWithNoAttr() throws Exception {
+        String template = "<foo.a>: <ick>";
+        ST st = new ST(template);
+        st.add("foo", new HashMap<String, String>() {{put("a","b");}});
+        String expected = "b: ";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testMapAcrossDictionaryUsesKeys() throws Exception {
-		String template = "<foo:{f | <f>}>"; // checks field and method getter
-		ST st = new ST(template);
-		st.add("foo", new LinkedHashMap<String, String>() {{put("a","b"); put("c","d");}});
-		String expected = "ac";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testMapAcrossDictionaryUsesKeys() throws Exception {
+        String template = "<foo:{f | <f>}>"; // checks field and method getter
+        ST st = new ST(template);
+        st.add("foo", new LinkedHashMap<String, String>() {{put("a","b"); put("c","d");}});
+        String expected = "ac";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testSTProp() throws Exception {
-		String template = "<t.x>"; // get x attr of template t
-		ST st = new ST(template);
-		ST t = new ST("<x>");
-		t.add("x", "Ter");
-		st.add("t", t);
-		String expected = "Ter";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testSTProp() throws Exception {
+        String template = "<t.x>"; // get x attr of template t
+        ST st = new ST(template);
+        ST t = new ST("<x>");
+        t.add("x", "Ter");
+        st.add("t", t);
+        String expected = "Ter";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testBooleanISProp() throws Exception {
-		String template = "<t.manager>"; // call isManager
-		ST st = new ST(template);
-		st.add("t", new User(32, "Ter"));
-		String expected = "true";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testBooleanISProp() throws Exception {
+        String template = "<t.manager>"; // call isManager
+        ST st = new ST(template);
+        st.add("t", new User(32, "Ter"));
+        String expected = "true";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testBooleanHASProp() throws Exception {
-		String template = "<t.parkingSpot>"; // call hasParkingSpot
-		ST st = new ST(template);
-		st.add("t", new User(32, "Ter"));
-		String expected = "true";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testBooleanHASProp() throws Exception {
+        String template = "<t.parkingSpot>"; // call hasParkingSpot
+        ST st = new ST(template);
+        st.add("t", new User(32, "Ter"));
+        String expected = "true";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testNullAttrProp() throws Exception {
-		String template = "<u.id>: <u.name>";
-		ST st = new ST(template);
-		String expected = ": ";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testNullAttrProp() throws Exception {
+        String template = "<u.id>: <u.name>";
+        ST st = new ST(template);
+        String expected = ": ";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testNoSuchProp() throws Exception {
-		ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
-		String template = "<u.qqq>";
-		STGroup group = new STGroup();
-		group.setListener(errors);
-		ST st = new ST(group, template);
-		st.add("u", new User(1, "parrt"));
-		String expected = "";
-		String result = st.render();
-		assertEquals(expected, result);
-		STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
-		STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
-		assertEquals("org.stringtemplate.v4.test.BaseTest$User.qqq", e.propertyName);
-	}
+    @Test public void testNoSuchProp() throws Exception {
+        ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
+        String template = "<u.qqq>";
+        STGroup group = new STGroup();
+        group.setListener(errors);
+        ST st = new ST(group, template);
+        st.add("u", new User(1, "parrt"));
+        String expected = "";
+        String result = st.render();
+        assertEquals(expected, result);
+        STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
+        STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
+        assertEquals("org.stringtemplate.v4.test.BaseTest$User.qqq", e.propertyName);
+    }
 
-	@Test public void testNullIndirectProp() throws Exception {
-		ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
-		STGroup group = new STGroup();
-		group.setListener(errors);
-		String template = "<u.(qqq)>";
-		ST st = new ST(group, template);
-		st.add("u", new User(1, "parrt"));
-		st.add("qqq", null);
-		String expected = "";
-		String result = st.render();
-		assertEquals(expected, result);
-		STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
-		STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
-		assertEquals("org.stringtemplate.v4.test.BaseTest$User.null", e.propertyName);
-	}
+    @Test public void testNullIndirectProp() throws Exception {
+        ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
+        STGroup group = new STGroup();
+        group.setListener(errors);
+        String template = "<u.(qqq)>";
+        ST st = new ST(group, template);
+        st.add("u", new User(1, "parrt"));
+        st.add("qqq", null);
+        String expected = "";
+        String result = st.render();
+        assertEquals(expected, result);
+        STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
+        STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
+        assertEquals("org.stringtemplate.v4.test.BaseTest$User.null", e.propertyName);
+    }
 
-	@Test public void testPropConvertsToString() throws Exception {
-		ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
-		STGroup group = new STGroup();
-		group.setListener(errors);
-		String template = "<u.(name)>";
-		ST st = new ST(group, template);
-		st.add("u", new User(1, "parrt"));
-		st.add("name", 100);
-		String expected = "";
-		String result = st.render();
-		assertEquals(expected, result);
-		STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
-		STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
-		assertEquals("org.stringtemplate.v4.test.BaseTest$User.100", e.propertyName);
-	}
+    @Test public void testPropConvertsToString() throws Exception {
+        ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
+        STGroup group = new STGroup();
+        group.setListener(errors);
+        String template = "<u.(name)>";
+        ST st = new ST(group, template);
+        st.add("u", new User(1, "parrt"));
+        st.add("name", 100);
+        String expected = "";
+        String result = st.render();
+        assertEquals(expected, result);
+        STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
+        STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
+        assertEquals("org.stringtemplate.v4.test.BaseTest$User.100", e.propertyName);
+    }
 
     @Test public void testInclude() throws Exception {
         String template = "load <box()>;";
@@ -255,23 +255,23 @@ public class TestCoreBasics extends BaseTest {
         String template = "load <box(\"arg\")>;";
         ST st = new ST(template);
         st.impl.nativeGroup.defineTemplate("box", "x", "kewl <x> daddy");
-		st.impl.dump();
+        st.impl.dump();
         st.add("name", "Ter");
         String expected = "load kewl arg daddy;";
         String result = st.render();
         assertEquals(expected, result);
     }
 
-	@Test public void testIncludeWithEmptySubtemplateArg() throws Exception {
-		String template = "load <box({})>;";
-		ST st = new ST(template);
-		st.impl.nativeGroup.defineTemplate("box", "x", "kewl <x> daddy");
-		st.impl.dump();
-		st.add("name", "Ter");
-		String expected = "load kewl  daddy;";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testIncludeWithEmptySubtemplateArg() throws Exception {
+        String template = "load <box({})>;";
+        ST st = new ST(template);
+        st.impl.nativeGroup.defineTemplate("box", "x", "kewl <x> daddy");
+        st.impl.dump();
+        st.add("name", "Ter");
+        String expected = "load kewl  daddy;";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testIncludeWithArg2() throws Exception {
         String template = "load <box(\"arg\", foo())>;";
@@ -295,68 +295,68 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testPassThru() throws Exception {
-		String templates =
-			"a(x,y) ::= \"<b(...)>\"\n" +
-			"b(x,y) ::= \"<x><y>\"\n";
-		STGroup group = new STGroupString(templates);
-		ST a = group.getInstanceOf("a");
-		a.add("x", "x");
-		a.add("y", "y");
-		String expected = "xy";
-		String result = a.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testPassThru() throws Exception {
+        String templates =
+            "a(x,y) ::= \"<b(...)>\"\n" +
+            "b(x,y) ::= \"<x><y>\"\n";
+        STGroup group = new STGroupString(templates);
+        ST a = group.getInstanceOf("a");
+        a.add("x", "x");
+        a.add("y", "y");
+        String expected = "xy";
+        String result = a.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testPassThruWithDefaultValue() throws Exception {
-		String templates =
-			"a(x,y) ::= \"<b(...)>\"\n" + // should not set y when it sees "no value" from above
-			"b(x,y={99}) ::= \"<x><y>\"\n";
-		STGroup group = new STGroupString(templates);
-		ST a = group.getInstanceOf("a");
-		a.add("x", "x");
-		String expected = "x99";
-		String result = a.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testPassThruWithDefaultValue() throws Exception {
+        String templates =
+            "a(x,y) ::= \"<b(...)>\"\n" + // should not set y when it sees "no value" from above
+            "b(x,y={99}) ::= \"<x><y>\"\n";
+        STGroup group = new STGroupString(templates);
+        ST a = group.getInstanceOf("a");
+        a.add("x", "x");
+        String expected = "x99";
+        String result = a.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testPassThruWithDefaultValueThatLacksDefinitionAbove() throws Exception {
-		String templates =
-			"a(x) ::= \"<b(...)>\"\n" + // should not set y when it sees "no definition" from above
-			"b(x,y={99}) ::= \"<x><y>\"\n";
-		STGroup group = new STGroupString(templates);
-		ST a = group.getInstanceOf("a");
-		a.add("x", "x");
-		String expected = "x99";
-		String result = a.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testPassThruWithDefaultValueThatLacksDefinitionAbove() throws Exception {
+        String templates =
+            "a(x) ::= \"<b(...)>\"\n" + // should not set y when it sees "no definition" from above
+            "b(x,y={99}) ::= \"<x><y>\"\n";
+        STGroup group = new STGroupString(templates);
+        ST a = group.getInstanceOf("a");
+        a.add("x", "x");
+        String expected = "x99";
+        String result = a.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testPassThruPartialArgs() throws Exception {
-		String templates =
-			"a(x,y) ::= \"<b(y={99},...)>\"\n" +
-			"b(x,y) ::= \"<x><y>\"\n";
-		STGroup group = new STGroupString(templates);
-		ST a = group.getInstanceOf("a");
-		a.add("x", "x");
-		a.add("y", "y");
-		String expected = "x99";
-		String result = a.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testPassThruPartialArgs() throws Exception {
+        String templates =
+            "a(x,y) ::= \"<b(y={99},...)>\"\n" +
+            "b(x,y) ::= \"<x><y>\"\n";
+        STGroup group = new STGroupString(templates);
+        ST a = group.getInstanceOf("a");
+        a.add("x", "x");
+        a.add("y", "y");
+        String expected = "x99";
+        String result = a.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testPassThruNoMissingArgs() throws Exception {
-		String templates =
-			"a(x,y) ::= \"<b(y={99},x={1},...)>\"\n" +
-			"b(x,y) ::= \"<x><y>\"\n";
-		STGroup group = new STGroupString(templates);
-		ST a = group.getInstanceOf("a");
-		a.add("x", "x");
-		a.add("y", "y");
-		String expected = "199";
-		String result = a.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testPassThruNoMissingArgs() throws Exception {
+        String templates =
+            "a(x,y) ::= \"<b(y={99},x={1},...)>\"\n" +
+            "b(x,y) ::= \"<x><y>\"\n";
+        STGroup group = new STGroupString(templates);
+        ST a = group.getInstanceOf("a");
+        a.add("x", "x");
+        a.add("y", "y");
+        String expected = "199";
+        String result = a.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testDefineTemplate() throws Exception {
         STGroup group = new STGroup();
@@ -372,34 +372,34 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testMap() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("inc", "x", "[<x>]");
-		group.defineTemplate("test", "name", "hi <name:inc()>!");
-		ST st = group.getInstanceOf("test");
-		st.add("name", "Ter");
-		st.add("name", "Tom");
-		st.add("name", "Sumana");
-		String expected =
-			"hi [Ter][Tom][Sumana]!";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testMap() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("inc", "x", "[<x>]");
+        group.defineTemplate("test", "name", "hi <name:inc()>!");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        st.add("name", "Tom");
+        st.add("name", "Sumana");
+        String expected =
+            "hi [Ter][Tom][Sumana]!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testIndirectMap() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("inc", "x", "[<x>]");
-		group.defineTemplate("test", "t,name", "<name:(t)()>!");
-		ST st = group.getInstanceOf("test");
-		st.add("t", "inc");
-		st.add("name", "Ter");
-		st.add("name", "Tom");
-		st.add("name", "Sumana");
-		String expected =
-			"[Ter][Tom][Sumana]!";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testIndirectMap() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("inc", "x", "[<x>]");
+        group.defineTemplate("test", "t,name", "<name:(t)()>!");
+        ST st = group.getInstanceOf("test");
+        st.add("t", "inc");
+        st.add("name", "Ter");
+        st.add("name", "Tom");
+        st.add("name", "Sumana");
+        String expected =
+            "[Ter][Tom][Sumana]!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testMapWithExprAsTemplateName() throws Exception {
         String templates =
@@ -448,105 +448,105 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testParallelMapThenMap() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("bold", "x", "[<x>]");
-		group.defineTemplate("test", "names,phones",
-							 "hi <names,phones:{n,p | <n>:<p>;}:bold()>");
-		ST st = group.getInstanceOf("test");
-		st.add("names", "Ter");
-		st.add("names", "Tom");
-		st.add("names", "Sumana");
-		st.add("phones", "x5001");
-		st.add("phones", "x5002");
-		String expected =
-			"hi [Ter:x5001;][Tom:x5002;][Sumana:;]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testParallelMapThenMap() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("bold", "x", "[<x>]");
+        group.defineTemplate("test", "names,phones",
+                             "hi <names,phones:{n,p | <n>:<p>;}:bold()>");
+        ST st = group.getInstanceOf("test");
+        st.add("names", "Ter");
+        st.add("names", "Tom");
+        st.add("names", "Sumana");
+        st.add("phones", "x5001");
+        st.add("phones", "x5002");
+        String expected =
+            "hi [Ter:x5001;][Tom:x5002;][Sumana:;]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testMapThenParallelMap() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("bold", "x", "[<x>]");
-		group.defineTemplate("test", "names,phones",
-							 "hi <[names:bold()],phones:{n,p | <n>:<p>;}>");
-		ST st = group.getInstanceOf("test");
-		st.add("names", "Ter");
-		st.add("names", "Tom");
-		st.add("names", "Sumana");
-		st.add("phones", "x5001");
-		st.add("phones", "x5002");
-		String expected =
-			"hi [Ter]:x5001;[Tom]:x5002;[Sumana]:;";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testMapThenParallelMap() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("bold", "x", "[<x>]");
+        group.defineTemplate("test", "names,phones",
+                             "hi <[names:bold()],phones:{n,p | <n>:<p>;}>");
+        ST st = group.getInstanceOf("test");
+        st.add("names", "Ter");
+        st.add("names", "Tom");
+        st.add("names", "Sumana");
+        st.add("phones", "x5001");
+        st.add("phones", "x5002");
+        String expected =
+            "hi [Ter]:x5001;[Tom]:x5002;[Sumana]:;";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testMapIndexes() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("inc", "x,i", "<i>:<x>");
-		group.defineTemplate("test", "name", "<name:{n|<inc(n,i)>}; separator=\", \">");
-		ST st = group.getInstanceOf("test");
-		st.add("name", "Ter");
-		st.add("name", "Tom");
-		st.add("name", null); // don't count this one
-		st.add("name", "Sumana");
-		String expected =
-			"1:Ter, 2:Tom, 3:Sumana";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testMapIndexes() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("inc", "x,i", "<i>:<x>");
+        group.defineTemplate("test", "name", "<name:{n|<inc(n,i)>}; separator=\", \">");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        st.add("name", "Tom");
+        st.add("name", null); // don't count this one
+        st.add("name", "Sumana");
+        String expected =
+            "1:Ter, 2:Tom, 3:Sumana";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testMapIndexes2() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "name", "<name:{n | <i>:<n>}; separator=\", \">");
-		ST st = group.getInstanceOf("test");
-		st.add("name", "Ter");
-		st.add("name", "Tom");
-		st.add("name", null); // don't count this one. still can't apply subtemplate to null value
-		st.add("name", "Sumana");
-		String expected =
-			"1:Ter, 2:Tom, 3:Sumana";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testMapIndexes2() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "name", "<name:{n | <i>:<n>}; separator=\", \">");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        st.add("name", "Tom");
+        st.add("name", null); // don't count this one. still can't apply subtemplate to null value
+        st.add("name", "Sumana");
+        String expected =
+            "1:Ter, 2:Tom, 3:Sumana";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testMapSingleValue() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("a", "x", "[<x>]");
-		group.defineTemplate("test", "name", "hi <name:a()>!");
-		ST st = group.getInstanceOf("test");
-		st.add("name", "Ter");
-		String expected = "hi [Ter]!";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testMapSingleValue() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("a", "x", "[<x>]");
+        group.defineTemplate("test", "name", "hi <name:a()>!");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        String expected = "hi [Ter]!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testMapNullValue() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("a", "x", "[<x>]");
-		group.defineTemplate("test", "name", "hi <name:a()>!");
-		ST st = group.getInstanceOf("test");
-		String expected = "hi !";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testMapNullValue() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("a", "x", "[<x>]");
+        group.defineTemplate("test", "name", "hi <name:a()>!");
+        ST st = group.getInstanceOf("test");
+        String expected = "hi !";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testMapNullValueInList() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "name", "<name; separator=\", \">");
-		ST st = group.getInstanceOf("test");
-		st.add("name", "Ter");
-		st.add("name", "Tom");
-		st.add("name", null); // don't print this one
-		st.add("name", "Sumana");
-		String expected =
-			"Ter, Tom, Sumana";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testMapNullValueInList() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "name", "<name; separator=\", \">");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        st.add("name", "Tom");
+        st.add("name", null); // don't print this one
+        st.add("name", "Sumana");
+        String expected =
+            "Ter, Tom, Sumana";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testRepeatedMap() throws Exception {
+    @Test public void testRepeatedMap() throws Exception {
      STGroup group = new STGroup();
      group.defineTemplate("a", "x", "[<x>]");
      group.defineTemplate("b", "x", "(<x>)");
@@ -561,37 +561,37 @@ public class TestCoreBasics extends BaseTest {
      assertEquals(expected, result);
  }
 
-	@Test public void testRepeatedMapWithNullValue() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("a", "x", "[<x>]");
-		group.defineTemplate("b", "x", "(<x>)");
-		group.defineTemplate("test", "name", "hi <name:a():b()>!");
-		ST st = group.getInstanceOf("test");
-		st.add("name", "Ter");
-		st.add("name", null);
-		st.add("name", "Sumana");
-		String expected =
-			"hi ([Ter])([Sumana])!";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testRepeatedMapWithNullValue() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("a", "x", "[<x>]");
+        group.defineTemplate("b", "x", "(<x>)");
+        group.defineTemplate("test", "name", "hi <name:a():b()>!");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        st.add("name", null);
+        st.add("name", "Sumana");
+        String expected =
+            "hi ([Ter])([Sumana])!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testRepeatedMapWithNullValueAndNullOption() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("a", "x", "[<x>]");
-		group.defineTemplate("b", "x", "(<x>)");
-		group.defineTemplate("test", "name", "hi <name:a():b(); null={x}>!");
-		ST st = group.getInstanceOf("test");
-		st.add("name", "Ter");
-		st.add("name", null);
-		st.add("name", "Sumana");
-		String expected =
-			"hi ([Ter])x([Sumana])!";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testRepeatedMapWithNullValueAndNullOption() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("a", "x", "[<x>]");
+        group.defineTemplate("b", "x", "(<x>)");
+        group.defineTemplate("test", "name", "hi <name:a():b(); null={x}>!");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        st.add("name", null);
+        st.add("name", "Sumana");
+        String expected =
+            "hi ([Ter])x([Sumana])!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testRoundRobinMap() throws Exception {
+    @Test public void testRoundRobinMap() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("a", "x", "[<x>]");
         group.defineTemplate("b", "x", "(<x>)");
@@ -606,128 +606,128 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testTrueCond() throws Exception {
-		String template = "<if(name)>works<endif>";
-		ST st = new ST(template);
-		st.add("name", "Ter");
-		String expected = "works";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testTrueCond() throws Exception {
+        String template = "<if(name)>works<endif>";
+        ST st = new ST(template);
+        st.add("name", "Ter");
+        String expected = "works";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testEmptyIFTemplate() throws Exception {
-		String template = "<if(x)>fail<elseif(name)><endif>";
-		ST st = new ST(template);
-		st.add("name", "Ter");
-		String expected = "";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
-	@Test public void testCondParens() throws Exception {
-		String template = "<if(!(x||y)&&!z)>works<endif>";
-		ST st = new ST(template);
-		String expected = "works";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
-	@Test public void testFalseCond() throws Exception {
-		String template = "<if(name)>works<endif>";
-		ST st = new ST(template);
-		String expected = "";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
-	@Test public void testFalseCond2() throws Exception {
-		String template = "<if(name)>works<endif>";
-		ST st = new ST(template);
-		st.add("name", null);
-		String expected = "";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
-	@Test public void testFalseCondWithFormalArgs() throws Exception {
-		// insert of indent instr was not working; ok now
-		String dir = getRandomDir();
-		String groupFile =
-			"a(scope) ::= <<" +newline+
-			"foo" +newline+
-			"    <if(scope)>oops<endif>" +newline+
-			"bar" +newline+
-			">>";
-		writeFile(dir, "group.stg", groupFile);
-		STGroupFile group = new STGroupFile(dir+"/group.stg");
-		ST st = group.getInstanceOf("a");
-		st.impl.dump();
-		String expected = "foo" +newline+
-			"bar";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
-	@Test public void testElseIf2() throws Exception {
-		String template =
-			"<if(x)>fail1<elseif(y)>fail2<elseif(z)>works<else>fail3<endif>";
-		ST st = new ST(template);
-		st.add("z", "blort");
-		String expected = "works";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
-	@Test public void testElseIf3() throws Exception {
-		String template =
-			"<if(x)><elseif(y)><elseif(z)>works<else><endif>";
-		ST st = new ST(template);
-		st.add("z", "blort");
-		String expected = "works";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
-
-	@Test public void testNotTrueCond() throws Exception {
-		String template = "<if(!name)>works<endif>";
-		ST st = new ST(template);
+    @Test public void testEmptyIFTemplate() throws Exception {
+        String template = "<if(x)>fail<elseif(name)><endif>";
+        ST st = new ST(template);
         st.add("name", "Ter");
         String expected = "";
         String result = st.render();
         assertEquals(expected, result);
     }
 
-	@Test public void testNotFalseCond() throws Exception {
-		String template = "<if(!name)>works<endif>";
-		ST st = new ST(template);
-		String expected = "works";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testCondParens() throws Exception {
+        String template = "<if(!(x||y)&&!z)>works<endif>";
+        ST st = new ST(template);
+        String expected = "works";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testParensInConditonal() throws Exception {
-		String template = "<if((a||b)&&(c||d))>works<endif>";
-		ST st = new ST(template);
-		st.add("a", true);
-		st.add("b", true);
-		st.add("c", true);
-		st.add("d", true);
-		String expected = "works";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testFalseCond() throws Exception {
+        String template = "<if(name)>works<endif>";
+        ST st = new ST(template);
+        String expected = "";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testParensInConditonal2() throws Exception {
-		String template = "<if((!a||b)&&!(c||d))>broken<else>works<endif>";
-		ST st = new ST(template);
-		st.add("a", true);
-		st.add("b", true);
-		st.add("c", true);
-		st.add("d", true);
-		String expected = "works";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testFalseCond2() throws Exception {
+        String template = "<if(name)>works<endif>";
+        ST st = new ST(template);
+        st.add("name", null);
+        String expected = "";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testFalseCondWithFormalArgs() throws Exception {
+        // insert of indent instr was not working; ok now
+        String dir = getRandomDir();
+        String groupFile =
+            "a(scope) ::= <<" +newline+
+            "foo" +newline+
+            "    <if(scope)>oops<endif>" +newline+
+            "bar" +newline+
+            ">>";
+        writeFile(dir, "group.stg", groupFile);
+        STGroupFile group = new STGroupFile(dir+"/group.stg");
+        ST st = group.getInstanceOf("a");
+        st.impl.dump();
+        String expected = "foo" +newline+
+            "bar";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testElseIf2() throws Exception {
+        String template =
+            "<if(x)>fail1<elseif(y)>fail2<elseif(z)>works<else>fail3<endif>";
+        ST st = new ST(template);
+        st.add("z", "blort");
+        String expected = "works";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testElseIf3() throws Exception {
+        String template =
+            "<if(x)><elseif(y)><elseif(z)>works<else><endif>";
+        ST st = new ST(template);
+        st.add("z", "blort");
+        String expected = "works";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testNotTrueCond() throws Exception {
+        String template = "<if(!name)>works<endif>";
+        ST st = new ST(template);
+        st.add("name", "Ter");
+        String expected = "";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testNotFalseCond() throws Exception {
+        String template = "<if(!name)>works<endif>";
+        ST st = new ST(template);
+        String expected = "works";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testParensInConditonal() throws Exception {
+        String template = "<if((a||b)&&(c||d))>works<endif>";
+        ST st = new ST(template);
+        st.add("a", true);
+        st.add("b", true);
+        st.add("c", true);
+        st.add("d", true);
+        String expected = "works";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
+    @Test public void testParensInConditonal2() throws Exception {
+        String template = "<if((!a||b)&&!(c||d))>broken<else>works<endif>";
+        ST st = new ST(template);
+        st.add("a", true);
+        st.add("b", true);
+        st.add("c", true);
+        st.add("d", true);
+        String expected = "works";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testTrueCondWithElse() throws Exception {
         String template = "<if(name)>works<else>fail<endif>";
@@ -771,14 +771,14 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testOr() throws Exception {
-		String template = "<if(name||notThere)>works<else>fail<endif>";
-		ST st = new ST(template);
-		st.add("name", "Ter");
-		String expected = "works";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testOr() throws Exception {
+        String template = "<if(name||notThere)>works<else>fail<endif>";
+        ST st = new ST(template);
+        st.add("name", "Ter");
+        String expected = "works";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testMapConditionAndEscapeInside() throws Exception {
         String template = "<if(m.name)>works \\\\<endif>";
@@ -791,23 +791,23 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testAnd() throws Exception {
-		String template = "<if(name&&notThere)>fail<else>works<endif>";
-		ST st = new ST(template);
-		st.add("name", "Ter");
-		String expected = "works";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testAnd() throws Exception {
+        String template = "<if(name&&notThere)>fail<else>works<endif>";
+        ST st = new ST(template);
+        st.add("name", "Ter");
+        String expected = "works";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testAndNot() throws Exception {
-		String template = "<if(name&&!notThere)>works<else>fail<endif>";
-		ST st = new ST(template);
-		st.add("name", "Ter");
-		String expected = "works";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testAndNot() throws Exception {
+        String template = "<if(name&&!notThere)>works<else>fail<endif>";
+        ST st = new ST(template);
+        st.add("name", "Ter");
+        String expected = "works";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testCharLiterals() throws Exception {
         ST st = new ST(
@@ -866,210 +866,210 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testSeparator() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
-		ST st = group.getInstanceOf("test");
-		st.add("names", "Ter");
-		st.add("names", "Tom");
-		String expected =
-			"case Ter, case Tom";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testSeparator() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+        ST st = group.getInstanceOf("test");
+        st.add("names", "Ter");
+        st.add("names", "Tom");
+        String expected =
+            "case Ter, case Tom";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testSeparatorInList() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
-		ST st = group.getInstanceOf("test");
-		st.add("names", new ArrayList<String>() {{
-			add("Ter");
-			add("Tom");
-		}});
-		String expected =
-			"case Ter, case Tom";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testSeparatorInList() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+        ST st = group.getInstanceOf("test");
+        st.add("names", new ArrayList<String>() {{
+            add("Ter");
+            add("Tom");
+        }});
+        String expected =
+            "case Ter, case Tom";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testSeparatorInList2() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
-		ST st = group.getInstanceOf("test");
-		st.add("names", "Ter");
-		st.add("names", new ArrayList<String>() {{
-			add("Tom");
-			add("Sriram");
-		}});
-		String expected =
-			"case Ter, case Tom, case Sriram";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testSeparatorInList2() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+        ST st = group.getInstanceOf("test");
+        st.add("names", "Ter");
+        st.add("names", new ArrayList<String>() {{
+            add("Tom");
+            add("Sriram");
+        }});
+        String expected =
+            "case Ter, case Tom, case Sriram";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testSeparatorInArray() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
-		ST st = group.getInstanceOf("test");
-		st.add("names", new String[] { "Ter", "Tom" });
-		String expected =
-			"case Ter, case Tom";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testSeparatorInArray() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+        ST st = group.getInstanceOf("test");
+        st.add("names", new String[] { "Ter", "Tom" });
+        String expected =
+            "case Ter, case Tom";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testSeparatorInArray2() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
-		ST st = group.getInstanceOf("test");
-		st.add("names", "Ter");
-		st.add("names", new String[] { "Tom", "Sriram" });
-		String expected =
-			"case Ter, case Tom, case Sriram";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testSeparatorInArray2() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+        ST st = group.getInstanceOf("test");
+        st.add("names", "Ter");
+        st.add("names", new String[] { "Tom", "Sriram" });
+        String expected =
+            "case Ter, case Tom, case Sriram";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testSeparatorInPrimitiveArray() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
-		ST st = group.getInstanceOf("test");
-		st.add("names", new int[] { 0, 1 });
-		String expected =
-			"case 0, case 1";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testSeparatorInPrimitiveArray() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+        ST st = group.getInstanceOf("test");
+        st.add("names", new int[] { 0, 1 });
+        String expected =
+            "case 0, case 1";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testSeparatorInPrimitiveArray2() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
-		ST st = group.getInstanceOf("test");
-		st.add("names", 0);
-		st.add("names", new int[] { 1, 2 });
-		String expected =
-			"case 0, case 1, case 2";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testSeparatorInPrimitiveArray2() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
+        ST st = group.getInstanceOf("test");
+        st.add("names", 0);
+        st.add("names", new int[] { 1, 2 });
+        String expected =
+            "case 0, case 1, case 2";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	/** (...) forces early eval to string. early eval {@code <(x)>} using new
-	 *  STWriter derived from type of current STWriter. e.g., AutoIndentWriter.
-	 */
+    /** (...) forces early eval to string. early eval {@code <(x)>} using new
+     *  STWriter derived from type of current STWriter. e.g., AutoIndentWriter.
+     */
     @Test public void testEarlyEvalIndent() throws Exception {
-		String templates =
-			"t() ::= <<  abc>>\n" +
-			"main() ::= <<\n" +
-			"<t()>\n" +
-			"<(t())>\n" + // early eval ignores indents; mostly for simply strings
-			"  <t()>\n" +
-			"  <(t())>\n" +
-			">>\n";
+        String templates =
+            "t() ::= <<  abc>>\n" +
+            "main() ::= <<\n" +
+            "<t()>\n" +
+            "<(t())>\n" + // early eval ignores indents; mostly for simply strings
+            "  <t()>\n" +
+            "  <(t())>\n" +
+            ">>\n";
 
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ST st = group.getInstanceOf("main");
-		String result = st.render();
-		String expected =
-			"  abc" + newline +
-			"  abc" + newline +
-			"    abc" + newline +
-			"    abc";
-		assertEquals(expected, result);
-	}
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        ST st = group.getInstanceOf("main");
+        String result = st.render();
+        String expected =
+            "  abc" + newline +
+            "  abc" + newline +
+            "    abc" + newline +
+            "    abc";
+        assertEquals(expected, result);
+    }
 
-	@Test public void testEarlyEvalNoIndent() throws Exception {
-		String templates =
-			"t() ::= <<  abc>>\n" +
-			"main() ::= <<\n" +
-			"<t()>\n" +
-			"<(t())>\n" + // early eval ignores indents; mostly for simply strings
-			"  <t()>\n" +
-			"  <(t())>\n" +
-			">>\n";
+    @Test public void testEarlyEvalNoIndent() throws Exception {
+        String templates =
+            "t() ::= <<  abc>>\n" +
+            "main() ::= <<\n" +
+            "<t()>\n" +
+            "<(t())>\n" + // early eval ignores indents; mostly for simply strings
+            "  <t()>\n" +
+            "  <(t())>\n" +
+            ">>\n";
 
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
-		ST st = group.getInstanceOf("main");
-		StringWriter sw = new StringWriter();
-		NoIndentWriter w = new NoIndentWriter(sw);
-		st.write(w);
-		String result = sw.toString();
-		String expected =
-			"abc" + newline +
-			"abc" + newline +
-			"abc" + newline +
-			"abc";
-		assertEquals(expected, result);
-	}
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
+        ST st = group.getInstanceOf("main");
+        StringWriter sw = new StringWriter();
+        NoIndentWriter w = new NoIndentWriter(sw);
+        st.write(w);
+        String result = sw.toString();
+        String expected =
+            "abc" + newline +
+            "abc" + newline +
+            "abc" + newline +
+            "abc";
+        assertEquals(expected, result);
+    }
 
-	@Test public void testArrayOfTemplates() throws Exception {
-		String template = "<foo>!";
-		ST st = new ST(template);
-		ST[] t = new ST[] {new ST("hi"), new ST("mom")};
-		st.add("foo", t);
-		String expected = "himom!";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testArrayOfTemplates() throws Exception {
+        String template = "<foo>!";
+        ST st = new ST(template);
+        ST[] t = new ST[] {new ST("hi"), new ST("mom")};
+        st.add("foo", t);
+        String expected = "himom!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testArrayOfTemplatesInTemplate() throws Exception {
-		String template = "<foo>!";
-		ST st = new ST(template);
-		ST[] t = new ST[] {new ST("hi"), new ST("mom")};
-		st.add("foo", t);
-		ST wrapper = new ST("<x>");
-		wrapper.add("x", st);
-		String expected = "himom!";
-		String result = wrapper.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testArrayOfTemplatesInTemplate() throws Exception {
+        String template = "<foo>!";
+        ST st = new ST(template);
+        ST[] t = new ST[] {new ST("hi"), new ST("mom")};
+        st.add("foo", t);
+        ST wrapper = new ST("<x>");
+        wrapper.add("x", st);
+        String expected = "himom!";
+        String result = wrapper.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testListOfTemplates() throws Exception {
-		String template = "<foo>!";
-		ST st = new ST(template);
-		List<ST> t = new ArrayList<ST>() {{add(new ST("hi")); add(new ST("mom"));}};
-		st.add("foo", t);
-		String expected = "himom!";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testListOfTemplates() throws Exception {
+        String template = "<foo>!";
+        ST st = new ST(template);
+        List<ST> t = new ArrayList<ST>() {{add(new ST("hi")); add(new ST("mom"));}};
+        st.add("foo", t);
+        String expected = "himom!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testListOfTemplatesInTemplate() throws Exception {
-		String template = "<foo>!";
-		ST st = new ST(template);
-		List<ST> t = new ArrayList<ST>() {{add(new ST("hi")); add(new ST("mom"));}};
-		st.add("foo", t);
-		ST wrapper = new ST("<x>");
-		wrapper.add("x", st);
-		String expected = "himom!";
-		String result = wrapper.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testListOfTemplatesInTemplate() throws Exception {
+        String template = "<foo>!";
+        ST st = new ST(template);
+        List<ST> t = new ArrayList<ST>() {{add(new ST("hi")); add(new ST("mom"));}};
+        st.add("foo", t);
+        ST wrapper = new ST("<x>");
+        wrapper.add("x", st);
+        String expected = "himom!";
+        String result = wrapper.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void playing() throws Exception {
-		String template = "<a:t(x,y),u()>";
-		ST st = new ST(template);
-		st.impl.dump();
-	}
+    @Test public void playing() throws Exception {
+        String template = "<a:t(x,y),u()>";
+        ST st = new ST(template);
+        st.impl.dump();
+    }
 
-	@Test public void testPrototype() {
-		ST prototype = new ST("simple template");
+    @Test public void testPrototype() {
+        ST prototype = new ST("simple template");
 
-		ST st = new ST(prototype);
-		st.add("arg1", "value");
-		assertEquals("simple template", st.render());
+        ST st = new ST(prototype);
+        st.add("arg1", "value");
+        assertEquals("simple template", st.render());
 
-		ST st2 = new ST(prototype);
-		st2.add("arg1", "value");
-		assertEquals("simple template", st2.render());
-	}
+        ST st2 = new ST(prototype);
+        st2.add("arg1", "value");
+        assertEquals("simple template", st2.render());
+    }
 
-	@Test public void testFormat_PositionalArguments() {
-		String n = "n";
-		String p = "p";
-		String expected = "n:p";
-		String actual = ST.format("<%1>:<%2>", n, p);
-		assertEquals(expected, actual);
-	}
+    @Test public void testFormat_PositionalArguments() {
+        String n = "n";
+        String p = "p";
+        String expected = "n:p";
+        String actual = ST.format("<%1>:<%2>", n, p);
+        assertEquals(expected, actual);
+    }
 }

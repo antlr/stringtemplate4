@@ -48,46 +48,46 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testIndirectTemplateInclude() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("foo", "bar");
-		String template = "<(name)()>";
-		group.defineTemplate("test", "name", template);
-		ST st = group.getInstanceOf("test");
-		st.add("name", "foo");
-		String expected = "bar";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testIndirectTemplateInclude() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("foo", "bar");
+        String template = "<(name)()>";
+        group.defineTemplate("test", "name", template);
+        ST st = group.getInstanceOf("test");
+        st.add("name", "foo");
+        String expected = "bar";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testIndirectTemplateIncludeWithArgs() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("foo", "x,y", "<x><y>");
-		String template = "<(name)({1},{2})>";
-		group.defineTemplate("test", "name", template);
-		ST st = group.getInstanceOf("test");
-		st.add("name", "foo");
-		String expected = "12";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testIndirectTemplateIncludeWithArgs() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("foo", "x,y", "<x><y>");
+        String template = "<(name)({1},{2})>";
+        group.defineTemplate("test", "name", template);
+        ST st = group.getInstanceOf("test");
+        st.add("name", "foo");
+        String expected = "12";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test
-	public void testIndirectCallWithPassThru() throws Exception {
-		// pass-through for dynamic template invocation is not supported by the
-		// bytecode representation
-		writeFile(tmpdir, "t.stg",
-			"t1(x) ::= \"<x>\"\n" +
-			"main(x=\"hello\",t=\"t1\") ::= <<\n" +
-			"<(t)(...)>\n" +
-			">>");
-		STGroup group = new STGroupFile(tmpdir + "/t.stg");
-		ErrorBuffer errors = new ErrorBuffer();
-		group.setListener(errors);
-		ST st = group.getInstanceOf("main");
-		assertEquals("t.stg 2:34: mismatched input '...' expecting RPAREN" + newline, errors.toString());
-		assertNull(st);
-	}
+    @Test
+    public void testIndirectCallWithPassThru() throws Exception {
+        // pass-through for dynamic template invocation is not supported by the
+        // bytecode representation
+        writeFile(tmpdir, "t.stg",
+            "t1(x) ::= \"<x>\"\n" +
+            "main(x=\"hello\",t=\"t1\") ::= <<\n" +
+            "<(t)(...)>\n" +
+            ">>");
+        STGroup group = new STGroupFile(tmpdir + "/t.stg");
+        ErrorBuffer errors = new ErrorBuffer();
+        group.setListener(errors);
+        ST st = group.getInstanceOf("main");
+        assertEquals("t.stg 2:34: mismatched input '...' expecting RPAREN" + newline, errors.toString());
+        assertNull(st);
+    }
 
     @Test public void testIndirectTemplateIncludeViaTemplate() throws Exception {
         STGroup group = new STGroup();

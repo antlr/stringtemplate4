@@ -44,56 +44,56 @@ import java.util.Locale;
 
 /** Adapted from Oliver Zeigermann benchmarking */
 public class OliverTest {
-	static STGroup test = new STGroupFile("email.stg");
+    static STGroup test = new STGroupFile("email.stg");
 
-	public void timeEmail(int reps) {
-		ST st = test.getInstanceOf("email");
-		st.add("order", Helper.order);
-		st.add("separator", "----------------");
-		for (int i = 0; i < reps; i++) {
-			st.render();
-		}
-	}
+    public void timeEmail(int reps) {
+        ST st = test.getInstanceOf("email");
+        st.add("order", Helper.order);
+        st.add("separator", "----------------");
+        for (int i = 0; i < reps; i++) {
+            st.render();
+        }
+    }
 
-	public void timeEmailWriteToStringBuffer(int reps) {
-		ST st = test.getInstanceOf("email");
-		st.add("order", Helper.order);
-		st.add("separator", "----------------");
-		for (int i = 0; i < reps; i++) {
-			StringWriter sw = new StringWriter();
-			AutoIndentWriter w = new AutoIndentWriter(sw);
-			try {st.write(w);} catch (IOException ioe) {;}
-		}
-	}
+    public void timeEmailWriteToStringBuffer(int reps) {
+        ST st = test.getInstanceOf("email");
+        st.add("order", Helper.order);
+        st.add("separator", "----------------");
+        for (int i = 0; i < reps; i++) {
+            StringWriter sw = new StringWriter();
+            AutoIndentWriter w = new AutoIndentWriter(sw);
+            try {st.write(w);} catch (IOException ioe) {;}
+        }
+    }
 
-	public void timeEmailWithRenderers(int reps) {
-		STGroup test = new STGroupFile("email.stg");
-		test.registerRenderer(Date.class, new DateRenderer());
-		test.registerRenderer(BigDecimal.class, new BigDecimalRenderer());
-		ST st = test.getInstanceOf("email");
-		st.add("order", Helper.order);
-		st.add("separator", "----------------");
-		for (int i = 0; i < reps; i++) {
-			st.render();
-		}
-	}
+    public void timeEmailWithRenderers(int reps) {
+        STGroup test = new STGroupFile("email.stg");
+        test.registerRenderer(Date.class, new DateRenderer());
+        test.registerRenderer(BigDecimal.class, new BigDecimalRenderer());
+        ST st = test.getInstanceOf("email");
+        st.add("order", Helper.order);
+        st.add("separator", "----------------");
+        for (int i = 0; i < reps; i++) {
+            st.render();
+        }
+    }
 
-	public static class BigDecimalRenderer implements AttributeRenderer {
-		private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(
-				"##,##0.00", DecimalFormatSymbols.getInstance(Locale.GERMANY));
-		private static final String EURO_CHARACTER = "\u20AC";
+    public static class BigDecimalRenderer implements AttributeRenderer {
+        private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(
+                "##,##0.00", DecimalFormatSymbols.getInstance(Locale.GERMANY));
+        private static final String EURO_CHARACTER = "\u20AC";
 
-		public String toString(Object o, String formatString, Locale locale) {
-			if (formatString.equals("currency")) {
-				if (o instanceof BigDecimal) {
-					NumberFormat numberFormat = DECIMAL_FORMAT;
-					String formatted = numberFormat.format(o) + " "
-							+ EURO_CHARACTER;
-					return formatted;
-				}
-			}
-			return o.toString();
-		}
-	}
+        public String toString(Object o, String formatString, Locale locale) {
+            if (formatString.equals("currency")) {
+                if (o instanceof BigDecimal) {
+                    NumberFormat numberFormat = DECIMAL_FORMAT;
+                    String formatted = numberFormat.format(o) + " "
+                            + EURO_CHARACTER;
+                    return formatted;
+                }
+            }
+            return o.toString();
+        }
+    }
 
 }

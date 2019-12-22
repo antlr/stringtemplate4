@@ -48,39 +48,39 @@ import static org.junit.Assert.assertEquals;
 
 public class TestRenderers extends BaseTest {
 
-	String javaVersion = System.getProperty("java.version");
+    String javaVersion = System.getProperty("java.version");
 
-	// Make sure to use the US Locale during the tests
-	private Locale origLocale;
+    // Make sure to use the US Locale during the tests
+    private Locale origLocale;
 
-	@Before
-	@Override
-	public void setUp() {
-		super.setUp();
-		origLocale = Locale.getDefault();
-		Locale.setDefault(Locale.US);
-	}
+    @Before
+    @Override
+    public void setUp() {
+        super.setUp();
+        origLocale = Locale.getDefault();
+        Locale.setDefault(Locale.US);
+    }
 
-	@After
-	public void tearDown() {
-		Locale.setDefault(origLocale);
-	}
+    @After
+    public void tearDown() {
+        Locale.setDefault(origLocale);
+    }
 
-	@Test public void testRendererForGroup() throws Exception {
-		String templates =
-				"dateThing(created) ::= \"datetime: <created>\"\n";
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/t.stg");
-		group.registerRenderer(GregorianCalendar.class, new DateRenderer());
-		ST st = group.getInstanceOf("dateThing");
-		st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
-		String expecting = "datetime: 7/5/05, 12:00 AM";
-		if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
-			expecting = "datetime: 7/5/05 12:00 AM";
-		}
-		String result = st.render();
-		assertEquals(expecting, result);
-	}
+    @Test public void testRendererForGroup() throws Exception {
+        String templates =
+                "dateThing(created) ::= \"datetime: <created>\"\n";
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(GregorianCalendar.class, new DateRenderer());
+        ST st = group.getInstanceOf("dateThing");
+        st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
+        String expecting = "datetime: 7/5/05, 12:00 AM";
+        if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
+            expecting = "datetime: 7/5/05 12:00 AM";
+        }
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
 
     @Test public void testRendererWithFormat() throws Exception {
         String templates =
@@ -104,10 +104,10 @@ public class TestRenderers extends BaseTest {
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
         String expecting = " datetime: 7/5/05, 12:00 AM ";
-	    if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
-		    expecting = " datetime: 7/5/05 12:00 AM ";
-	    }
-	    String result = st.render();
+        if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
+            expecting = " datetime: 7/5/05 12:00 AM ";
+        }
+        String result = st.render();
         assertEquals(expecting, result);
     }
 
@@ -120,19 +120,19 @@ public class TestRenderers extends BaseTest {
         ST st = group.getInstanceOf("dateThing");
         TimeZone origTimeZone = TimeZone.getDefault();
         try {
-        	// set Timezone to "PDT"
-        	TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
-        	st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
-        	String expecting = " datetime: Tuesday, July 5, 2005 at 12:00:00 AM Pacific Daylight Time ";
-	        if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
-		        expecting = " datetime: Tuesday, July 5, 2005 12:00:00 AM PDT ";
-	        }
-	        String result = st.render();
-        	assertEquals(expecting, result);
+            // set Timezone to "PDT"
+            TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
+            st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
+            String expecting = " datetime: Tuesday, July 5, 2005 at 12:00:00 AM Pacific Daylight Time ";
+            if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
+                expecting = " datetime: Tuesday, July 5, 2005 12:00:00 AM PDT ";
+            }
+            String result = st.render();
+            assertEquals(expecting, result);
         }
         finally {
-           	// Restore original Timezone
-           	TimeZone.setDefault(origTimeZone);
+            // Restore original Timezone
+            TimeZone.setDefault(origTimeZone);
         }
    }
 
@@ -178,36 +178,36 @@ public class TestRenderers extends BaseTest {
         assertEquals(expecting, result);
     }
 
-	@Test public void testStringRendererWithTemplateInclude_cap() throws Exception {
-		// must toString the t() ref before applying format
-		String templates =
-				"foo(x) ::= << <(t()); format=\"cap\"> >>\n" +
-				"t() ::= <<ack>>\n";
+    @Test public void testStringRendererWithTemplateInclude_cap() throws Exception {
+        // must toString the t() ref before applying format
+        String templates =
+                "foo(x) ::= << <(t()); format=\"cap\"> >>\n" +
+                "t() ::= <<ack>>\n";
 
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/t.stg");
-		group.registerRenderer(String.class, new StringRenderer());
-		ST st = group.getInstanceOf("foo");
-		st.add("x", "hi");
-		String expecting = " Ack ";
-		String result = st.render();
-		assertEquals(expecting, result);
-	}
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(String.class, new StringRenderer());
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "hi");
+        String expecting = " Ack ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
 
-	@Test public void testStringRendererWithSubtemplateInclude_cap() throws Exception {
-		String templates =
-				"foo(x) ::= << <({ack}); format=\"cap\"> >>\n" +
-				"t() ::= <<ack>>\n";
+    @Test public void testStringRendererWithSubtemplateInclude_cap() throws Exception {
+        String templates =
+                "foo(x) ::= << <({ack}); format=\"cap\"> >>\n" +
+                "t() ::= <<ack>>\n";
 
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/t.stg");
-		group.registerRenderer(String.class, new StringRenderer());
-		ST st = group.getInstanceOf("foo");
-		st.add("x", "hi");
-		String expecting = " Ack ";
-		String result = st.render();
-		assertEquals(expecting, result);
-	}
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(String.class, new StringRenderer());
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "hi");
+        String expecting = " Ack ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
 
     @Test public void testStringRendererWithFormat_cap_emptyValue() throws Exception {
         String templates =
@@ -295,20 +295,20 @@ public class TestRenderers extends BaseTest {
         assertEquals(expecting, result);
     }
 
-	@Test public void testInstanceofRenderer() throws Exception {
-		String templates =
-				"numberThing(x,y,z) ::= \"numbers: <x>, <y>; <z>\"\n";
-		writeFile(tmpdir, "t.stg", templates);
-		STGroup group = new STGroupFile(tmpdir+"/t.stg");
-		group.registerRenderer(Number.class, new NumberRenderer());
-		ST st = group.getInstanceOf("numberThing");
-		st.add("x", -2100);
-		st.add("y", 3.14159);
-		st.add("z", "hi");
-		String expecting = "numbers: -2100, 3.14159; hi";
-		String result = st.render();
-		assertEquals(expecting, result);
-	}
+    @Test public void testInstanceofRenderer() throws Exception {
+        String templates =
+                "numberThing(x,y,z) ::= \"numbers: <x>, <y>; <z>\"\n";
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(Number.class, new NumberRenderer());
+        ST st = group.getInstanceOf("numberThing");
+        st.add("x", -2100);
+        st.add("y", 3.14159);
+        st.add("z", "hi");
+        String expecting = "numbers: -2100, 3.14159; hi";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
 
     @Test public void testLocaleWithNumberRenderer() throws Exception {
         String templates =
@@ -373,20 +373,20 @@ public class TestRenderers extends BaseTest {
         assertEquals(expecting, result);
     }
 
-	@Test public void testDateRendererWithLocale() {
-		String input = "<date; format=\"dd 'de' MMMMM 'de' yyyy\">";
-		STGroup group = new STGroup();
-		group.registerRenderer(Calendar.class, new DateRenderer());
-		ST st = new ST(group, input);
+    @Test public void testDateRendererWithLocale() {
+        String input = "<date; format=\"dd 'de' MMMMM 'de' yyyy\">";
+        STGroup group = new STGroup();
+        group.registerRenderer(Calendar.class, new DateRenderer());
+        ST st = new ST(group, input);
 
-		Calendar cal = Calendar.getInstance();
-		cal.set(2012, Calendar.JUNE, 12);
-		st.add("date", cal);
+        Calendar cal = Calendar.getInstance();
+        cal.set(2012, Calendar.JUNE, 12);
+        st.add("date", cal);
 
-		String expected = "12 de junho de 2012";
-		if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
-			expected = "12 de Junho de 2012";
-		}
-		assertEquals(expected, st.render(new Locale("pt")));
-	}
+        String expected = "12 de junho de 2012";
+        if ( javaVersion.startsWith("1.6") || javaVersion.startsWith("1.7") || javaVersion.startsWith("1.8") ) {
+            expected = "12 de Junho de 2012";
+        }
+        assertEquals(expected, st.render(new Locale("pt")));
+    }
 }

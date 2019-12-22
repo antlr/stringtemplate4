@@ -54,29 +54,29 @@ public class TestFunctions extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testLength() throws Exception {
-		String template = "<length(names)>";
-		org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
-		List<String> names = new ArrayList<String>() {
-			{add("Ter"); add("Tom");}
-		};
-		st.add("names", names);
-		String expected = "2";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testLength() throws Exception {
+        String template = "<length(names)>";
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
+        List<String> names = new ArrayList<String>() {
+            {add("Ter"); add("Tom");}
+        };
+        st.add("names", names);
+        String expected = "2";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testLengthWithNullValues() throws Exception {
-		String template = "<length(names)>";
-		org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
-		List<String> names = new ArrayList<String>() {
-			{add("Ter"); add(null); add("Tom"); add(null); }
-		};
-		st.add("names", names);
-		String expected = "4";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testLengthWithNullValues() throws Exception {
+        String template = "<length(names)>";
+        org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(template);
+        List<String> names = new ArrayList<String>() {
+            {add("Ter"); add(null); add("Tom"); add(null); }
+        };
+        st.add("names", names);
+        String expected = "4";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testFirstOp() throws Exception {
         org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
@@ -286,69 +286,69 @@ public class TestFunctions extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-	@Test public void testStripOp() throws Exception {
-		ST e = new org.stringtemplate.v4.ST(
-				"<strip(names); null=\"n/a\">"
-			);
-		e.add("names", null);
-		e.add("names", "Tom");
-		e.add("names", null);
-		e.add("names", null);
-		e.add("names", "Sriram");
-		e.add("names", null);
-		String expecting = "TomSriram";
-		assertEquals(expecting, e.render());
-	}
+    @Test public void testStripOp() throws Exception {
+        ST e = new org.stringtemplate.v4.ST(
+                "<strip(names); null=\"n/a\">"
+            );
+        e.add("names", null);
+        e.add("names", "Tom");
+        e.add("names", null);
+        e.add("names", null);
+        e.add("names", "Sriram");
+        e.add("names", null);
+        String expecting = "TomSriram";
+        assertEquals(expecting, e.render());
+    }
 
-	@Test public void testStripOpList() throws Exception {
-		ST e = new ST(
-				"<strip(names); null=\"n/a\">"
-			);
-		e.add("names", Arrays.asList(null, "Tom", null, null, "Sriram", null));
-		String expecting = "TomSriram";
-		assertEquals(expecting, e.render());
-	}
+    @Test public void testStripOpList() throws Exception {
+        ST e = new ST(
+                "<strip(names); null=\"n/a\">"
+            );
+        e.add("names", Arrays.asList(null, "Tom", null, null, "Sriram", null));
+        String expecting = "TomSriram";
+        assertEquals(expecting, e.render());
+    }
 
-	@Test public void testStripOpArray() throws Exception {
-		ST e = new ST(
-				"<strip(names); null=\"n/a\">"
-			);
-		e.add("names", new String[] { null, "Tom", null, null, "Sriram", null });
-		String expecting = "TomSriram";
-		assertEquals(expecting, e.render());
-	}
+    @Test public void testStripOpArray() throws Exception {
+        ST e = new ST(
+                "<strip(names); null=\"n/a\">"
+            );
+        e.add("names", new String[] { null, "Tom", null, null, "Sriram", null });
+        String expecting = "TomSriram";
+        assertEquals(expecting, e.render());
+    }
 
-	@Test public void testLengthStrip() throws Exception {
-		ST e = new org.stringtemplate.v4.ST(
-				"<length(strip(names))>"
-			);
-		e.add("names", null);
-		e.add("names", "Tom");
-		e.add("names", null);
-		e.add("names", null);
-		e.add("names", "Sriram");
-		e.add("names", null);
-		String expecting = "2";
-		assertEquals(expecting, e.render());
-	}
+    @Test public void testLengthStrip() throws Exception {
+        ST e = new org.stringtemplate.v4.ST(
+                "<length(strip(names))>"
+            );
+        e.add("names", null);
+        e.add("names", "Tom");
+        e.add("names", null);
+        e.add("names", null);
+        e.add("names", "Sriram");
+        e.add("names", null);
+        String expecting = "2";
+        assertEquals(expecting, e.render());
+    }
 
-	@Test public void testLengthStripList() throws Exception {
-		ST e = new ST(
-				"<length(strip(names))>"
-			);
-		e.add("names", Arrays.asList(null, "Tom", null, null, "Sriram", null));
-		String expecting = "2";
-		assertEquals(expecting, e.render());
-	}
+    @Test public void testLengthStripList() throws Exception {
+        ST e = new ST(
+                "<length(strip(names))>"
+            );
+        e.add("names", Arrays.asList(null, "Tom", null, null, "Sriram", null));
+        String expecting = "2";
+        assertEquals(expecting, e.render());
+    }
 
-	@Test public void testLengthStripArray() throws Exception {
-		ST e = new ST(
-				"<length(strip(names))>"
-			);
-		e.add("names", new String[] { null, "Tom", null, null, "Sriram", null });
-		String expecting = "2";
-		assertEquals(expecting, e.render());
-	}
+    @Test public void testLengthStripArray() throws Exception {
+        ST e = new ST(
+                "<length(strip(names))>"
+            );
+        e.add("names", new String[] { null, "Tom", null, null, "Sriram", null });
+        String expecting = "2";
+        assertEquals(expecting, e.render());
+    }
 
     @Test public void testCombinedOp() throws Exception {
         // replace first of yours with first of mine
@@ -689,54 +689,54 @@ public class TestFunctions extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-	@Test public void testFirstWithCatAttribute() throws Exception {
-		ST e = new org.stringtemplate.v4.ST(
-				"<first([names,phones])>"
-			);
-		e.add("names", "Ter");
-		e.add("names", "Tom");
-		e.add("phones", "1");
-		e.add("phones", "2");
-		String expecting = "Ter";
-		assertEquals(expecting, e.render());
-	}
+    @Test public void testFirstWithCatAttribute() throws Exception {
+        ST e = new org.stringtemplate.v4.ST(
+                "<first([names,phones])>"
+            );
+        e.add("names", "Ter");
+        e.add("names", "Tom");
+        e.add("phones", "1");
+        e.add("phones", "2");
+        String expecting = "Ter";
+        assertEquals(expecting, e.render());
+    }
 
-	@Test public void testFirstWithListOfMaps() throws Exception {
-		org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
-				"<first(maps).Ter>"
-			);
-		final Map<String, String> m1 = new HashMap<String, String>();
-		final Map<String, String> m2 = new HashMap<String, String>();
-		m1.put("Ter", "x5707");
-		e.add("maps", m1);
-		m2.put("Tom", "x5332");
-		e.add("maps", m2);
-		String expecting = "x5707";
-		assertEquals(expecting, e.render());
+    @Test public void testFirstWithListOfMaps() throws Exception {
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
+                "<first(maps).Ter>"
+            );
+        final Map<String, String> m1 = new HashMap<String, String>();
+        final Map<String, String> m2 = new HashMap<String, String>();
+        m1.put("Ter", "x5707");
+        e.add("maps", m1);
+        m2.put("Tom", "x5332");
+        e.add("maps", m2);
+        String expecting = "x5707";
+        assertEquals(expecting, e.render());
 
-		List<Map<String, String>> list = new ArrayList<Map<String, String>>() {{add(m1); add(m2);}};
-		e.add("maps", list);
-		expecting = "x5707";
-		assertEquals(expecting, e.render());
-	}
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>() {{add(m1); add(m2);}};
+        e.add("maps", list);
+        expecting = "x5707";
+        assertEquals(expecting, e.render());
+    }
 
-	@Test public void testFirstWithListOfMaps2() throws Exception {
-		org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
-				"<first(maps):{ m | <m>!}>"
-			);
-		final Map<String, String> m1 = new HashMap<String, String>();
-		final Map<String, String> m2 = new HashMap<String, String>();
-		m1.put("Ter", "x5707");
-		e.add("maps", m1);
-		m2.put("Tom", "x5332");
-		e.add("maps", m2);
-		String expecting = "Ter!";
-		assertEquals(expecting, e.render());
-		List<Map<String, String>> list = new ArrayList<Map<String, String>>() {{add(m1); add(m2);}};
-		e.add("maps", list);
-		expecting = "Ter!";
-		assertEquals(expecting, e.render());
-	}
+    @Test public void testFirstWithListOfMaps2() throws Exception {
+        org.stringtemplate.v4.ST e = new org.stringtemplate.v4.ST(
+                "<first(maps):{ m | <m>!}>"
+            );
+        final Map<String, String> m1 = new HashMap<String, String>();
+        final Map<String, String> m2 = new HashMap<String, String>();
+        m1.put("Ter", "x5707");
+        e.add("maps", m1);
+        m2.put("Tom", "x5332");
+        e.add("maps", m2);
+        String expecting = "Ter!";
+        assertEquals(expecting, e.render());
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>() {{add(m1); add(m2);}};
+        e.add("maps", list);
+        expecting = "Ter!";
+        assertEquals(expecting, e.render());
+    }
 
     @Test public void testTrim() throws Exception {
         ST e = new org.stringtemplate.v4.ST(

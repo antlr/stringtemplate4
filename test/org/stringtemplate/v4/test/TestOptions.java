@@ -36,30 +36,30 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import static org.junit.Assert.assertEquals;
 
 public class TestOptions extends BaseTest {
-	@Test public void testSeparator() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
-		ST st = group.getInstanceOf("test");
-		st.add("name", "Ter");
-		st.add("name", "Tom");
-		st.add("name", "Sumana");
-		String expected = "hi Ter, Tom, Sumana!";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testSeparator() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        st.add("name", "Tom");
+        st.add("name", "Sumana");
+        String expected = "hi Ter, Tom, Sumana!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testSeparatorWithSpaces() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "name", "hi <name; separator= \", \">!");
-		ST st = group.getInstanceOf("test");
-		System.out.println(st.impl.ast.toStringTree());
-		st.add("name", "Ter");
-		st.add("name", "Tom");
-		st.add("name", "Sumana");
-		String expected = "hi Ter, Tom, Sumana!";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testSeparatorWithSpaces() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "name", "hi <name; separator= \", \">!");
+        ST st = group.getInstanceOf("test");
+        System.out.println(st.impl.ast.toStringTree());
+        st.add("name", "Ter");
+        st.add("name", "Tom");
+        st.add("name", "Sumana");
+        String expected = "hi Ter, Tom, Sumana!";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testAttrSeparator() throws Exception {
         STGroup group = new STGroup();
@@ -117,7 +117,7 @@ public class TestOptions extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; null=\"n/a\", separator=\", \">!");
         ST st = group.getInstanceOf("test");
-		st.impl.dump();
+        st.impl.dump();
         st.add("name", "Ter");
         st.add("name", null);
         st.add("name", "Sumana");
@@ -126,42 +126,42 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-	@Test public void testNullValueAndNullOption() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "name", "<name; null=\"n/a\">");
-		ST st = group.getInstanceOf("test");
-		st.add("name", null);
-		String expected = "n/a";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testNullValueAndNullOption() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "name", "<name; null=\"n/a\">");
+        ST st = group.getInstanceOf("test");
+        st.add("name", null);
+        String expected = "n/a";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testListApplyWithNullValueAndNullOption() throws Exception {
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "name", "<name:{n | <n>}; null=\"n/a\">");
-		ST st = group.getInstanceOf("test");
-		st.add("name", "Ter");
-		st.add("name", null);
-		st.add("name", "Sumana");
-		String expected = "Tern/aSumana";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testListApplyWithNullValueAndNullOption() throws Exception {
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "name", "<name:{n | <n>}; null=\"n/a\">");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        st.add("name", null);
+        st.add("name", "Sumana");
+        String expected = "Tern/aSumana";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
-	@Test public void testDoubleListApplyWithNullValueAndNullOption() throws Exception {
-		// first apply sends [ST, null, ST] to second apply, which puts [] around
-		// the value.  This verifies that null not blank comes out of first apply
-		// since we don't get [null].
-		STGroup group = new STGroup();
-		group.defineTemplate("test", "name", "<name:{n | <n>}:{n | [<n>]}; null=\"n/a\">");
-		ST st = group.getInstanceOf("test");
-		st.add("name", "Ter");
-		st.add("name", null);
-		st.add("name", "Sumana");
-		String expected = "[Ter]n/a[Sumana]";
-		String result = st.render();
-		assertEquals(expected, result);
-	}
+    @Test public void testDoubleListApplyWithNullValueAndNullOption() throws Exception {
+        // first apply sends [ST, null, ST] to second apply, which puts [] around
+        // the value.  This verifies that null not blank comes out of first apply
+        // since we don't get [null].
+        STGroup group = new STGroup();
+        group.defineTemplate("test", "name", "<name:{n | <n>}:{n | [<n>]}; null=\"n/a\">");
+        ST st = group.getInstanceOf("test");
+        st.add("name", "Ter");
+        st.add("name", null);
+        st.add("name", "Sumana");
+        String expected = "[Ter]n/a[Sumana]";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
 
     @Test public void testMissingValueAndNullOption() throws Exception {
         STGroup group = new STGroup();
@@ -186,8 +186,8 @@ public class TestOptions extends BaseTest {
     @Test public void testIllegalOption() throws Exception {
         ErrorBuffer errors = new ErrorBuffer();
         STGroup group = new STGroup();
-		group.setListener(errors);
-		group.defineTemplate("test", "name", "<name; bad=\"ugly\">");
+        group.setListener(errors);
+        group.defineTemplate("test", "name", "<name; bad=\"ugly\">");
         ST st = group.getInstanceOf("test");
         st.add("name", "Ter");
         String expected = "Ter";
