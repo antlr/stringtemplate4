@@ -40,11 +40,10 @@ import java.util.Locale;
  *  <li>{@code xml-encode}:</li>
  * </ul>
  */
-public class StringRenderer implements AttributeRenderer {
+public class StringRenderer implements AttributeRenderer<String> {
     // trim(s) and strlen(s) built-in funcs; these are format options
     @Override
-    public String toString(Object o, String formatString, Locale locale) {
-        String s = (String)o;
+    public String toString(String s, String formatString, Locale locale) {
         if ( formatString==null ) return s;
         if ( formatString.equals("upper") ) return s.toUpperCase(locale);
         if ( formatString.equals("lower") ) return s.toLowerCase(locale);

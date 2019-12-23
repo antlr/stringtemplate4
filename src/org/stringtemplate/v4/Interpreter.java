@@ -793,7 +793,7 @@ public class Interpreter {
         String formatString = null;
         if ( options!=null ) formatString = options[Option.FORMAT.ordinal()];
         // ask the native group defining the surrounding template for the renderer
-        AttributeRenderer r = scope.st.impl.nativeGroup.getAttributeRenderer(o.getClass());
+        AttributeRenderer<? super Object> r = scope.st.impl.nativeGroup.getAttributeRenderer(o.getClass());
         String v;
         if ( r!=null ) v = r.toString(o, formatString, locale);
         else v = o.toString();

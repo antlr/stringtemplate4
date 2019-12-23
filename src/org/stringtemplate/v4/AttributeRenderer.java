@@ -41,7 +41,10 @@ import java.util.Locale;
  * <p>
  * {@code formatString} can be {@code null} but {@code locale} will at least be
  * {@link Locale#getDefault}.</p>
+ *
+ * @param <T>
+ *     the type of values this renderer can handle.
  */
-public interface AttributeRenderer {
-    public String toString(Object o, String formatString, Locale locale);
+public interface AttributeRenderer<T> {
+    String toString(T value, String formatString, Locale locale);
 }

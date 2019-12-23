@@ -147,6 +147,7 @@ public class STGroup {
      *  <p>
      *  This structure is synchronized.</p>
      */
+    @SuppressWarnings("rawtypes")
     protected Map<Class<?>, AttributeRenderer> renderers;
 
     /** A dictionary that allows people to register a model adaptor for
@@ -754,17 +755,18 @@ public class STGroup {
      *  object in question is an instance of {@code attributeType}.  Recursively
      *  set renderer into all import groups.
      */
-    public void registerRenderer(Class<?> attributeType, AttributeRenderer r) {
+    public <T> void registerRenderer(Class<? extends T> attributeType, AttributeRenderer<? super T> r) {
         registerRenderer(attributeType, r, true);
     }
 
-    public void registerRenderer(Class<?> attributeType, AttributeRenderer r, boolean recursive) {
+    public <T> void registerRenderer(Class<? extends T> attributeType, AttributeRenderer<? super T> r, boolean recursive) {
         if ( attributeType.isPrimitive() ) {
             throw new IllegalArgumentException("can't register renderer for primitive type "+
                                                attributeType.getSimpleName());
         }
 
         if ( renderers == null ) {
+            //noinspection rawtypes
             renderers = Collections.synchronizedMap(new TypeRegistry<AttributeRenderer>());
         }
 
@@ -789,11 +791,12 @@ public class STGroup {
      *  have multiple renderers for {@code String}, say, then just make uber combined
      *  renderer with more specific format names.</p>
      */
-    public AttributeRenderer getAttributeRenderer(Class<?> attributeType) {
+    public <T> AttributeRenderer<? super T> getAttributeRenderer(Class<? extends T> attributeType) {
         if ( renderers==null ) {
             return null;
         }
 
+        //noinspection unchecked
         return renderers.get(attributeType);
     }
 
