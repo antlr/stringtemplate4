@@ -22,7 +22,7 @@ See [Template expressions](templates.md#expressions)
 |`<a1,a2,...,aN:{argument-list \| anonymous-template}>`|Parallel list iteration. March through the values of the attributes a1..aN, setting the values to the arguments in argument-list in the same order. Apply the anonymous template.|
 |`<attribute:t1(),t2(),`...`,tN()>`|Apply an alternating list of templates to the elements of attribute. The template names may include argument lists.|
 |`\<` or `\>`|escaped delimiter prevents `<` or `>` from starting an attribute expression and results in that single character.|
-|`<\ >, <\n>, <\t>, <\r>`|special character(s): space, newline, tab, carriage return. Can have multiple in single `<...>` expression.|
+|`<\ >, <\n>, <\t>`|special character(s): space, newline, tab. Can have multiple in single `<...>` expression, e.g. `<\t\t>`.|
 |`<\uXXXX>`|Unicode character(s). Can have multiple in single `<...>` expression.|
 |`<\\>`|Ignore the immediately following newline char. Allows you to put a newline in the template to better format it without actually inserting a newline into the output|
 |`<! comment !>`|Comments, ignored by StringTemplate.|
