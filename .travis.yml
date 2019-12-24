@@ -2,6 +2,10 @@
 
 language: java
 
+# required for UI tests
+services:
+  - xvfb
+
 matrix:
   include:
     # minimum
@@ -9,7 +13,7 @@ matrix:
     # - dist: trusty
     #   jdk: openjdk6
     # LTS
-    - dist: trusty
+    - dist: xenial
       jdk: openjdk8
     # LTS
     - dist: xenial
