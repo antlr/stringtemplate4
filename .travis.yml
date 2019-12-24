@@ -1,11 +1,28 @@
 # --------------- General Settings ---------------
 
 language: java
-jdk:
-  - openjdk6  # minimum
-  - openjdk8  # LTS
-  - openjdk11 # LTS
-  - openjdk13 # latest
+
+matrix:
+  include:
+    # minimum
+    - dist: trusty
+      jdk: openjdk6
+      # workaround from https://github.com/travis-ci/travis-ci/issues/9713
+      addons:
+        apt:
+          packages:
+            - openjdk-6-jdk
+      before_install:
+        - jdk_switcher use openjdk6
+    # LTS
+    - dist: trusty
+      jdk: openjdk8
+    # LTS
+    - dist: xenial
+      jdk: openjdk11
+    # latest
+    - dist: xenial
+      jdk: openjdk13
 
 # --------------- Maven Cache ---------------
 
