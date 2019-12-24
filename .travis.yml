@@ -1,0 +1,15 @@
+# --------------- General Settings ---------------
+
+language: java
+jdk:
+  - openjdk6  # minimum
+  - openjdk8  # LTS
+  - openjdk11 # LTS
+  - openjdk13 # latest
+
+# --------------- Maven Cache ---------------
+
+cache:
+  directories:
+    - .autoconf
+    - $HOME/.m2
