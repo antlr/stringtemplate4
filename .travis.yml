@@ -1,26 +1,18 @@
 # --------------- General Settings ---------------
 
+dist: xenial
 language: java
+
+jdk:
+  # unfortunately JDK 6 is no longer support by Travis CI
+  # - openjdk6  # minimum
+  - openjdk8  # LTS
+  - openjdk11 # LTS
+  - openjdk13 # latest
 
 # required for UI tests
 services:
   - xvfb
-
-matrix:
-  include:
-    # minimum
-    # unfortunately JDK 6 is no longer support by Travis CI
-    # - dist: trusty
-    #   jdk: openjdk6
-    # LTS
-    - dist: xenial
-      jdk: openjdk8
-    # LTS
-    - dist: xenial
-      jdk: openjdk11
-    # latest
-    - dist: xenial
-      jdk: openjdk13
 
 # --------------- Maven Cache ---------------
 
