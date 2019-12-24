@@ -5,15 +5,9 @@ language: java
 matrix:
   include:
     # minimum
-    - dist: trusty
-      jdk: openjdk6
-      # workaround from https://github.com/travis-ci/travis-ci/issues/9713
-      addons:
-        apt:
-          packages:
-            - openjdk-6-jdk
-      before_install:
-        - jdk_switcher use openjdk6
+    # unfortunately JDK 6 is no longer support by Travis CI
+    # - dist: trusty
+    #   jdk: openjdk6
     # LTS
     - dist: trusty
       jdk: openjdk8
