@@ -792,11 +792,7 @@ public class Interpreter {
     protected int writePOJO(STWriter out, InstanceScope scope, Object o, String[] options) throws IOException {
         String formatString = null;
         if ( options!=null ) formatString = options[Option.FORMAT.ordinal()];
-        // ask the native group defining the surrounding template for the renderer
-        AttributeRenderer r = scope.st.impl.nativeGroup.getAttributeRenderer(o.getClass());
-        String v;
-        if ( r!=null ) v = r.toString(o, formatString, locale);
-        else v = o.toString();
+        String v = renderObject(scope, formatString, o, o.getClass());
         int n;
         if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
             n = out.write(v, options[Option.WRAP.ordinal()]);
@@ -805,6 +801,16 @@ public class Interpreter {
             n = out.write(v);
         }
         return n;
+    }
+
+    private <T> String renderObject(InstanceScope scope, String formatString, T o, Class<? extends T> attributeType) {
+        // ask the native group defining the surrounding template for the renderer
+        AttributeRenderer<? super T> r = scope.st.impl.nativeGroup.getAttributeRenderer(attributeType);
+        if ( r!=null ) {
+            return r.toString(o, formatString, locale);
+        } else {
+            return o.toString();
+        }
     }
 
     protected int getExprStartChar(InstanceScope scope) {

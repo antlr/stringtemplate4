@@ -147,7 +147,7 @@ public class STGroup {
      *  <p>
      *  This structure is synchronized.</p>
      */
-    protected Map<Class<?>, AttributeRenderer> renderers;
+    protected Map<Class<?>, AttributeRenderer<?>> renderers;
 
     /** A dictionary that allows people to register a model adaptor for
      *  a particular kind of object (subclass or implementation). Applies
@@ -754,18 +754,18 @@ public class STGroup {
      *  object in question is an instance of {@code attributeType}.  Recursively
      *  set renderer into all import groups.
      */
-    public void registerRenderer(Class<?> attributeType, AttributeRenderer r) {
+    public <T> void registerRenderer(Class<T> attributeType, AttributeRenderer<? super T> r) {
         registerRenderer(attributeType, r, true);
     }
 
-    public void registerRenderer(Class<?> attributeType, AttributeRenderer r, boolean recursive) {
+    public <T> void registerRenderer(Class<T> attributeType, AttributeRenderer<? super T> r, boolean recursive) {
         if ( attributeType.isPrimitive() ) {
             throw new IllegalArgumentException("can't register renderer for primitive type "+
                                                attributeType.getSimpleName());
         }
 
         if ( renderers == null ) {
-            renderers = Collections.synchronizedMap(new TypeRegistry<AttributeRenderer>());
+            renderers = Collections.synchronizedMap(new TypeRegistry<AttributeRenderer<?>>());
         }
 
         renderers.put(attributeType, r);
@@ -789,12 +789,13 @@ public class STGroup {
      *  have multiple renderers for {@code String}, say, then just make uber combined
      *  renderer with more specific format names.</p>
      */
-    public AttributeRenderer getAttributeRenderer(Class<?> attributeType) {
+    public <T> AttributeRenderer<? super T> getAttributeRenderer(Class<? extends T> attributeType) {
         if ( renderers==null ) {
             return null;
         }
 
-        return renderers.get(attributeType);
+        //noinspection unchecked
+        return (AttributeRenderer<? super T>) renderers.get(attributeType);
     }
 
     public ST createStringTemplate(CompiledST impl) {
