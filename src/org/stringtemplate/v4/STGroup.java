@@ -759,7 +759,7 @@ public class STGroup {
         registerRenderer(attributeType, r, true);
     }
 
-    public <T> void registerRenderer(Class<? extends T> attributeType, AttributeRenderer<? super T> r, boolean recursive) {
+    public <T> void registerRenderer(Class<T> attributeType, AttributeRenderer<? super T> r, boolean recursive) {
         if ( attributeType.isPrimitive() ) {
             throw new IllegalArgumentException("can't register renderer for primitive type "+
                                                attributeType.getSimpleName());
