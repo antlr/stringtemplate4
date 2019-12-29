@@ -63,11 +63,11 @@ public class DateRenderer implements AttributeRenderer<Object> {
     }
 
     @Override
-    public String toString(Object o, String formatString, Locale locale) {
+    public String toString(Object value, String formatString, Locale locale) {
         Date d;
         if ( formatString==null ) formatString = "short";
-        if ( o instanceof Calendar ) d = ((Calendar)o).getTime();
-        else d = (Date)o;
+        if ( value instanceof Calendar ) d = ((Calendar)value).getTime();
+        else d = (Date)value;
         Integer styleI = formatToInt.get(formatString);
         DateFormat f;
         if ( styleI==null ) f = new SimpleDateFormat(formatString, locale);

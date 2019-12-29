@@ -41,12 +41,12 @@ import java.util.Locale;
  */
 public class NumberRenderer implements AttributeRenderer<Number> {
     @Override
-    public String toString(Number o, String formatString, Locale locale) {
-        // o will be instanceof Number
-        if ( formatString==null ) return o.toString();
+    public String toString(Number value, String formatString, Locale locale) {
+        // value will be instanceof Number
+        if ( formatString==null ) return value.toString();
         Formatter f = new Formatter(locale);
         try {
-            f.format(formatString, o);
+            f.format(formatString, value);
             return f.toString();
         }
         finally {
