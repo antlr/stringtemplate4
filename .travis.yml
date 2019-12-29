@@ -1,0 +1,23 @@
+# --------------- General Settings ---------------
+
+dist: xenial
+language: java
+
+jdk:
+  # unfortunately JDK 6 is no longer support by Travis CI
+  # - openjdk6  # minimum
+  - openjdk8  # LTS
+  - openjdk11 # LTS
+  # disabled because the maven compiler for JDK 13 no longer supports source/target compatibility 6
+  # - openjdk13 # latest
+
+# required for UI tests
+services:
+  - xvfb
+
+# --------------- Maven Cache ---------------
+
+cache:
+  directories:
+    - .autoconf
+    - $HOME/.m2
