@@ -791,7 +791,7 @@ public class STGroup {
      *  have multiple renderers for {@code String}, say, then just make uber combined
      *  renderer with more specific format names.</p>
      */
-    public <T> AttributeRenderer<? super T> getAttributeRenderer(Class<? extends T> attributeType) {
+    public <T> AttributeRenderer<? super T> getAttributeRenderer(Class<T> attributeType) {
         if ( renderers==null ) {
             return null;
         }
