@@ -755,7 +755,7 @@ public class STGroup {
      *  object in question is an instance of {@code attributeType}.  Recursively
      *  set renderer into all import groups.
      */
-    public <T> void registerRenderer(Class<? extends T> attributeType, AttributeRenderer<? super T> r) {
+    public <T> void registerRenderer(Class<T> attributeType, AttributeRenderer<? super T> r) {
         registerRenderer(attributeType, r, true);
     }
 
