@@ -147,8 +147,7 @@ public class STGroup {
      *  <p>
      *  This structure is synchronized.</p>
      */
-    @SuppressWarnings("rawtypes")
-    protected Map<Class<?>, AttributeRenderer> renderers;
+    protected Map<Class<?>, AttributeRenderer<?>> renderers;
 
     /** A dictionary that allows people to register a model adaptor for
      *  a particular kind of object (subclass or implementation). Applies
@@ -766,8 +765,7 @@ public class STGroup {
         }
 
         if ( renderers == null ) {
-            //noinspection rawtypes
-            renderers = Collections.synchronizedMap(new TypeRegistry<AttributeRenderer>());
+            renderers = Collections.synchronizedMap(new TypeRegistry<AttributeRenderer<?>>());
         }
 
         renderers.put(attributeType, r);
@@ -797,7 +795,7 @@ public class STGroup {
         }
 
         //noinspection unchecked
-        return renderers.get(attributeType);
+        return (AttributeRenderer<? super T>) renderers.get(attributeType);
     }
 
     public ST createStringTemplate(CompiledST impl) {
