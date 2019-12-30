@@ -31,12 +31,11 @@ import org.stringtemplate.v4.Interpreter;
 import org.stringtemplate.v4.ModelAdaptor;
 import org.stringtemplate.v4.ST;
 
-public class STModelAdaptor implements ModelAdaptor {
+public class STModelAdaptor implements ModelAdaptor<ST> {
     @Override
-    public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
+    public Object getProperty(Interpreter interp, ST self, ST model, Object property, String propertyName)
         throws STNoSuchPropertyException
     {
-        ST st = (ST)o;
-        return st.getAttribute(propertyName);
+        return model.getAttribute(propertyName);
     }
 }

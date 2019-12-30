@@ -37,7 +37,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ObjectModelAdaptor implements ModelAdaptor {
+public class ObjectModelAdaptor implements ModelAdaptor<Object> {
     protected static final Member INVALID_MEMBER;
     static {
         Member invalidMember;

@@ -158,9 +158,9 @@ public class STGroup {
      * <p>
      *  The last one you register gets priority; do least to most specific.</p>
      */
-    protected final Map<Class<?>, ModelAdaptor> adaptors;
+    protected final Map<Class<?>, ModelAdaptor<?>> adaptors;
     {
-        TypeRegistry<ModelAdaptor> registry = new TypeRegistry<ModelAdaptor>();
+        TypeRegistry<ModelAdaptor<?>> registry = new TypeRegistry<ModelAdaptor<?>>();
         registry.put(Object.class, new ObjectModelAdaptor());
         registry.put(ST.class, new STModelAdaptor());
         registry.put(Map.class, new MapModelAdaptor());
@@ -736,7 +736,7 @@ public class STGroup {
      * This must invalidate cache entries, so set your adaptors up before
      * calling {@link ST#render} for efficiency.</p>
      */
-    public void registerModelAdaptor(Class<?> attributeType, ModelAdaptor adaptor) {
+    public <T> void registerModelAdaptor(Class<T> attributeType, ModelAdaptor<? super T> adaptor) {
         if ( attributeType.isPrimitive() ) {
             throw new IllegalArgumentException("can't register ModelAdaptor for primitive type "+
                                                attributeType.getSimpleName());
@@ -745,8 +745,9 @@ public class STGroup {
         adaptors.put(attributeType, adaptor);
     }
 
-    public ModelAdaptor getModelAdaptor(Class<?> attributeType) {
-        return adaptors.get(attributeType);
+    public <T> ModelAdaptor<T> getModelAdaptor(Class<? extends T> attributeType) {
+        //noinspection unchecked
+        return (ModelAdaptor<T>) adaptors.get(attributeType);
     }
 
     /** Register a renderer for all objects of a particular "kind" for all
