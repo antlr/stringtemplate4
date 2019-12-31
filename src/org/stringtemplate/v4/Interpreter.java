@@ -1439,7 +1439,7 @@ public class Interpreter {
     public static int getShort(byte[] memory, int index) {
         int b1 = memory[index]&0xFF; // mask off sign-extended bits
         int b2 = memory[index+1]&0xFF;
-        return b1<<(8*1) | b2;
+        return b1<<8 | b2;
     }
 
     protected static class ObjectList extends ArrayList<Object> {
