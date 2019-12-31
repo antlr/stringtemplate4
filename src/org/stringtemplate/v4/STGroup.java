@@ -745,7 +745,7 @@ public class STGroup {
         adaptors.put(attributeType, adaptor);
     }
 
-    public <T> ModelAdaptor<T> getModelAdaptor(Class<? extends T> attributeType) {
+    public <T> ModelAdaptor<? super T> getModelAdaptor(Class<T> attributeType) {
         //noinspection unchecked
         return (ModelAdaptor<T>) adaptors.get(attributeType);
     }
