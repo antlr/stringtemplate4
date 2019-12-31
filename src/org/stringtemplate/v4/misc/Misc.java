@@ -126,9 +126,9 @@ public class Misc {
     }
 
     public static String replaceEscapes(String s) {
-        s = s.replaceAll("\n", "\\\\n");
-        s = s.replaceAll("\r", "\\\\r");
-        s = s.replaceAll("\t", "\\\\t");
+        s = s.replace("\n", "\\\\n");
+        s = s.replace("\r", "\\\\r");
+        s = s.replace("\t", "\\\\t");
         return s;
     }
 
