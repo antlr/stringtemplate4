@@ -161,7 +161,7 @@ public class STGroup {
     protected final Map<Class<?>, ModelAdaptor<?>> adaptors;
     {
         TypeRegistry<ModelAdaptor<?>> registry = new TypeRegistry<ModelAdaptor<?>>();
-        registry.put(Object.class, new ObjectModelAdaptor());
+        registry.put(Object.class, new ObjectModelAdaptor<Object>());
         registry.put(ST.class, new STModelAdaptor());
         registry.put(Map.class, new MapModelAdaptor());
         registry.put(Aggregate.class, new AggregateModelAdaptor());

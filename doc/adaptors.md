@@ -27,8 +27,8 @@ class UserAdaptor implements ModelAdaptor<User> {
     public Object getProperty(Interpreter interpreter, ST self, User model, Object property, String propertyName)
         throws STNoSuchPropertyException
     {
-        if ( propertyName.equals("id") ) return user.id;
-        if ( propertyName.equals("name") ) return user.theName();
+        if ( propertyName.equals("id") ) return model.id;
+        if ( propertyName.equals("name") ) return model.theName();
         throw new STNoSuchPropertyException(null, "User."+propertyName);
     }
 }
@@ -58,16 +58,16 @@ String result = st.render();
 ## Example 2
  
 ```java
-class UserAdaptor extends ObjectModelAdaptor {
-    public Object getProperty(Interpreter interpreter, ST self, Object o, Object property, String propertyName)
+class UserAdaptor extends ObjectModelAdaptor<User> {
+    public Object getProperty(Interpreter interpreter, ST self, User model, Object property, String propertyName)
         throws STNoSuchPropertyException
     {
         // intercept handling of "name" property and capitalize first character
-        if ( propertyName.equals("name") ) return ((User)o).name.substring(0,1).toUpperCase()+((User)o).name.substring(1);
+        if ( propertyName.equals("name") ) return model.name.substring(0,1).toUpperCase()+model.name.substring(1);
         // respond to "description" property by composing desired result
-        if ( propertyName.equals("description") ) return "User object with id:" + ((User)o).id;
+        if ( propertyName.equals("description") ) return "User object with id:" + model.id;
         // let "id" be handled by ObjectModelAdaptor
-        return super.getProperty(interpreter,self,o,property,propertyName);
+        return super.getProperty(interpreter,self,model,property,propertyName);
     }
 }
 
