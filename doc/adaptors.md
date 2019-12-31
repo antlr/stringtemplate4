@@ -53,7 +53,7 @@ String result = st.render();
 
 |Inheriting from `ObjectModelAdaptor`|
 |---|
-|You can inherit your ModelAdaptor from `ObjectModelAdaptor` to leverage its ability to handle "normal" attributes. You can choose to override the results of any given property or to handle properties that would not normally be handled by the default `ObjectModelAdaptor`.|
+|You can inherit your ModelAdaptor from `ObjectModelAdaptor<T>` to leverage its ability to handle "normal" attributes. You can choose to override the results of any given property or to handle properties that would not normally be handled by the default `ObjectModelAdaptor<T>`.|
 
 ## Example 2
  
