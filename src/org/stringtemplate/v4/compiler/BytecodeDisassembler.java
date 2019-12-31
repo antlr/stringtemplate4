@@ -30,9 +30,6 @@ package org.stringtemplate.v4.compiler;
 import org.stringtemplate.v4.misc.Interval;
 import org.stringtemplate.v4.misc.Misc;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class BytecodeDisassembler {
     CompiledST code;
 
@@ -84,49 +81,41 @@ public class BytecodeDisassembler {
             buf.append("  ");
             return ip;
         }
-        List<String> operands = new ArrayList<String>();
+
         for (int i=0; i<I.nopnds; i++) {
+            if ( i>0 ) buf.append(", ");
             int opnd = getShort(code.instrs, ip);
             ip += Bytecode.OPND_SIZE_IN_BYTES;
-            switch ( I.type[i] ) {
-                case STRING :
-                    operands.add(showConstPoolOperand(opnd));
-                    break;
-                case ADDR :
-                case INT :
-                    operands.add(String.valueOf(opnd));
-                    break;
-                default:
-                    operands.add(String.valueOf(opnd));
-                    break;
+            if (I.type[i] == Bytecode.OperandType.STRING) {
+                showConstPoolOperand(buf, opnd);
+            }
+            else {
+                buf.append(opnd);
             }
         }
-        for (int i = 0; i < operands.size(); i++) {
-            String s = operands.get(i);
-            if ( i>0 ) buf.append(", ");
-            buf.append( s );
-        }
+
         return ip;
     }
 
-    private String showConstPoolOperand(int poolIndex) {
-        StringBuilder buf = new StringBuilder();
+    private void showConstPoolOperand(StringBuilder buf, int poolIndex) {
         buf.append("#");
         buf.append(poolIndex);
-        String s = "<bad string index>";
-        if ( poolIndex<code.strings.length ) {
-            if ( code.strings[poolIndex]==null ) s = "null";
+        buf.append(":");
+
+        if (poolIndex < code.strings.length) {
+            String s = code.strings[poolIndex];
+            if (s == null) {
+                buf.append("null");
+            }
             else {
-                s = code.strings[poolIndex];
-                if (code.strings[poolIndex] != null) {
-                    s = Misc.replaceEscapes(s);
-                    s='"'+s+'"';
-                }
+                buf.append('"');
+                buf.append(Misc.replaceEscapes(s));
+                buf.append('"');
             }
         }
-        buf.append(":");
-        buf.append(s);
-        return buf.toString();
+        else {
+            buf.append("<bad string index>");
+        }
     }
 
     public static int getShort(byte[] memory, int index) {
@@ -137,20 +126,22 @@ public class BytecodeDisassembler {
     }
 
     public String strings() {
+        if (code.strings == null) {
+            return "";
+        }
+
         StringBuilder buf = new StringBuilder();
         int addr = 0;
-        if ( code.strings!=null ) {
-            for (Object o : code.strings) {
-                if ( o instanceof String ) {
-                    String s = (String)o;
-                    s = Misc.replaceEscapes(s);
-                    buf.append( String.format("%04d: \"%s\"\n", addr, s) );
-                }
-                else {
-                    buf.append( String.format("%04d: %s\n", addr, o) );
-                }
-                addr++;
+        for (Object o : code.strings) {
+            if ( o instanceof String ) {
+                String s = (String)o;
+                s = Misc.replaceEscapes(s);
+                buf.append( String.format("%04d: \"%s\"\n", addr, s) );
             }
+            else {
+                buf.append( String.format("%04d: %s\n", addr, o) );
+            }
+            addr++;
         }
         return buf.toString();
     }
