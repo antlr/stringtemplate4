@@ -1393,7 +1393,7 @@ public class Interpreter {
     protected void printForTrace(StringBuilder tr, InstanceScope scope, Object o) {
         if ( o instanceof ST ) {
             if ( ((ST)o).impl ==null ) tr.append("bad-template()");
-            else tr.append(" ").append(((ST) o).impl.name).append("()");
+            else tr.append(" ").append(((ST)o).impl.name).append("()");
             return;
         }
         o = convertAnythingIteratableToIterator(scope, o);
@@ -1449,4 +1449,3 @@ public class Interpreter {
     }
 
 }
-
