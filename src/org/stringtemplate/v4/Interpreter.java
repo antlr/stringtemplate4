@@ -484,8 +484,7 @@ public class Interpreter {
         operands[++sp] = self.impl.strings[strIndex];
     }
 
-    // TODO: refactor to remove dup'd code
-    void super_new(InstanceScope scope, String name, int nargs) {
+    private ST resolveST(InstanceScope scope, String name, boolean embedded) {
         final ST self = scope.st;
         ST st;
         CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
@@ -495,9 +494,23 @@ public class Interpreter {
             st = self.groupThatCreatedThisInstance.createStringTemplateInternally(new CompiledST());
         }
         else {
-            st = imported.nativeGroup.getEmbeddedInstanceOf(this, scope, name);
+            // TODO as this method was extracted from the two super_new overloads,
+            //      there was this difference in which method was called,
+            //      hence the addition of the 'embedded' parameter.
+            //      One of the calls is probably wrong.
+            if (embedded) {
+                st = imported.nativeGroup.getEmbeddedInstanceOf(this, scope, name);
+            }
+            else {
+                st = imported.nativeGroup.createStringTemplateInternally(imported);
+            }
             st.groupThatCreatedThisInstance = group;
         }
+        return st;
+    }
+
+    void super_new(InstanceScope scope, String name, int nargs) {
+        ST st = resolveST(scope, name, true);
         // get n args and store into st's attr list
         storeArgs(scope, nargs, st);
         sp -= nargs;
@@ -505,19 +518,7 @@ public class Interpreter {
     }
 
     void super_new(InstanceScope scope, String name, Map<String,Object> attrs) {
-        final ST self = scope.st;
-        ST st;
-        CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
-        if ( imported==null ) {
-            errMgr.runTimeError(this, scope, ErrorType.NO_IMPORTED_TEMPLATE,
-                                name);
-            st = self.groupThatCreatedThisInstance.createStringTemplateInternally(new CompiledST());
-        }
-        else {
-            st = imported.nativeGroup.createStringTemplateInternally(imported);
-            st.groupThatCreatedThisInstance = group;
-        }
-
+        ST st = resolveST(scope, name, false);
         // get n args and store into st's attr list
         storeArgs(scope, attrs, st);
         operands[++sp] = st;
