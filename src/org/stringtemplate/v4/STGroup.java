@@ -851,7 +851,7 @@ public class STGroup {
 
     public String show() {
         StringBuilder buf = new StringBuilder();
-        if ( imports.size()!=0 ) buf.append(" : "+imports);
+        if ( imports.size()!=0 ) buf.append(" : ").append(imports);
         for (String name : templates.keySet()) {
             CompiledST c = rawGetTemplate(name);
             if ( c.isAnonSubtemplate || c==NOT_FOUND_ST ) continue;
@@ -861,9 +861,9 @@ public class STGroup {
             buf.append('(');
             if ( c.formalArguments!=null ) buf.append( Misc.join(c.formalArguments.values().iterator(), ",") );
             buf.append(')');
-            buf.append(" ::= <<"+Misc.newline);
-            buf.append(c.template+ Misc.newline);
-            buf.append(">>"+Misc.newline);
+            buf.append(" ::= <<").append(Misc.newline);
+            buf.append(c.template).append(Misc.newline);
+            buf.append(">>").append(Misc.newline);
         }
         return buf.toString();
     }

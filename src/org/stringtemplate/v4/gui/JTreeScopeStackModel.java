@@ -89,7 +89,7 @@ public class JTreeScopeStackModel implements TreeModel {
                 if ( events!=null ) {
                     for (AddAttributeEvent ae : events) {
                         if ( i>0 ) locations.append(", ");
-                        locations.append(ae.getFileName()+":"+ae.getLine());
+                        locations.append(ae.getFileName()).append(":").append(ae.getLine());
                         i++;
                     }
                 }

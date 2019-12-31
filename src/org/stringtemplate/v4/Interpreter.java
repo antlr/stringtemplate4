@@ -1384,7 +1384,7 @@ public class Interpreter {
         }
         tr.append(" ], calls=");
         tr.append(getEnclosingInstanceStackString(scope));
-        tr.append(", sp="+sp+", nw="+ nwline);
+        tr.append(", sp=").append(sp).append(", nw=").append(nwline);
         String s = tr.toString();
         if ( debug ) executeTrace.add(s);
         if ( trace ) System.out.println(s);
@@ -1393,7 +1393,7 @@ public class Interpreter {
     protected void printForTrace(StringBuilder tr, InstanceScope scope, Object o) {
         if ( o instanceof ST ) {
             if ( ((ST)o).impl ==null ) tr.append("bad-template()");
-            else tr.append(" "+((ST)o).impl.name+"()");
+            else tr.append(" ").append(((ST) o).impl.name).append("()");
             return;
         }
         o = convertAnythingIteratableToIterator(scope, o);
@@ -1407,7 +1407,7 @@ public class Interpreter {
             tr.append(" ]");
         }
         else {
-            tr.append(" "+o);
+            tr.append(" ").append(o);
         }
     }
 
