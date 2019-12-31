@@ -38,7 +38,7 @@ import java.util.NoSuchElementException;
 public class ArrayIterator implements Iterator<Object> {
     /** Index into the data array */
     protected int i = -1;
-    protected Object array = null;
+    protected Object array;
     /** Arrays are fixed size; precompute. */
     protected int n;
 

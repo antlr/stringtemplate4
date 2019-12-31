@@ -67,7 +67,7 @@ public class AutoIndentWriter implements STWriter {
     /** {@code \n} or {@code \r\n}? */
     public String newline;
 
-    public Writer out = null;
+    public Writer out;
     public boolean atStartOfLine = true;
 
     /**

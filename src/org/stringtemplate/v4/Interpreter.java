@@ -98,7 +98,7 @@ public class Interpreter {
     protected List<String> executeTrace;
 
     /** When {@code true}, track events inside templates and in {@link #events}. */
-    public boolean debug = false;
+    public boolean debug;
 
     /**
      * Track everything happening in interpreter across all templates if
@@ -481,14 +481,13 @@ public class Interpreter {
 
     void load_str(ST self, int ip) {
         int strIndex = getShort(self.impl.instrs, ip);
-        ip += Bytecode.OPND_SIZE_IN_BYTES;
         operands[++sp] = self.impl.strings[strIndex];
     }
 
     // TODO: refactor to remove dup'd code
     void super_new(InstanceScope scope, String name, int nargs) {
         final ST self = scope.st;
-        ST st = null;
+        ST st;
         CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
         if ( imported==null ) {
             errMgr.runTimeError(this, scope, ErrorType.NO_IMPORTED_TEMPLATE,
@@ -507,7 +506,7 @@ public class Interpreter {
 
     void super_new(InstanceScope scope, String name, Map<String,Object> attrs) {
         final ST self = scope.st;
-        ST st = null;
+        ST st;
         CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
         if ( imported==null ) {
             errMgr.runTimeError(this, scope, ErrorType.NO_IMPORTED_TEMPLATE,

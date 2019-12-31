@@ -36,7 +36,7 @@ public class Bytecode {
     public static class Instruction {
         public String name; // E.g., "load_str", "new"
         public OperandType[] type = new OperandType[MAX_OPNDS];
-        public int nopnds = 0;
+        public int nopnds;
         public Instruction(String name) {
             this(name,OperandType.NONE,OperandType.NONE); nopnds =0;
         }
