@@ -747,7 +747,7 @@ public class STGroup {
 
     public <T> ModelAdaptor<? super T> getModelAdaptor(Class<T> attributeType) {
         //noinspection unchecked
-        return (ModelAdaptor<T>) adaptors.get(attributeType);
+        return (ModelAdaptor<? super T>) adaptors.get(attributeType);
     }
 
     /** Register a renderer for all objects of a particular "kind" for all
