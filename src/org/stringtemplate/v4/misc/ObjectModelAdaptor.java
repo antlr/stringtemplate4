@@ -111,7 +111,7 @@ public class ObjectModelAdaptor implements ModelAdaptor {
 
             // try getXXX and isXXX properties, look up using reflection
             String methodSuffix = Character.toUpperCase(memberName.charAt(0)) +
-                memberName.substring(1, memberName.length());
+                memberName.substring(1);
             
             member = tryGetMethod(clazz, "get" + methodSuffix);
             if (member == null) {

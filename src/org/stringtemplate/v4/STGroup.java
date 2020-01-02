@@ -528,8 +528,7 @@ public class STGroup {
     public static String getUnMangledTemplateName(String mangledName) {
         String t = mangledName.substring("/region__".length(),
                                          mangledName.lastIndexOf("__"));
-        String r = mangledName.substring(mangledName.lastIndexOf("__")+2,
-                                         mangledName.length());
+        String r = mangledName.substring(mangledName.lastIndexOf("__")+2);
         return t+'.'+r;
     }
 
@@ -854,7 +853,7 @@ public class STGroup {
             CompiledST c = rawGetTemplate(name);
             if ( c.isAnonSubtemplate || c==NOT_FOUND_ST ) continue;
             int slash = name.lastIndexOf('/');
-            name = name.substring(slash+1, name.length());
+            name = name.substring(slash+1);
             buf.append(name);
             buf.append('(');
             if ( c.formalArguments!=null ) buf.append( Misc.join(c.formalArguments.values().iterator(), ",") );
