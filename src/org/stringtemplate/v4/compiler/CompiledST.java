@@ -182,8 +182,10 @@ public class CompiledST implements Cloneable {
                     break;
 
                 case GroupParser.TRUE:
+                    fa.defaultValue = true;
+                    break;
                 case GroupParser.FALSE:
-                    fa.defaultValue = fa.defaultValueToken.getType()==GroupParser.TRUE;
+                    fa.defaultValue = false;
                     break;
 
                 default:
