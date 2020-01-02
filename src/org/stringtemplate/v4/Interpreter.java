@@ -1261,11 +1261,9 @@ public class Interpreter {
         if ( g.isDictionary(name) ) {
             return g.rawGetDictionary(name);
         }
-        if ( g.imports!=null ) {
-            for (STGroup sup : g.imports) {
-                Object o = getDictionary(sup, name);
-                if ( o!=null ) return o;
-            }
+        for (STGroup sup : g.imports) {
+            Object o = getDictionary(sup, name);
+            if ( o!=null ) return o;
         }
         return null;
     }

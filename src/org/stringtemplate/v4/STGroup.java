@@ -325,9 +325,7 @@ public class STGroup {
      * @since 4.0.9
      */
     public static boolean isReservedCharacter(char c) {
-        return c >= 0
-            && c < RESERVED_CHARACTERS.length
-            && RESERVED_CHARACTERS[c];
+        return c < RESERVED_CHARACTERS.length && RESERVED_CHARACTERS[c];
     }
 
     protected CompiledST lookupImportedTemplate(String name) {
@@ -630,7 +628,7 @@ public class STGroup {
                 g.setListener(this.getListener());
             }
         }
-        else if ( isGroupDir ) {
+        else /* if ( isGroupDir ) */ {
 //          System.out.println("try dir "+fileUnderRoot);
             if ( Misc.urlExists(fileUnderRoot) ) {
                 g = new STGroupDir(fileUnderRoot, encoding, delimiterStartChar, delimiterStopChar);

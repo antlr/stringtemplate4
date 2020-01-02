@@ -215,8 +215,11 @@ public abstract class BaseTest {
                 stream.closeEntry();
             }
 
-            for (File child : file.listFiles()) {
-                addJarFile(child, workingDir, stream);
+            final File[] files = file.listFiles();
+            if (files != null) {
+                for (File child : files) {
+                    addJarFile(child, workingDir, stream);
+                }
             }
 
             return;
@@ -386,17 +389,20 @@ public abstract class BaseTest {
      * @param file
      */
     public static void deleteFile(File file) {
-        if (file.exists()) {
-            if (file.isDirectory()) {
-                File[] dir = file.listFiles();
-                for (int i = 0; i < dir.length; i++) {
-                    deleteFile(dir[i]);
+        if (!file.exists()) {
+            return;
+        }
+        if (file.isDirectory()) {
+            File[] list = file.listFiles();
+            if (list != null) {
+                for (final File value : list) {
+                    deleteFile(value);
                 }
             }
-            if (!file.delete()) {
-                throw new RuntimeException("Error when deleting file "
-                        + file.getAbsolutePath());
-            }
+        }
+        if (!file.delete()) {
+            throw new RuntimeException("Error when deleting file "
+                    + file.getAbsolutePath());
         }
     }
     /**
