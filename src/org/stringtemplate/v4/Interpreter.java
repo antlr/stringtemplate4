@@ -792,7 +792,7 @@ public class Interpreter {
     protected int writePOJO(STWriter out, InstanceScope scope, Object o, String[] options) throws IOException {
         String formatString = null;
         if ( options!=null ) formatString = options[Option.FORMAT.ordinal()];
-        String v = renderObject(scope, formatString, o, o.getClass());
+        String v = renderObject(scope, formatString, o);
         int n;
         if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
             n = out.write(v, options[Option.WRAP.ordinal()]);
@@ -803,9 +803,10 @@ public class Interpreter {
         return n;
     }
 
-    private <T> String renderObject(InstanceScope scope, String formatString, T o, Class<? extends T> attributeType) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private String renderObject(InstanceScope scope, String formatString, Object o) {
         // ask the native group defining the surrounding template for the renderer
-        AttributeRenderer<? super T> r = scope.st.impl.nativeGroup.getAttributeRenderer(attributeType);
+        AttributeRenderer r = scope.st.impl.nativeGroup.getAttributeRenderer(o.getClass());
         if ( r!=null ) {
             return r.toString(o, formatString, locale);
         } else {
