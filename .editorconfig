@@ -12,3 +12,9 @@ tab_width = 4
 [{*.yml, *.yaml}]
 indent_size = 2
 tab_width = 2
+
+[*.java]
+ij_java_block_brace_style = end_of_line
+ij_java_class_brace_style = end_of_line
+ij_java_method_brace_style = end_of_line
+ij_java_lambda_brace_style = end_of_line
