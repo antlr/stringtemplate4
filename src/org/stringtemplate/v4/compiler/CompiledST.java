@@ -251,26 +251,52 @@ public class CompiledST implements Cloneable {
         return dis.instrs();
     }
 
+    /**
+     * Dumps bytecode, string table and source map to standard output.
+     */
     public void dump() {
-        BytecodeDisassembler dis = new BytecodeDisassembler(this);
-        System.out.println(name+":");
-        System.out.println(dis.disassemble());
-        System.out.println("Strings:");
-        System.out.println(dis.strings());
-        System.out.println("Bytecode to template map:");
-        System.out.println(dis.sourceMap());
+        try {
+            this.dump(System.out);
+        }
+        catch (IOException ignored) {
+        }
     }
 
-    public String disasm() {
+    /**
+     * Dumps bytecode, string table and source map to the given writer.
+     *
+     * @param writer
+     *     the writer
+     *
+     * @throws IOException
+     *     if it occurs in the writer
+     *
+     * @since 4.3
+     */
+    public void dump(Appendable writer) throws IOException {
         BytecodeDisassembler dis = new BytecodeDisassembler(this);
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        pw.println(dis.disassemble());
-        pw.println("Strings:");
-        pw.println(dis.strings());
-        pw.println("Bytecode to template map:");
-        pw.println(dis.sourceMap());
-        pw.close();
-        return sw.toString();
+        writer.append(name);
+        writer.append(":\n");
+        writer.append(dis.disassemble());
+        writer.append('\n');
+        writer.append("Strings:\n");
+        writer.append(dis.strings());
+        writer.append('\n');
+        writer.append("Bytecode to template map:\n");
+        writer.append(dis.sourceMap());
+        writer.append('\n');
+    }
+
+    /**
+     * Dumps bytecode, string table and source map and returns the result as a string.
+     */
+    public String disasm() {
+        final StringBuilder builder = new StringBuilder();
+        try {
+            this.dump(builder);
+        }
+        catch (IOException ignored) {
+        }
+        return builder.toString();
     }
 }
