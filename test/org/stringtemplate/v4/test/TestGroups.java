@@ -818,6 +818,7 @@ public class TestGroups extends BaseTest {
     final STGroup group = new STGroupString(templates);
 
     doMultipleThreadInvoke(new Callable<Object>() {
+      @Override
       public Object call() throws Exception {
         testGroupString(group);
         return null;
@@ -838,6 +839,7 @@ public class TestGroups extends BaseTest {
     final STGroup group = new STGroupFile(dir + "/a.stg");
 
      doMultipleThreadInvoke(new Callable<Object>() {
+      @Override
       public Object call() throws Exception {
         testGroupFile(group);
         return null;

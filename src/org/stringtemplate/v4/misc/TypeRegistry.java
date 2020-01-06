@@ -45,14 +45,17 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
     private final Map<Class<?>, V> backingStore = new HashMap<Class<?>, V>();
     private final Map<Class<?>, Class<?>> cache = new HashMap<Class<?>, Class<?>>();
 
+    @Override
     public int size() {
         return backingStore.size();
     }
 
+    @Override
     public boolean isEmpty() {
         return backingStore.isEmpty();
     }
 
+    @Override
     public boolean containsKey(Object key) {
         if (cache.containsKey(key)) {
             return true;
@@ -65,6 +68,7 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
         return get(key) != null;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public boolean containsValue(Object value) {
         return values().contains(value);
@@ -76,6 +80,7 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
      * @throws AmbiguousMatchException if the registry contains more than value
      * mapped to a maximally-specific type from which {@code key} is derived.
      */
+    @Override
     public V get(Object key) {
         V value = backingStore.get(key);
         if (value != null) {
@@ -159,6 +164,7 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
         }
     }
 
+    @Override
     public V put(Class<?> key, V value) {
         V result = get(key);
         backingStore.put(key, value);
@@ -166,6 +172,7 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
         return result;
     }
 
+    @Override
     public V remove(Object key) {
         if (!(key instanceof Class)) {
             return null;
@@ -180,25 +187,30 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
         return previous;
     }
 
+    @Override
     public void putAll(Map<? extends Class<?>, ? extends V> m) {
         for (Map.Entry<? extends Class<?>, ? extends V> entry : m.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
     }
 
+    @Override
     public void clear() {
         backingStore.clear();
         cache.clear();
     }
 
+    @Override
     public Set<Class<?>> keySet() {
         return Collections.unmodifiableSet(backingStore.keySet());
     }
 
+    @Override
     public Collection<V> values() {
         return Collections.unmodifiableCollection(backingStore.values());
     }
 
+    @Override
     public Set<Entry<Class<?>, V>> entrySet() {
         return Collections.unmodifiableSet(backingStore.entrySet());
     }
