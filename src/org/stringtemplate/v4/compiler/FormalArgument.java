@@ -44,7 +44,7 @@ import org.antlr.runtime.Token;
  * Currently, though, cardinality is not used.</p>
  */
 public class FormalArgument {
-/*
+    /*
     // the following represent bit positions emulating a cardinality bitset.
     public static final int OPTIONAL = 1;     // a?
     public static final int REQUIRED = 2;     // a
@@ -99,7 +99,7 @@ public class FormalArgument {
 
     @Override
     public boolean equals(Object o) {
-        if ( o==null || !(o instanceof FormalArgument) ) {
+        if (!(o instanceof FormalArgument)) {
             return false;
         }
         FormalArgument other = (FormalArgument)o;
@@ -107,8 +107,9 @@ public class FormalArgument {
             return false;
         }
         // only check if there is a default value; that's all
-        return !((this.defaultValueToken != null && other.defaultValueToken == null) ||
-               (this.defaultValueToken == null && other.defaultValueToken != null));
+        final boolean thisDefault = this.defaultValueToken != null;
+        final boolean otherDefault = other.defaultValueToken != null;
+        return thisDefault == otherDefault;
     }
 
     @Override
