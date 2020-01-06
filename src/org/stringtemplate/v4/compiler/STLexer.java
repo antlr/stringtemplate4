@@ -76,11 +76,19 @@ public class STLexer implements TokenSource {
                 channelStr=",channel="+channel;
             }
             String txt = getText();
-            if ( txt!=null ) txt = Misc.replaceEscapes(txt);
-            else txt = "<no text>";
+            if ( txt!=null ) {
+                txt = Misc.replaceEscapes(txt);
+            }
+            else {
+                txt = "<no text>";
+            }
             String tokenName;
-            if ( type==EOF_TYPE ) tokenName = "EOF";
-            else tokenName = STParser.tokenNames[type];
+            if ( type==EOF_TYPE ) {
+                tokenName = "EOF";
+            }
+            else {
+                tokenName = STParser.tokenNames[type];
+            }
             return "[@"+getTokenIndex()+","+start+":"+stop+"='"+txt+"',<"+ tokenName +">"+channelStr+","+line+":"+getCharPositionInLine()+"]";
         }
     }
@@ -187,7 +195,9 @@ public class STLexer implements TokenSource {
     public Token nextToken() {
         Token t;
         if ( tokens.size()>0 ) { t = tokens.remove(0); }
-        else t = _nextToken();
+        else {
+            t = _nextToken();
+        }
 //      System.out.println(t);
         return t;
     }
@@ -216,24 +226,40 @@ public class STLexer implements TokenSource {
             startLine = input.getLine();
             startCharPositionInLine = input.getCharPositionInLine();
 
-            if ( c==EOF ) return newToken(EOF_TYPE);
+            if ( c==EOF ) {
+                return newToken(EOF_TYPE);
+            }
             Token t;
-            if ( scanningInsideExpr ) t = inside();
-            else t = outside();
-            if ( t!=SKIP ) return t;
+            if ( scanningInsideExpr ) {
+                t = inside();
+            }
+            else {
+                t = outside();
+            }
+            if ( t!=SKIP ) {
+                return t;
+            }
         }
     }
 
     protected Token outside() {
         if ( input.getCharPositionInLine()==0 && (c==' '||c=='\t') ) {
-            while ( c==' ' || c=='\t' ) consume(); // scarf indent
-            if ( c!=EOF ) return newToken(INDENT);
+            while ( c==' ' || c=='\t' ) {
+                consume(); // scarf indent
+            }
+            if ( c!=EOF ) {
+                return newToken(INDENT);
+            }
             return newToken(TEXT);
         }
         if ( c==delimiterStartChar ) {
             consume();
-            if ( c=='!' ) return COMMENT();
-            if ( c=='\\' ) return ESCAPE(); // <\\> <\uFFFF> <\n> etc...
+            if ( c=='!' ) {
+                return COMMENT();
+            }
+            if ( c=='\\' ) {
+                return ESCAPE(); // <\\> <\uFFFF> <\n> etc...
+            }
             scanningInsideExpr = true;
             return newToken(LDELIM);
         }
@@ -292,13 +318,27 @@ public class STLexer implements TokenSource {
                     if ( isIDStartLetter(c) ) {
                         Token id = mID();
                         String name = id.getText();
-                        if ( name.equals("if") ) return newToken(IF);
-                        else if ( name.equals("endif") ) return newToken(ENDIF);
-                        else if ( name.equals("else") ) return newToken(ELSE);
-                        else if ( name.equals("elseif") ) return newToken(ELSEIF);
-                        else if ( name.equals("super") ) return newToken(SUPER);
-                        else if ( name.equals("true") ) return newToken(TRUE);
-                        else if ( name.equals("false") ) return newToken(FALSE);
+                        if ( name.equals("if") ) {
+                            return newToken(IF);
+                        }
+                        else if ( name.equals("endif") ) {
+                            return newToken(ENDIF);
+                        }
+                        else if ( name.equals("else") ) {
+                            return newToken(ELSE);
+                        }
+                        else if ( name.equals("elseif") ) {
+                            return newToken(ELSEIF);
+                        }
+                        else if ( name.equals("super") ) {
+                            return newToken(SUPER);
+                        }
+                        else if ( name.equals("true") ) {
+                            return newToken(TRUE);
+                        }
+                        else if ( name.equals("false") ) {
+                            return newToken(FALSE);
+                        }
                         return id;
                     }
                     RecognitionException re =
@@ -338,9 +378,13 @@ public class STLexer implements TokenSource {
         if ( c=='|' ) {
             consume();
             argTokens.add( newTokenFromPreviousChar(PIPE) );
-            if ( isWS(c) ) consume(); // ignore a single whitespace after |
+            if ( isWS(c) ) {
+                consume(); // ignore a single whitespace after |
+            }
             //System.out.println("matched args: "+argTokens);
-            for (Token t : argTokens) emit(t);
+            for (Token t : argTokens) {
+                emit(t);
+            }
             input.release(m);
             scanningInsideExpr = false;
             startCharIndex = curlyStartChar; // reset state
@@ -361,7 +405,9 @@ public class STLexer implements TokenSource {
         startCharIndex = input.index();
         startCharPositionInLine = input.getCharPositionInLine();
         consume(); // kill \\
-        if ( c=='u') return UNICODE();
+        if ( c=='u') {
+            return UNICODE();
+        }
         String text;
         switch ( c ) {
             case '\\' : LINEBREAK(); return SKIP;
@@ -419,8 +465,12 @@ public class STLexer implements TokenSource {
         boolean modifiedText = false;
         StringBuilder buf = new StringBuilder();
         while ( c != EOF && c != delimiterStartChar ) {
-            if ( c=='\r' || c=='\n') break;
-            if ( c=='}' && subtemplateDepth>0 ) break;
+            if ( c=='\r' || c=='\n') {
+                break;
+            }
+            if ( c=='}' && subtemplateDepth>0 ) {
+                break;
+            }
             if ( c=='\\' ) {
                 if ( input.LA(2)=='\\' ) { // convert \\ to \
                     consume(); consume(); buf.append('\\');
@@ -443,8 +493,12 @@ public class STLexer implements TokenSource {
             buf.append(c);
             consume();
         }
-        if ( modifiedText ) return newToken(TEXT, buf.toString());
-        else return newToken(TEXT);
+        if ( modifiedText ) {
+            return newToken(TEXT, buf.toString());
+        }
+        else {
+            return newToken(TEXT);
+        }
     }
 
     /** <pre>
@@ -506,12 +560,18 @@ public class STLexer implements TokenSource {
         }
         buf.append(c);
         consume();
-        if ( sawEscape ) return newToken(STRING, buf.toString());
-        else return newToken(STRING);
+        if ( sawEscape ) {
+            return newToken(STRING, buf.toString());
+        }
+        else {
+            return newToken(STRING);
+        }
     }
 
     void WS() {
-        while ( c==' ' || c=='\t' || c=='\n' || c=='\r' ) consume();
+        while ( c==' ' || c=='\t' || c=='\n' || c=='\r' ) {
+            consume();
+        }
     }
 
     Token COMMENT() {
@@ -536,7 +596,9 @@ public class STLexer implements TokenSource {
     void LINEBREAK() {
         match('\\'); // only kill 2nd \ as ESCAPE() kills first one
         match(delimiterStopChar);
-        while ( c==' ' || c=='\t' ) consume(); // scarf WS after <\\>
+        while ( c==' ' || c=='\t' ) {
+            consume(); // scarf WS after <\\>
+        }
         if ( c==EOF ) {
             RecognitionException re = new RecognitionException(input);
             re.line = input.getLine();
@@ -545,9 +607,13 @@ public class STLexer implements TokenSource {
                               templateToken, re);
             return;
         }
-        if ( c=='\r' ) consume();
+        if ( c=='\r' ) {
+            consume();
+        }
         match('\n');
-        while ( c==' ' || c=='\t' ) consume(); // scarf any indent
+        while ( c==' ' || c=='\t' ) {
+            consume(); // scarf any indent
+        }
     }
 
     public static boolean isIDStartLetter(char c) { return isIDLetter(c); }
@@ -597,7 +663,9 @@ public class STLexer implements TokenSource {
     }
 
     public static String str(int c) {
-        if ( c==EOF ) return "<EOF>";
+        if ( c==EOF ) {
+            return "<EOF>";
+        }
         return String.valueOf((char)c);
     }
 }

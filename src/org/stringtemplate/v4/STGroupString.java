@@ -53,25 +53,33 @@ public class STGroupString extends STGroup {
 
     @Override
     public boolean isDictionary(String name) {
-        if ( !alreadyLoaded ) load();
+        if ( !alreadyLoaded ) {
+            load();
+        }
         return super.isDictionary(name);
     }
 
     @Override
     public boolean isDefined(String name) {
-        if ( !alreadyLoaded ) load();
+        if ( !alreadyLoaded ) {
+            load();
+        }
         return super.isDefined(name);
     }
 
     @Override
     protected synchronized CompiledST load(String name) {
-        if ( !alreadyLoaded ) load();
+        if ( !alreadyLoaded ) {
+            load();
+        }
         return rawGetTemplate(name);
     }
 
     @Override
     public synchronized void load() {
-        if (alreadyLoaded) return;
+        if (alreadyLoaded) {
+            return;
+        }
         alreadyLoaded = true;
         GroupParser parser;
         try {

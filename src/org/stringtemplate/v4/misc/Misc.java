@@ -74,15 +74,23 @@ public class Misc {
 
     /** Strip a single newline character from the front of {@code s}. */
     public static String trimOneStartingNewline(String s) {
-        if ( s.startsWith("\r\n") ) s = s.substring(2);
-        else if ( s.startsWith("\n") ) s = s.substring(1);
+        if ( s.startsWith("\r\n") ) {
+            s = s.substring(2);
+        }
+        else if ( s.startsWith("\n") ) {
+            s = s.substring(1);
+        }
         return s;
     }
 
     /** Strip a single newline character from the end of {@code s}. */
     public static String trimOneTrailingNewline(String s) {
-        if ( s.endsWith("\r\n") ) s = s.substring(0, s.length()-2);
-        else if ( s.endsWith("\n") ) s = s.substring(0, s.length()-1);
+        if ( s.endsWith("\r\n") ) {
+            s = s.substring(0, s.length()-2);
+        }
+        else if ( s.endsWith("\n") ) {
+            s = s.substring(0, s.length()-1);
+        }
         return s;
     }
 
@@ -91,37 +99,53 @@ public class Misc {
      */
     public static String stripLastPathElement(String f) {
         int slash = f.lastIndexOf('/');
-        if ( slash<0 ) return f;
+        if ( slash<0 ) {
+            return f;
+        }
         return f.substring(0, slash);
     }
 
     public static String getFileNameNoSuffix(String f) {
-        if (f==null) return null;
+        if (f==null) {
+            return null;
+        }
         f = getFileName(f);
         return f.substring(0,f.lastIndexOf('.'));
     }
 
     public static String getFileName(String fullFileName) {
-        if (fullFileName==null) return null;
+        if (fullFileName==null) {
+            return null;
+        }
         File f = new File(fullFileName); // strip to simple name
         return f.getName();
     }
 
     public static String getParent(String name) {
         //System.out.println("getParent("+name+")="+p);
-        if (name==null) return null;
+        if (name==null) {
+            return null;
+        }
         int lastSlash=name.lastIndexOf('/');
-        if (lastSlash>0) return name.substring(0, lastSlash);
-        if (lastSlash==0) return "/";
+        if (lastSlash>0) {
+            return name.substring(0, lastSlash);
+        }
+        if (lastSlash==0) {
+            return "/";
+        }
         //System.out.println("getParent("+name+")="+p);
         return "";
     }
 
     public static String getPrefix(String name) {
-        if (name==null) return "/";
+        if (name==null) {
+            return "/";
+        }
         String parent = getParent(name);
         String prefix = parent;
-        if ( !parent.endsWith("/") ) prefix += '/';
+        if ( !parent.endsWith("/") ) {
+            prefix += '/';
+        }
         return prefix;
     }
 
@@ -197,7 +221,9 @@ public class Misc {
         int p = 0;
         while ( p < index ) { // don't care about s[index] itself; count before
             if ( s.charAt(p)=='\n' ) { line++; charPos=0; }
-            else charPos++;
+            else {
+                charPos++;
+            }
             p++;
         }
 

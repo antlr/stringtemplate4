@@ -175,7 +175,9 @@ public abstract class BaseTest {
         String classpathOption = "-classpath";
 
         String path = "."+pathSep+CLASSPATH;
-        if ( extraCLASSPATH!=null ) path = "."+pathSep+extraCLASSPATH+pathSep+CLASSPATH;
+        if ( extraCLASSPATH!=null ) {
+	        path = "."+pathSep+extraCLASSPATH+pathSep+CLASSPATH;
+        }
 
         String[] args = new String[] {
                     "java",
@@ -299,14 +301,18 @@ public abstract class BaseTest {
             System.err.println(stderr);
         }
         int ret = process.exitValue();
-        if ( ret!=0 ) System.err.println("failed");
+        if ( ret!=0 ) {
+	        System.err.println("failed");
+        }
         return null;
     }
 
     public static void writeFile(String dir, String fileName, String content) {
         try {
             File f = new File(dir, fileName);
-            if ( !f.getParentFile().exists() ) f.getParentFile().mkdirs();
+            if ( !f.getParentFile().exists() ) {
+	            f.getParentFile().mkdirs();
+            }
             FileWriter w = new FileWriter(f);
             BufferedWriter bw = new BufferedWriter(w);
             bw.write(content);
@@ -339,7 +345,9 @@ public abstract class BaseTest {
         int i = 1;
         Token t = tokens.LT(i);
         while ( t.getType()!=Token.EOF ) {
-            if ( i>1 ) buf.append(", ");
+            if ( i>1 ) {
+	            buf.append(", ");
+            }
             buf.append(t);
             i++;
             t = tokens.LT(i);

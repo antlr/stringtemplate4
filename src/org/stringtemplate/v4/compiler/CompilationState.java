@@ -107,7 +107,9 @@ public class CompilationState {
             int j = opAST.getTokenStopIndex();
             int p = ((CommonToken)tokens.get(i)).getStartIndex();
             int q = ((CommonToken)tokens.get(j)).getStopIndex();
-            if ( !(p<0 || q<0) ) impl.sourceMap[ip] = new Interval(p, q);
+            if ( !(p<0 || q<0) ) {
+                impl.sourceMap[ip] = new Interval(p, q);
+            }
         }
         impl.instrs[ip++] = (byte)opcode;
     }

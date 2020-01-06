@@ -145,7 +145,9 @@ public class Interpreter {
      */
     public int exec(STWriter out, InstanceScope scope) {
         final ST self = scope.st;
-        if ( trace ) System.out.println("exec("+self.getName()+")");
+        if ( trace ) {
+            System.out.println("exec("+self.getName()+")");
+        }
         try {
             setDefaultArguments(out, scope);
             return _exec(out, scope);
@@ -176,7 +178,9 @@ public class Interpreter {
         byte[] code = self.impl.instrs;        // which code block are we executing
         int ip = 0;
         while ( ip < self.impl.codeSize ) {
-            if ( trace || debug ) trace(scope, ip);
+            if ( trace || debug ) {
+                trace(scope, ip);
+            }
             short opcode = code[ip];
             //count[opcode]++;
             scope.ip = ip;
@@ -193,7 +197,9 @@ public class Interpreter {
                     name = self.impl.strings[nameIndex];
                     try {
                         o = getAttribute(scope, name);
-                        if ( o==ST.EMPTY_ATTR ) o = null;
+                        if ( o==ST.EMPTY_ATTR ) {
+                            o = null;
+                        }
                     }
                     catch (STNoSuchAttributeException nsae) {
                         errMgr.runTimeError(this, scope, ErrorType.NO_SUCH_ATTRIBUTE, name);
@@ -205,7 +211,9 @@ public class Interpreter {
                     int valueIndex = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
                     o = self.locals[valueIndex];
-                    if ( o==ST.EMPTY_ATTR ) o = null;
+                    if ( o==ST.EMPTY_ATTR ) {
+                        o = null;
+                    }
                     operands[++sp] = o;
                     break;
                 case Bytecode.INSTR_LOAD_PROP :
@@ -308,17 +316,23 @@ public class Interpreter {
                     int nmaps = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
                     List<ST> templates = new ArrayList<ST>();
-                    for (int i=nmaps-1; i>=0; i--) templates.add((ST)operands[sp-i]);
+                    for (int i=nmaps-1; i>=0; i--) {
+                        templates.add((ST)operands[sp-i]);
+                    }
                     sp -= nmaps;
                     o = operands[sp--];
-                    if ( o!=null ) rot_map(scope,o,templates);
+                    if ( o!=null ) {
+                        rot_map(scope,o,templates);
+                    }
                     break;
                 case Bytecode.INSTR_ZIP_MAP:
                     st = (ST)operands[sp--];
                     nmaps = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
                     List<Object> exprs = new ObjectList();
-                    for (int i=nmaps-1; i>=0; i--) exprs.add(operands[sp-i]);
+                    for (int i=nmaps-1; i>=0; i--) {
+                        exprs.add(operands[sp-i]);
+                    }
                     sp -= nmaps;
                     operands[++sp] = zip_map(scope, exprs, st);
                     break;
@@ -329,7 +343,9 @@ public class Interpreter {
                     addr = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
                     o = operands[sp--]; // <if(expr)>...<endif>
-                    if ( !testAttributeTrue(o) ) ip = addr; // jump
+                    if ( !testAttributeTrue(o) ) {
+                        ip = addr; // jump
+                    }
                     break;
                 case Bytecode.INSTR_OPTIONS :
                     operands[++sp] = new Object[Compiler.NUM_OPTIONS];
@@ -526,8 +542,12 @@ public class Interpreter {
 
     void passthru(InstanceScope scope, String templateName, Map<String,Object> attrs) {
         CompiledST c = group.lookupTemplate(templateName);
-        if ( c==null ) return; // will get error later
-        if ( c.formalArguments==null ) return;
+        if ( c==null ) {
+            return; // will get error later
+        }
+        if ( c.formalArguments==null ) {
+            return;
+        }
         for (FormalArgument arg : c.formalArguments.values()) {
             // if not already set by user, set to value from outer scope
             if ( !attrs.containsKey(arg.name) ) {
@@ -641,10 +661,14 @@ public class Interpreter {
         }
 
         int nformalArgs = 0;
-        if ( st.impl.formalArguments!=null ) nformalArgs = st.impl.formalArguments.size();
+        if ( st.impl.formalArguments!=null ) {
+            nformalArgs = st.impl.formalArguments.size();
+        }
         int firstArg = sp-(nargs-1);
         int numToStore = Math.min(nargs, nformalArgs);
-        if ( st.impl.isAnonSubtemplate ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
+        if ( st.impl.isAnonSubtemplate ) {
+            nformalArgs -= predefinedAnonSubtemplateAttributes.size();
+        }
 
         if ( nargs < (nformalArgs-st.impl.numberOfArgsWithDefaultValues) ||
              nargs > nformalArgs )
@@ -656,7 +680,9 @@ public class Interpreter {
                                 nformalArgs);
         }
 
-        if ( st.impl.formalArguments==null ) return;
+        if ( st.impl.formalArguments==null ) {
+            return;
+        }
 
         Iterator<String> argNames = st.impl.formalArguments.keySet().iterator();
         for (int i=0; i<numToStore; i++) {
@@ -738,7 +764,9 @@ public class Interpreter {
             if ( options!=null && options[Option.NULL.ordinal()]!=null ) {
                 o = options[Option.NULL.ordinal()];
             }
-            else return 0;
+            else {
+                return 0;
+            }
         }
         if ( o instanceof ST ) {
             scope = new InstanceScope(scope, (ST)o);
@@ -757,8 +785,12 @@ public class Interpreter {
         else {
             o = convertAnythingIteratableToIterator(scope, o); // normalize
             try {
-                if ( o instanceof Iterator) n = writeIterator(out, scope, o, options);
-                else n = writePOJO(out, scope, o, options);
+                if ( o instanceof Iterator) {
+                    n = writeIterator(out, scope, o, options);
+                }
+                else {
+                    n = writePOJO(out, scope, o, options);
+                }
             }
             catch (IOException ioe) {
                 errMgr.IOError(scope.st, ErrorType.WRITE_IO_ERROR, ioe, o);
@@ -768,11 +800,15 @@ public class Interpreter {
     }
 
     protected int writeIterator(STWriter out, InstanceScope scope, Object o, String[] options) throws IOException {
-        if ( o==null ) return 0;
+        if ( o==null ) {
+            return 0;
+        }
         int n = 0;
         Iterator<?> it = (Iterator<?>)o;
         String separator = null;
-        if ( options!=null ) separator = options[Option.SEPARATOR.ordinal()];
+        if ( options!=null ) {
+            separator = options[Option.SEPARATOR.ordinal()];
+        }
         boolean seenAValue = false;
         while ( it.hasNext() ) {
             Object iterValue = it.next();
@@ -781,9 +817,13 @@ public class Interpreter {
                 separator!=null &&            // we have a separator and
                 (iterValue!=null ||           // either we have a value
                     options[Option.NULL.ordinal()]!=null); // or no value but null option
-            if ( needSeparator ) n += out.writeSeparator(separator);
+            if ( needSeparator ) {
+                n += out.writeSeparator(separator);
+            }
             int nw = writeObject(out, scope, iterValue, options);
-            if ( nw > 0 ) seenAValue = true;
+            if ( nw > 0 ) {
+                seenAValue = true;
+            }
             n += nw;
         }
         return n;
@@ -791,7 +831,9 @@ public class Interpreter {
 
     protected int writePOJO(STWriter out, InstanceScope scope, Object o, String[] options) throws IOException {
         String formatString = null;
-        if ( options!=null ) formatString = options[Option.FORMAT.ordinal()];
+        if ( options!=null ) {
+            formatString = options[Option.FORMAT.ordinal()];
+        }
         String v = renderObject(scope, formatString, o, o.getClass());
         int n;
         if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
@@ -815,13 +857,17 @@ public class Interpreter {
 
     protected int getExprStartChar(InstanceScope scope) {
         Interval templateLocation = scope.st.impl.sourceMap[scope.ip];
-        if ( templateLocation!=null ) return templateLocation.a;
+        if ( templateLocation!=null ) {
+            return templateLocation.a;
+        }
         return -1;
     }
 
     protected int getExprStopChar(InstanceScope scope) {
         Interval templateLocation = scope.st.impl.sourceMap[scope.ip];
-        if ( templateLocation!=null ) return templateLocation.b;
+        if ( templateLocation!=null ) {
+            return templateLocation.b;
+        }
         return -1;
     }
 
@@ -897,7 +943,9 @@ public class Interpreter {
         // make everything iterable
         for (int i = 0; i < exprs.size(); i++) {
             Object attr = exprs.get(i);
-            if ( attr!=null ) exprs.set(i, convertAnythingToIterator(scope, attr));
+            if ( attr!=null ) {
+                exprs.set(i, convertAnythingToIterator(scope, attr));
+            }
         }
 
         // ensure arguments line up
@@ -912,7 +960,9 @@ public class Interpreter {
         // todo: track formal args not names for efficient filling of locals
         String[] formalArgumentNames = formalArguments.keySet().toArray(new String[formalArguments.size()]);
         int nformalArgs = formalArgumentNames.length;
-        if ( prototype.isAnonSubtemplate() ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
+        if ( prototype.isAnonSubtemplate() ) {
+            nformalArgs -= predefinedAnonSubtemplateAttributes.size();
+        }
         if ( nformalArgs != numExprs ) {
             errMgr.runTimeError(this, scope,
                                       ErrorType.MAP_ARGUMENT_COUNT_MISMATCH,
@@ -950,7 +1000,9 @@ public class Interpreter {
                     numEmpty++;
                 }
             }
-            if ( numEmpty==numExprs ) break;
+            if ( numEmpty==numExprs ) {
+                break;
+            }
             results.add(embedded);
             i++;
         }
@@ -981,7 +1033,9 @@ public class Interpreter {
         if ( o instanceof Iterator ) {
             // copy of elements into our temp list
             Iterator<?> it = (Iterator<?>)o;
-            while (it.hasNext()) list.add(it.next());
+            while (it.hasNext()) {
+                list.add(it.next());
+            }
         }
         else {
             list.add(o);
@@ -996,7 +1050,9 @@ public class Interpreter {
      * {@code <names:first()>}.</p>
      */
     public Object first(InstanceScope scope, Object v) {
-        if ( v==null ) return null;
+        if ( v==null ) {
+            return null;
+        }
         Object r = v;
         v = convertAnythingIteratableToIterator(scope, v);
         if ( v instanceof Iterator ) {
@@ -1017,8 +1073,12 @@ public class Interpreter {
      * {@code <names:last()>}.</p>
      */
     public Object last(InstanceScope scope, Object v) {
-        if ( v==null ) return null;
-        if ( v instanceof List ) return ((List<?>)v).get(((List<?>)v).size()-1);
+        if ( v==null ) {
+            return null;
+        }
+        if ( v instanceof List ) {
+            return ((List<?>)v).get(((List<?>)v).size()-1);
+        }
         else if ( v.getClass().isArray() ) {
             return Array.get(v, Array.getLength(v) - 1);
         }
@@ -1038,17 +1098,23 @@ public class Interpreter {
      * {@code null} if single-valued.
      */
     public Object rest(InstanceScope scope, Object v) {
-        if ( v == null ) return null;
+        if ( v == null ) {
+            return null;
+        }
         if ( v instanceof List ) { // optimize list case
             List<?> elems = (List<?>)v;
-            if ( elems.size()<=1 ) return null;
+            if ( elems.size()<=1 ) {
+                return null;
+            }
             return elems.subList(1, elems.size());
         }
         v = convertAnythingIteratableToIterator(scope, v);
         if ( v instanceof Iterator ) {
             List<Object> a = new ArrayList<Object>();
             Iterator<?> it = (Iterator<?>)v;
-            if ( !it.hasNext() ) return null; // if not even one value return null
+            if ( !it.hasNext() ) {
+                return null; // if not even one value return null
+            }
             it.next(); // ignore first value
             while (it.hasNext()) {
                 Object o = it.next();
@@ -1061,10 +1127,14 @@ public class Interpreter {
 
     /** Return all but the last element. <code>trunc(<i>x</i>)==null</code> if <code><i>x</i></code> is single-valued. */
     public Object trunc(InstanceScope scope, Object v) {
-        if ( v ==null ) return null;
+        if ( v ==null ) {
+            return null;
+        }
         if ( v instanceof List ) { // optimize list case
             List<?> elems = (List<?>)v;
-            if ( elems.size()<=1 ) return null;
+            if ( elems.size()<=1 ) {
+                return null;
+            }
             return elems.subList(0, elems.size()-1);
         }
         v = convertAnythingIteratableToIterator(scope, v);
@@ -1073,7 +1143,9 @@ public class Interpreter {
             Iterator<?> it = (Iterator<?>) v;
             while (it.hasNext()) {
                 Object o = it.next();
-                if ( it.hasNext() ) a.add(o); // only add if not last one
+                if ( it.hasNext() ) {
+                    a.add(o); // only add if not last one
+                }
             }
             return a;
         }
@@ -1082,14 +1154,18 @@ public class Interpreter {
 
     /** Return a new list without {@code null} values. */
     public Object strip(InstanceScope scope, Object v) {
-        if ( v ==null ) return null;
+        if ( v ==null ) {
+            return null;
+        }
         v = convertAnythingIteratableToIterator(scope, v);
         if ( v instanceof Iterator ) {
             List<Object> a = new ArrayList<Object>();
             Iterator<?> it = (Iterator<?>) v;
             while (it.hasNext()) {
                 Object o = it.next();
-                if ( o!=null ) a.add(o);
+                if ( o!=null ) {
+                    a.add(o);
+                }
             }
             return a;
         }
@@ -1103,12 +1179,16 @@ public class Interpreter {
      * {@code reverse(strip(v))} to do that.</p>
      */
     public Object reverse(InstanceScope scope, Object v) {
-        if ( v==null ) return null;
+        if ( v==null ) {
+            return null;
+        }
         v = convertAnythingIteratableToIterator(scope, v);
         if ( v instanceof Iterator ) {
             List<Object> a = new LinkedList<Object>();
             Iterator<?> it = (Iterator<?>)v;
-            while (it.hasNext()) a.add(0, it.next());
+            while (it.hasNext()) {
+                a.add(0, it.next());
+            }
             return a;
         }
         return v;
@@ -1122,13 +1202,23 @@ public class Interpreter {
      * special cases for speed.</p>
      */
     public Object length(Object v) {
-        if ( v == null) return 0;
+        if ( v == null) {
+            return 0;
+        }
         int i = 1;      // we have at least one of something. Iterator and arrays might be empty.
-        if ( v instanceof Map ) i = ((Map<?, ?>)v).size();
-        else if ( v instanceof Collection ) i = ((Collection<?>)v).size();
-        else if ( v instanceof Object[] ) i = ((Object[])v).length;
-        else if ( v.getClass().isArray() ) i = Array.getLength(v);
-        else if ( v instanceof Iterable || v instanceof Iterator ) {
+        if ( v instanceof Map ) {
+            i = ((Map<?, ?>)v).size();
+        }
+        else if ( v instanceof Collection ) {
+            i = ((Collection<?>)v).size();
+        }
+        else if ( v instanceof Object[] ) {
+            i = ((Object[])v).length;
+        }
+        else if ( v.getClass().isArray() ) {
+            i = Array.getLength(v);
+        }
+        else if ( v instanceof Iterable||v instanceof Iterator ) {
             Iterator<?> it = v instanceof Iterable ? ((Iterable<?>)v).iterator() : (Iterator<?>)v;
             i = 0;
             while ( it.hasNext() ) {
@@ -1141,7 +1231,9 @@ public class Interpreter {
 
     protected String toString(STWriter out, InstanceScope scope, Object value) {
         if ( value!=null ) {
-            if ( value.getClass()==String.class ) return (String)value;
+            if ( value.getClass()==String.class ) {
+                return (String)value;
+            }
             // if not string already, must evaluate it
             StringWriter sw = new StringWriter();
             STWriter stw;
@@ -1169,10 +1261,18 @@ public class Interpreter {
 
     public Object convertAnythingIteratableToIterator(InstanceScope scope, Object o) {
         Iterator<?> iter = null;
-        if ( o == null ) return null;
-        if ( o instanceof Iterable )      iter = ((Iterable<?>)o).iterator();
-        else if ( o instanceof Object[] )  iter = Arrays.asList((Object[])o).iterator();
-        else if ( o.getClass().isArray() ) iter = new ArrayIterator(o);
+        if ( o == null ) {
+            return null;
+        }
+        if ( o instanceof Iterable ) {
+            iter = ((Iterable<?>)o).iterator();
+        }
+        else if ( o instanceof Object[] ) {
+            iter = Arrays.asList((Object[])o).iterator();
+        }
+        else if ( o.getClass().isArray() ) {
+            iter = new ArrayIterator(o);
+        }
         else if ( o instanceof Map ) {
             if (scope.st.groupThatCreatedThisInstance.iterateAcrossValues) {
                 iter = ((Map<?, ?>)o).values().iterator();
@@ -1185,27 +1285,41 @@ public class Interpreter {
         //else if ( o instanceof Iterator ) {
         //  iter = (Iterator<?>)o;
         //}
-        if ( iter==null ) return o;
+        if ( iter==null ) {
+            return o;
+        }
         return iter;
     }
 
     public Iterator<?> convertAnythingToIterator(InstanceScope scope, Object o) {
         o = convertAnythingIteratableToIterator(scope, o);
-        if ( o instanceof Iterator ) return (Iterator<?>)o;
+        if ( o instanceof Iterator ) {
+            return (Iterator<?>)o;
+        }
         List<Object> singleton = new ST.AttributeList(1);
         singleton.add(o);
         return singleton.iterator();
     }
 
     protected boolean testAttributeTrue(Object a) {
-        if ( a==null ) return false;
-        if ( a instanceof Boolean ) return (Boolean)a;
-        if ( a instanceof Collection ) return ((Collection<?>)a).size()>0;
-        if ( a instanceof Map ) return ((Map<?, ?>)a).size()>0;
+        if ( a==null ) {
+            return false;
+        }
+        if ( a instanceof Boolean ) {
+            return (Boolean)a;
+        }
+        if ( a instanceof Collection ) {
+            return ((Collection<?>)a).size()>0;
+        }
+        if ( a instanceof Map ) {
+            return ((Map<?, ?>)a).size()>0;
+        }
         if ( a instanceof Iterable ) {
             return ((Iterable<?>)a).iterator().hasNext();
         }
-        if ( a instanceof Iterator ) return ((Iterator<?>)a).hasNext();
+        if ( a instanceof Iterator ) {
+            return ((Iterator<?>)a).hasNext();
+        }
         return true; // any other non-null object, return true--it's present
     }
 
@@ -1240,7 +1354,9 @@ public class Interpreter {
         while ( current!=null ) {
             ST p = current.st;
             FormalArgument localArg = null;
-            if ( p.impl.formalArguments!=null ) localArg = p.impl.formalArguments.get(name);
+            if ( p.impl.formalArguments!=null ) {
+                localArg = p.impl.formalArguments.get(name);
+            }
             if ( localArg!=null ) {
                 Object o = p.locals[localArg.index];
                 return o;
@@ -1251,7 +1367,9 @@ public class Interpreter {
         final ST self = scope.st;
         STGroup g = self.impl.nativeGroup;
         Object o = getDictionary(g, name);
-        if ( o!=null ) return o;
+        if ( o!=null ) {
+            return o;
+        }
 
         // not found, report unknown attr
         throw new STNoSuchAttributeException(name, scope);
@@ -1263,7 +1381,9 @@ public class Interpreter {
         }
         for (STGroup sup : g.imports) {
             Object o = getDictionary(sup, name);
-            if ( o!=null ) return o;
+            if ( o!=null ) {
+                return o;
+            }
         }
         return null;
     }
@@ -1325,7 +1445,9 @@ public class Interpreter {
         StringBuilder buf = new StringBuilder();
         int i = 0;
         for (ST st : templates) {
-            if ( i>0 ) buf.append(" ");
+            if ( i>0 ) {
+                buf.append(" ");
+            }
             buf.append(st.getName());
             i++;
         }
@@ -1336,8 +1458,12 @@ public class Interpreter {
         List<ST> stack = new LinkedList<ST>();
         InstanceScope p = scope;
         while ( p!=null ) {
-            if ( topdown ) stack.add(0,p.st);
-            else stack.add(p.st);
+            if ( topdown ) {
+                stack.add(0,p.st);
+            }
+            else {
+                stack.add(p.st);
+            }
             p = p.parent;
         }
         return stack;
@@ -1347,8 +1473,12 @@ public class Interpreter {
         List<InstanceScope> stack = new LinkedList<InstanceScope>();
         InstanceScope p = scope;
         while ( p!=null ) {
-            if ( topdown ) stack.add(0,p);
-            else stack.add(p);
+            if ( topdown ) {
+                stack.add(0,p);
+            }
+            else {
+                stack.add(p);
+            }
             p = p.parent;
         }
         return stack;
@@ -1359,8 +1489,12 @@ public class Interpreter {
         InstanceScope p = scope;
         while ( p!=null ) {
             EvalTemplateEvent eval = (EvalTemplateEvent)p.events.get(p.events.size()-1);
-            if ( topdown ) stack.add(0,eval);
-            else stack.add(eval);
+            if ( topdown ) {
+                stack.add(0,eval);
+            }
+            else {
+                stack.add(eval);
+            }
             p = p.parent;
         }
         return stack;
@@ -1373,7 +1507,9 @@ public class Interpreter {
         StringBuilder buf = new StringBuilder();
         dis.disassembleInstruction(buf,ip);
         String name = self.impl.name+":";
-        if ( Misc.referenceEquals(self.impl.name, ST.UNKNOWN_NAME) ) name = "";
+        if ( Misc.referenceEquals(self.impl.name, ST.UNKNOWN_NAME) ) {
+            name = "";
+        }
         tr.append(String.format("%-40s",name+buf));
         tr.append("\tstack=[");
         for (int i = 0; i <= sp; i++) {
@@ -1384,14 +1520,22 @@ public class Interpreter {
         tr.append(getEnclosingInstanceStackString(scope));
         tr.append(", sp=").append(sp).append(", nw=").append(nwline);
         String s = tr.toString();
-        if ( debug ) executeTrace.add(s);
-        if ( trace ) System.out.println(s);
+        if ( debug ) {
+            executeTrace.add(s);
+        }
+        if ( trace ) {
+            System.out.println(s);
+        }
     }
 
     protected void printForTrace(StringBuilder tr, InstanceScope scope, Object o) {
         if ( o instanceof ST ) {
-            if ( ((ST)o).impl ==null ) tr.append("bad-template()");
-            else tr.append(" ").append(((ST)o).impl.name).append("()");
+            if ( ((ST)o).impl ==null ) {
+                tr.append("bad-template()");
+            }
+            else {
+                tr.append(" ").append(((ST)o).impl.name).append("()");
+            }
             return;
         }
         o = convertAnythingIteratableToIterator(scope, o);

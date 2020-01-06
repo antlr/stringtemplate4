@@ -57,7 +57,9 @@ public class JTreeASTModel implements TreeModel {
 
     @Override
     public int getIndexOfChild(Object parent, Object child){
-        if ( parent==null ) return -1;
+        if ( parent==null ) {
+	        return -1;
+        }
         return adaptor.getChildIndex(child);
     }
 

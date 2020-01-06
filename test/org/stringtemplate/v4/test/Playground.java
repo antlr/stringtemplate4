@@ -8,7 +8,9 @@ public class Playground {
         STGroup g = new STGroupFile("/tmp/g.stg");
         g.setListener(errors);
         ST t = g.getInstanceOf("u");
-        if ( t!=null ) System.out.println(t.render());
+        if ( t!=null ) {
+	        System.out.println(t.render());
+        }
         System.err.println("errors: "+errors);
     }
 }

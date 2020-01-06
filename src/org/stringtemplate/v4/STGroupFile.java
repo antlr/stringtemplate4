@@ -71,7 +71,9 @@ public class STGroupFile extends STGroup {
             catch (MalformedURLException e) {
                 throw new STException("can't load group file "+fileName, e);
             }
-            if ( verbose ) System.out.println("STGroupFile(" + fileName + ") == file "+f.getAbsolutePath());
+            if ( verbose ) {
+                System.out.println("STGroupFile(" + fileName + ") == file "+f.getAbsolutePath());
+            }
         }
         else { // try in classpath
             url = getURL(fileName);
@@ -79,7 +81,9 @@ public class STGroupFile extends STGroup {
                 throw new IllegalArgumentException("No such group file: "+
                                                        fileName);
             }
-            if ( verbose ) System.out.println("STGroupFile(" + fileName + ") == url "+url);
+            if ( verbose ) {
+                System.out.println("STGroupFile(" + fileName + ") == url "+url);
+            }
         }
         this.fileName = fileName;
     }
@@ -115,13 +119,17 @@ public class STGroupFile extends STGroup {
 
     @Override
     public boolean isDictionary(String name) {
-        if ( !alreadyLoaded ) load();
+        if ( !alreadyLoaded ) {
+            load();
+        }
         return super.isDictionary(name);
     }
 
     @Override
     public boolean isDefined(String name) {
-        if ( !alreadyLoaded ) load();
+        if ( !alreadyLoaded ) {
+            load();
+        }
         return super.isDefined(name);
     }
 
@@ -133,24 +141,34 @@ public class STGroupFile extends STGroup {
 
     @Override
     protected synchronized CompiledST load(String name) {
-        if ( !alreadyLoaded ) load();
+        if ( !alreadyLoaded ) {
+            load();
+        }
         return rawGetTemplate(name);
     }
 
     @Override
     public synchronized void load() {
-        if ( alreadyLoaded ) return;
+        if ( alreadyLoaded ) {
+            return;
+        }
         alreadyLoaded = true; // do before actual load to say we're doing it
         // no prefix since this group file is the entire group, nothing lives
         // beneath it.
-        if ( verbose ) System.out.println("loading group file "+url.toString());
+        if ( verbose ) {
+            System.out.println("loading group file "+url.toString());
+        }
         loadGroupFile("/", url.toString());
-        if ( verbose ) System.out.println("found "+templates.size()+" templates in "+url.toString()+" = "+templates.keySet());
+        if ( verbose ) {
+            System.out.println("found "+templates.size()+" templates in "+url.toString()+" = "+templates.keySet());
+        }
     }
 
     @Override
     public String show() {
-        if ( !alreadyLoaded ) load();
+        if ( !alreadyLoaded ) {
+            load();
+        }
         return super.show();
     }
 

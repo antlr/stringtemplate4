@@ -51,7 +51,9 @@ public class JTreeSTModel implements TreeModel {
 
         @Override
         public boolean equals(Object o) {
-            if ( o == null ) return false;
+            if ( o == null ) {
+	            return false;
+            }
             //System.out.println(event+"=="+((Wrapper)o).event+" is "+(this.event == ((Wrapper)o).event));
             return this.event == ((Wrapper)o).event;
         }
@@ -59,7 +61,9 @@ public class JTreeSTModel implements TreeModel {
         @Override
         public String toString() {
             ST st = event.scope.st;
-            if ( st.isAnonSubtemplate() ) return "{...}";
+            if ( st.isAnonSubtemplate() ) {
+	            return "{...}";
+            }
             if ( st.debugState!=null && st.debugState.newSTEvent!=null ) {
                 String label = st.toString()+" @ "+st.debugState.newSTEvent.getFileName()+":"+
                        st.debugState.newSTEvent.getLine();

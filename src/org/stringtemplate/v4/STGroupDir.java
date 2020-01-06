@@ -65,7 +65,9 @@ public class STGroupDir extends STGroup {
             catch (MalformedURLException e) {
                 throw new STException("can't load dir "+dirName, e);
             }
-            if ( verbose ) System.out.println("STGroupDir("+dirName+") found at "+root);
+            if ( verbose ) {
+                System.out.println("STGroupDir("+dirName+") found at "+root);
+            }
         }
         else {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -74,7 +76,9 @@ public class STGroupDir extends STGroup {
                 cl = this.getClass().getClassLoader();
                 root = cl.getResource(dirName);
             }
-            if ( verbose ) System.out.println("STGroupDir("+dirName+") found via CLASSPATH at "+root);
+            if ( verbose ) {
+                System.out.println("STGroupDir("+dirName+") found via CLASSPATH at "+root);
+            }
             if ( root==null ) {
                 throw new IllegalArgumentException("No such directory: "+
                                                        dirName);
@@ -115,7 +119,9 @@ public class STGroupDir extends STGroup {
      */
     @Override
     protected CompiledST load(String name) {
-        if ( verbose ) System.out.println("STGroupDir.load("+name+")");
+        if ( verbose ) {
+            System.out.println("STGroupDir.load("+name+")");
+        }
         String parent = Misc.getParent(name); // must have parent; it's fully-qualified
         String prefix = Misc.getPrefix(name);
 //      if (parent.isEmpty()) {
@@ -143,7 +149,9 @@ public class STGroupDir extends STGroup {
         }
         finally { // clean up
             try {
-                if (is!=null ) is.close();
+                if (is!=null ) {
+                    is.close();
+                }
             }
             catch (IOException ioe) {
                 errMgr.internalError(null, "can't close template file stream "+name, ioe);
@@ -156,8 +164,10 @@ public class STGroupDir extends STGroup {
 
     /** Load .st as relative file name relative to root by {@code prefix}. */
     public CompiledST loadTemplateFile(String prefix, String unqualifiedFileName) {
-        if ( verbose ) System.out.println("loadTemplateFile("+unqualifiedFileName+") in groupdir "+
-                                          "from "+root+" prefix="+prefix);
+        if ( verbose ) {
+            System.out.println("loadTemplateFile("+unqualifiedFileName+") in groupdir "+
+                                              "from "+root+" prefix="+prefix);
+        }
         URL f;
         try {
             f = new URL(root+prefix+unqualifiedFileName);
@@ -174,7 +184,9 @@ public class STGroupDir extends STGroup {
             fs.name = unqualifiedFileName;
         }
         catch (IOException ioe) {
-            if ( verbose ) System.out.println(root+"/"+unqualifiedFileName+" doesn't exist");
+            if ( verbose ) {
+                System.out.println(root+"/"+unqualifiedFileName+" doesn't exist");
+            }
             //errMgr.IOError(null, ErrorType.NO_SUCH_TEMPLATE, ioe, unqualifiedFileName);
             return null;
         }
