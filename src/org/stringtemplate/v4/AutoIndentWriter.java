@@ -85,7 +85,7 @@ public class AutoIndentWriter implements STWriter {
 
     public AutoIndentWriter(Writer out, String newline) {
         this.out = out;
-        indents.add(null); // s oftart with no indent
+        indents.add(null); // start with no indent
         this.newline = newline;
     }
 
@@ -136,28 +136,31 @@ public class AutoIndentWriter implements STWriter {
         for (int i=0; i<sl; i++) {
             char c = str.charAt(i);
             // found \n or \r\n newline?
-            if ( c=='\r' ) {
-                continue;
+            switch ( c ) {
+                case '\r':
+                    // omit
+                    break;
+                case '\n':
+                    atStartOfLine = true;
+                    charPosition = -nll; // set so the write below sets to 0
+                    out.write(newline);
+                    n += nll;
+                    charIndex += nll;
+                    charPosition += n; // wrote n more char
+                    break;
+                default:
+                    // normal character
+                    // check to see if we are at the start of a line; need indent if so
+                    if ( atStartOfLine ) {
+                        n += indent();
+                        atStartOfLine = false;
+                    }
+                    n++;
+                    out.write(c);
+                    charPosition++;
+                    charIndex++;
+                    break;
             }
-            if ( c=='\n' ) {
-                atStartOfLine = true;
-                charPosition = -nll; // set so the write below sets to 0
-                out.write(newline);
-                n += nll;
-                charIndex += nll;
-                charPosition += n; // wrote n more char
-                continue;
-            }
-            // normal character
-            // check to see if we are at the start of a line; need indent if so
-            if ( atStartOfLine ) {
-                n+=indent();
-                atStartOfLine = false;
-            }
-            n++;
-            out.write(c);
-            charPosition++;
-            charIndex++;
         }
         return n;
     }
@@ -185,31 +188,33 @@ public class AutoIndentWriter implements STWriter {
         int n = 0;
         // if want wrap and not already at start of line (last char was \n)
         // and we have hit or exceeded the threshold
-        if ( lineWidth!=NO_WRAP && wrap!=null && !atStartOfLine &&
-             charPosition >= lineWidth )
-        {
-            // ok to wrap
-            // Walk wrap string and look for A\nB.  Spit out A\n
-            // then spit indent or anchor, whichever is larger
-            // then spit out B.
-            for (int i=0; i<wrap.length(); i++) {
-                char c = wrap.charAt(i);
-                if ( c=='\r' ) {
-                    continue;
-                } else if ( c=='\n' ) {
+        if ( lineWidth==NO_WRAP || wrap==null || atStartOfLine || charPosition<lineWidth ) {
+            return n;
+        }
+
+        // ok to wrap
+        // Walk wrap string and look for A\nB.  Spit out A\n
+        // then spit indent or anchor, whichever is larger
+        // then spit out B.
+        for (int i = 0; i<wrap.length(); i++) {
+            char c = wrap.charAt(i);
+            switch ( c ) {
+                case '\r':
+                    // omit
+                    break;
+                case '\n':
                     out.write(newline);
                     n += newline.length();
                     charPosition = 0;
                     charIndex += newline.length();
                     n += indent();
-                    // continue writing any chars out
-                }
-                else {  // write A or B part
+                    break;
+                default:   // write A or B part
                     n++;
                     out.write(c);
                     charPosition++;
                     charIndex++;
-                }
+                    break;
             }
         }
         return n;
