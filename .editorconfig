@@ -30,5 +30,8 @@ ij_java_spaces_around_logical_operators = true
 
 ij_java_spaces_within_if_parentheses = true
 ij_java_spaces_within_while_parentheses = true
+ij_java_spaces_within_switch_parentheses = true
 
 ij_java_space_after_type_cast = false
+
+ij_java_indent_case_from_switch = true
