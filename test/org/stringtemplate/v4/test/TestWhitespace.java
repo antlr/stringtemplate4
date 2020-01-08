@@ -38,7 +38,8 @@ import java.io.StringWriter;
 import static org.junit.Assert.assertEquals;
 
 public class TestWhitespace extends BaseTest {
-    @Test public void testTrimmedSubtemplates() throws Exception {
+    @Test public void testTrimmedSubtemplates()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n | <n>}>!");
         ST st = group.getInstanceOf("test");
@@ -50,7 +51,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTrimmedNewlinesBeforeAfterInTemplate() throws Exception {
+    @Test public void testTrimmedNewlinesBeforeAfterInTemplate()
+    {
         String templates =
             "a(x) ::= <<"+newline+
             "foo"+newline+
@@ -65,14 +67,16 @@ public class TestWhitespace extends BaseTest {
     /**
      * This is a regression test for antlr/stringtemplate4#93.
      */
-    @Test public void testNoTrimmedNewlinesBeforeAfterInCodedTemplate() throws Exception {
+    @Test public void testNoTrimmedNewlinesBeforeAfterInCodedTemplate()
+    {
         ST st = new ST(newline + "foo" + newline);
         String expected = newline + "foo" + newline;
         String result = st.render();
         assertEquals(expected, result);
     }
 
-    @Test public void testDontTrimJustSpaceBeforeAfterInTemplate() throws Exception {
+    @Test public void testDontTrimJustSpaceBeforeAfterInTemplate()
+    {
         String templates =
             "a(x) ::= << foo >>\n";
         STGroupString group = new STGroupString(templates);
@@ -82,7 +86,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTrimmedSubtemplatesNoArgs() throws Exception {
+    @Test public void testTrimmedSubtemplatesNoArgs()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "[<foo({ foo })>]");
         group.defineTemplate("foo", "x", "<x>");
@@ -92,7 +97,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTrimmedSubtemplatesArgs() throws Exception {
+    @Test public void testTrimmedSubtemplatesArgs()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{x|  foo }>");
         ST st = group.getInstanceOf("test");
@@ -104,7 +110,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTrimJustOneWSInSubtemplates() throws Exception {
+    @Test public void testTrimJustOneWSInSubtemplates()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n |  <n> }>!");
         ST st = group.getInstanceOf("test");
@@ -116,7 +123,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTrimNewlineInSubtemplates() throws Exception {
+    @Test public void testTrimNewlineInSubtemplates()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n |\n" +
                                      "<n>}>!");
@@ -129,7 +137,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testLeaveNewlineOnEndInSubtemplates() throws Exception {
+    @Test public void testLeaveNewlineOnEndInSubtemplates()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n |\n" +
                                      "<n>\n" +
@@ -144,7 +153,8 @@ public class TestWhitespace extends BaseTest {
     }
 
     @Ignore("will revisit the behavior of indented expressions spanning multiple lines for a future release")
-    @Test public void testTabBeforeEndInSubtemplates() throws Exception {
+    @Test public void testTabBeforeEndInSubtemplates()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "  <names:{n |\n" +
                                      "    <n>\n" +
@@ -159,7 +169,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEmptyExprAsFirstLineGetsNoOutput() throws Exception {
+    @Test public void testEmptyExprAsFirstLineGetsNoOutput()
+    {
         ST t = new ST(
             "<users>\n" +
             "end\n");
@@ -168,7 +179,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testEmptyLineWithIndent() throws Exception {
+    @Test public void testEmptyLineWithIndent()
+    {
         ST t = new ST(
             "begin\n" +
             "    \n" +
@@ -178,7 +190,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testEmptyLine() throws Exception {
+    @Test public void testEmptyLine()
+    {
         ST t = new ST(
             "begin\n" +
             "\n" +
@@ -188,7 +201,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testSizeZeroOnLineByItselfGetsNoOutput() throws Exception {
+    @Test public void testSizeZeroOnLineByItselfGetsNoOutput()
+    {
         ST t = new ST(
             "begin\n"+
             "<name>\n"+
@@ -200,7 +214,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testSizeZeroOnLineWithIndentGetsNoOutput() throws Exception {
+    @Test public void testSizeZeroOnLineWithIndentGetsNoOutput()
+    {
         ST t = new ST(
             "begin\n"+
             "  <name>\n"+
@@ -212,7 +227,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testSizeZeroOnLineWithMultipleExpr() throws Exception {
+    @Test public void testSizeZeroOnLineWithMultipleExpr()
+    {
         ST t = new ST(
             "begin\n"+
             "  <name>\n"+
@@ -223,7 +239,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIFExpr() throws Exception {
+    @Test public void testIFExpr()
+    {
         ST t = new ST(
             "begin\n"+
             "<if(x)><endif>\n"+
@@ -233,7 +250,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIndentedIFExpr() throws Exception {
+    @Test public void testIndentedIFExpr()
+    {
         ST t = new ST(
             "begin\n"+
             "    <if(x)><endif>\n"+
@@ -243,7 +261,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIFElseExprOnSingleLine() throws Exception {
+    @Test public void testIFElseExprOnSingleLine()
+    {
         ST t = new ST(
             "begin\n"+
             "<if(users)><else><endif>\n"+
@@ -253,7 +272,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIFOnMultipleLines() throws Exception {
+    @Test public void testIFOnMultipleLines()
+    {
         ST t = new ST(
             "begin\n"+
             "<if(users)>\n" +
@@ -267,7 +287,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testEndifNotOnLineAlone() throws Exception {
+    @Test public void testEndifNotOnLineAlone()
+    {
         ST t = new ST(
             "begin\n"+
             "  <if(users)>\n" +
@@ -280,7 +301,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testElseIFOnMultipleLines() throws Exception {
+    @Test public void testElseIFOnMultipleLines()
+    {
         ST t = new ST(
             "begin\n"+
             "<if(a)>\n" +
@@ -294,7 +316,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testElseIFOnMultipleLines2() throws Exception {
+    @Test public void testElseIFOnMultipleLines2()
+    {
         ST t = new ST(
             "begin\n"+
             "<if(a)>\n" +
@@ -309,7 +332,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testElseIFOnMultipleLines3() throws Exception {
+    @Test public void testElseIFOnMultipleLines3()
+    {
         ST t = new ST(
             "begin\n"+
             "  <if(a)>\n" +
@@ -324,7 +348,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testNestedIFOnMultipleLines() throws Exception {
+    @Test public void testNestedIFOnMultipleLines()
+    {
         ST t = new ST(
             "begin\n"+
             "<if(x)>\n" +
@@ -341,7 +366,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testLineBreak() throws Exception {
+    @Test public void testLineBreak()
+    {
         ST st = new ST(
                 "Foo <\\\\>"+newline+
                 "  \t  bar" +newline
@@ -353,7 +379,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testLineBreak2() throws Exception {
+    @Test public void testLineBreak2()
+    {
         ST st = new ST(
                 "Foo <\\\\>       "+newline+
                 "  \t  bar" +newline
@@ -365,7 +392,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testLineBreakNoWhiteSpace() throws Exception {
+    @Test public void testLineBreakNoWhiteSpace()
+    {
         ST st = new ST(
                 "Foo <\\\\>"+newline+
                 "bar\n"
@@ -377,7 +405,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testNewlineNormalizationInTemplateString() throws Exception {
+    @Test public void testNewlineNormalizationInTemplateString()
+    {
         ST st = new ST(
                 "Foo\r\n"+
                 "Bar\n"
@@ -389,7 +418,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testNewlineNormalizationInTemplateStringPC() throws Exception {
+    @Test public void testNewlineNormalizationInTemplateStringPC()
+    {
         ST st = new ST(
                 "Foo\r\n"+
                 "Bar\n"
@@ -401,7 +431,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testNewlineNormalizationInAttribute() throws Exception {
+    @Test public void testNewlineNormalizationInAttribute()
+    {
         ST st = new ST(
                 "Foo\r\n"+
                 "<name>\n"
@@ -414,7 +445,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testCommentOnlyLineGivesNoOutput() throws Exception {
+    @Test public void testCommentOnlyLineGivesNoOutput()
+    {
         ST t = new org.stringtemplate.v4.ST(
             "begin\n" +
             "<! ignore !>\n" +
@@ -424,7 +456,8 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testCommentOnlyLineGivesNoOutput2() throws Exception {
+    @Test public void testCommentOnlyLineGivesNoOutput2()
+    {
         ST t = new org.stringtemplate.v4.ST(
             "begin\n" +
             "    <! ignore !>\n" +

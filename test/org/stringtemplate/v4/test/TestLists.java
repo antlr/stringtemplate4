@@ -35,7 +35,7 @@ import org.stringtemplate.v4.STGroupFile;
 import static org.junit.Assert.assertEquals;
 
 public class TestLists extends BaseTest {
-    @Test public void testJustCat() throws Exception {
+    @Test public void testJustCat() {
         ST e = new ST(
                 "<[names,phones]>"
             );
@@ -47,7 +47,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testListLiteralWithEmptyElements() throws Exception {
+    @Test public void testListLiteralWithEmptyElements() {
         ST e = new ST(
             "<[\"Ter\",,\"Jesse\"]:{n | <i>:<n>}; separator=\", \", null={foo}>"
         );
@@ -55,7 +55,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testListLiteralWithEmptyFirstElement() throws Exception {
+    @Test public void testListLiteralWithEmptyFirstElement() {
         ST e = new ST(
             "<[,\"Ter\",\"Jesse\"]:{n | <i>:<n>}; separator=\", \", null={foo}>"
         );
@@ -63,7 +63,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testLength() throws Exception {
+    @Test public void testLength() {
         ST e = new ST(
                 "<length([names,phones])>"
             );
@@ -75,7 +75,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testCat2Attributes() throws Exception {
+    @Test public void testCat2Attributes() {
         ST e = new ST(
                 "<[names,phones]; separator=\", \">"
             );
@@ -87,7 +87,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testCat2AttributesWithApply() throws Exception {
+    @Test public void testCat2AttributesWithApply() {
         ST e = new ST(
                 "<[names,phones]:{a|<a>.}>"
             );
@@ -99,7 +99,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testCat3Attributes() throws Exception {
+    @Test public void testCat3Attributes() {
         ST e = new ST(
                 "<[names,phones,salaries]; separator=\", \">"
             );
@@ -113,7 +113,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testCatWithTemplateApplicationAsElement() throws Exception {
+    @Test public void testCatWithTemplateApplicationAsElement() {
         ST e = new ST(
                 "<[names:{n|<n>!},phones]; separator=\", \">"
             );
@@ -125,7 +125,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testCatWithIFAsElement() throws Exception {
+    @Test public void testCatWithIFAsElement() {
         ST e = new ST(
                 "<[{<if(names)>doh<endif>},phones]; separator=\", \">"
             );
@@ -137,7 +137,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testCatNullValues() throws Exception {
+    @Test public void testCatNullValues() {
         // [a, b] must behave like <a><b>; if a==b==null, blank output
         // unless null argument.
         ST e = new ST(
@@ -149,7 +149,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testCatWithNullTemplateApplicationAsElement() throws Exception {
+    @Test public void testCatWithNullTemplateApplicationAsElement() {
         ST e = new ST(
                 "<[names:{n|<n>!},\"foo\"]:{a|x}; separator=\", \">"
             );
@@ -159,7 +159,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testCatWithNestedTemplateApplicationAsElement() throws Exception {
+    @Test public void testCatWithNestedTemplateApplicationAsElement() {
         ST e = new ST(
                 "<[names, [\"foo\",\"bar\"]:{x | <x>!},phones]; separator=\", \">"
             );
@@ -171,7 +171,7 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testListAsTemplateArgument() throws Exception {
+    @Test public void testListAsTemplateArgument() {
         String templates =
                 "test(names,phones) ::= \"<foo([names,phones])>\""+newline+
                 "foo(items) ::= \"<items:{a | *<a>*}>\""+newline
@@ -188,7 +188,8 @@ public class TestLists extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testListWithTwoEmptyListsCollapsesToEmptyList() throws Exception {
+    @Test public void testListWithTwoEmptyListsCollapsesToEmptyList()
+    {
         ST e = new ST(
             "<[[],[]]:{x | <x>!}; separator=\", \">"
         );

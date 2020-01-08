@@ -38,7 +38,8 @@ import static org.junit.Assert.assertEquals;
 
 public class TestNoNewlineTemplates extends BaseTest {
         @Test
-        public void testNoNewlineTemplate() throws Exception {
+        public void testNoNewlineTemplate()
+        {
         String template =
             "t(x) ::= <%\n" +
             "[  <if(!x)>" +
@@ -58,7 +59,8 @@ public class TestNoNewlineTemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testWSNoNewlineTemplate() throws Exception {
+    @Test public void testWSNoNewlineTemplate()
+    {
         String template =
             "t(x) ::= <%\n" +
             "\n" +
@@ -71,7 +73,8 @@ public class TestNoNewlineTemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEmptyNoNewlineTemplate() throws Exception {
+    @Test public void testEmptyNoNewlineTemplate()
+    {
         String template =
             "t(x) ::= <%%>\n";
         STGroup g = new STGroupString(template);
@@ -82,7 +85,8 @@ public class TestNoNewlineTemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIgnoreIndent() throws Exception {
+    @Test public void testIgnoreIndent()
+    {
         String template =
             "t(x) ::= <%\n" +
             "   foo\n" +
@@ -96,7 +100,8 @@ public class TestNoNewlineTemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIgnoreIndentInIF() throws Exception {
+    @Test public void testIgnoreIndentInIF()
+    {
         String template =
             "t(x) ::= <%\n" +
             "   <if(x)>\n" +
@@ -112,7 +117,8 @@ public class TestNoNewlineTemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testKeepWS() throws Exception {
+    @Test public void testKeepWS()
+    {
         String template =
             "t(x) ::= <%\n" +
             "   <x> <x> hi\n" +
@@ -125,7 +131,8 @@ public class TestNoNewlineTemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testRegion() throws Exception {
+    @Test public void testRegion()
+    {
         String template =
             "t(x) ::= <%\n" +
             "<@r>\n" +
@@ -142,7 +149,8 @@ public class TestNoNewlineTemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefineRegionInSubgroup() throws Exception {
+    @Test public void testDefineRegionInSubgroup()
+    {
         String dir = getRandomDir();
         String g1 = "a() ::= <<[<@r()>]>>\n";
         writeFile(dir, "g1.stg", g1);

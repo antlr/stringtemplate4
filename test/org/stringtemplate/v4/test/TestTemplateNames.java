@@ -8,7 +8,7 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.Misc;
 
 public class TestTemplateNames extends BaseTest {
-    @Test public void testAbsoluteTemplateRefFromOutside() throws Exception {
+    @Test public void testAbsoluteTemplateRefFromOutside() {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
         writeFile(dir,           "a.st", "a(x) ::= << </subdir/b()> >>\n");
@@ -20,7 +20,7 @@ public class TestTemplateNames extends BaseTest {
     }
 
 
-    @Test public void testRelativeTemplateRefInExpr() throws Exception {
+    @Test public void testRelativeTemplateRefInExpr() {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
         writeFile(dir,           "a.st", "a(x) ::= << <subdir/b()> >>\n");
@@ -29,7 +29,7 @@ public class TestTemplateNames extends BaseTest {
         assertEquals(" bar ", group.getInstanceOf("a").render());
     }
 
-    @Test public void testAbsoluteTemplateRefInExpr() throws Exception {
+    @Test public void testAbsoluteTemplateRefInExpr() {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
         writeFile(dir,           "a.st", "a(x) ::= << </subdir/b()> >>\n");
@@ -38,7 +38,7 @@ public class TestTemplateNames extends BaseTest {
         assertEquals(" bar ", group.getInstanceOf("a").render());
     }
 
-    @Test public void testRefToAnotherTemplateInSameGroup() throws Exception {
+    @Test public void testRefToAnotherTemplateInSameGroup() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a() ::= << <b()> >>\n");
         writeFile(dir, "b.st", "b() ::= <<bar>>\n");
@@ -49,7 +49,7 @@ public class TestTemplateNames extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testRefToAnotherTemplateInSameSubdir() throws Exception {
+    @Test public void testRefToAnotherTemplateInSameSubdir() {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
         writeFile(dir+"/subdir", "a.st", "a() ::= << <b()> >>\n");
@@ -59,7 +59,7 @@ public class TestTemplateNames extends BaseTest {
         assertEquals(" bar ", group.getInstanceOf("/subdir/a").render());
     }
 
-    @Test public void testFullyQualifiedGetInstanceOf() throws Exception {
+    @Test public void testFullyQualifiedGetInstanceOf() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= <<foo>>");
         STGroup group = new STGroupDir(dir);
@@ -67,7 +67,7 @@ public class TestTemplateNames extends BaseTest {
         assertEquals("foo", group.getInstanceOf("/a").render());
     }
 
-    @Test public void testFullyQualifiedTemplateRef() throws Exception {
+    @Test public void testFullyQualifiedTemplateRef() {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
         writeFile(dir+"/subdir", "a.st", "a() ::= << </subdir/b()> >>\n");
@@ -77,7 +77,7 @@ public class TestTemplateNames extends BaseTest {
         assertEquals(" bar ", group.getInstanceOf("subdir/a").render());
     }
 
-    @Test public void testFullyQualifiedTemplateRef2() throws Exception {
+    @Test public void testFullyQualifiedTemplateRef2() {
         // /randomdir/a and /randomdir/group.stg with b and c templates
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= << </group/b()> >>\n");
@@ -93,7 +93,7 @@ public class TestTemplateNames extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testRelativeInSubdir() throws Exception {
+    @Test public void testRelativeInSubdir() {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
         writeFile(dir,           "a.st", "a(x) ::= << </subdir/c()> >>\n");
@@ -106,7 +106,8 @@ public class TestTemplateNames extends BaseTest {
     /**
      * This is a regression test for antlr/stringtemplate4#94.
      */
-    @Test public void testIdWithHyphens() throws Exception {
+    @Test public void testIdWithHyphens()
+    {
         String templates =
             "template-a(x-1) ::= \"[<x-1>]\"" + Misc.newline +
             "template-b(x-2) ::= <<" + Misc.newline +

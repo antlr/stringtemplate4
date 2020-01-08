@@ -39,11 +39,10 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestImports extends BaseTest {
-    @Test public void testImportDir() throws Exception {
+    @Test public void testImportDir() {
         /*
         dir1
             g.stg has a() that imports dir2 with absolute path
@@ -148,16 +147,15 @@ public class TestImports extends BaseTest {
          */
         String root = getRandomDir();
         System.out.println(root);
-        String dir = root;
         String main =
             "import \"lib.stg\"\n" + // should see in same dir as main.stg
             "a() ::= <<main a calls <bold()>!>>\n"+
             "b() ::= <<main b>>\n";
-        writeFile(dir, "main.stg", main);
+        writeFile(root, "main.stg", main);
 
         String lib =
             "bold() ::= <<lib bold>>\n";
-        writeFile(dir, "lib.stg", lib);
+        writeFile(root, "lib.stg", lib);
 
         writeTestFile(
             "STGroup group = new STGroupFile(\"main.stg\");\n" +
@@ -280,7 +278,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportRelativeDir() throws Exception {
+    @Test public void testImportRelativeDir() {
         /*
         dir
             g.stg has a() that imports subdir with relative path
@@ -351,7 +349,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEmptyGroupImportGroupFileSameDir() throws Exception {
+    @Test public void testEmptyGroupImportGroupFileSameDir() {
         /*
         dir
             group1.stg      that imports group2.stg in same dir with just filename
@@ -373,7 +371,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportGroupFileSameDir() throws Exception {
+    @Test public void testImportGroupFileSameDir() {
         /*
         dir
             group1.stg      that imports group2.stg in same dir with just filename
@@ -397,7 +395,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportRelativeGroupFile() throws Exception {
+    @Test public void testImportRelativeGroupFile() {
         /*
         dir
             group1.stg      that imports group2.stg in same dir with just filename
@@ -422,7 +420,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportTemplateFileSameDir() throws Exception {
+    @Test public void testImportTemplateFileSameDir() {
         /*
         dir
             group1.stg      (that imports c.st)
@@ -443,7 +441,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportRelativeTemplateFile() throws Exception {
+    @Test public void testImportRelativeTemplateFile() {
         /*
         dir
             group1.stg      that imports c.st
@@ -470,7 +468,7 @@ public class TestImports extends BaseTest {
 
 
 
-    @Test public void testImportTemplateFromAnotherGroupObject() throws Exception {
+    @Test public void testImportTemplateFromAnotherGroupObject() {
         /*
         dir1
             a.st
@@ -502,7 +500,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportTemplateInGroupFileFromDir() throws Exception {
+    @Test public void testImportTemplateInGroupFileFromDir() {
         /*
         dir
             x
@@ -527,7 +525,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportTemplateInGroupFileFromGroupFile() throws Exception {
+    @Test public void testImportTemplateInGroupFileFromGroupFile() {
         String dir = getRandomDir();
         String groupFile =
             "a() ::= \"g1 a\"\n"+
@@ -548,7 +546,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportTemplateFromSubdir() throws Exception {
+    @Test public void testImportTemplateFromSubdir() {
         // /randomdir/x/subdir/a and /randomdir/y/subdir/b
         String dir = getRandomDir();
         writeFile(dir, "x/subdir/a.st", "a() ::= << </subdir/b()> >>");
@@ -563,7 +561,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportTemplateFromGroupFile() throws Exception {
+    @Test public void testImportTemplateFromGroupFile() {
         // /randomdir/x/subdir/a and /randomdir/y/subdir.stg which has a and b
         String dir = getRandomDir();
         writeFile(dir, "x/subdir/a.st", "a() ::= << </subdir/b()> >>");
@@ -582,7 +580,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testPolymorphicTemplateReference() throws Exception {
+    @Test public void testPolymorphicTemplateReference() {
         String dir1 = getRandomDir();
         String b = "b() ::= <<dir1 b>>\n";
         writeFile(dir1, "b.st", b);
@@ -609,7 +607,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSuper() throws Exception {
+    @Test public void testSuper() {
         String dir1 = getRandomDir();
         String a = "a() ::= <<dir1 a>>\n";
         String b = "b() ::= <<dir1 b>>\n";
@@ -628,7 +626,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testUnloadImportedTemplate() throws Exception {
+    @Test public void testUnloadImportedTemplate() {
         String dir1 = getRandomDir();
         String a = "a() ::= <<dir1 a>>\n";
         String b = "b() ::= <<dir1 b>>\n";
@@ -649,7 +647,7 @@ public class TestImports extends BaseTest {
         group1.unload(); // blast cache
         st = group2.getInstanceOf("a");
         int newHashCode = System.identityHashCode(st);
-        assertEquals(originalHashCode==newHashCode, false); // diff objects
+        assertNotEquals(originalHashCode, newHashCode); // diff objects
 
         String expected = " dir1 b ";
         String result = st!=null ? st.render() : null;
@@ -657,14 +655,14 @@ public class TestImports extends BaseTest {
 
         st = group2.getInstanceOf("b");
         int newHashCode2 = System.identityHashCode(st);
-        assertEquals(originalHashCode2==newHashCode2, false); // diff objects
+        assertNotEquals(originalHashCode2, newHashCode2); // diff objects
         result = st.render();
         expected = "dir1 b";
         assertEquals(expected, result);
     }
 
     @Test
-    public void testUnloadImportedTemplatedSpecifiedInGroupFile() throws Exception {
+    public void testUnloadImportedTemplatedSpecifiedInGroupFile() {
         writeFile(tmpdir, "t.stg",
                 "import \"g1.stg\"\n\nmain() ::= <<\nv1-<f()>\n>>");
         writeFile(tmpdir, "g1.stg", "f() ::= \"g1\"");
@@ -683,7 +681,7 @@ public class TestImports extends BaseTest {
 
     /** Cannot import from a group file unless it's the root.
      */
-    @Test public void testGroupFileInDirImportsAnotherGroupFile() throws Exception {
+    @Test public void testGroupFileInDirImportsAnotherGroupFile() {
         // /randomdir/group.stg with a() imports /randomdir/imported.stg with b()
         // can't have groupdir then groupfile inside that imports
         String dir = getRandomDir();
@@ -704,7 +702,7 @@ public class TestImports extends BaseTest {
         assertTrue(result.contains(expecting));
     }
 
-    @Test public void testGroupFileInDirImportsAGroupDir() throws Exception {
+    @Test public void testGroupFileInDirImportsAGroupDir() {
         /*
         dir
             g.stg has a() that imports subdir with relative path
@@ -728,7 +726,7 @@ public class TestImports extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportUtfTemplateFileSameDir() throws Exception {
+    @Test public void testImportUtfTemplateFileSameDir() {
         /*
         dir
             group.stg       (that imports c.st)

@@ -37,7 +37,8 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import static org.junit.Assert.assertEquals;
 
 public class TestSyntaxErrors extends BaseTest {
-    @Test public void testEmptyExpr() throws Exception {
+    @Test public void testEmptyExpr()
+    {
         String template = " <> ";
         STGroup group = new STGroup();
         ErrorBuffer errors = new ErrorBuffer();
@@ -53,7 +54,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEmptyExpr2() throws Exception {
+    @Test public void testEmptyExpr2()
+    {
         String template = "hi <> ";
         STGroup group = new STGroup();
         ErrorBuffer errors = new ErrorBuffer();
@@ -69,7 +71,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testUnterminatedExpr() throws Exception {
+    @Test public void testUnterminatedExpr()
+    {
         String template = "hi <t()$";
         STGroup group = new STGroup();
         ErrorBuffer errors = new ErrorBuffer();
@@ -87,7 +90,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testWeirdChar() throws Exception {
+    @Test public void testWeirdChar()
+    {
         String template = "   <*>";
         STGroup group = new STGroup();
         ErrorBuffer errors = new ErrorBuffer();
@@ -104,7 +108,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testWeirdChar2() throws Exception {
+    @Test public void testWeirdChar2()
+    {
         String template = "\n<\\\n";
         STGroup group = new STGroup();
         ErrorBuffer errors = new ErrorBuffer();
@@ -121,7 +126,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testValidButOutOfPlaceChar() throws Exception {
+    @Test public void testValidButOutOfPlaceChar()
+    {
         String templates =
             "foo() ::= <<hi <.> mom>>\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -135,7 +141,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testValidButOutOfPlaceCharOnDifferentLine() throws Exception {
+    @Test public void testValidButOutOfPlaceCharOnDifferentLine()
+    {
         String templates =
                 "foo() ::= \"hi <\n" +
                 ".> mom\"\n";
@@ -150,7 +157,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testErrorInNestedTemplate() throws Exception {
+    @Test public void testErrorInNestedTemplate()
+    {
         String templates =
             "foo() ::= \"hi <name:{[<aaa.bb!>]}> mom\"\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -165,7 +173,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEOFInExpr() throws Exception {
+    @Test public void testEOFInExpr()
+    {
         String templates =
             "foo() ::= \"hi <name\"";
         writeFile(tmpdir, "t.stg", templates);
@@ -181,7 +190,8 @@ public class TestSyntaxErrors extends BaseTest {
     }
 
 
-    @Test public void testEOFInExpr2() throws Exception {
+    @Test public void testEOFInExpr2()
+    {
         String templates =
             "foo() ::= \"hi <name:{x|[<aaa.bb>]}\"\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -196,7 +206,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEOFInString() throws Exception {
+    @Test public void testEOFInString()
+    {
         String templates =
             "foo() ::= << <f(\"foo>>\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -212,7 +223,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNonterminatedComment() throws Exception {
+    @Test public void testNonterminatedComment()
+    {
         String templates =
             "foo() ::= << <!foo> >>";
         writeFile(tmpdir, "t.stg", templates);
@@ -228,7 +240,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMissingRPAREN() throws Exception {
+    @Test public void testMissingRPAREN()
+    {
         String templates =
             "foo() ::= \"hi <foo(>\"\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -243,7 +256,8 @@ public class TestSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testRotPar() throws Exception {
+    @Test public void testRotPar()
+    {
         String templates =
             "foo() ::= \"<a,b:t(),u()>\"\n";
         writeFile(tmpdir, "t.stg", templates);

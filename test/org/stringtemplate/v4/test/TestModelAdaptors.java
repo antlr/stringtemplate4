@@ -54,7 +54,7 @@ public class TestModelAdaptors extends BaseTest {
         }
     }
 
-    @Test public void testSimpleAdaptor() throws Exception {
+    @Test public void testSimpleAdaptor() {
         String templates =
                 "foo(x) ::= \"<x.id>: <x.name>\"\n";
         writeFile(tmpdir, "foo.stg", templates);
@@ -67,7 +67,7 @@ public class TestModelAdaptors extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testAdaptorAndBadProp() throws Exception {
+    @Test public void testAdaptorAndBadProp() {
         ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
         String templates =
                 "foo(x) ::= \"<x.qqq>\"\n";
@@ -86,7 +86,7 @@ public class TestModelAdaptors extends BaseTest {
         assertEquals("User.qqq", e.propertyName);
     }
 
-    @Test public void testAdaptorCoversSubclass() throws Exception {
+    @Test public void testAdaptorCoversSubclass() {
         String templates =
                 "foo(x) ::= \"<x.id>: <x.name>\"\n";
         writeFile(tmpdir, "foo.stg", templates);
@@ -99,7 +99,7 @@ public class TestModelAdaptors extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testWeCanResetAdaptorCacheInvalidatedUponAdaptorReset() throws Exception {
+    @Test public void testWeCanResetAdaptorCacheInvalidatedUponAdaptorReset() {
         String templates =
                 "foo(x) ::= \"<x.id>: <x.name>\"\n";
         writeFile(tmpdir, "foo.stg", templates);
@@ -117,7 +117,7 @@ public class TestModelAdaptors extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testSeesMostSpecificAdaptor() throws Exception {
+    @Test public void testSeesMostSpecificAdaptor() {
         String templates =
                 "foo(x) ::= \"<x.id>: <x.name>\"\n";
         writeFile(tmpdir, "foo.stg", templates);

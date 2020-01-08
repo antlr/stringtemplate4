@@ -31,14 +31,16 @@ import org.junit.Test;
 
 public class TestLexer extends BaseTest {
 
-    @Test public void testOneExpr() throws Exception {
+    @Test public void testOneExpr()
+    {
         String template = "<name>";
         String expected = "[[@0,0:0='<',<LDELIM>,1:0], [@1,1:4='name',<ID>,1:1], " +
                           "[@2,5:5='>',<RDELIM>,1:5]]";
         checkTokens(template, expected);
     }
 
-    @Test public void testOneExprSurrounded() throws Exception {
+    @Test public void testOneExprSurrounded()
+    {
         String template = "hi <name> mom";
         String expected = "[[@0,0:2='hi ',<TEXT>,1:0], [@1,3:3='<',<LDELIM>,1:3], " +
                           "[@2,4:7='name',<ID>,1:4], [@3,8:8='>',<RDELIM>,1:8], " +
@@ -46,19 +48,22 @@ public class TestLexer extends BaseTest {
         checkTokens(template, expected);
     }
 
-    @Test public void testEscDelim() throws Exception {
+    @Test public void testEscDelim()
+    {
         String template = "hi \\<name>";
         String expected = "[[@0,0:9='hi <name>',<TEXT>,1:0]]";
         checkTokens(template, expected);
     }
 
-    @Test public void testEscEsc() throws Exception {
+    @Test public void testEscEsc()
+    {
         String template = "hi \\\\ foo";
         String expected = "[[@0,0:8='hi \\ foo',<TEXT>,1:0]]";
         checkTokens(template, expected);
     }
 
-    @Test public void testEscDelimHasCorrectStartChar() throws Exception {
+    @Test public void testEscDelimHasCorrectStartChar()
+    {
         String template = "<a>\\<dog";
         String expected =
             "[[@0,0:0='<',<LDELIM>,1:0], [@1,1:1='a',<ID>,1:1], [@2,2:2='>',<RDELIM>,1:2], " +
@@ -66,13 +71,15 @@ public class TestLexer extends BaseTest {
         checkTokens(template, expected);
     }
 
-    @Test public void testEscChar() throws Exception {
+    @Test public void testEscChar()
+    {
         String template = "hi \\x";
         String expected = "[[@0,0:4='hi \\x',<TEXT>,1:0]]";
         checkTokens(template, expected);
     }
 
-    @Test public void testString() throws Exception {
+    @Test public void testString()
+    {
         String template = "hi <foo(a=\">\")>";
         String expected = "[[@0,0:2='hi ',<TEXT>,1:0], [@1,3:3='<',<LDELIM>,1:3], " +
                           "[@2,4:6='foo',<ID>,1:4], [@3,7:7='(',<LPAREN>,1:7], " +
@@ -82,7 +89,8 @@ public class TestLexer extends BaseTest {
         checkTokens(template, expected);
     }
 
-    @Test public void testEscInString() throws Exception {
+    @Test public void testEscInString()
+    {
         String template = "hi <foo(a=\">\\\"\")>";
         String expected =
             "[[@0,0:2='hi ',<TEXT>,1:0], [@1,3:3='<',<LDELIM>,1:3], [@2,4:6='foo',<ID>,1:4], " +
@@ -92,35 +100,40 @@ public class TestLexer extends BaseTest {
         checkTokens(template, expected);
     }
 
-    @Test public void testSubtemplate() throws Exception {
+    @Test public void testSubtemplate()
+    {
         String template = "hi <names:{n | <n>}>";
         String expected =
             "[[@0,0:2='hi ',<TEXT>,1:0], [@1,3:3='<',<LDELIM>,1:3], [@2,4:8='names',<ID>,1:4], [@3,9:9=':',<COLON>,1:9], [@4,10:10='{',<LCURLY>,1:10], [@5,11:11='n',<ID>,1:11], [@6,13:13='|',<PIPE>,1:13], [@7,15:15='<',<LDELIM>,1:15], [@8,16:16='n',<ID>,1:16], [@9,17:17='>',<RDELIM>,1:17], [@10,18:18='}',<RCURLY>,1:18], [@11,19:19='>',<RDELIM>,1:19]]";
         checkTokens(template, expected);
     }
 
-    @Test public void testSubtemplateNoArg() throws Exception {
+    @Test public void testSubtemplateNoArg()
+    {
         String template = "hi <names:{n | <n>}>";
         String expected =
             "[[@0,0:2='hi ',<TEXT>,1:0], [@1,3:3='<',<LDELIM>,1:3], [@2,4:8='names',<ID>,1:4], [@3,9:9=':',<COLON>,1:9], [@4,10:10='{',<LCURLY>,1:10], [@5,11:11='n',<ID>,1:11], [@6,13:13='|',<PIPE>,1:13], [@7,15:15='<',<LDELIM>,1:15], [@8,16:16='n',<ID>,1:16], [@9,17:17='>',<RDELIM>,1:17], [@10,18:18='}',<RCURLY>,1:18], [@11,19:19='>',<RDELIM>,1:19]]";
         checkTokens(template, expected);
     }
 
-    @Test public void testSubtemplateMultiArgs() throws Exception {
+    @Test public void testSubtemplateMultiArgs()
+    {
         String template = "hi <names:{x,y | <x><y>}>"; // semantically bogus
         String expected =
             "[[@0,0:2='hi ',<TEXT>,1:0], [@1,3:3='<',<LDELIM>,1:3], [@2,4:8='names',<ID>,1:4], [@3,9:9=':',<COLON>,1:9], [@4,10:10='{',<LCURLY>,1:10], [@5,11:11='x',<ID>,1:11], [@6,12:12=',',<COMMA>,1:12], [@7,13:13='y',<ID>,1:13], [@8,15:15='|',<PIPE>,1:15], [@9,17:17='<',<LDELIM>,1:17], [@10,18:18='x',<ID>,1:18], [@11,19:19='>',<RDELIM>,1:19], [@12,20:20='<',<LDELIM>,1:20], [@13,21:21='y',<ID>,1:21], [@14,22:22='>',<RDELIM>,1:22], [@15,23:23='}',<RCURLY>,1:23], [@16,24:24='>',<RDELIM>,1:24]]";
         checkTokens(template, expected);
     }
 
-    @Test public void testNestedSubtemplate() throws Exception {
+    @Test public void testNestedSubtemplate()
+    {
         String template = "hi <names:{n | <n:{x|<x>}>}>";
         String expected =
             "[[@0,0:2='hi ',<TEXT>,1:0], [@1,3:3='<',<LDELIM>,1:3], [@2,4:8='names',<ID>,1:4], [@3,9:9=':',<COLON>,1:9], [@4,10:10='{',<LCURLY>,1:10], [@5,11:11='n',<ID>,1:11], [@6,13:13='|',<PIPE>,1:13], [@7,15:15='<',<LDELIM>,1:15], [@8,16:16='n',<ID>,1:16], [@9,17:17=':',<COLON>,1:17], [@10,18:18='{',<LCURLY>,1:18], [@11,19:19='x',<ID>,1:19], [@12,20:20='|',<PIPE>,1:20], [@13,21:21='<',<LDELIM>,1:21], [@14,22:22='x',<ID>,1:22], [@15,23:23='>',<RDELIM>,1:23], [@16,24:24='}',<RCURLY>,1:24], [@17,25:25='>',<RDELIM>,1:25], [@18,26:26='}',<RCURLY>,1:26], [@19,27:27='>',<RDELIM>,1:27]]";
         checkTokens(template, expected);
     }
 
-    @Test public void testNestedList() throws Exception {
+    @Test public void testNestedList()
+    {
         String template =
             "*<[names, [\"foo\",\"bar\"]:{x|<x>!},phones]; separator=\", \">*";
            //01234567890123456
@@ -129,7 +142,8 @@ public class TestLexer extends BaseTest {
         checkTokens(template, expected);
     }
 
-    @Test public void testIF() throws Exception {
+    @Test public void testIF()
+    {
         String template = "<if(!name)>works<endif>";
         String expected =
             "[[@0,0:0='<',<LDELIM>,1:0], [@1,1:2='if',<IF>,1:1], [@2,3:3='(',<LPAREN>,1:3], " +
@@ -140,7 +154,8 @@ public class TestLexer extends BaseTest {
         checkTokens(template, expected);
     }
 
-    @Test public void testIFNot() throws Exception {
+    @Test public void testIFNot()
+    {
         String template = "<if(!name)>works<endif>";
         String expected =
             "[[@0,0:0='<',<LDELIM>,1:0], [@1,1:2='if',<IF>,1:1], [@2,3:3='(',<LPAREN>,1:3], " +
@@ -151,7 +166,8 @@ public class TestLexer extends BaseTest {
         checkTokens(template, expected);
     }
 
-    @Test public void testIFELSE() throws Exception {
+    @Test public void testIFELSE()
+    {
         String template = "<if(name)>works<else>fail<endif>";
         String expected =
             "[[@0,0:0='<',<LDELIM>,1:0], [@1,1:2='if',<IF>,1:1], [@2,3:3='(',<LPAREN>,1:3], " +
@@ -163,7 +179,8 @@ public class TestLexer extends BaseTest {
         checkTokens(template, expected);
     }
 
-    @Test public void testELSEIF() throws Exception {
+    @Test public void testELSEIF()
+    {
         String template = "<if(name)>fail<elseif(id)>works<else>fail<endif>";
         String expected =
             "[[@0,0:0='<',<LDELIM>,1:0], [@1,1:2='if',<IF>,1:1], [@2,3:3='(',<LPAREN>,1:3], " +
@@ -179,7 +196,8 @@ public class TestLexer extends BaseTest {
         checkTokens(template, expected);
     }
 
-    @Test public void testEmbeddedRegion() throws Exception {
+    @Test public void testEmbeddedRegion()
+    {
         String template = "<@r>foo<@end>";
         String expected =
             "[[@0,0:0='<',<LDELIM>,1:0], [@1,1:1='@',<AT>,1:1], [@2,2:2='r',<ID>,1:2], " +
@@ -188,7 +206,8 @@ public class TestLexer extends BaseTest {
         checkTokens(template, expected);
     }
 
-    @Test public void testRegion() throws Exception {
+    @Test public void testRegion()
+    {
         String template = "<@r()>";
         String expected =
             "[[@0,0:0='<',<LDELIM>,1:0], [@1,1:1='@',<AT>,1:1], [@2,2:2='r',<ID>,1:2], " +

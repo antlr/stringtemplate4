@@ -36,7 +36,8 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import static org.junit.Assert.assertEquals;
 
 public class TestGroupSyntaxErrors extends BaseTest {
-    @Test public void testMissingImportString() throws Exception {
+    @Test public void testMissingImportString()
+    {
         String templates =
             "import\n" +
             "foo() ::= <<>>\n";
@@ -52,7 +53,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportNotString() throws Exception {
+    @Test public void testImportNotString()
+    {
         String templates =
             "import Super.stg\n" +
             "foo() ::= <<>>\n";
@@ -67,7 +69,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMissingTemplate() throws Exception {
+    @Test public void testMissingTemplate()
+    {
         String templates =
             "foo() ::= \n";
         writeFile(tmpdir, "t.stg", templates);
@@ -82,7 +85,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testUnclosedTemplate() throws Exception {
+    @Test public void testUnclosedTemplate()
+    {
         String templates =
             "foo() ::= {";
         writeFile(tmpdir, "t.stg", templates);
@@ -98,7 +102,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testParen() throws Exception {
+    @Test public void testParen()
+    {
         String templates =
             "foo( ::= << >>\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -113,7 +118,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNewlineInString() throws Exception {
+    @Test public void testNewlineInString()
+    {
         String templates =
             "foo() ::= \"\nfoo\"\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -128,7 +134,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testParen2() throws Exception {
+    @Test public void testParen2()
+    {
         String templates =
             "foo) ::= << >>\n" +
             "bar() ::= <<bar>>\n";
@@ -144,7 +151,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testArg() throws Exception {
+    @Test public void testArg()
+    {
         String templates =
             "foo(a,) ::= << >>\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -159,7 +167,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testArg2() throws Exception {
+    @Test public void testArg2()
+    {
         String templates =
             "foo(a,,) ::= << >>\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -177,7 +186,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testArg3() throws Exception {
+    @Test public void testArg3()
+    {
         String templates =
             "foo(a b) ::= << >>\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -193,7 +203,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefaultArgsOutOfOrder() throws Exception {
+    @Test public void testDefaultArgsOutOfOrder()
+    {
         String templates =
             "foo(a={hi}, b) ::= << >>\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -209,7 +220,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testArgumentRedefinition() throws Exception {
+    @Test public void testArgumentRedefinition()
+    {
         String templates =
             "foo(a,b,a) ::= << >>\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -225,7 +237,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testArgumentRedefinitionInSubtemplate() throws Exception {
+    @Test public void testArgumentRedefinitionInSubtemplate()
+    {
         String templates =
             "foo(names) ::= <<" + newline +
             "<names, names, names:{a,b,a|}>" + newline +
@@ -244,7 +257,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testErrorWithinTemplate() throws Exception {
+    @Test public void testErrorWithinTemplate()
+    {
         String templates =
             "foo(a) ::= \"<a b>\"\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -259,7 +273,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMap() throws Exception {
+    @Test public void testMap()
+    {
         String templates =
             "d ::= []\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -274,7 +289,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMap2() throws Exception {
+    @Test public void testMap2()
+    {
         String templates =
             "d ::= [\"k\":]\n";
         writeFile(tmpdir, "t.stg", templates);
@@ -289,7 +305,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMap3() throws Exception {
+    @Test public void testMap3()
+    {
         String templates =
             "d ::= [\"k\":{dfkj}}]\n"; // extra }
         writeFile(tmpdir, "t.stg", templates);
@@ -304,7 +321,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testUnterminatedString() throws Exception {
+    @Test public void testUnterminatedString()
+    {
         String templates =
             "f() ::= \""; // extra }
         writeFile(tmpdir, "t.stg", templates);

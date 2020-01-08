@@ -12,11 +12,11 @@ public class TestBuggyDefaultValueRaisesNPETest extends BaseTest {
      * When the anonymous template specified as a default value for a formalArg
      * contains a syntax error ST 4.0.2 emits a NullPointerException error
      * (after the syntax error)
-     * 
-     * @throws Exception
+     *
      */
     @Test
-    public void testHandleBuggyDefaultArgument() throws Exception {
+    public void testHandleBuggyDefaultArgument()
+    {
         String templates = "main(a={(<\"\")>}) ::= \"\"";
         writeFile(tmpdir, "t.stg", templates);
 

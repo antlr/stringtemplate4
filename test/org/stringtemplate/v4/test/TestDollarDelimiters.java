@@ -38,7 +38,8 @@ import org.stringtemplate.v4.STGroupString;
 import static org.junit.Assert.assertEquals;
 
 public class TestDollarDelimiters extends BaseTest {
-    @Test public void testAttr() throws Exception {
+    @Test public void testAttr()
+    {
         String template = "hi $name$!";
         ST st = new org.stringtemplate.v4.ST(template, '$', '$');
         st.add("name", "Ter");
@@ -47,7 +48,8 @@ public class TestDollarDelimiters extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testParallelMap() throws Exception {
+    @Test public void testParallelMap()
+    {
         STGroup group = new org.stringtemplate.v4.STGroup('$', '$');
         group.defineTemplate("test", "names,phones", "hi $names,phones:{n,p | $n$:$p$;}$");
         ST st = group.getInstanceOf("test");
@@ -63,7 +65,8 @@ public class TestDollarDelimiters extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testRefToAnotherTemplateInSameGroup() throws Exception {
+    @Test public void testRefToAnotherTemplateInSameGroup()
+    {
         String dir = getRandomDir();
         String a = "a() ::= << <$b()$> >>\n";
         String b = "b() ::= <<bar>>\n";
@@ -76,7 +79,8 @@ public class TestDollarDelimiters extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefaultArgument() throws Exception {
+    @Test public void testDefaultArgument()
+    {
         String templates =
                 "method(name) ::= <<"+newline+
                 "$stat(name)$" +newline+
@@ -96,7 +100,8 @@ public class TestDollarDelimiters extends BaseTest {
      * This is part of a regression test for antlr/stringtemplate4#46.
      * https://github.com/antlr/stringtemplate4/issues/46
      */
-    @Test public void testDelimitersClause() throws Exception {
+    @Test public void testDelimitersClause()
+    {
         String templates =
                 "delimiters \"$\", \"$\""+newline+
                 "method(name) ::= <<"+newline+
@@ -117,7 +122,8 @@ public class TestDollarDelimiters extends BaseTest {
      * This is part of a regression test for antlr/stringtemplate4#46.
      * https://github.com/antlr/stringtemplate4/issues/46
      */
-    @Test public void testDelimitersClauseInGroupString() throws Exception {
+    @Test public void testDelimitersClauseInGroupString()
+    {
         String templates =
                 "delimiters \"$\", \"$\""+newline+
                 "method(name) ::= <<"+newline+

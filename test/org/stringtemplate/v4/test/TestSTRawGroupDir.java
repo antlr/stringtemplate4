@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class TestSTRawGroupDir extends BaseTest {
-    @Test public void testSimpleGroup() throws Exception {
+    @Test public void testSimpleGroup() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "foo");
         STGroup group = new STRawGroupDir(dir, '$', '$');
@@ -18,7 +18,7 @@ public class TestSTRawGroupDir extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSimpleGroup2() throws Exception {
+    @Test public void testSimpleGroup2() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "foo");
         writeFile(dir, "b.st", "$name$");
@@ -33,7 +33,7 @@ public class TestSTRawGroupDir extends BaseTest {
         assertEquals("Bob", b.render());
     }
 
-    @Test public void testSimpleGroupAngleBrackets() throws Exception {
+    @Test public void testSimpleGroupAngleBrackets() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "foo");
         writeFile(dir, "b.st", "<name>");
@@ -61,7 +61,7 @@ public class TestSTRawGroupDir extends BaseTest {
         assertEquals("[one][two][three]", template.render());
     }
 
-    @Test public void testMap() throws Exception {
+    @Test public void testMap() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "$names:bold()$");
         writeFile(dir, "bold.st", "<b>$it$</b>");
@@ -80,7 +80,8 @@ public class TestSTRawGroupDir extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSuper() throws Exception {
+    @Test public void testSuper()
+    {
         String dir1 = getRandomDir();
         String a = "dir1 a";
         String b = "dir1 b";

@@ -384,7 +384,7 @@ public abstract class BaseTest {
     }
 
     public String getRandomDir() {
-        File randomDir = new File(tmpdir, "dir" + String.valueOf((int)(Math.random() * 100000)));
+        File randomDir = new File(tmpdir, "dir"+(int)(Math.random()*100000));
         randomDir.mkdirs();
         return randomDir.getAbsolutePath();
     }

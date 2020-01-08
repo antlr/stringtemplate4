@@ -33,7 +33,6 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -214,28 +213,28 @@ public class TestNullAndEmptyValues extends BaseTest {
         new T("<[]:t()>", UNDEF, ""),
     };
 
-    @Test public void testSingleValued() throws Exception {
+    @Test public void testSingleValued() {
         List<T> failed = testMatrix(singleValuedTests);
         List<T> expecting = Collections.emptyList();
         assertArrayEquals("failed tests "+failed,
                           expecting.toArray(), failed.toArray());
     }
 
-    @Test public void testMultiValued() throws Exception {
+    @Test public void testMultiValued() {
         List<T> failed = testMatrix(multiValuedTests);
         List<T> expecting = Collections.emptyList();
         assertArrayEquals("failed tests "+failed,
                           expecting.toArray(), failed.toArray());
     }
 
-    @Test public void testLists() throws Exception {
+    @Test public void testLists() {
         List<T> failed = testMatrix(listTests);
         List<T> expecting = Collections.emptyList();
         assertArrayEquals("failed tests "+failed,
                           expecting.toArray(), failed.toArray());
     }
 
-    public List<T> testMatrix(T[] tests) throws Exception {
+    public List<T> testMatrix(T[] tests) {
         List<T> failed = new ArrayList<T>();
         for (T t : tests) {
             T test = new T(t); // dup since we might mod with result
@@ -258,7 +257,7 @@ public class TestNullAndEmptyValues extends BaseTest {
     }
 
 
-    @Test public void testSeparatorWithNullFirstValue() throws Exception {
+    @Test public void testSeparatorWithNullFirstValue() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
         ST st = group.getInstanceOf("test");
@@ -270,7 +269,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTemplateAppliedToNullIsEmpty() throws Exception {
+    @Test public void testTemplateAppliedToNullIsEmpty() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "<name:t()>");
         group.defineTemplate("t", "x", "<x>");
@@ -281,7 +280,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTemplateAppliedToMissingValueIsEmpty() throws Exception {
+    @Test public void testTemplateAppliedToMissingValueIsEmpty() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "<name:t()>");
         group.defineTemplate("t", "x", "<x>");
@@ -291,7 +290,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorWithNull2ndValue() throws Exception {
+    @Test public void testSeparatorWithNull2ndValue() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
         ST st = group.getInstanceOf("test");
@@ -303,7 +302,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorWithNullLastValue() throws Exception {
+    @Test public void testSeparatorWithNullLastValue() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
         ST st = group.getInstanceOf("test");
@@ -315,7 +314,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorWithTwoNullValuesInRow() throws Exception {
+    @Test public void testSeparatorWithTwoNullValuesInRow() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
         ST st = group.getInstanceOf("test");
@@ -329,7 +328,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTwoNullValues() throws Exception {
+    @Test public void testTwoNullValues() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; null=\"x\">!");
         ST st = group.getInstanceOf("test");
@@ -340,7 +339,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNullListItemNotCountedForIteratorIndex() throws Exception {
+    @Test public void testNullListItemNotCountedForIteratorIndex() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "<name:{n | <i>:<n>}>");
         ST st = group.getInstanceOf("test");
@@ -353,7 +352,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSizeZeroButNonNullListGetsNoOutput() throws Exception {
+    @Test public void testSizeZeroButNonNullListGetsNoOutput() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "users",
             "begin\n" +
@@ -366,7 +365,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testNullListGetsNoOutput() throws Exception {
+    @Test public void testNullListGetsNoOutput() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "users",
             "begin\n" +
@@ -378,7 +377,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testEmptyListGetsNoOutput() throws Exception {
+    @Test public void testEmptyListGetsNoOutput() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "users",
             "begin\n" +
@@ -391,7 +390,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testMissingDictionaryValue() throws Exception {
+    @Test public void testMissingDictionaryValue() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "m", "<m.foo>");
         ST t = group.getInstanceOf("test");
@@ -401,7 +400,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testMissingDictionaryValue2() throws Exception {
+    @Test public void testMissingDictionaryValue2() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "m", "<if(m.foo)>[<m.foo>]<endif>");
         ST t = group.getInstanceOf("test");
@@ -411,7 +410,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testMissingDictionaryValue3() throws Exception {
+    @Test public void testMissingDictionaryValue3() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "m", "<if(m.foo)>[<m.foo>]<endif>");
         ST t = group.getInstanceOf("test");
@@ -421,9 +420,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void TestSeparatorEmittedForEmptyIteratorValue()
-        throws IOException
-    {
+    @Test public void TestSeparatorEmittedForEmptyIteratorValue() {
         ST st = new ST(
             "<values:{v|<if(v)>x<endif>}; separator=\" \">"
         );
@@ -435,9 +432,7 @@ public class TestNullAndEmptyValues extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void TestSeparatorEmittedForEmptyIteratorValu3333e()
-        throws IOException
-    {
+    @Test public void TestSeparatorEmittedForEmptyIteratorValu3333e() {
         String dir = getRandomDir();
         String groupFile =
             "filter ::= [\"b\":, default: key]\n" +
@@ -455,9 +450,7 @@ public class TestNullAndEmptyValues extends BaseTest {
 
 
 
-    @Test public void TestSeparatorEmittedForEmptyIteratorValue2()
-        throws IOException
-    {
+    @Test public void TestSeparatorEmittedForEmptyIteratorValue2() {
         ST st = new ST(
             "<values; separator=\" \">"
         );

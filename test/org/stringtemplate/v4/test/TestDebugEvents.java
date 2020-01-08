@@ -36,7 +36,8 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class TestDebugEvents extends BaseTest {
-    @Test public void testString() throws Exception {
+    @Test public void testString()
+    {
         String templates =
             "t() ::= <<foo>>" + newline;
 
@@ -51,7 +52,8 @@ public class TestDebugEvents extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAttribute() throws Exception {
+    @Test public void testAttribute()
+    {
         String templates =
             "t(x) ::= << <x> >>" + newline;
 
@@ -68,7 +70,8 @@ public class TestDebugEvents extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTemplateCall() throws Exception {
+    @Test public void testTemplateCall()
+    {
         String templates =
             "t(x) ::= <<[<u()>]>>\n" +
             "u() ::= << <x> >>\n";
@@ -94,7 +97,8 @@ public class TestDebugEvents extends BaseTest {
     }
 
     @Test
-    public void testEvalExprEventForSpecialCharacter() throws Exception {
+    public void testEvalExprEventForSpecialCharacter()
+    {
         String templates = "t() ::= <<[<\\n>]>>\n";
         //                            012 345
         // Rendering t() emits: "[\n]"  or  "[\r\n]" (depends on line.separator)

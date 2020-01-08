@@ -41,7 +41,8 @@ import static org.junit.Assert.assertEquals;
 
 public class TestSubtemplates extends BaseTest {
 
-    @Test public void testSimpleIteration() throws Exception {
+    @Test public void testSimpleIteration()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n|<n>}>!");
         ST st = group.getInstanceOf("test");
@@ -53,7 +54,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMapIterationIsByKeys() throws Exception {
+    @Test public void testMapIterationIsByKeys()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "emails", "<emails:{n|<n>}>!");
         ST st = group.getInstanceOf("test");
@@ -67,7 +69,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSimpleIterationWithArg() throws Exception {
+    @Test public void testSimpleIterationWithArg()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n | <n>}>!");
         ST st = group.getInstanceOf("test");
@@ -79,7 +82,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNestedIterationWithArg() throws Exception {
+    @Test public void testNestedIterationWithArg()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "users", "<users:{u | <u.id:{id | <id>=}><u.name>}>!");
         ST st = group.getInstanceOf("test");
@@ -91,7 +95,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSubtemplateAsDefaultArg() throws Exception {
+    @Test public void testSubtemplateAsDefaultArg()
+    {
         String templates =
             "t(x,y={<x:{s|<s><s>}>}) ::= <<\n" +
             "x: <x>\n" +
@@ -109,7 +114,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testParallelAttributeIteration() throws Exception {
+    @Test public void testParallelAttributeIteration()
+    {
         ST e = new ST(
                 "<names,phones,salaries:{n,p,s | <n>@<p>: <s>\n}>"
             );
@@ -123,7 +129,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testParallelAttributeIterationWithNullValue() throws Exception {
+    @Test public void testParallelAttributeIterationWithNullValue()
+    {
         ST e = new ST(
                 "<names,phones,salaries:{n,p,s | <n>@<p>: <s>\n}>"
             );
@@ -140,7 +147,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testParallelAttributeIterationHasI() throws Exception {
+    @Test public void testParallelAttributeIterationHasI()
+    {
         ST e = new ST(
                 "<names,phones,salaries:{n,p,s | <i0>. <n>@<p>: <s>\n}>"
             );
@@ -156,7 +164,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testParallelAttributeIterationWithDifferentSizes() throws Exception {
+    @Test public void testParallelAttributeIterationWithDifferentSizes()
+    {
         ST e = new ST(
                 "<names,phones,salaries:{n,p,s | <n>@<p>: <s>}; separator=\", \">"
             );
@@ -170,7 +179,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testParallelAttributeIterationWithSingletons() throws Exception {
+    @Test public void testParallelAttributeIterationWithSingletons()
+    {
         ST e = new ST(
                 "<names,phones,salaries:{n,p,s | <n>@<p>: <s>}; separator=\", \">"
             );
@@ -181,7 +191,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testParallelAttributeIterationWithDifferentSizesTemplateRefInsideToo() throws Exception {
+    @Test public void testParallelAttributeIterationWithDifferentSizesTemplateRefInsideToo()
+    {
         String templates =
                 "page(names,phones,salaries) ::= "+newline+
                 "   << <names,phones,salaries:{n,p,s | <value(n)>@<value(p)>: <value(s)>}; separator=\", \"> >>"+newline +
@@ -200,7 +211,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expecting, p.render());
     }
 
-    @Test public void testEvalSTIteratingSubtemplateInSTFromAnotherGroup() throws Exception {
+    @Test public void testEvalSTIteratingSubtemplateInSTFromAnotherGroup()
+    {
         ErrorBuffer errors = new ErrorBuffer();
         STGroup innerGroup = new STGroup();
         innerGroup.setListener(errors);
@@ -222,7 +234,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEvalSTIteratingSubtemplateInSTFromAnotherGroupSingleValue() throws Exception {
+    @Test public void testEvalSTIteratingSubtemplateInSTFromAnotherGroupSingleValue()
+    {
         ErrorBuffer errors = new ErrorBuffer();
         STGroup innerGroup = new STGroup();
         innerGroup.setListener(errors);
@@ -244,7 +257,8 @@ public class TestSubtemplates extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEvalSTFromAnotherGroup() throws Exception {
+    @Test public void testEvalSTFromAnotherGroup()
+    {
         ErrorBuffer errors = new ErrorBuffer();
         STGroup innerGroup = new STGroup();
         innerGroup.setListener(errors);

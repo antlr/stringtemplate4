@@ -48,11 +48,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestGroups extends BaseTest {
-    @Test public void testSimpleGroup() throws Exception {
+    @Test public void testSimpleGroup() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= <<foo>>");
         STGroup group = new STGroupDir(dir);
@@ -62,7 +61,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEscapeOneRightAngle() throws Exception {
+    @Test public void testEscapeOneRightAngle() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= << > >>");
         STGroup group = new STGroupDir(dir);
@@ -73,7 +72,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEscapeJavaRightShift() throws Exception {
+    @Test public void testEscapeJavaRightShift() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= << \\>> >>");
         STGroup group = new STGroupDir(dir);
@@ -84,7 +83,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEscapeJavaRightShift2() throws Exception {
+    @Test public void testEscapeJavaRightShift2() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= << >\\> >>");
         STGroup group = new STGroupDir(dir);
@@ -95,7 +94,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEscapeJavaRightShiftAtRightEdge() throws Exception {
+    @Test public void testEscapeJavaRightShiftAtRightEdge() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= <<\\>>>"); // <<\>>>
         STGroup group = new STGroupDir(dir);
@@ -106,7 +105,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEscapeJavaRightShiftAtRightEdge2() throws Exception {
+    @Test public void testEscapeJavaRightShiftAtRightEdge2() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= <<>\\>>>");
         STGroup group = new STGroupDir(dir);
@@ -117,7 +116,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSimpleGroupFromString() throws Exception {
+    @Test public void testSimpleGroupFromString() {
         String g =
             "a(x) ::= <<foo>>\n"+
             "b() ::= <<bar>>\n";
@@ -128,7 +127,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testGroupWithTwoTemplates() throws Exception {
+    @Test public void testGroupWithTwoTemplates() {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= <<foo>>");
         writeFile(dir, "b.st", "b() ::= \"bar\"");
@@ -140,7 +139,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSubdir() throws Exception {
+    @Test public void testSubdir() {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
         writeFile(dir,           "a.st", "a(x) ::= <<foo>>");
@@ -151,7 +150,7 @@ public class TestGroups extends BaseTest {
         assertEquals("bar", group.getInstanceOf("subdir/b").render());
     }
 
-    @Test public void testSubdirWithSubtemplate() throws Exception {
+    @Test public void testSubdirWithSubtemplate() {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
         writeFile(dir+"/subdir", "a.st", "a(x) ::= \"<x:{y|<y>}>\"");
@@ -161,7 +160,7 @@ public class TestGroups extends BaseTest {
         assertEquals("ab", st.render());
     }
 
-    @Test public void testGroupFileInDir() throws Exception {
+    @Test public void testGroupFileInDir() {
         // /randomdir/a and /randomdir/group.stg with b and c templates
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= <<foo>>");
@@ -175,7 +174,7 @@ public class TestGroups extends BaseTest {
         assertEquals("duh", group.getInstanceOf("/group/c").render());
     }
 
-    @Test public void testSubSubdir() throws Exception {
+    @Test public void testSubSubdir() {
         // /randomdir/a and /randomdir/subdir/b
         String dir = getRandomDir();
         writeFile(dir,              "a.st", "a(x) ::= <<foo>>");
@@ -188,7 +187,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testGroupFileInSubDir() throws Exception {
+    @Test public void testGroupFileInSubDir() {
         // /randomdir/a and /randomdir/group.stg with b and c templates
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= <<foo>>");
@@ -205,7 +204,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDupDef() throws Exception {
+    @Test public void testDupDef() {
         String dir = getRandomDir();
         String groupFile =
             "b() ::= \"bar\"\n"+
@@ -220,7 +219,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAlias() throws Exception {
+    @Test public void testAlias() {
         String dir = getRandomDir();
         String groupFile =
             "a() ::= \"bar\"\n"+
@@ -233,7 +232,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAliasWithArgs() throws Exception {
+    @Test public void testAliasWithArgs() {
         String dir = getRandomDir();
         String groupFile =
             "a(x,y) ::= \"<x><y>\"\n"+
@@ -248,7 +247,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSimpleDefaultArg() throws Exception {
+    @Test public void testSimpleDefaultArg() {
         String dir = getRandomDir();
         String a = "a() ::= << <b()> >>\n";
         String b = "b(x=\"foo\") ::= \"<x>\"\n";
@@ -261,7 +260,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefaultArgument() throws Exception {
+    @Test public void testDefaultArgument() {
         String templates =
                 "method(name) ::= <<"+newline+
                 "<stat(name)>" +newline+
@@ -277,7 +276,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testBooleanDefaultArguments() throws Exception {
+    @Test public void testBooleanDefaultArguments() {
         String templates =
                 "method(name) ::= <<"+newline+
                 "<stat(name)>" +newline+
@@ -293,7 +292,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDefaultArgument2() throws Exception {
+    @Test public void testDefaultArgument2() {
         String templates =
                 "stat(name,value=\"99\") ::= \"x=<value>; // <name>\""+newline
                 ;
@@ -306,7 +305,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testSubtemplateAsDefaultArgSeesOtherArgs() throws Exception {
+    @Test public void testSubtemplateAsDefaultArgSeesOtherArgs() {
         String templates =
             "t(x,y={<x:{s|<s><z>}>},z=\"foo\") ::= <<\n" +
             "x: <x>\n" +
@@ -324,7 +323,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testEarlyEvalOfDefaultArgs() throws Exception {
+    @Test public void testEarlyEvalOfDefaultArgs() {
         String templates =
             "s(x,y={<(x)>}) ::= \"<x><y>\"\n"; // should see x in def arg
         STGroup group = new STGroupString(templates);
@@ -335,7 +334,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDefaultArgumentAsSimpleTemplate() throws Exception {
+    @Test public void testDefaultArgumentAsSimpleTemplate() {
         String templates =
                 "stat(name,value={99}) ::= \"x=<value>; // <name>\""+newline
                 ;
@@ -348,7 +347,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDefaultArgumentManuallySet() throws Exception {
+    @Test public void testDefaultArgumentManuallySet() {
         class Field {
             public String name = "parrt";
             public int n = 0;
@@ -373,7 +372,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDefaultArgumentSeesVarFromDynamicScoping() throws Exception {
+    @Test public void testDefaultArgumentSeesVarFromDynamicScoping() {
         class Field {
             public String name = "parrt";
             public int n = 0;
@@ -397,7 +396,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDefaultArgumentImplicitlySet2() throws Exception {
+    @Test public void testDefaultArgumentImplicitlySet2() {
         class Field {
             public String name = "parrt";
             public int n = 0;
@@ -422,7 +421,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDefaultArgumentAsTemplate() throws Exception {
+    @Test public void testDefaultArgumentAsTemplate() {
         String templates =
                 "method(name,size) ::= <<"+newline+
                 "<stat(name)>" +newline+
@@ -440,7 +439,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDefaultArgumentAsTemplate2() throws Exception {
+    @Test public void testDefaultArgumentAsTemplate2() {
         String templates =
                 "method(name,size) ::= <<"+newline+
                 "<stat(name)>" +newline+
@@ -458,7 +457,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDoNotUseDefaultArgument() throws Exception {
+    @Test public void testDoNotUseDefaultArgument() {
         String templates =
                 "method(name) ::= <<"+newline+
                 "<stat(name,\"34\")>" +newline+
@@ -474,7 +473,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDefaultArgumentInParensToEvalEarly() throws Exception {
+    @Test public void testDefaultArgumentInParensToEvalEarly() {
         class Counter {
             int n = 0;
             @Override
@@ -496,7 +495,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testTrueFalseArgs() throws Exception {
+    @Test public void testTrueFalseArgs() {
         String dir = getRandomDir();
         String groupFile =
             "f(x,y) ::= \"<x><y>\"\n" +
@@ -509,7 +508,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNamedArgsInOrder() throws Exception {
+    @Test public void testNamedArgsInOrder() {
         String dir = getRandomDir();
         String groupFile =
             "f(x,y) ::= \"<x><y>\"\n" +
@@ -522,7 +521,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNamedArgsOutOfOrder() throws Exception {
+    @Test public void testNamedArgsOutOfOrder() {
         String dir = getRandomDir();
         String groupFile =
             "f(x,y) ::= \"<x><y>\"\n" +
@@ -535,7 +534,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testUnknownNamedArg() throws Exception {
+    @Test public void testUnknownNamedArg() {
         String dir = getRandomDir();
         String groupFile =
             "f(x,y) ::= \"<x><y>\"\n" +
@@ -553,7 +552,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMissingNamedArg() throws Exception {
+    @Test public void testMissingNamedArg() {
         String dir = getRandomDir();
         String groupFile =
             "f(x,y) ::= \"<x><y>\"\n" +
@@ -570,7 +569,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNamedArgsNotAllowInIndirectInclude() throws Exception {
+    @Test public void testNamedArgsNotAllowInIndirectInclude() {
         String dir = getRandomDir();
         String groupFile =
             "f(x,y) ::= \"<x><y>\"\n" +
@@ -587,7 +586,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testCantSeeGroupDirIfGroupFileOfSameName() throws Exception {
+    @Test public void testCantSeeGroupDirIfGroupFileOfSameName() {
         String dir = getRandomDir();
         String a = "a() ::= <<dir1 a>>\n";
         writeFile(dir, "group/a.st", a); // can't see this file
@@ -598,10 +597,10 @@ public class TestGroups extends BaseTest {
 
         STGroup group1 = new STGroupDir(dir);
         ST st = group1.getInstanceOf("group/a"); // can't see
-        assertEquals(null, st);
+        assertNull(st);
     }
 
-    @Test public void testUnloadingSimpleGroup() throws Exception {
+    @Test public void testUnloadingSimpleGroup() {
         String dir = getRandomDir();
         String a =
             "a(x) ::= <<foo>>\n";
@@ -616,7 +615,7 @@ public class TestGroups extends BaseTest {
         group.unload(); // blast cache
         st = group.getInstanceOf("a");
         int newHashCode = System.identityHashCode(st);
-        assertEquals(originalHashCode==newHashCode, false); // diff objects
+        assertNotEquals(originalHashCode, newHashCode); // diff objects
         String expected = "foo";
         String result = st.render();
         assertEquals(expected, result);
@@ -626,7 +625,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testUnloadingGroupFile() throws Exception {
+    @Test public void testUnloadingGroupFile() {
         String dir = getRandomDir();
         String a =
             "a(x) ::= <<foo>>\n" +
@@ -639,7 +638,7 @@ public class TestGroups extends BaseTest {
         group.unload(); // blast cache
         st = group.getInstanceOf("a");
         int newHashCode = System.identityHashCode(st);
-        assertEquals(originalHashCode==newHashCode, false); // diff objects
+        assertNotEquals(originalHashCode, newHashCode); // diff objects
         String expected = "foo";
         String result = st.render();
         assertEquals(expected, result);
@@ -649,7 +648,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testGroupFileImport() throws Exception {
+    @Test public void testGroupFileImport() {
         // /randomdir/group1.stg (a template) and /randomdir/group2.stg with b.
         // group1 imports group2, a includes b
         String dir = getRandomDir();
@@ -682,7 +681,7 @@ public class TestGroups extends BaseTest {
     }
 
     @Test
-    public void testGetTemplateNames() throws Exception {
+    public void testGetTemplateNames() {
         String templates =
             "t() ::= \"foo\"\n" +
             "main() ::= \"<t()>\"";
@@ -703,7 +702,7 @@ public class TestGroups extends BaseTest {
     }
 
     @Test
-    public void testUnloadWithImports() throws Exception {
+    public void testUnloadWithImports() {
         writeFile(tmpdir, "t.stg",
                 "import \"g1.stg\"\n\nmain() ::= <<\nv1-<f()>\n>>");
         writeFile(tmpdir, "g1.stg", "f() ::= \"g1\"");
@@ -720,7 +719,7 @@ public class TestGroups extends BaseTest {
         Assert.assertEquals("v2-g2;f2", st.render());
     }
 
-    @Test public void testLineBreakInGroup() throws Exception {
+    @Test public void testLineBreakInGroup() {
         String templates =
             "t() ::= <<"+newline+
                 "Foo <\\\\>"+newline+
@@ -734,7 +733,7 @@ public class TestGroups extends BaseTest {
         Assert.assertEquals(expecting, st.render());
     }
 
-    @Test public void testLineBreakInGroup2() throws Exception {
+    @Test public void testLineBreakInGroup2() {
         String templates =
             "t() ::= <<"+newline+
                 "Foo <\\\\>       "+newline+
@@ -748,7 +747,7 @@ public class TestGroups extends BaseTest {
         Assert.assertEquals(expecting, st.render());
     }
 
-    @Test public void testLineBreakMissingTrailingNewline() throws Exception {
+    @Test public void testLineBreakMissingTrailingNewline() {
         writeFile(tmpdir, "t.stg", "a(x) ::= <<<\\\\>\r\n>>"); // that is <<<\\>>> not an escaped >>
         ErrorBuffer errors = new ErrorBuffer();
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
@@ -761,7 +760,7 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testLineBreakWithScarfedTrailingNewline() throws Exception {
+    @Test public void testLineBreakWithScarfedTrailingNewline() {
         writeFile(tmpdir, "t.stg", "a(x) ::= <<<\\\\>\r\n>>"); // \r\n removed as trailing whitespace
         ErrorBuffer errors = new ErrorBuffer();
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
@@ -800,7 +799,7 @@ public class TestGroups extends BaseTest {
     }
   }
 
-  public void testGroupString(STGroup group) throws Exception {
+  public void testGroupString(STGroup group) {
 
     assertTrue(group.isDefined("stat"));
 
@@ -819,14 +818,14 @@ public class TestGroups extends BaseTest {
 
     doMultipleThreadInvoke(new Callable<Object>() {
       @Override
-      public Object call() throws Exception {
+      public Object call() {
         testGroupString(group);
         return null;
       }
     });
   }
 
-  public void testGroupFile(STGroup group) throws Exception {
+  public void testGroupFile(STGroup group) {
     assertTrue(group.isDefined("a"));
     assertEquals("foo", group.getInstanceOf("a").render());
   }
@@ -840,7 +839,7 @@ public class TestGroups extends BaseTest {
 
      doMultipleThreadInvoke(new Callable<Object>() {
       @Override
-      public Object call() throws Exception {
+      public Object call() {
         testGroupFile(group);
         return null;
       }
