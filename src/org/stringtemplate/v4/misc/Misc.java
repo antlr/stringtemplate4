@@ -164,19 +164,17 @@ public class Misc {
         int i = 0;
         while ( i<s.length() ) {
             char c = s.charAt(i);
-            if ( c=='<' && s.substring(i).startsWith("<\\\\>") ) {
+            if ( c=='<' && s.startsWith("<\\\\>", i) ) {
                 buf.append("<\\\\>");
                 i += "<\\\\>".length();
                 continue;
             }
-            if ( c=='>' && s.substring(i).startsWith(">\\>") ) {
+            if ( c=='>' && s.startsWith(">\\>", i) ) {
                 buf.append(">>");
                 i += ">\\>".length();
                 continue;
             }
-            if ( c=='\\' && s.substring(i).startsWith("\\>>") &&
-                !s.substring(i).startsWith("\\>>>") )
-            {
+            if ( c=='\\' && s.startsWith("\\>>", i) && !s.startsWith("\\>>>", i) ) {
                 buf.append(">>");
                 i += "\\>>".length();
                 continue;
