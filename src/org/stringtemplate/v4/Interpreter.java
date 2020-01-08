@@ -803,10 +803,9 @@ public class Interpreter {
         return n;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private <T> String renderObject(InstanceScope scope, String formatString, Object o, Class<T> attributeType) {
         // ask the native group defining the surrounding template for the renderer
-        AttributeRenderer<? super T> r = scope.st.impl.nativeGroup.getAttributeRenderer(o);
+        AttributeRenderer<? super T> r = scope.st.impl.nativeGroup.getAttributeRenderer(attributeType);
         if ( r!=null ) {
             return r.toString(attributeType.cast(o), formatString, locale);
         } else {
