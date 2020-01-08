@@ -488,6 +488,12 @@ public class STViz {
         return null;
     }
 
+    /**
+     * Internal test method.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void main(String[] args) throws IOException { // test rig
         if ( args.length>0 && args[0].equals("1") ) test1();
         else if ( args.length>0 && args[0].equals("2") ) test2();
@@ -495,6 +501,12 @@ public class STViz {
         else if ( args.length>0 && args[0].equals("4") ) test4();
     }
 
+    /**
+     * Internal test method.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void test1() throws IOException { // test rig
         String templates =
             "method(type,name,locals,args,stats) ::= <<\n" +
@@ -534,6 +546,12 @@ public class STViz {
         System.out.println(st.render()); // should not mess up ST event lists
     }
 
+    /**
+     * Internal test method.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void test2() throws IOException { // test rig
         String templates =
             "t1(q1=\"Some\\nText\") ::= <<\n" +
@@ -557,6 +575,12 @@ public class STViz {
         STViz viz = st.inspect();
     }
 
+    /**
+     * Internal test method.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void test3() throws IOException {
         String templates =
             "main() ::= <<\n" +
@@ -570,6 +594,12 @@ public class STViz {
         st.inspect();
     }
 
+    /**
+     * Internal test method.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void test4() throws IOException {
         String templates =
             "main(t) ::= <<\n" +
@@ -589,6 +619,12 @@ public class STViz {
         st.render();
     }
 
+    /**
+     * Used by internal test methods.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void writeFile(String dir, String fileName, String content) {
         try {
             File f = new File(dir, fileName);
