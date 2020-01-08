@@ -69,8 +69,8 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean containsValue(Object value) {
+        //noinspection SuspiciousMethodCalls
         return values().contains(value);
     }
 
