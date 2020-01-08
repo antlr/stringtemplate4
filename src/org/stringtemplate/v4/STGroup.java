@@ -131,10 +131,10 @@ public class STGroup {
      * <p>
      *  The last one you register gets priority; do least to most specific.</p>
      */
-    protected final Map<Class<?>, ModelAdaptor> adaptors;
+    protected final Map<Class<?>, ModelAdaptor<?>> adaptors;
     {
-        TypeRegistry<ModelAdaptor> registry = new TypeRegistry<ModelAdaptor>();
-        registry.put(Object.class, new ObjectModelAdaptor());
+        TypeRegistry<ModelAdaptor<?>> registry = new TypeRegistry<ModelAdaptor<?>>();
+        registry.put(Object.class, new ObjectModelAdaptor<Object>());
         registry.put(ST.class, new STModelAdaptor());
         registry.put(Map.class, new MapModelAdaptor());
         registry.put(Aggregate.class, new AggregateModelAdaptor());
@@ -700,7 +700,7 @@ public class STGroup {
      * This must invalidate cache entries, so set your adaptors up before
      * calling {@link ST#render} for efficiency.</p>
      */
-    public void registerModelAdaptor(Class<?> attributeType, ModelAdaptor adaptor) {
+    public <T> void registerModelAdaptor(Class<T> attributeType, ModelAdaptor<? super T> adaptor) {
         if ( attributeType.isPrimitive() ) {
             throw new IllegalArgumentException("can't register ModelAdaptor for primitive type "+
                                                attributeType.getSimpleName());
@@ -709,8 +709,9 @@ public class STGroup {
         adaptors.put(attributeType, adaptor);
     }
 
-    public ModelAdaptor getModelAdaptor(Class<?> attributeType) {
-        return adaptors.get(attributeType);
+    public <T> ModelAdaptor<? super T> getModelAdaptor(Class<T> attributeType) {
+        //noinspection unchecked
+        return (ModelAdaptor<? super T>) adaptors.get(attributeType);
     }
 
     /** Register a renderer for all objects of a particular "kind" for all
@@ -753,7 +754,7 @@ public class STGroup {
      *  have multiple renderers for {@code String}, say, then just make uber combined
      *  renderer with more specific format names.</p>
      */
-    public <T> AttributeRenderer<? super T> getAttributeRenderer(Class<? extends T> attributeType) {
+    public <T> AttributeRenderer<? super T> getAttributeRenderer(Class<T> attributeType) {
         if ( renderers==null ) {
             return null;
         }
