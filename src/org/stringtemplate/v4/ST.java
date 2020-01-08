@@ -201,6 +201,7 @@ public class ST {
             Arrays.fill(this.locals, EMPTY_ATTR);
         }
         this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
+        // TODO copy debugState?
     }
 
     /** Inject an attribute (name/value pair). If there is already an attribute
@@ -309,7 +310,8 @@ public class ST {
         String aggrName = aggrSpec.substring(0, dot);
         String propString = aggrSpec.substring(dot+2, aggrSpec.length()-1);
         propString = propString.trim();
-        String[] propNames = propString.split("\\ *,\\ *");
+        // TODO perhaps we can use \s* and allow tabs and other whitespace as separators?
+        String[] propNames = propString.split(" *, *");
         if (propNames.length == 0) {
             throw new IllegalArgumentException("invalid aggregate attribute format: "+
                                                aggrSpec);
@@ -432,7 +434,7 @@ public class ST {
 
     public boolean isAnonSubtemplate() { return impl.isAnonSubtemplate; }
 
-    public int write(STWriter out) throws IOException {
+    public int write(STWriter out) {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
                                              impl.nativeGroup.errMgr,
                                              false);
