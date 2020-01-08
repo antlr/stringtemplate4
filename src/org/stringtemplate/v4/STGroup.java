@@ -27,44 +27,17 @@
  */
 package org.stringtemplate.v4;
 
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonToken;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.Token;
-import org.stringtemplate.v4.compiler.CompiledST;
+import org.antlr.runtime.*;
 import org.stringtemplate.v4.compiler.Compiler;
-import org.stringtemplate.v4.compiler.FormalArgument;
-import org.stringtemplate.v4.compiler.GroupLexer;
-import org.stringtemplate.v4.compiler.GroupParser;
-import org.stringtemplate.v4.compiler.STException;
+import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.gui.STViz;
-import org.stringtemplate.v4.misc.Aggregate;
-import org.stringtemplate.v4.misc.AggregateModelAdaptor;
-import org.stringtemplate.v4.misc.ErrorManager;
-import org.stringtemplate.v4.misc.ErrorType;
-import org.stringtemplate.v4.misc.MapModelAdaptor;
-import org.stringtemplate.v4.misc.Misc;
-import org.stringtemplate.v4.misc.ObjectModelAdaptor;
-import org.stringtemplate.v4.misc.STModelAdaptor;
-import org.stringtemplate.v4.misc.TypeRegistry;
+import org.stringtemplate.v4.misc.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /** A directory or directory tree of {@code .st} template files and/or group files.
  *  Individual template files contain formal template definitions. In a sense,
@@ -384,11 +357,7 @@ public class STGroup {
             templateName = "/"+templateName;
         }
         try {
-            CompiledST impl =
-                defineTemplate(templateName,
-                               new CommonToken(GroupParser.ID, templateName),
-                               null, template, null);
-            return impl;
+            return defineTemplate(templateName, new CommonToken(GroupParser.ID, templateName), null, template, null);
         }
         catch (STException se) {
             // we have reported the error; the exception just blasts us
@@ -622,8 +591,6 @@ public class STGroup {
         boolean isTemplateFile = fileName.endsWith(TEMPLATE_FILE_EXTENSION);
         boolean isGroupDir = !(isGroupFile || isTemplateFile);
 
-        STGroup g = null;
-
         // search path is: working dir, g.stg's dir, CLASSPATH
         URL thisRoot = getRootDirURL();
         URL fileUnderRoot;
@@ -635,6 +602,8 @@ public class STGroup {
             errMgr.internalError(null, "can't build URL for "+thisRoot+"/"+fileName, mfe);
             return;
         }
+
+        STGroup g;
         if ( isTemplateFile ) {
             g = new STGroup(delimiterStartChar, delimiterStopChar);
             g.setListener(this.getListener());
@@ -668,25 +637,23 @@ public class STGroup {
             //System.out.println("look for fileUnderRoot: "+fileUnderRoot);
             if ( Misc.urlExists(fileUnderRoot) ) {
                 g = new STGroupFile(fileUnderRoot, encoding, delimiterStartChar, delimiterStopChar);
-                g.setListener(this.getListener());
             }
             else {
                 g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
-                g.setListener(this.getListener());
             }
+            g.setListener(this.getListener());
         }
         else /* if ( isGroupDir ) */ {
 //          System.out.println("try dir "+fileUnderRoot);
             if ( Misc.urlExists(fileUnderRoot) ) {
                 g = new STGroupDir(fileUnderRoot, encoding, delimiterStartChar, delimiterStopChar);
-                g.setListener(this.getListener());
             }
             else {
                 // try in CLASSPATH
 //              System.out.println("try dir in CLASSPATH "+fileName);
                 g = new STGroupDir(fileName, delimiterStartChar, delimiterStopChar);
-                g.setListener(this.getListener());
             }
+            g.setListener(this.getListener());
         }
 
         if ( g==null ) {
