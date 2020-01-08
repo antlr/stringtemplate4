@@ -37,7 +37,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ObjectModelAdaptor implements ModelAdaptor {
+public class ObjectModelAdaptor<T> implements ModelAdaptor<T> {
     protected static final Member INVALID_MEMBER;
     static {
         Member invalidMember;
@@ -56,14 +56,14 @@ public class ObjectModelAdaptor implements ModelAdaptor {
         new HashMap<Class<?>, Map<String, Member>>();
 
     @Override
-    public synchronized Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
+    public synchronized Object getProperty(Interpreter interp, ST self, T model, Object property, String propertyName)
         throws STNoSuchPropertyException
     {
-        if (o == null) {
+        if (model == null) {
             throw new NullPointerException("o");
         }
 
-        Class<?> c = o.getClass();
+        Class<?> c = model.getClass();
 
         if ( property==null ) {
             return throwNoSuchProperty(c, propertyName, null);
@@ -73,10 +73,10 @@ public class ObjectModelAdaptor implements ModelAdaptor {
         if ( member!=null ) {
             try {
                 if (member instanceof Method) {
-                    return ((Method)member).invoke(o);
+                    return ((Method)member).invoke(model);
                 }
                 else if (member instanceof Field) {
-                    return ((Field)member).get(o);
+                    return ((Field)member).get(model);
                 }
             }
             catch (Exception e) {
