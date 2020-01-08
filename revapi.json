@@ -2,6 +2,7 @@
   "4.3+": {
     "revapi": {
       "ignore": [
+        // --------------- https://github.com/antlr/stringtemplate4/pull/233 ---------------
         {
           "code": "java.method.parameterTypeParameterChanged",
           "old": "parameter java.lang.String org.stringtemplate.v4.AttributeRenderer::toString(===java.lang.Object===, java.lang.String, java.util.Locale)",
@@ -318,7 +319,7 @@
           "new": "method <T> org.stringtemplate.v4.AttributeRenderer<? super T> org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<T>)",
           "typeParameter": "T",
           "justification": "https://github.com/antlr/stringtemplate4/pull/237"
-        }
+        },
       ]
     }
   }
