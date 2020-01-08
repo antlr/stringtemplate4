@@ -113,11 +113,7 @@ public class JTreeScopeStackModel implements TreeModel {
             }
 
             if (!names.add(a)) {
-                StringBuilder builder = new StringBuilder();
-                builder.append("<html><font color=\"gray\">");
-                builder.append(StringRenderer.escapeHTML(descr));
-                builder.append("</font></html>");
-                descr = builder.toString();
+                descr = "<html><font color=\"gray\">"+StringRenderer.escapeHTML(descr)+"</font></html>";
             }
 
             node.addChild( new StringTree(descr) );
