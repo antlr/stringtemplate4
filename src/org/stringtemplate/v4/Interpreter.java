@@ -792,7 +792,7 @@ public class Interpreter {
     protected int writePOJO(STWriter out, InstanceScope scope, Object o, String[] options) throws IOException {
         String formatString = null;
         if ( options!=null ) formatString = options[Option.FORMAT.ordinal()];
-        String v = renderObject(scope, formatString, o);
+        String v = renderObject(scope, formatString, o, o.getClass());
         int n;
         if ( options!=null && options[Option.WRAP.ordinal()]!=null ) {
             n = out.write(v, options[Option.WRAP.ordinal()]);
