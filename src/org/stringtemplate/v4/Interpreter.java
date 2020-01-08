@@ -886,7 +886,7 @@ public class Interpreter {
         }
         attr = convertAnythingIteratableToIterator(scope, attr);
         if ( attr instanceof Iterator ) {
-            List<ST> mapped = rot_map_iterator(scope, (Iterator) attr, prototypes);
+            List<ST> mapped = rot_map_iterator(scope, (Iterator<?>) attr, prototypes);
             operands[++sp] = mapped;
         }
         else { // if only single value, just apply first template to sole value
@@ -906,9 +906,8 @@ public class Interpreter {
         }
     }
 
-    protected List<ST> rot_map_iterator(InstanceScope scope, Iterator<?> attr, List<ST> prototypes) {
+    protected List<ST> rot_map_iterator(InstanceScope scope, Iterator<?> iter, List<ST> prototypes) {
         List<ST> mapped = new ArrayList<ST>();
-        Iterator<?> iter = attr;
         int i0 = 0;
         int i = 1;
         int ti = 0;
@@ -958,7 +957,7 @@ public class Interpreter {
         }
 
         // todo: track formal args not names for efficient filling of locals
-        String[] formalArgumentNames = formalArguments.keySet().toArray(new String[formalArguments.size()]);
+        String[] formalArgumentNames = formalArguments.keySet().toArray(new String[0]);
         int nformalArgs = formalArgumentNames.length;
         if ( prototype.isAnonSubtemplate() ) {
             nformalArgs -= predefinedAnonSubtemplateAttributes.size();
@@ -1358,8 +1357,7 @@ public class Interpreter {
                 localArg = p.impl.formalArguments.get(name);
             }
             if ( localArg!=null ) {
-                Object o = p.locals[localArg.index];
-                return o;
+                return p.locals[localArg.index];
             }
             current = current.parent; // look up enclosing scope chain
         }
