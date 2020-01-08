@@ -104,6 +104,17 @@
                         <goals><goal>check</goal></goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <analysisConfigurationFiles>
+                        <configurationFile>
+                            <path>revapi.json</path>
+                            <roots>
+                                <root>base</root>
+                                <root>4.3+</root>
+                            </roots>
+                        </configurationFile>
+                    </analysisConfigurationFiles>
+                </configuration>
             </plugin>
         </plugins>
 	</build>
