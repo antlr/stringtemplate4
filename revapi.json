@@ -59,31 +59,6 @@
         },
         {
           "code": "java.method.parameterTypeParameterChanged",
-          "old": "parameter org.stringtemplate.v4.AttributeRenderer org.stringtemplate.v4.STGroup::getAttributeRenderer(===java.lang.Class<?>===)",
-          "new": "parameter <T> org.stringtemplate.v4.AttributeRenderer<? super T> org.stringtemplate.v4.STGroup::getAttributeRenderer(===java.lang.Class<? extends T>===)",
-          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
-        },
-        {
-          "code": "java.method.returnTypeTypeParametersChanged",
-          "old": "method org.stringtemplate.v4.AttributeRenderer org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<?>)",
-          "new": "method <T> org.stringtemplate.v4.AttributeRenderer<? super T> org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<? extends T>)",
-          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
-        },
-        {
-          "code": "java.generics.elementNowParameterized",
-          "old": "method org.stringtemplate.v4.AttributeRenderer org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<?>)",
-          "new": "method <T> org.stringtemplate.v4.AttributeRenderer<? super T> org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<? extends T>)",
-          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
-        },
-        {
-          "code": "java.generics.formalTypeParameterAdded",
-          "old": "method org.stringtemplate.v4.AttributeRenderer org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<?>)",
-          "new": "method <T> org.stringtemplate.v4.AttributeRenderer<? super T> org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<? extends T>)",
-          "typeParameter": "T",
-          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
-        },
-        {
-          "code": "java.method.parameterTypeParameterChanged",
           "old": "parameter void org.stringtemplate.v4.STGroup::registerRenderer(===java.lang.Class<?>===, org.stringtemplate.v4.AttributeRenderer)",
           "new": "parameter <T> void org.stringtemplate.v4.STGroup::registerRenderer(===java.lang.Class<T>===, org.stringtemplate.v4.AttributeRenderer<? super T>)",
           "justification": "https://github.com/antlr/stringtemplate4/pull/233"
