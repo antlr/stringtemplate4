@@ -191,9 +191,8 @@ public class STGroupFile extends STGroup {
             parent = parent + "/."; // whooops. at the root so add "current dir" after jar spec
         }
         try {
-            URL parentURL = new URL(parent);
-//          System.out.println("parent URL "+parentURL.toString());
-            return parentURL;
+            //          System.out.println("parent URL "+parent);
+            return new URL(parent);
         }
         catch (MalformedURLException mue) {
             errMgr.runTimeError(null, null, ErrorType.INVALID_TEMPLATE_NAME,
