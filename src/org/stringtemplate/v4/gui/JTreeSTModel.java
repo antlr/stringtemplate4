@@ -61,9 +61,7 @@ public class JTreeSTModel implements TreeModel {
         @Override
         public String toString() {
             ST st = event.scope.st;
-            if ( st.isAnonSubtemplate() ) {
-	            return "{...}";
-            }
+            if ( st.isAnonSubtemplate() ) return "{...}";
             if ( st.debugState!=null && st.debugState.newSTEvent!=null ) {
                 String label = st.toString()+" @ "+st.debugState.newSTEvent.getFileName()+":"+
                        st.debugState.newSTEvent.getLine();

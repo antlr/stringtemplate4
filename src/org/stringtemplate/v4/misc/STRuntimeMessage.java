@@ -67,13 +67,9 @@ public class STRuntimeMessage extends STMessage {
      *  return it's template line:col.
      */
     public String getSourceLocation() {
-        if ( ip<0 || self==null || self.impl==null ) {
-            return null;
-        }
+        if ( ip<0 || self==null || self.impl==null ) return null;
         Interval I = self.impl.sourceMap[ip];
-        if ( I==null ) {
-            return null;
-        }
+        if ( I==null ) return null;
         // get left edge and get line/col
         int i = I.a;
         Coordinate loc = Misc.getLineCharPosition(self.impl.template, i);
@@ -92,9 +88,7 @@ public class STRuntimeMessage extends STMessage {
             }
             buf.append("]");
         }
-        if ( loc!=null ) {
-            buf.append(" ").append(loc);
-        }
+        if ( loc!=null ) buf.append(" ").append(loc);
         buf.append(" ").append(super.toString());
         return buf.toString();
     }

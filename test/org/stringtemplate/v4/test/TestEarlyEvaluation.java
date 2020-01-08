@@ -16,9 +16,8 @@ public class TestEarlyEvaluation extends BaseTest {
      */
     public static boolean isAnyWindowVisible() {
         for (Window w : Window.getWindows()) {
-            if (w.isVisible()) {
-	            return true;
-            }
+            if (w.isVisible())
+                return true;
         }
         return false;
     }

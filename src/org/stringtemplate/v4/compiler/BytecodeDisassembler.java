@@ -39,9 +39,7 @@ public class BytecodeDisassembler {
         StringBuilder buf = new StringBuilder();
         int ip=0;
         while (ip<code.codeSize) {
-            if ( ip>0 ) {
-                buf.append(", ");
-            }
+            if ( ip>0 ) buf.append(", ");
             int opcode = code.instrs[ip];
             Bytecode.Instruction I = Bytecode.instructions[opcode];
             buf.append(I.name);
@@ -85,9 +83,7 @@ public class BytecodeDisassembler {
         }
 
         for (int i=0; i<I.nopnds; i++) {
-            if ( i>0 ) {
-                buf.append(", ");
-            }
+            if ( i>0 ) buf.append(", ");
             int opnd = getShort(code.instrs, ip);
             ip += Bytecode.OPND_SIZE_IN_BYTES;
             if (I.type[i] == Bytecode.OperandType.STRING) {

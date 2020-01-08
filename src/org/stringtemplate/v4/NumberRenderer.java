@@ -43,9 +43,7 @@ public class NumberRenderer implements AttributeRenderer<Number> {
     @Override
     public String toString(Number value, String formatString, Locale locale) {
         // value will be instanceof Number
-        if ( formatString==null ) {
-            return value.toString();
-        }
+        if ( formatString==null ) return value.toString();
         Formatter f = new Formatter(locale);
         try {
             f.format(formatString, value);

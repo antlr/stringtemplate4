@@ -39,9 +39,7 @@ public class ConstructionEvent {
         StackTraceElement[] trace = stack.getStackTrace();
         for (StackTraceElement e : trace) {
             String name = e.toString();
-            if ( !name.startsWith("org.stringtemplate.v4") ) {
-                return e;
-            }
+            if ( !name.startsWith("org.stringtemplate.v4") ) return e;
         }
         return trace[0];
     }

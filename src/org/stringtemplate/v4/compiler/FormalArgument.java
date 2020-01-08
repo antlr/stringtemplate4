@@ -114,9 +114,7 @@ public class FormalArgument {
 
     @Override
     public String toString() {
-        if ( defaultValueToken!=null ) {
-            return name+"="+defaultValueToken.getText();
-        }
+        if ( defaultValueToken!=null ) return name+"="+defaultValueToken.getText();
         return name;
     }
 }

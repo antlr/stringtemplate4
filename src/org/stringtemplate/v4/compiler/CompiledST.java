@@ -147,9 +147,7 @@ public class CompiledST implements Cloneable {
 
     public void addImplicitlyDefinedTemplate(CompiledST sub) {
         sub.prefix = this.prefix;
-        if ( sub.name.charAt(0)!='/' ) {
-            sub.name = sub.prefix+sub.name;
-        }
+        if ( sub.name.charAt(0)!='/' ) sub.name = sub.prefix+sub.name;
         if ( implicitlyDefinedTemplates == null ) {
             implicitlyDefinedTemplates = new ArrayList<CompiledST>();
         }
@@ -157,9 +155,7 @@ public class CompiledST implements Cloneable {
     }
 
     public void defineArgDefaultValueTemplates(STGroup group) {
-        if ( formalArguments==null ) {
-            return;
-        }
+        if ( formalArguments==null ) return;
         for (String a : formalArguments.keySet()) {
             FormalArgument fa = formalArguments.get(a);
             if ( fa.defaultValueToken!=null ) {
@@ -201,14 +197,8 @@ public class CompiledST implements Cloneable {
 
     public void defineFormalArgs(List<FormalArgument> args) {
         hasFormalArgs = true; // even if no args; it's formally defined
-        if ( args == null ) {
-            formalArguments = null;
-        }
-        else {
-            for (FormalArgument a : args) {
-                addArg(a);
-            }
-        }
+        if ( args == null ) formalArguments = null;
+        else for (FormalArgument a : args) addArg(a);
     }
 
     /** Used by {@link ST#add} to add args one by one without turning on full formal args definition signal. */

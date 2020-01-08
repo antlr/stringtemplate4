@@ -65,31 +65,17 @@ public class DateRenderer implements AttributeRenderer<Object> {
     @Override
     public String toString(Object value, String formatString, Locale locale) {
         Date d;
-        if ( formatString==null ) {
-            formatString = "short";
-        }
-        if ( value instanceof Calendar ) {
-            d = ((Calendar)value).getTime();
-        }
-        else {
-            d = (Date)value;
-        }
+        if ( formatString==null ) formatString = "short";
+        if ( value instanceof Calendar ) d = ((Calendar)value).getTime();
+        else d = (Date)value;
         Integer styleI = formatToInt.get(formatString);
         DateFormat f;
-        if ( styleI==null ) {
-            f = new SimpleDateFormat(formatString, locale);
-        }
+        if ( styleI==null ) f = new SimpleDateFormat(formatString, locale);
         else {
             int style = styleI;
-            if ( formatString.startsWith("date:") ) {
-                f = DateFormat.getDateInstance(style, locale);
-            }
-            else if ( formatString.startsWith("time:") ) {
-                f = DateFormat.getTimeInstance(style, locale);
-            }
-            else {
-                f = DateFormat.getDateTimeInstance(style, style, locale);
-            }
+            if ( formatString.startsWith("date:") ) f = DateFormat.getDateInstance(style, locale);
+            else if ( formatString.startsWith("time:") ) f = DateFormat.getTimeInstance(style, locale);
+            else f = DateFormat.getDateTimeInstance(style, style, locale);
         }
         return f.format(d);
     }

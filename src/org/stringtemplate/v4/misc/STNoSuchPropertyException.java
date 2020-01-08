@@ -42,11 +42,7 @@ public class STNoSuchPropertyException extends STException {
 
     @Override
     public String getMessage() {
-        if ( o!=null ) {
-            return "object "+o.getClass()+" has no "+propertyName+" property";
-        }
-        else {
-            return "no such property: "+propertyName;
-        }
+        if ( o!=null ) return "object "+o.getClass()+" has no "+propertyName+" property";
+        else return "no such property: "+propertyName;
     }
 }

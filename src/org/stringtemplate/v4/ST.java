@@ -225,17 +225,13 @@ public class ST {
         }
 
         if ( STGroup.trackCreationEvents ) {
-            if ( debugState==null ) {
-                debugState = new DebugState();
-            }
+            if ( debugState==null ) debugState = new ST.DebugState();
             debugState.addAttrEvents.map(name, new AddAttributeEvent(name, value));
         }
 
         FormalArgument arg = null;
         if ( impl.hasFormalArgs ) {
-            if ( impl.formalArguments!=null ) {
-                arg = impl.formalArguments.get(name);
-            }
+            if ( impl.formalArguments!=null ) arg = impl.formalArguments.get(name);
             if ( arg==null ) {
                 throw new IllegalArgumentException("no such attribute: "+name);
             }
@@ -248,9 +244,7 @@ public class ST {
             if ( arg==null ) { // not defined
                 arg = new FormalArgument(name);
                 impl.addArg(arg);
-                if ( locals==null ) {
-                    locals = new Object[1];
-                }
+                if ( locals==null ) locals = new Object[1];
                 else {
                     Object[] copy = new Object[impl.formalArguments.size()];
                     System.arraycopy(locals, 0, copy, 0,
@@ -365,29 +359,21 @@ public class ST {
     /** Find an attribute in this template only. */
     public Object getAttribute(String name) {
         FormalArgument localArg = null;
-        if ( impl.formalArguments!=null ) {
-            localArg = impl.formalArguments.get(name);
-        }
+        if ( impl.formalArguments!=null ) localArg = impl.formalArguments.get(name);
         if ( localArg!=null ) {
             Object o = locals[localArg.index];
-            if ( o==ST.EMPTY_ATTR ) {
-                o = null;
-            }
+            if ( o==ST.EMPTY_ATTR ) o = null;
             return o;
         }
         return null;
     }
 
     public Map<String, Object> getAttributes() {
-        if ( impl.formalArguments==null ) {
-            return null;
-        }
+        if ( impl.formalArguments==null ) return null;
         Map<String, Object> attributes = new HashMap<String, Object>();
         for (FormalArgument a : impl.formalArguments.values()) {
             Object o = locals[a.index];
-            if ( o==ST.EMPTY_ATTR ) {
-                o = null;
-            }
+            if ( o==ST.EMPTY_ATTR ) o = null;
             attributes.put(a.name, o);
         }
         return attributes;
@@ -504,9 +490,7 @@ public class ST {
             return n;
         }
         finally {
-            if (bw != null) {
-                bw.close();
-            }
+            if (bw != null) bw.close();
         }
     }
 
@@ -576,9 +560,7 @@ public class ST {
 
     @Override
     public String toString() {
-        if ( impl==null ) {
-            return "bad-template()";
-        }
+        if ( impl==null ) return "bad-template()";
         String name = impl.name+"()";
         if (this.impl.isRegion) {
             name = "@" + STGroup.getUnMangledTemplateName(name);

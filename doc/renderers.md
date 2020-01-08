@@ -58,8 +58,7 @@ Here's the renderer definition:
  */
 public class NumberRenderer implements AttributeRenderer<Number> {
     public String toString(Number o, String formatString, Locale locale) {
-        if ( formatString==null ) {
-return o.toString();}
+        if ( formatString==null ) return o.toString();
         Formatter f = new Formatter(locale);
         f.format(formatString, o);
         return f.toString();

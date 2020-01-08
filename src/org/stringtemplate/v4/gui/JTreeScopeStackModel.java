@@ -60,9 +60,7 @@ public class JTreeScopeStackModel implements TreeModel {
 
         @Override
         public String toString() {
-            if ( !isNil() ) {
-	            return text;
-            }
+            if ( !isNil() ) return text;
             return "nil";
         }
     }
@@ -81,10 +79,7 @@ public class JTreeScopeStackModel implements TreeModel {
 
     public void addAttributeDescriptions(ST st, StringTree node, Set<String> names) {
         Map<String, Object> attrs = st.getAttributes();
-        if ( attrs==null )
-        {
-	        return;
-        }
+        if ( attrs==null ) return;
         for (String a : attrs.keySet()) {
             String descr;
             if ( st.debugState!=null && st.debugState.addAttrEvents!=null ) {
@@ -93,10 +88,7 @@ public class JTreeScopeStackModel implements TreeModel {
                 int i = 0;
                 if ( events!=null ) {
                     for (AddAttributeEvent ae : events) {
-                        if ( i>0 )
-                        {
-	                        locations.append(", ");
-                        }
+                        if ( i>0 ) locations.append(", ");
                         locations.append(ae.getFileName()).append(":").append(ae.getLine());
                         i++;
                     }

@@ -38,9 +38,7 @@ public class StringTable {
 
     public int add(String s) {
         Integer I = table.get(s);
-        if ( I!=null ) {
-            return I;
-        }
+        if ( I!=null ) return I;
         i++;
         table.put(s, i);
         return i;
@@ -49,9 +47,7 @@ public class StringTable {
     public String[] toArray() {
         String[] a = new String[table.size()];
         int i = 0;
-        for (String s : table.keySet()) {
-            a[i++] = s;
-        }
+        for (String s : table.keySet()) a[i++] = s;
         return a;
     }
 }

@@ -44,15 +44,9 @@ public class StringRenderer implements AttributeRenderer<String> {
     // trim(s) and strlen(s) built-in funcs; these are format options
     @Override
     public String toString(String value, String formatString, Locale locale) {
-        if ( formatString==null ) {
-            return value;
-        }
-        if ( formatString.equals("upper") ) {
-            return value.toUpperCase(locale);
-        }
-        if ( formatString.equals("lower") ) {
-            return value.toLowerCase(locale);
-        }
+        if ( formatString==null ) return value;
+        if ( formatString.equals("upper") ) return value.toUpperCase(locale);
+        if ( formatString.equals("lower") ) return value.toLowerCase(locale);
         if ( formatString.equals("cap") ) {
             return (value.length() > 0) ? Character.toUpperCase(value.charAt(0))+value.substring(1) : value;
         }
@@ -100,9 +94,7 @@ public class StringRenderer implements AttributeRenderer<String> {
                         buf.append((int)c);
                         buf.append(";");
                     }
-                    else {
-                        buf.append(c);
-                    }
+                    else buf.append(c);
             }
         }
         return buf.toString();
