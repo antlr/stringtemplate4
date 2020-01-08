@@ -29,6 +29,7 @@
 package org.stringtemplate.v4.misc;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /** An automatically created aggregate of properties.
  *
@@ -71,7 +72,25 @@ import java.util.HashMap;
  *  of {@code getPropertyName}.</p>
  */
 public class Aggregate {
+    /**
+     * @deprecated since 4.3; use {@link #getProperties()} or {@link #setProperties(Map)} instead
+     */
+    @SuppressWarnings("PublicField")
+    @Deprecated
     public HashMap<String, Object> properties = new HashMap<String, Object>();
+
+    public Map<String, Object> getProperties()
+    {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties)
+    {
+        this.properties = properties instanceof HashMap ?
+            (HashMap<String, Object>) properties : new HashMap<String, Object>(properties);
+    }
+
+    // TODO remove this, or make it public
     /** Allow StringTemplate to add values, but prevent the end
      *  user from doing so.
      */

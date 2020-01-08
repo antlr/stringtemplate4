@@ -39,7 +39,7 @@ public class AggregateModelAdaptor extends MapModelAdaptor {
     public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
         throws STNoSuchPropertyException
     {
-        Map<?, ?> map = ((Aggregate)o).properties;
+        Map<?, ?> map = ((Aggregate)o).getProperties();
         return super.getProperty(interp, self, map, property, propertyName);
     }
 }

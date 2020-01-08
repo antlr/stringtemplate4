@@ -317,7 +317,7 @@ public class ST {
         Aggregate aggr = new Aggregate();
         for (String p : propNames) {
             Object v = values[i++];
-            aggr.properties.put(p, v);
+            aggr.getProperties().put(p, v);
         }
 
         add(aggrName, aggr); // now add as usual
