@@ -34,21 +34,20 @@ import org.stringtemplate.v4.STGroup;
 
 import java.util.Map;
 
-public class MapModelAdaptor implements ModelAdaptor {
+public class MapModelAdaptor implements ModelAdaptor<Map<?, ?>> {
     @Override
-    public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
+    public Object getProperty(Interpreter interp, ST self, Map<?, ?> model, Object property, String propertyName)
         throws STNoSuchPropertyException
     {
         Object value;
-        Map<?, ?> map = (Map<?, ?>)o;
-        if ( property==null ) value = getDefaultValue(map);
-        else if ( containsKey(map, property) ) value = map.get(property);
-        else if ( containsKey(map, propertyName) ) { // if can't find the key, try toString version
-            value = map.get(propertyName);
+        if ( property==null ) value = getDefaultValue(model);
+        else if ( containsKey(model, property) ) value = model.get(property);
+        else if ( containsKey(model, propertyName) ) { // if can't find the key, try toString version
+            value = model.get(propertyName);
         }
-        else if ( property.equals("keys") ) value = map.keySet();
-        else if ( property.equals("values") ) value = map.values();
-        else value = getDefaultValue(map); // not found, use default
+        else if ( property.equals("keys") ) value = model.keySet();
+        else if ( property.equals("values") ) value = model.values();
+        else value = getDefaultValue(model); // not found, use default
         if ( value == STGroup.DICT_KEY ) {
             value = property;
         }
