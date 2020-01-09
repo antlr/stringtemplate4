@@ -29,7 +29,12 @@ package org.stringtemplate.v4.debug;
 
 /** An event that happens when building ST trees, adding attributes etc... */
 public class ConstructionEvent {
+    /**
+     * @deprecated since 4.3; field is for internal use only
+     */
+    @Deprecated
     public Throwable stack;
+
     public ConstructionEvent() { stack = new Throwable(); }
 
     public String getFileName() { return getSTEntryPoint().getFileName(); }
