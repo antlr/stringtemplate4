@@ -75,7 +75,6 @@ public class Aggregate {
     /**
      * @deprecated since 4.3; use {@link #getProperties()} or {@link #setProperties(Map)} instead
      */
-    @SuppressWarnings("PublicField")
     @Deprecated
     public HashMap<String, Object> properties = new HashMap<String, Object>();
 
