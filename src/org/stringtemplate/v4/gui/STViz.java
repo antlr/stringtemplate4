@@ -335,7 +335,7 @@ public class STViz {
         if (currentEvent instanceof EvalExprEvent) {
             EvalExprEvent exprEvent = (EvalExprEvent)currentEvent;
             highlight(m.output, exprEvent.getOutputStartChar(), exprEvent.getOutputStopChar());
-            highlight(m.template, exprEvent.exprStartChar, exprEvent.exprStopChar);
+            highlight(m.template, exprEvent.getExprStartChar(), exprEvent.getExprStopChar());
         }
         else {
             EvalTemplateEvent templateEvent;
