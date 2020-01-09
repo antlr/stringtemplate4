@@ -159,7 +159,7 @@ public class CompilationState {
                 int opnd = BytecodeDisassembler.getShort(impl.instrs, a+1);
                 writeShort(impl.instrs, a+1, (short)(opnd+instrSize));
             }
-            a += I.nopnds * Bytecode.OPND_SIZE_IN_BYTES + 1;
+            a += I.getOperandCount() * Bytecode.OPND_SIZE_IN_BYTES + 1;
         }
         //System.out.println("after  insert of "+opcode+"("+s+"):"+ Arrays.toString(impl.instrs));
     }

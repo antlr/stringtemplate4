@@ -45,9 +45,9 @@ public class BytecodeDisassembler {
             if ( ip>0 ) buf.append(", ");
             int opcode = code.instrs[ip];
             Bytecode.Instruction I = Bytecode.instructions[opcode];
-            buf.append(I.name);
+            buf.append(I.getName());
             ip++;
-            for (int opnd=0; opnd<I.nopnds; opnd++) {
+            for (int opnd = 0, nopnds = I.getOperandCount(); opnd < nopnds; opnd++) {
                 buf.append(' ');
                 buf.append(getShort(code.instrs, ip));
                 ip += Bytecode.OPND_SIZE_IN_BYTES;
@@ -77,18 +77,21 @@ public class BytecodeDisassembler {
             throw new IllegalArgumentException("no such instruction "+opcode+
                 " at address "+ip);
         }
-        String instrName = I.name;
+        String instrName = I.getName();
         buf.append( String.format("%04d:\t%-14s", ip, instrName) );
         ip++;
-        if ( I.nopnds ==0 ) {
+
+        final int nopnds = I.getOperandCount();
+        if (nopnds == 0 ) {
             buf.append("  ");
             return ip;
         }
+
         List<String> operands = new ArrayList<String>();
-        for (int i=0; i<I.nopnds; i++) {
+        for (int i = 0; i < nopnds; i++) {
             int opnd = getShort(code.instrs, ip);
             ip += Bytecode.OPND_SIZE_IN_BYTES;
-            switch ( I.type[i] ) {
+            switch ( I.getOperandType(i) ) {
                 case STRING :
                     operands.add(showConstPoolOperand(opnd));
                     break;
