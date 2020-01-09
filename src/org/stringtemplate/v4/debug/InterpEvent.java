@@ -30,23 +30,58 @@ package org.stringtemplate.v4.debug;
 import org.stringtemplate.v4.InstanceScope;
 
 public class InterpEvent {
+    /**
+     * @deprecated since 4.3; use {@link #getScope()} instead
+     */
+    @Deprecated
     public InstanceScope scope;
-    /** Index of first char into output stream. */
+
+    /**
+     * Index of first char into output stream.
+     *
+     * @deprecated since 4.3; use {@link #getOutputStartChar()} instead
+     */
+    @Deprecated
     public final int outputStartChar;
-    /** Index of last char into output stream (inclusive). */
+
+    /**
+     * Index of last char into output stream (inclusive).
+     *
+     * @deprecated since 4.3; use {@link #getOutputStopChar()} instead
+     */
+    @Deprecated
     public final int outputStopChar;
+
     public InterpEvent(InstanceScope scope, int outputStartChar, int outputStopChar) {
         this.scope = scope;
         this.outputStartChar = outputStartChar;
         this.outputStopChar = outputStopChar;
     }
 
+    public InstanceScope getScope() {
+        return scope;
+    }
+
+    /**
+     * Index of first char into output stream.
+     */
+    public int getOutputStartChar() {
+        return outputStartChar;
+    }
+
+    /**
+     * Index of last char into output stream (inclusive).
+     */
+    public int getOutputStopChar() {
+        return outputStopChar;
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName()+"{" +
-               "self=" + scope.st +
-               ", start=" + outputStartChar +
-               ", stop=" + outputStopChar +
+               "self=" + getScope().st +
+               ", start=" + getOutputStartChar() +
+               ", stop=" + getOutputStopChar() +
                '}';
     }
 }

@@ -56,8 +56,8 @@ public class EvalExprEvent extends InterpEvent {
                ", expr='" + expr + '\'' +
                ", exprStartChar=" + exprStartChar +
                ", exprStopChar=" + exprStopChar +
-               ", start=" + outputStartChar +
-               ", stop=" + outputStopChar +
+               ", start=" + getOutputStartChar() +
+               ", stop=" + getOutputStopChar() +
                '}';
     }
 

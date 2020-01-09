@@ -334,7 +334,7 @@ public class STViz {
         // get last event for currentScope.st; it's the event that captures ST eval
         if (currentEvent instanceof EvalExprEvent) {
             EvalExprEvent exprEvent = (EvalExprEvent)currentEvent;
-            highlight(m.output, exprEvent.outputStartChar, exprEvent.outputStopChar);
+            highlight(m.output, exprEvent.getOutputStartChar(), exprEvent.getOutputStopChar());
             highlight(m.template, exprEvent.exprStartChar, exprEvent.exprStopChar);
         }
         else {
@@ -348,7 +348,7 @@ public class STViz {
             }
 
             if (templateEvent != null) {
-                highlight(m.output, templateEvent.outputStartChar, templateEvent.outputStopChar);
+                highlight(m.output, templateEvent.getOutputStartChar(), templateEvent.getOutputStopChar());
             }
 
             if ( currentScope.st.isAnonSubtemplate() ) {
@@ -483,7 +483,7 @@ public class STViz {
                 continue;
             }
 
-            if ( charIndex>=e.outputStartChar && charIndex<=e.outputStopChar) return e;
+            if ( charIndex>=e.getOutputStartChar() && charIndex<=e.getOutputStopChar()) return e;
         }
         return null;
     }
