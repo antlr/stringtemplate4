@@ -120,7 +120,7 @@ public abstract class BaseTest {
     @Before
     public void setUp() {
         STGroup.defaultGroup = new STGroup();
-        Compiler.subtemplateCount = new AtomicInteger(0);
+        Compiler.subtemplateCount.set(0);
 
         String baseTestDirectory = System.getProperty("java.io.tmpdir");
         String testDirectory = getClass().getSimpleName() + "-" + System.currentTimeMillis();

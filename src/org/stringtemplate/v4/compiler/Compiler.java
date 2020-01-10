@@ -91,8 +91,13 @@ public class Compiler {
         funcs = Collections.unmodifiableMap(map);
     }
 
-    /** Name subtemplates {@code _sub1}, {@code _sub2}, ... */
-    public static AtomicInteger subtemplateCount = new AtomicInteger(0);
+    /**
+     * Name subtemplates {@code _sub1}, {@code _sub2}, ...
+     *
+     * @deprecated since 4.3; for internal use only
+     */
+    @Deprecated
+    public static final AtomicInteger subtemplateCount = new AtomicInteger(0);
 
     public STGroup group;
 
