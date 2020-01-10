@@ -99,6 +99,10 @@ public class Compiler {
     @Deprecated
     public static final AtomicInteger subtemplateCount = new AtomicInteger(0);
 
+    /**
+     * @deprecated since 4.3; for internal use only
+     */
+    @Deprecated
     public STGroup group;
 
     public Compiler() { this(STGroup.defaultGroup); }
