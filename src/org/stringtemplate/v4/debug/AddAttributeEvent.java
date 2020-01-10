@@ -28,9 +28,9 @@
 package org.stringtemplate.v4.debug;
 
 public class AddAttributeEvent extends ConstructionEvent {
-    private String name;
+    private final String name;
     /** Reserved for future use. */
-    private Object value;
+    private final Object value;
 
     public AddAttributeEvent(String name, Object value) {
         this.name = name;
