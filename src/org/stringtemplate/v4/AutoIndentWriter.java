@@ -55,19 +55,44 @@ import java.util.Stack;
 public class AutoIndentWriter implements STWriter {
     /** Stack of indents. Use {@link List} as it's much faster than {@link Stack}. Grows
      *  from 0..n-1.
+     *
+     * @deprecated since 4.3; for internal use only
      */
+    @Deprecated
     public List<String> indents = new ArrayList<String>();
 
     /** Stack of integer anchors (char positions in line); avoid {@link Integer}
      *  creation overhead.
+     *
+     * @deprecated since 4.3; for internal use only
      */
+    @Deprecated
     public int[] anchors = new int[10];
+
+    /**
+     * @deprecated since 4.3; for internal use only
+     */
+    @Deprecated
     public int anchors_sp = -1;
 
-    /** {@code \n} or {@code \r\n}? */
+    /**
+     * {@code \n} or {@code \r\n}?
+     *
+     * @deprecated since 4.3; set via constructor
+     */
+    @Deprecated
     public String newline;
 
+    /**
+     * @deprecated since 4.3; set via constructor
+     */
+    @Deprecated // needs to be made protected, not private! (used by NoIndentWriter)
     public Writer out = null;
+
+    /**
+     * @deprecated since 4.3; for internal use only
+     */
+    @Deprecated
     public boolean atStartOfLine = true;
 
     /**
@@ -75,12 +100,24 @@ public class AutoIndentWriter implements STWriter {
      * from 0. We want to keep {@code charPosition <= }{@link #lineWidth}.
      * This is the position we are <em>about</em> to write, not the position
      * last written to.
+     *
+     * @deprecated since 4.3; for internal use only
      */
+    @Deprecated
     public int charPosition = 0;
 
-    /** The absolute char index into the output of the next char to be written. */
+    /**
+     * The absolute char index into the output of the next char to be written.
+     *
+     * @deprecated since 4.3; for internal use only
+     */
+    @Deprecated
     public int charIndex = 0;
 
+    /**
+     * @deprecated since 4.3; for internal use only
+     */
+    @Deprecated
     public int lineWidth = NO_WRAP;
 
     public AutoIndentWriter(Writer out, String newline) {
