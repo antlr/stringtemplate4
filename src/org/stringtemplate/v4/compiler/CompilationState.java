@@ -61,6 +61,18 @@ public class CompilationState {
         impl.prefix = Misc.getPrefix(name);
     }
 
+    public CompiledST getCompiledST() {
+        return impl;
+    }
+
+    public StringTable getStringTable() {
+        return stringtable;
+    }
+
+    public int getInstructionPointer() {
+        return ip;
+    }
+
     public int defineString(String s) { return stringtable.add(s); }
 
     public void refAttr(Token templateToken, CommonTree id) {
