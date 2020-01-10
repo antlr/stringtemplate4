@@ -75,7 +75,7 @@ public class Compiler {
         defaultOptionValues = Collections.unmodifiableMap(map);
     }
 
-    public static Map<String, Short> funcs;
+    public static final Map<String, Short> funcs;
 
     static {
         final Map<String, Short> map = new HashMap<String, Short>();
