@@ -225,7 +225,7 @@ public class STGroup {
     {
         String fullyQualifiedName = name;
         if ( name.charAt(0)!='/' ) {
-            fullyQualifiedName = scope.st.impl.prefix + name;
+            fullyQualifiedName = scope.getST().impl.prefix + name;
         }
         if ( verbose ) System.out.println("getEmbeddedInstanceOf(" + fullyQualifiedName +")");
         ST st = getInstanceOf(fullyQualifiedName);

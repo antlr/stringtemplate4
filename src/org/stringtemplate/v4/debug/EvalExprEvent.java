@@ -59,7 +59,7 @@ public class EvalExprEvent extends InterpEvent {
         this.exprStartChar = exprStartChar;
         this.exprStopChar = exprStopChar;
         if ( exprStartChar >=0 && exprStopChar >=0 ) {
-            expr = scope.st.impl.template.substring(exprStartChar, exprStopChar +1);
+            expr = scope.getST().impl.template.substring(exprStartChar, exprStopChar + 1);
         }
         else {
             expr = "";
@@ -87,7 +87,7 @@ public class EvalExprEvent extends InterpEvent {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +
-               "self=" + scope.st +
+               "self=" + scope.getST() +
                ", expr='" + getExpr() + '\'' +
                ", exprStartChar=" + getExprStartChar() +
                ", exprStopChar=" + getExprStopChar() +

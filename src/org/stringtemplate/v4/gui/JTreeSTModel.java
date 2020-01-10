@@ -58,7 +58,7 @@ public class JTreeSTModel implements TreeModel {
 
         @Override
         public String toString() {
-            ST st = event.scope.st;
+            ST st = event.scope.getST();
             if ( st.isAnonSubtemplate() ) return "{...}";
             if ( st.debugState!=null && st.debugState.newSTEvent!=null ) {
                 String label = st.toString()+" @ "+st.debugState.newSTEvent.getFileName()+":"+
@@ -79,13 +79,13 @@ public class JTreeSTModel implements TreeModel {
     @Override
     public Object getChild(Object parent, int index) {
         EvalTemplateEvent e = ((Wrapper)parent).event;
-        return new Wrapper(e.scope.childEvalTemplateEvents.get(index));
+        return new Wrapper(e.scope.getChildEvalTemplateEvents().get(index));
     }
 
     @Override
     public int getChildCount(Object parent) {
         EvalTemplateEvent e = ((Wrapper)parent).event;
-        return e.scope.childEvalTemplateEvents.size();
+        return e.scope.getChildEvalTemplateEvents().size();
     }
 
     @Override
@@ -93,8 +93,8 @@ public class JTreeSTModel implements TreeModel {
         EvalTemplateEvent p = ((Wrapper)parent).event;
         EvalTemplateEvent c = ((Wrapper)parent).event;
         int i = 0;
-        for (EvalTemplateEvent e : p.scope.childEvalTemplateEvents) {
-            if ( e.scope.st == c.scope.st ) {
+        for (EvalTemplateEvent e : p.scope.getChildEvalTemplateEvents()) {
+            if (e.scope.getST() == c.scope.getST()) {
 //              System.out.println(i);
 //              System.out.println("found "+e.self+" as child of "+parentST);
                 return i;

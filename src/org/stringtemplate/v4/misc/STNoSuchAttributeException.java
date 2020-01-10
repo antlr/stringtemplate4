@@ -43,6 +43,6 @@ public class STNoSuchAttributeException extends STException {
 
     @Override
     public String getMessage() {
-        return "from template "+scope.st.getName()+" no attribute "+name+" is visible";
+        return "from template " + scope.getST().getName() + " no attribute " + name + " is visible";
     }
 }

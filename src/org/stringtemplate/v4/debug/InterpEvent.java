@@ -78,8 +78,8 @@ public class InterpEvent {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"{" +
-               "self=" + getScope().st +
+        return getClass().getSimpleName() + "{" +
+               "self=" + getScope().getST() +
                ", start=" + getOutputStartChar() +
                ", stop=" + getOutputStopChar() +
                '}';

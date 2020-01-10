@@ -110,7 +110,7 @@ public class STViz {
         updateStack(currentScope, viewFrame);
         updateAttributes(currentScope, viewFrame);
 
-        List<InterpEvent> events = currentScope.events;
+        List<InterpEvent> events = currentScope.getEvents();
         tmodel = new JTreeSTModel(interp, (EvalTemplateEvent)events.get(events.size()-1));
         viewFrame.tree.setModel(tmodel);
         viewFrame.tree.addTreeSelectionListener(
@@ -134,7 +134,7 @@ public class STViz {
             }
         );
 
-        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
+        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.getST().impl.ast);
         viewFrame.ast.setModel(astModel);
         viewFrame.ast.addTreeSelectionListener(
             new TreeSelectionListener() {
@@ -150,8 +150,8 @@ public class STViz {
                         if ( path==null ) return;
                         CommonTree node = (CommonTree)treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
                         //System.out.println("select AST: "+node);
-                        CommonToken a = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStartIndex());
-                        CommonToken b = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStopIndex());
+                        CommonToken a = (CommonToken) currentScope.getST().impl.tokens.get(node.getTokenStartIndex());
+                        CommonToken b = (CommonToken) currentScope.getST().impl.tokens.get(node.getTokenStopIndex());
                         highlight(viewFrame.template, a.getStartIndex(), b.getStopIndex());
                     }
                     finally {
@@ -281,8 +281,8 @@ public class STViz {
         viewFrame.setSize(900, 700);
 
         setText(viewFrame.output, output);
-        setText(viewFrame.template, currentScope.st.impl.template);
-        setText(viewFrame.bytecode, currentScope.st.impl.disasm());
+        setText(viewFrame.template, currentScope.getST().impl.template);
+        setText(viewFrame.bytecode, currentScope.getST().impl.disasm());
         setText(viewFrame.trace, Misc.join(trace.iterator(), "\n"));
 
         viewFrame.setVisible(true);
@@ -325,9 +325,9 @@ public class STViz {
         // update all views according to currentScope.st
         updateStack(currentScope, m);                      // STACK
         updateAttributes(currentScope, m);                 // ATTRIBUTES
-        setText(m.bytecode, currentScope.st.impl.disasm()); // BYTECODE DIS.
-        setText(m.template, currentScope.st.impl.template); // TEMPLATE SRC
-        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
+        setText(m.bytecode, currentScope.getST().impl.disasm()); // BYTECODE DIS.
+        setText(m.template, currentScope.getST().impl.template); // TEMPLATE SRC
+        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.getST().impl.ast);
         viewFrame.ast.setModel(astModel);
 
         // highlight output text and, if {...} subtemplate, region in ST src
@@ -343,7 +343,7 @@ public class STViz {
                 templateEvent = (EvalTemplateEvent)currentEvent;
             }
             else {
-                List<InterpEvent> events = currentScope.events;
+                List<InterpEvent> events = currentScope.getEvents();
                 templateEvent = (EvalTemplateEvent)events.get(events.size() - 1);
             }
 
@@ -351,8 +351,8 @@ public class STViz {
                 highlight(m.output, templateEvent.getOutputStartChar(), templateEvent.getOutputStopChar());
             }
 
-            if ( currentScope.st.isAnonSubtemplate() ) {
-                Interval r = currentScope.st.impl.getTemplateRange();
+            if ( currentScope.getST().isAnonSubtemplate() ) {
+                Interval r = currentScope.getST().impl.getTemplateRange();
                 //System.out.println("currentScope.st src range="+r);
                 //m.template.moveCaretPosition(r.a);
                 highlight(m.template, r.a, r.b);
@@ -423,7 +423,7 @@ public class STViz {
             }
         }
         catch (BadLocationException ble) {
-            errMgr.internalError(tmodel.root.event.scope.st, "bad highlight location", ble);
+            errMgr.internalError(tmodel.root.event.scope.getST(), "bad highlight location", ble);
         }
     }
 
@@ -479,7 +479,7 @@ public class STViz {
                                                  int charIndex)
     {
         for (InterpEvent e : events) {
-            if (e.scope.earlyEval) {
+            if (e.scope.isEarlyEval()) {
                 continue;
             }
 

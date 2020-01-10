@@ -70,9 +70,9 @@ public class JTreeScopeStackModel implements TreeModel {
         Set<String> names = new HashSet<String>();
         List<InstanceScope> stack = Interpreter.getScopeStack(scope, false);
         for (InstanceScope s : stack) {
-            StringTree templateNode = new StringTree(s.st.getName());
+            StringTree templateNode = new StringTree(s.getST().getName());
             root.insertChild(0, templateNode);
-            addAttributeDescriptions(s.st, templateNode, names);
+            addAttributeDescriptions(s.getST(), templateNode, names);
         }
         //System.out.println(root.toStringTree());
     }
