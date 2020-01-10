@@ -67,7 +67,7 @@ public class CompilationState {
         String name = id.getText();
         if ( impl.formalArguments!=null && impl.formalArguments.get(name)!=null ) {
             FormalArgument arg = impl.formalArguments.get(name);
-            int index = arg.index;
+            int index = arg.getIndex();
             emit1(id, Bytecode.INSTR_LOAD_LOCAL, index);
         }
         else {

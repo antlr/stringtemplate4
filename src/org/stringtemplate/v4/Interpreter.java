@@ -530,26 +530,26 @@ public class Interpreter {
         if ( c.formalArguments==null ) return;
         for (FormalArgument arg : c.formalArguments.values()) {
             // if not already set by user, set to value from outer scope
-            if ( !attrs.containsKey(arg.name) ) {
+            if ( !attrs.containsKey(arg.getName()) ) {
                 //System.out.println("arg "+arg.name+" missing");
                 try {
-                    Object o = getAttribute(scope, arg.name);
+                    Object o = getAttribute(scope, arg.getName());
                     // If the attribute exists but there is no value and
                     // the formal argument has no default value, make it null.
-                    if ( o==ST.EMPTY_ATTR && arg.defaultValueToken==null ) {
-                        attrs.put(arg.name, null);
+                    if ( o==ST.EMPTY_ATTR && arg.getDefaultValueToken() == null ) {
+                        attrs.put(arg.getName(), null);
                     }
                     // Else, the attribute has an existing value, set arg.
                     else if ( o!=ST.EMPTY_ATTR ) {
-                        attrs.put(arg.name, o);
+                        attrs.put(arg.getName(), o);
                     }
                 }
                 catch (STNoSuchAttributeException nsae) {
                     // if no such attribute exists for arg.name, set parameter
                     // if no default value
-                    if ( arg.defaultValueToken==null ) {
-                        errMgr.runTimeError(this, scope, ErrorType.NO_SUCH_ATTRIBUTE_PASS_THROUGH, arg.name);
-                        attrs.put(arg.name, null);
+                    if (arg.getDefaultValueToken() == null ) {
+                        errMgr.runTimeError(this, scope, ErrorType.NO_SUCH_ATTRIBUTE_PASS_THROUGH, arg.getName());
+                        attrs.put(arg.getName(), null);
                     }
                 }
             }
@@ -604,7 +604,9 @@ public class Interpreter {
             // ignore this check if a NO_SUCH_ATTRIBUTE error already occurred
             if (!noSuchAttributeReported) {
                 for (Map.Entry<String, FormalArgument> formalArgument : formalArguments.entrySet()) {
-                    if (formalArgument.getValue().defaultValueToken != null || formalArgument.getValue().defaultValue != null) {
+                    if (formalArgument.getValue().getDefaultValueToken() != null || formalArgument.getValue()
+                                                                                                  .getDefaultValue()
+                                                                                    != null) {
                         // this argument has a default value, so it doesn't need to appear in attrs
                         continue;
                     }
@@ -1242,7 +1244,7 @@ public class Interpreter {
             FormalArgument localArg = null;
             if ( p.impl.formalArguments!=null ) localArg = p.impl.formalArguments.get(name);
             if ( localArg!=null ) {
-                Object o = p.locals[localArg.index];
+                Object o = p.locals[localArg.getIndex()];
                 return o;
             }
             current = current.parent; // look up enclosing scope chain
@@ -1286,12 +1288,12 @@ public class Interpreter {
         }
         for (FormalArgument arg : invokedST.impl.formalArguments.values()) {
             // if no value for attribute and default arg, inject default arg into self
-            if ( invokedST.locals[arg.index]!=ST.EMPTY_ATTR || arg.defaultValueToken==null ) {
+            if (invokedST.locals[arg.getIndex()] != ST.EMPTY_ATTR || arg.getDefaultValueToken() == null ) {
                 continue;
             }
             //System.out.println("setting def arg "+arg.name+" to "+arg.defaultValueToken);
-            if ( arg.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
-                CompiledST code = arg.compiledDefaultValue;
+            if (arg.getDefaultValueToken().getType() == GroupParser.ANONYMOUS_TEMPLATE ) {
+                CompiledST code = arg.getCompiledDefaultValue();
                 if (code == null) {
                     code = new CompiledST();
                 }
@@ -1301,18 +1303,18 @@ public class Interpreter {
                 // wrapped in parens, x={<(...)>}, then eval to string
                 // rather than setting x to the template for later
                 // eval.
-                String defArgTemplate = arg.defaultValueToken.getText();
+                String defArgTemplate = arg.getDefaultValueToken().getText();
                 if ( defArgTemplate.startsWith("{"+group.delimiterStartChar+"(") &&
                     defArgTemplate.endsWith(")"+group.delimiterStopChar+"}") ) {
 
-                    invokedST.rawSetAttribute(arg.name, toString(out, new InstanceScope(scope, invokedST), defaultArgST));
+                    invokedST.rawSetAttribute(arg.getName(), toString(out, new InstanceScope(scope, invokedST), defaultArgST));
                 }
                 else {
-                    invokedST.rawSetAttribute(arg.name, defaultArgST);
+                    invokedST.rawSetAttribute(arg.getName(), defaultArgST);
                 }
             }
             else {
-                invokedST.rawSetAttribute(arg.name, arg.defaultValue);
+                invokedST.rawSetAttribute(arg.getName(), arg.getDefaultValue());
             }
         }
     }

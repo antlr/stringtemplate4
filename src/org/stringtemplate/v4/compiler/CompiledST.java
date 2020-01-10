@@ -158,32 +158,31 @@ public class CompiledST implements Cloneable {
         if ( formalArguments==null ) return;
         for (String a : formalArguments.keySet()) {
             FormalArgument fa = formalArguments.get(a);
-            if ( fa.defaultValueToken!=null ) {
+            if (fa.getDefaultValueToken() != null ) {
                 numberOfArgsWithDefaultValues++;
-                switch (fa.defaultValueToken.getType()) {
+                switch (fa.getDefaultValueToken().getType()) {
                 case GroupParser.ANONYMOUS_TEMPLATE:
-                    String argSTname = fa.name + "_default_value";
+                    String argSTname = fa.getName() + "_default_value";
                     Compiler c2 = new Compiler(group);
                     String defArgTemplate =
-                        Misc.strip(fa.defaultValueToken.getText(), 1);
-                    fa.compiledDefaultValue =
-                        c2.compile(group.getFileName(), argSTname, null,
-                                   defArgTemplate, fa.defaultValueToken);
-                    fa.compiledDefaultValue.name = argSTname;
-                    fa.compiledDefaultValue.defineImplicitlyDefinedTemplates(group);
+                        Misc.strip(fa.getDefaultValueToken().getText(), 1);
+                    fa.setCompiledDefaultValue(c2.compile(group.getFileName(), argSTname, null,
+                                                          defArgTemplate, fa.getDefaultValueToken()));
+                    fa.getCompiledDefaultValue().name = argSTname;
+                    fa.getCompiledDefaultValue().defineImplicitlyDefinedTemplates(group);
                     break;
 
                 case GroupParser.STRING:
-                    fa.defaultValue = Misc.strip(fa.defaultValueToken.getText(), 1);
+                    fa.setDefaultValue(Misc.strip(fa.getDefaultValueToken().getText(), 1));
                     break;
 
                 case GroupParser.LBRACK:
-                    fa.defaultValue = Collections.emptyList();
+                    fa.setDefaultValue(Collections.emptyList());
                     break;
 
                 case GroupParser.TRUE:
                 case GroupParser.FALSE:
-                    fa.defaultValue = fa.defaultValueToken.getType()==GroupParser.TRUE;
+                    fa.setDefaultValue(fa.getDefaultValueToken().getType() == GroupParser.TRUE);
                     break;
 
                 default:
@@ -204,12 +203,12 @@ public class CompiledST implements Cloneable {
         if ( formalArguments==null ) {
             formalArguments = Collections.synchronizedMap(new LinkedHashMap<String,FormalArgument>());
         }
-        else if (formalArguments.containsKey(a.name)) {
-            throw new IllegalArgumentException(String.format("Formal argument %s already exists.", a.name));
+        else if (formalArguments.containsKey(a.getName())) {
+            throw new IllegalArgumentException(String.format("Formal argument %s already exists.", a.getName()));
         }
 
-        a.index = formalArguments.size();
-        formalArguments.put(a.name, a);
+        a.setIndex(formalArguments.size());
+        formalArguments.put(a.getName(), a);
     }
 
     public void defineImplicitlyDefinedTemplates(STGroup group) {

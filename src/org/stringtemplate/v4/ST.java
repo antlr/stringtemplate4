@@ -250,13 +250,13 @@ public class ST {
                                      Math.min(locals.length, impl.formalArguments.size()));
                     locals = copy;
                 }
-                locals[arg.index] = EMPTY_ATTR;
+                locals[arg.getIndex()] = EMPTY_ATTR;
             }
         }
 
-        Object curvalue = locals[arg.index];
+        Object curvalue = locals[arg.getIndex()];
         if ( curvalue==EMPTY_ATTR ) { // new attribute
-            locals[arg.index] = value;
+            locals[arg.getIndex()] = value;
             return this;
         }
 
@@ -264,7 +264,7 @@ public class ST {
         // convert current attribute to list if not already
         // copy-on-write semantics; copy a list injected by user to add new value
         AttributeList multi = convertToAttributeList(curvalue);
-        locals[arg.index] = multi; // replace with list
+        locals[arg.getIndex()] = multi; // replace with list
 
         // now, add incoming value to multi-valued attribute
         if ( value instanceof List ) {
@@ -336,7 +336,7 @@ public class ST {
         if ( arg==null ) {
             throw new IllegalArgumentException("no such attribute: "+name);
         }
-        locals[arg.index] = EMPTY_ATTR; // reset value
+        locals[arg.getIndex()] = EMPTY_ATTR; // reset value
     }
 
     /** Set {@code locals} attribute value when you only know the name, not the
@@ -351,7 +351,7 @@ public class ST {
         if ( arg==null ) {
             throw new IllegalArgumentException("no such attribute: "+name);
         }
-        locals[arg.index] = value;
+        locals[arg.getIndex()] = value;
     }
 
     /** Find an attribute in this template only. */
@@ -359,7 +359,7 @@ public class ST {
         FormalArgument localArg = null;
         if ( impl.formalArguments!=null ) localArg = impl.formalArguments.get(name);
         if ( localArg!=null ) {
-            Object o = locals[localArg.index];
+            Object o = locals[localArg.getIndex()];
             if ( o==ST.EMPTY_ATTR ) o = null;
             return o;
         }
@@ -370,9 +370,9 @@ public class ST {
         if ( impl.formalArguments==null ) return null;
         Map<String, Object> attributes = new HashMap<String, Object>();
         for (FormalArgument a : impl.formalArguments.values()) {
-            Object o = locals[a.index];
+            Object o = locals[a.getIndex()];
             if ( o==ST.EMPTY_ATTR ) o = null;
-            attributes.put(a.name, o);
+            attributes.put(a.getName(), o);
         }
         return attributes;
     }
