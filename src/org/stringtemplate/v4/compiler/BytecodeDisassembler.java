@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BytecodeDisassembler {
-    private CompiledST code;
+    private final CompiledST code;
 
     public BytecodeDisassembler(CompiledST code) { this.code = code; }
 
