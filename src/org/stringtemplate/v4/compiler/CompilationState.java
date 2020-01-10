@@ -38,21 +38,21 @@ import org.stringtemplate.v4.misc.*;
  */
 public class CompilationState {
     /** The compiled code implementation to fill in. */
-    CompiledST impl = new CompiledST();
+    private final CompiledST impl = new CompiledST();
 
     /** Track unique strings; copy into {@link CompiledST#strings} after compilation. */
-    StringTable stringtable = new StringTable();
+    private final StringTable stringtable = new StringTable();
+
+    private final TokenStream tokens;
+
+    private final ErrorManager errMgr;
 
     /**
      * Track instruction location within
      * {@code impl.}{@link CompiledST#instrs instrs} array; this is next address
      * to write to. Byte-addressable memory.
      */
-    int ip = 0;
-
-    TokenStream tokens;
-
-    ErrorManager errMgr;
+    private int ip = 0;
 
     public CompilationState(ErrorManager errMgr, String name, TokenStream tokens) {
         this.errMgr = errMgr;
