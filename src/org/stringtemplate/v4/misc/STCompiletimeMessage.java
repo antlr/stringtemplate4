@@ -34,10 +34,22 @@ import org.stringtemplate.v4.compiler.GroupParser;
  *  interpretation. For ST parsing ONLY not group parsing.
  */
 public class STCompiletimeMessage extends STMessage {
-    /** overall token pulled from group file */
+    /**
+     * @deprecated since 4.3; use {@link #getTemplateToken()} instead
+     */
+    @Deprecated
     public Token templateToken;
-    /** token inside template */
+
+    /**
+     * @deprecated since 4.3; use {@link #getToken()} instead
+     */
+    @Deprecated
     public Token token;
+
+    /**
+     * @deprecated since 4.3; use {@link #getSourceName()}
+     */
+    @Deprecated
     public String srcName;
 
     public STCompiletimeMessage(ErrorType error, String srcName, Token templateToken, Token t) {
@@ -58,6 +70,20 @@ public class STCompiletimeMessage extends STMessage {
         this.templateToken = templateToken;
         this.token = t;
         this.srcName = srcName;
+    }
+
+    /** overall token pulled from group file */
+    public Token getTemplateToken() {
+        return templateToken;
+    }
+
+    /** token inside template */
+    public Token getToken() {
+        return token;
+    }
+
+    public String getSourceName() {
+        return srcName;
     }
 
     @Override
