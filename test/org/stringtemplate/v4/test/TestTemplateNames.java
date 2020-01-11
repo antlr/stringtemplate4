@@ -124,7 +124,7 @@ public class TestTemplateNames extends BaseTest {
         String result = template.render();
         assertEquals(expected, result);
 
-        assertEquals("[]", errors.errors.toString());
+        assertEquals("[]", errors.getErrors().toString());
     }
 
     // TODO: test <a/b()> is RELATIVE NOT ABSOLUTE

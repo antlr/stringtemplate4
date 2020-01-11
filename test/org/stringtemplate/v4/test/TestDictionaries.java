@@ -213,7 +213,7 @@ public class TestDictionaries extends BaseTest {
         group.setListener(errors);
         group.load();
         String expected = "[test.stg 1:33: missing value for key at ']']";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 

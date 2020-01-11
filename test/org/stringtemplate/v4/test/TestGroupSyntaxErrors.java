@@ -173,7 +173,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
             "[t.stg 1:6: missing ID at ',', " +
             "t.stg 1:7: missing ID at ')', " +
             "t.stg 1:7: redefinition of parameter <missing ID>]";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 
@@ -189,7 +189,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         group.load(); // force load
         String expected =
             "[t.stg 1:6: no viable alternative at input 'b']";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 
@@ -205,7 +205,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         group.load(); // force load
         String expected =
             "[t.stg 1:12: required parameters (b) must appear before optional parameters]";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 
@@ -221,7 +221,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         group.load(); // force load
         String expected =
             "[t.stg 1:8: redefinition of parameter a]";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 
@@ -240,7 +240,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         String expected =
             "[t.stg 1:43: redefinition of parameter a, " +
             "t.stg 1:38: anonymous template has 2 arg(s) but mapped across 3 value(s)]";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 
@@ -255,7 +255,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         group.setListener(errors);
         group.load(); // force load
         String expected = "[t.stg 1:15: 'b' came as a complete surprise to me]";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 
@@ -270,7 +270,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         group.setListener(errors);
         group.load(); // force load
         String expected = "[t.stg 1:7: missing dictionary entry at ']']";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 
@@ -285,7 +285,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         group.setListener(errors);
         group.load(); // force load
         String expected = "[t.stg 1:11: missing value for key at ']']";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 
@@ -300,7 +300,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         group.setListener(errors);
         group.load(); // force load
         String expected = "[t.stg 1:17: invalid character '}']";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 
@@ -315,7 +315,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
         group.setListener(errors);
         group.load(); // force load
         String expected = "[t.stg 1:9: unterminated string, t.stg 1:9: missing template at '<EOF>']";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 }

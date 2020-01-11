@@ -532,7 +532,7 @@ public class ST {
         EvalTemplateEvent overallTemplateEval =
             (EvalTemplateEvent)events.get(events.size()-1);
         STViz viz = new STViz(errMgr, overallTemplateEval, out.toString(), interp,
-                              interp.getExecutionTrace(), errors.errors);
+                              interp.getExecutionTrace(), errors.getErrors());
         viz.open();
         return viz;
     }

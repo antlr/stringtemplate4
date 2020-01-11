@@ -194,6 +194,6 @@ public class TestOptions extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
         expected = "[test 1:7: no such option: bad]";
-        assertEquals(expected, errors.errors.toString());
+        assertEquals(expected, errors.getErrors().toString());
     }
 }

@@ -146,7 +146,7 @@ public class TestSyntaxErrors extends BaseTest {
         group.setListener(errors);
         group.load(); // force load
         String expected = "[t.stg 1:15: \\n in string, t.stg 1:14: doesn't look like an expression]";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 

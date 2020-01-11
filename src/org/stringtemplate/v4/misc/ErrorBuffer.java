@@ -34,7 +34,15 @@ import java.util.List;
 
 /** Used during tests to track all errors. */
 public class ErrorBuffer implements STErrorListener {
+    /**
+     * @deprecated since 4.3; use {@link #getErrors()} instead
+     */
+    @Deprecated
     public List<STMessage> errors = new ArrayList<STMessage>();
+
+    public List<STMessage> getErrors() {
+        return errors;
+    }
 
     @Override
     public void compileTimeError(STMessage msg) {

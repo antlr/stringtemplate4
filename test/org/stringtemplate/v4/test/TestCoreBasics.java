@@ -204,7 +204,7 @@ public class TestCoreBasics extends BaseTest {
         String expected = "";
         String result = st.render();
         assertEquals(expected, result);
-        STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
+        STRuntimeMessage msg = (STRuntimeMessage) errors.getErrors().get(0);
         STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
         assertEquals("org.stringtemplate.v4.test.BaseTest$User.qqq", e.propertyName);
     }
@@ -220,7 +220,7 @@ public class TestCoreBasics extends BaseTest {
         String expected = "";
         String result = st.render();
         assertEquals(expected, result);
-        STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
+        STRuntimeMessage msg = (STRuntimeMessage) errors.getErrors().get(0);
         STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
         assertEquals("org.stringtemplate.v4.test.BaseTest$User.null", e.propertyName);
     }
@@ -236,7 +236,7 @@ public class TestCoreBasics extends BaseTest {
         String expected = "";
         String result = st.render();
         assertEquals(expected, result);
-        STRuntimeMessage msg = (STRuntimeMessage)errors.errors.get(0);
+        STRuntimeMessage msg = (STRuntimeMessage) errors.getErrors().get(0);
         STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
         assertEquals("org.stringtemplate.v4.test.BaseTest$User.100", e.propertyName);
     }
