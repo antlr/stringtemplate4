@@ -86,7 +86,37 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
+            <plugin>
+                <!-- https://mvnrepository.com/artifact/org.revapi/revapi-maven-plugin -->
+                <groupId>org.revapi</groupId>
+                <artifactId>revapi-maven-plugin</artifactId>
+                <version>0.11.2</version>
+                <dependencies>
+                    <!-- https://mvnrepository.com/artifact/org.revapi/revapi-java -->
+                    <dependency>
+                        <groupId>org.revapi</groupId>
+                        <artifactId>revapi-java</artifactId>
+                        <version>0.20.0</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <goals><goal>check</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <analysisConfigurationFiles>
+                        <configurationFile>
+                            <path>revapi.json</path>
+                            <roots>
+                                <root>base</root>
+                                <root>4.3+</root>
+                            </roots>
+                        </configurationFile>
+                    </analysisConfigurationFiles>
+                </configuration>
+            </plugin>
+        </plugins>
 	</build>
 
 	<scm>

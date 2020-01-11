@@ -1,0 +1,315 @@
+{
+  "4.3+": {
+    "revapi": {
+      "ignore": [
+        // --------------- https://github.com/antlr/stringtemplate4/pull/233 ---------------
+        {
+          "code": "java.method.parameterTypeParameterChanged",
+          "old": "parameter java.lang.String org.stringtemplate.v4.AttributeRenderer::toString(===java.lang.Object===, java.lang.String, java.util.Locale)",
+          "new": "parameter java.lang.String org.stringtemplate.v4.AttributeRenderer<T>::toString(===T===, java.lang.String, java.util.Locale)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.generics.elementNowParameterized",
+          "old": "interface org.stringtemplate.v4.AttributeRenderer",
+          "new": "interface org.stringtemplate.v4.AttributeRenderer<T extends java.lang.Object>",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.generics.formalTypeParameterAdded",
+          "old": "interface org.stringtemplate.v4.AttributeRenderer",
+          "new": "interface org.stringtemplate.v4.AttributeRenderer<T extends java.lang.Object>",
+          "typeParameter": "T",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.class.noLongerImplementsInterface",
+          "old": "class org.stringtemplate.v4.DateRenderer",
+          "new": "class org.stringtemplate.v4.DateRenderer",
+          "interface": "org.stringtemplate.v4.AttributeRenderer",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.class.superTypeTypeParametersChanged",
+          "old": "class org.stringtemplate.v4.DateRenderer",
+          "new": "class org.stringtemplate.v4.DateRenderer",
+          "oldSuperType": "org.stringtemplate.v4.AttributeRenderer",
+          "newSuperType": "org.stringtemplate.v4.AttributeRenderer<java.lang.Object>",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.class.noLongerImplementsInterface",
+          "old": "class org.stringtemplate.v4.NumberRenderer",
+          "new": "class org.stringtemplate.v4.NumberRenderer",
+          "interface": "org.stringtemplate.v4.AttributeRenderer",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.method.parameterTypeParameterChanged",
+          "old": "parameter void org.stringtemplate.v4.STGroup::registerRenderer(===java.lang.Class<?>===, org.stringtemplate.v4.AttributeRenderer)",
+          "new": "parameter <T> void org.stringtemplate.v4.STGroup::registerRenderer(===java.lang.Class<T>===, org.stringtemplate.v4.AttributeRenderer<? super T>)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.method.parameterTypeParameterChanged",
+          "old": "parameter void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<?>, ===org.stringtemplate.v4.AttributeRenderer===)",
+          "new": "parameter <T> void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<T>, ===org.stringtemplate.v4.AttributeRenderer<? super T>===)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.generics.elementNowParameterized",
+          "old": "method void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<?>, org.stringtemplate.v4.AttributeRenderer)",
+          "new": "method <T> void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<T>, org.stringtemplate.v4.AttributeRenderer<? super T>)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.generics.formalTypeParameterAdded",
+          "old": "method void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<?>, org.stringtemplate.v4.AttributeRenderer)",
+          "new": "method <T> void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<T>, org.stringtemplate.v4.AttributeRenderer<? super T>)",
+          "typeParameter": "T",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.method.parameterTypeParameterChanged",
+          "old": "parameter void org.stringtemplate.v4.STGroup::registerRenderer(===java.lang.Class<?>===, org.stringtemplate.v4.AttributeRenderer, boolean)",
+          "new": "parameter <T> void org.stringtemplate.v4.STGroup::registerRenderer(===java.lang.Class<T>===, org.stringtemplate.v4.AttributeRenderer<? super T>, boolean)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.method.parameterTypeParameterChanged",
+          "old": "parameter void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<?>, ===org.stringtemplate.v4.AttributeRenderer===, boolean)",
+          "new": "parameter <T> void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<T>, ===org.stringtemplate.v4.AttributeRenderer<? super T>===, boolean)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.generics.elementNowParameterized",
+          "old": "method void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<?>, org.stringtemplate.v4.AttributeRenderer, boolean)",
+          "new": "method <T> void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<T>, org.stringtemplate.v4.AttributeRenderer<? super T>, boolean)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.generics.formalTypeParameterAdded",
+          "old": "method void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<?>, org.stringtemplate.v4.AttributeRenderer, boolean)",
+          "new": "method <T> void org.stringtemplate.v4.STGroup::registerRenderer(java.lang.Class<T>, org.stringtemplate.v4.AttributeRenderer<? super T>, boolean)",
+          "typeParameter": "T",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        {
+          "code": "java.class.noLongerImplementsInterface",
+          "old": "class org.stringtemplate.v4.StringRenderer",
+          "new": "class org.stringtemplate.v4.StringRenderer",
+          "interface": "org.stringtemplate.v4.AttributeRenderer",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+        },
+        // --------------- https://github.com/antlr/stringtemplate4/pull/241 ---------------
+        {
+          "code": "java.class.superTypeTypeParametersChanged",
+          "old": "class org.stringtemplate.v4.NumberRenderer",
+          "new": "class org.stringtemplate.v4.NumberRenderer",
+          "oldSuperType": "org.stringtemplate.v4.AttributeRenderer",
+          "newSuperType": "org.stringtemplate.v4.AttributeRenderer<java.lang.Object>",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/241"
+        },
+        {
+          "code": "java.class.superTypeTypeParametersChanged",
+          "old": "class org.stringtemplate.v4.StringRenderer",
+          "new": "class org.stringtemplate.v4.StringRenderer",
+          "oldSuperType": "org.stringtemplate.v4.AttributeRenderer",
+          "newSuperType": "org.stringtemplate.v4.AttributeRenderer<java.lang.Object>",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/241"
+        },
+        // --------------- https://github.com/antlr/stringtemplate4/pull/235 ---------------
+        {
+          "code": "java.method.parameterTypeParameterChanged",
+          "old": "parameter java.lang.Object org.stringtemplate.v4.ModelAdaptor::getProperty(org.stringtemplate.v4.Interpreter, org.stringtemplate.v4.ST, ===java.lang.Object===, java.lang.Object, java.lang.String) throws org.stringtemplate.v4.misc.STNoSuchPropertyException",
+          "new": "parameter java.lang.Object org.stringtemplate.v4.ModelAdaptor<T>::getProperty(org.stringtemplate.v4.Interpreter, org.stringtemplate.v4.ST, ===T===, java.lang.Object, java.lang.String) throws org.stringtemplate.v4.misc.STNoSuchPropertyException",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.generics.elementNowParameterized",
+          "old": "interface org.stringtemplate.v4.ModelAdaptor",
+          "new": "interface org.stringtemplate.v4.ModelAdaptor<T extends java.lang.Object>",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.generics.formalTypeParameterAdded",
+          "old": "interface org.stringtemplate.v4.ModelAdaptor",
+          "new": "interface org.stringtemplate.v4.ModelAdaptor<T extends java.lang.Object>",
+          "typeParameter": "T",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.method.parameterTypeParameterChanged",
+          "old": "parameter org.stringtemplate.v4.ModelAdaptor org.stringtemplate.v4.STGroup::getModelAdaptor(===java.lang.Class<?>===)",
+          "new": "parameter <T> org.stringtemplate.v4.ModelAdaptor<? super T> org.stringtemplate.v4.STGroup::getModelAdaptor(===java.lang.Class<T>===)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.method.returnTypeTypeParametersChanged",
+          "old": "method org.stringtemplate.v4.ModelAdaptor org.stringtemplate.v4.STGroup::getModelAdaptor(java.lang.Class<?>)",
+          "new": "method <T> org.stringtemplate.v4.ModelAdaptor<? super T> org.stringtemplate.v4.STGroup::getModelAdaptor(java.lang.Class<T>)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.generics.elementNowParameterized",
+          "old": "method org.stringtemplate.v4.ModelAdaptor org.stringtemplate.v4.STGroup::getModelAdaptor(java.lang.Class<?>)",
+          "new": "method <T> org.stringtemplate.v4.ModelAdaptor<? super T> org.stringtemplate.v4.STGroup::getModelAdaptor(java.lang.Class<T>)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.generics.formalTypeParameterAdded",
+          "old": "method org.stringtemplate.v4.ModelAdaptor org.stringtemplate.v4.STGroup::getModelAdaptor(java.lang.Class<?>)",
+          "new": "method <T> org.stringtemplate.v4.ModelAdaptor<? super T> org.stringtemplate.v4.STGroup::getModelAdaptor(java.lang.Class<T>)",
+          "typeParameter": "T",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.method.parameterTypeParameterChanged",
+          "old": "parameter void org.stringtemplate.v4.STGroup::registerModelAdaptor(===java.lang.Class<?>===, org.stringtemplate.v4.ModelAdaptor)",
+          "new": "parameter <T> void org.stringtemplate.v4.STGroup::registerModelAdaptor(===java.lang.Class<T>===, org.stringtemplate.v4.ModelAdaptor<? super T>)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.method.parameterTypeParameterChanged",
+          "old": "parameter void org.stringtemplate.v4.STGroup::registerModelAdaptor(java.lang.Class<?>, ===org.stringtemplate.v4.ModelAdaptor===)",
+          "new": "parameter <T> void org.stringtemplate.v4.STGroup::registerModelAdaptor(java.lang.Class<T>, ===org.stringtemplate.v4.ModelAdaptor<? super T>===)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.generics.elementNowParameterized",
+          "old": "method void org.stringtemplate.v4.STGroup::registerModelAdaptor(java.lang.Class<?>, org.stringtemplate.v4.ModelAdaptor)",
+          "new": "method <T> void org.stringtemplate.v4.STGroup::registerModelAdaptor(java.lang.Class<T>, org.stringtemplate.v4.ModelAdaptor<? super T>)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.generics.formalTypeParameterAdded",
+          "old": "method void org.stringtemplate.v4.STGroup::registerModelAdaptor(java.lang.Class<?>, org.stringtemplate.v4.ModelAdaptor)",
+          "new": "method <T> void org.stringtemplate.v4.STGroup::registerModelAdaptor(java.lang.Class<T>, org.stringtemplate.v4.ModelAdaptor<? super T>)",
+          "typeParameter": "T",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.method.parameterTypeChanged",
+          "old": "parameter java.lang.Object org.stringtemplate.v4.misc.AggregateModelAdaptor::getProperty(org.stringtemplate.v4.Interpreter, org.stringtemplate.v4.ST, ===java.lang.Object===, java.lang.Object, java.lang.String) throws org.stringtemplate.v4.misc.STNoSuchPropertyException",
+          "new": "parameter java.lang.Object org.stringtemplate.v4.misc.AggregateModelAdaptor::getProperty(org.stringtemplate.v4.Interpreter, org.stringtemplate.v4.ST, ===org.stringtemplate.v4.misc.Aggregate===, java.lang.Object, java.lang.String) throws org.stringtemplate.v4.misc.STNoSuchPropertyException",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.class.noLongerInheritsFromClass",
+          "old": "class org.stringtemplate.v4.misc.AggregateModelAdaptor",
+          "new": "class org.stringtemplate.v4.misc.AggregateModelAdaptor",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.class.noLongerImplementsInterface",
+          "old": "class org.stringtemplate.v4.misc.AggregateModelAdaptor",
+          "new": "class org.stringtemplate.v4.misc.AggregateModelAdaptor",
+          "interface": "org.stringtemplate.v4.ModelAdaptor",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.method.parameterTypeChanged",
+          "old": "parameter java.lang.Object org.stringtemplate.v4.misc.MapModelAdaptor::getProperty(org.stringtemplate.v4.Interpreter, org.stringtemplate.v4.ST, ===java.lang.Object===, java.lang.Object, java.lang.String) throws org.stringtemplate.v4.misc.STNoSuchPropertyException",
+          "new": "parameter java.lang.Object org.stringtemplate.v4.misc.MapModelAdaptor::getProperty(org.stringtemplate.v4.Interpreter, org.stringtemplate.v4.ST, ===java.util.Map<?, ?>===, java.lang.Object, java.lang.String) throws org.stringtemplate.v4.misc.STNoSuchPropertyException",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.class.noLongerImplementsInterface",
+          "old": "class org.stringtemplate.v4.misc.MapModelAdaptor",
+          "new": "class org.stringtemplate.v4.misc.MapModelAdaptor",
+          "interface": "org.stringtemplate.v4.ModelAdaptor",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.class.superTypeTypeParametersChanged",
+          "old": "class org.stringtemplate.v4.misc.MapModelAdaptor",
+          "new": "class org.stringtemplate.v4.misc.MapModelAdaptor",
+          "oldSuperType": "org.stringtemplate.v4.ModelAdaptor",
+          "newSuperType": "org.stringtemplate.v4.ModelAdaptor<java.util.Map<?, ?>>",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.method.parameterTypeParameterChanged",
+          "old": "parameter java.lang.Object org.stringtemplate.v4.misc.ObjectModelAdaptor::getProperty(org.stringtemplate.v4.Interpreter, org.stringtemplate.v4.ST, ===java.lang.Object===, java.lang.Object, java.lang.String) throws org.stringtemplate.v4.misc.STNoSuchPropertyException",
+          "new": "parameter java.lang.Object org.stringtemplate.v4.misc.ObjectModelAdaptor<T>::getProperty(org.stringtemplate.v4.Interpreter, org.stringtemplate.v4.ST, ===T===, java.lang.Object, java.lang.String) throws org.stringtemplate.v4.misc.STNoSuchPropertyException",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.class.noLongerImplementsInterface",
+          "old": "class org.stringtemplate.v4.misc.ObjectModelAdaptor",
+          "new": "class org.stringtemplate.v4.misc.ObjectModelAdaptor<T extends java.lang.Object>",
+          "interface": "org.stringtemplate.v4.ModelAdaptor",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.generics.elementNowParameterized",
+          "old": "class org.stringtemplate.v4.misc.ObjectModelAdaptor",
+          "new": "class org.stringtemplate.v4.misc.ObjectModelAdaptor<T extends java.lang.Object>",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.generics.formalTypeParameterAdded",
+          "old": "class org.stringtemplate.v4.misc.ObjectModelAdaptor",
+          "new": "class org.stringtemplate.v4.misc.ObjectModelAdaptor<T extends java.lang.Object>",
+          "typeParameter": "T",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.class.superTypeTypeParametersChanged",
+          "old": "class org.stringtemplate.v4.misc.ObjectModelAdaptor",
+          "new": "class org.stringtemplate.v4.misc.ObjectModelAdaptor<T extends java.lang.Object>",
+          "oldSuperType": "org.stringtemplate.v4.ModelAdaptor",
+          "newSuperType": "org.stringtemplate.v4.ModelAdaptor<T extends java.lang.Object>",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.method.parameterTypeChanged",
+          "old": "parameter java.lang.Object org.stringtemplate.v4.misc.STModelAdaptor::getProperty(org.stringtemplate.v4.Interpreter, org.stringtemplate.v4.ST, ===java.lang.Object===, java.lang.Object, java.lang.String) throws org.stringtemplate.v4.misc.STNoSuchPropertyException",
+          "new": "parameter java.lang.Object org.stringtemplate.v4.misc.STModelAdaptor::getProperty(org.stringtemplate.v4.Interpreter, org.stringtemplate.v4.ST, ===org.stringtemplate.v4.ST===, java.lang.Object, java.lang.String) throws org.stringtemplate.v4.misc.STNoSuchPropertyException",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.class.noLongerImplementsInterface",
+          "old": "class org.stringtemplate.v4.misc.STModelAdaptor",
+          "new": "class org.stringtemplate.v4.misc.STModelAdaptor",
+          "interface": "org.stringtemplate.v4.ModelAdaptor",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        {
+          "code": "java.class.superTypeTypeParametersChanged",
+          "old": "class org.stringtemplate.v4.misc.STModelAdaptor",
+          "new": "class org.stringtemplate.v4.misc.STModelAdaptor",
+          "oldSuperType": "org.stringtemplate.v4.ModelAdaptor",
+          "newSuperType": "org.stringtemplate.v4.ModelAdaptor<org.stringtemplate.v4.ST>",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/235"
+        },
+        // --------------- https://github.com/antlr/stringtemplate4/pull/237 ---------------
+        {
+          "code": "java.method.parameterTypeParameterChanged",
+          "old": "parameter org.stringtemplate.v4.AttributeRenderer org.stringtemplate.v4.STGroup::getAttributeRenderer(===java.lang.Class<?>===)",
+          "new": "parameter <T> org.stringtemplate.v4.AttributeRenderer<? super T> org.stringtemplate.v4.STGroup::getAttributeRenderer(===java.lang.Class<T>===)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/237"
+        },
+        {
+          "code": "java.method.returnTypeTypeParametersChanged",
+          "old": "method org.stringtemplate.v4.AttributeRenderer org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<?>)",
+          "new": "method <T> org.stringtemplate.v4.AttributeRenderer<? super T> org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<T>)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/237"
+        },
+        {
+          "code": "java.generics.elementNowParameterized",
+          "old": "method org.stringtemplate.v4.AttributeRenderer org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<?>)",
+          "new": "method <T> org.stringtemplate.v4.AttributeRenderer<? super T> org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<T>)",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/237"
+        },
+        {
+          "code": "java.generics.formalTypeParameterAdded",
+          "old": "method org.stringtemplate.v4.AttributeRenderer org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<?>)",
+          "new": "method <T> org.stringtemplate.v4.AttributeRenderer<? super T> org.stringtemplate.v4.STGroup::getAttributeRenderer(java.lang.Class<T>)",
+          "typeParameter": "T",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/237"
+        }
+      ]
+    }
+  }
+}
