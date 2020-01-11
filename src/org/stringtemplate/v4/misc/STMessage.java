@@ -82,7 +82,7 @@ public class STMessage {
     public String toString() {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        String msg = String.format(error.message, arg, arg2, arg3);
+        String msg = String.format(error.getMessage(), arg, arg2, arg3);
         pw.print(msg);
         if ( cause!=null ) {
             pw.print("\nCaused by: ");

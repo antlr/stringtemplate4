@@ -61,8 +61,8 @@ public class STLexerMessage extends STMessage {
         }
         String filepos = line+":"+charPos;
         if ( srcName!=null ) {
-            return srcName+" "+filepos+": "+String.format(error.message, msg);
+            return srcName+" "+filepos+": "+String.format(error.getMessage(), msg);
         }
-        return filepos+": "+String.format(error.message, msg);
+        return filepos+": "+String.format(error.getMessage(), msg);
     }
 }

@@ -68,8 +68,8 @@ public class STGroupCompiletimeMessage extends STMessage {
         }
         String filepos = line+":"+charPos;
         if ( srcName!=null ) {
-            return srcName+" "+filepos+": "+String.format(error.message, arg, arg2);
+            return srcName+" "+filepos+": "+String.format(error.getMessage(), arg, arg2);
         }
-        return filepos+": "+String.format(error.message, arg, arg2);
+        return filepos+": "+String.format(error.getMessage(), arg, arg2);
     }
 }

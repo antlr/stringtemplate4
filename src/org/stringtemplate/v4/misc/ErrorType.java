@@ -67,7 +67,15 @@ public enum ErrorType {
     WRITE_IO_ERROR("error writing output caused by"),
     CANT_LOAD_GROUP_FILE("can't load group file %s");
 
+    /**
+     * @deprecated since 4.3; use {@link #getMessage()} instead
+     */
+    @Deprecated
     public String message;
 
     ErrorType(String m) { message = m; }
+
+    public String getMessage() {
+        return message;
+    }
 }
