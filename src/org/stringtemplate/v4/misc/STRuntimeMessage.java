@@ -32,13 +32,20 @@ import org.stringtemplate.v4.Interpreter;
 
 /** Used to track errors that occur in the ST interpreter. */
 public class STRuntimeMessage extends STMessage {
-    /** Which interpreter was executing?  If {@code null}, can be IO error or
-     *  bad URL etc...
-     */
     final Interpreter interp;
-    /** Where error occurred in bytecode memory. */
+
+    /**
+     * @deprecated since 4.3; use  instead
+     */
+    @Deprecated
     public final int ip;
+
+    /**
+     * @deprecated since 4.3; use  instead
+     */
+    @Deprecated
     public final InstanceScope scope;
+
     //List<ST> enclosingStack;
 
     public STRuntimeMessage(Interpreter interp, ErrorType error, int ip) {
@@ -74,6 +81,22 @@ public class STRuntimeMessage extends STMessage {
         int i = I.getStart();
         Coordinate loc = Misc.getLineCharPosition(getST().impl.template, i);
         return loc.toString();
+    }
+
+    /** Which interpreter was executing?  If {@code null}, can be IO error or
+     *  bad URL etc...
+     */
+    public Interpreter getInterpreter() {
+        return interp;
+    }
+
+    /** Where error occurred in bytecode memory. */
+    public int getInstructionPointer() {
+        return ip;
+    }
+
+    public InstanceScope getScope() {
+        return scope;
     }
 
     @Override
