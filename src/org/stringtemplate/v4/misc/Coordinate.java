@@ -31,9 +31,28 @@ package org.stringtemplate.v4.misc;
  *  mapping stuff to map address to range within a template.
  */
 public class Coordinate {
+    /**
+     * @deprecated since 4.3; use {@link #getLine()} instead
+     */
+    @Deprecated
     public int line;
+
+    /**
+     * @deprecated since 4.3; use {@link #getCharPosition()} instead
+     */
+    @Deprecated
     public int charPosition;
+
     public Coordinate(int a, int b) { this.line=a; this.charPosition=b; }
+
+    public int getLine() {
+        return line;
+    }
+
+    public int getCharPosition() {
+        return charPosition;
+    }
+
     @Override
     public String toString() { return line+":"+charPosition; }        
 }
