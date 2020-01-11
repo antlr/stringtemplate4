@@ -60,14 +60,6 @@ public class ErrorManager {
                 System.err.println(msg);
                 // throw new Error("internal error", msg.cause);
             }
-
-            public void error(String s) { error(s, null); }
-            public void error(String s, Throwable e) {
-                System.err.println(s);
-                if ( e!=null ) {
-                    e.printStackTrace(System.err);
-                }
-            }
         };
 
     /**
