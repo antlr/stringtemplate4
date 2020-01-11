@@ -40,7 +40,7 @@ public class STLexerMessage extends STMessage {
     public String srcName;
 
     public STLexerMessage(String srcName, String msg, Token templateToken, Throwable cause) {
-        super(ErrorType.LEXER_ERROR, null, cause, null);
+        super(ErrorType.LEXER_ERROR, null, cause);
         this.msg = msg;
         this.templateToken = templateToken;
         this.srcName = srcName;
