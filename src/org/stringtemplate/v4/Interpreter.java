@@ -88,16 +88,19 @@ public class Interpreter {
     ErrorManager errMgr;
 
     /**
-     * Dump bytecode instructions as they are executed. This field is mostly for
-     * StringTemplate development.
+     * @deprecated since 4.3; use {@link #isTrace()} or {@link #setTrace(boolean)} instead
      */
+    @Deprecated
     public static boolean trace = false;
 
     /** If {@link #trace} is {@code true}, track trace here. */
     // TODO: track the pieces not a string and track what it contributes to output
     protected List<String> executeTrace;
 
-    /** When {@code true}, track events inside templates and in {@link #events}. */
+    /**
+     * @deprecated since 4.3; use {@link #isDebug()} instead
+     */
+    @Deprecated
     public boolean debug = false;
 
     /**
@@ -128,6 +131,23 @@ public class Interpreter {
             events = new ArrayList<InterpEvent>();
             executeTrace = new ArrayList<String>();
         }
+    }
+
+    /** When {@code true}, track events inside templates and in {@link #events}. */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * Dump bytecode instructions as they are executed. This field is mostly for
+     * StringTemplate development.
+     */
+    public static boolean isTrace() {
+        return trace;
+    }
+
+    public static void setTrace(boolean trace) {
+        Interpreter.trace = trace;
     }
 
 //  public static int[] count = new int[Bytecode.MAX_BYTECODE+1];
