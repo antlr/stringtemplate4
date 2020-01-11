@@ -38,24 +38,10 @@
           "justification": "https://github.com/antlr/stringtemplate4/pull/233"
         },
         {
-          "code": "java.method.parameterTypeChanged",
-          "old": "parameter java.lang.String org.stringtemplate.v4.NumberRenderer::toString(===java.lang.Object===, java.lang.String, java.util.Locale)",
-          "new": "parameter java.lang.String org.stringtemplate.v4.NumberRenderer::toString(===java.lang.Number===, java.lang.String, java.util.Locale)",
-          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
-        },
-        {
           "code": "java.class.noLongerImplementsInterface",
           "old": "class org.stringtemplate.v4.NumberRenderer",
           "new": "class org.stringtemplate.v4.NumberRenderer",
           "interface": "org.stringtemplate.v4.AttributeRenderer",
-          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
-        },
-        {
-          "code": "java.class.superTypeTypeParametersChanged",
-          "old": "class org.stringtemplate.v4.NumberRenderer",
-          "new": "class org.stringtemplate.v4.NumberRenderer",
-          "oldSuperType": "org.stringtemplate.v4.AttributeRenderer",
-          "newSuperType": "org.stringtemplate.v4.AttributeRenderer<java.lang.Number>",
           "justification": "https://github.com/antlr/stringtemplate4/pull/233"
         },
         {
@@ -109,25 +95,28 @@
           "justification": "https://github.com/antlr/stringtemplate4/pull/233"
         },
         {
-          "code": "java.method.parameterTypeChanged",
-          "old": "parameter java.lang.String org.stringtemplate.v4.StringRenderer::toString(===java.lang.Object===, java.lang.String, java.util.Locale)",
-          "new": "parameter java.lang.String org.stringtemplate.v4.StringRenderer::toString(===java.lang.String===, java.lang.String, java.util.Locale)",
-          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
-        },
-        {
           "code": "java.class.noLongerImplementsInterface",
           "old": "class org.stringtemplate.v4.StringRenderer",
           "new": "class org.stringtemplate.v4.StringRenderer",
           "interface": "org.stringtemplate.v4.AttributeRenderer",
           "justification": "https://github.com/antlr/stringtemplate4/pull/233"
         },
+        // --------------- https://github.com/antlr/stringtemplate4/pull/241 ---------------
+        {
+          "code": "java.class.superTypeTypeParametersChanged",
+          "old": "class org.stringtemplate.v4.NumberRenderer",
+          "new": "class org.stringtemplate.v4.NumberRenderer",
+          "oldSuperType": "org.stringtemplate.v4.AttributeRenderer",
+          "newSuperType": "org.stringtemplate.v4.AttributeRenderer<java.lang.Object>",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/241"
+        },
         {
           "code": "java.class.superTypeTypeParametersChanged",
           "old": "class org.stringtemplate.v4.StringRenderer",
           "new": "class org.stringtemplate.v4.StringRenderer",
           "oldSuperType": "org.stringtemplate.v4.AttributeRenderer",
-          "newSuperType": "org.stringtemplate.v4.AttributeRenderer<java.lang.String>",
-          "justification": "https://github.com/antlr/stringtemplate4/pull/233"
+          "newSuperType": "org.stringtemplate.v4.AttributeRenderer<java.lang.Object>",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/241"
         },
         // --------------- https://github.com/antlr/stringtemplate4/pull/235 ---------------
         {
