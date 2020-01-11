@@ -37,7 +37,16 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 public class JTreeSTModel implements TreeModel {
+    /**
+     * @deprecated since 4.3; for internal use only
+     */
+    @Deprecated
     public Interpreter interp;
+
+    /**
+     * @deprecated since 4.3; for internal use only
+     */
+    @Deprecated
     public Wrapper root;
 
     public static class Wrapper {
