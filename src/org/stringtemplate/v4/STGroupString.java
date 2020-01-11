@@ -37,8 +37,18 @@ import org.stringtemplate.v4.misc.ErrorType;
 
 /** A group derived from a string not a file or directory. */
 public class STGroupString extends STGroup {
+    /**
+     * @deprecated since 4.3; use {@link #getSourceName()} instead
+     */
+    @Deprecated
     public String sourceName;
+
+    /**
+     * @deprecated since 4.3; use {@link #getText()} instead
+     */
+    @Deprecated
     public String text;
+
     protected boolean alreadyLoaded = false;
 
     public STGroupString(String text) { this("<string>", text, '<', '>'); }
@@ -49,6 +59,14 @@ public class STGroupString extends STGroup {
         super(delimiterStartChar, delimiterStopChar);
         this.sourceName = sourceName;
         this.text = text;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public String getText() {
+        return text;
     }
 
     @Override
