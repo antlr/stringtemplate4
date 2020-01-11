@@ -250,7 +250,7 @@ public class STViz {
                             currentScope = ((STRuntimeMessage) msg).scope;
                             updateCurrentST(viewFrame);
                             if ( I!=null ) { // highlight template
-                                highlight(viewFrame.template, I.a, I.b);
+                                highlight(viewFrame.template, I.getStart(), I.getEnd());
                             }
                         }
                     }
@@ -355,7 +355,7 @@ public class STViz {
                 Interval r = currentScope.getST().impl.getTemplateRange();
                 //System.out.println("currentScope.st src range="+r);
                 //m.template.moveCaretPosition(r.a);
-                highlight(m.template, r.a, r.b);
+                highlight(m.template, r.getStart(), r.getEnd());
             }
         }
     }

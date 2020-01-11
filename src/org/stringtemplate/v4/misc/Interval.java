@@ -31,9 +31,29 @@ package org.stringtemplate.v4.misc;
  *  template patterns (for debugging).
  */
 public class Interval {
+
+    /**
+     * @deprecated since 4.3; use {@link #getStart()} instead
+     */
+    @Deprecated
     public int a;
+
+    /**
+     * @deprecated since 4.3; use {@link #getEnd()} instead
+     */
+    @Deprecated
     public int b;
+
     public Interval(int a, int b) { this.a=a; this.b=b; }
+
+    public int getStart() {
+        return a;
+    }
+
+    public int getEnd() {
+        return b;
+    }
+
     @Override
     public String toString() { return a+".."+b; }    
 }

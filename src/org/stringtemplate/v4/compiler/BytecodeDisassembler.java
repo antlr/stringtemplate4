@@ -163,7 +163,7 @@ public class BytecodeDisassembler {
         int addr = 0;
         for (Interval I : code.sourceMap) {
             if ( I!=null ) {
-                String chunk = code.template.substring(I.a,I.b+1);
+                String chunk = code.template.substring(I.getStart(), I.getEnd() + 1);
                 buf.append( String.format("%04d: %s\t\"%s\"\n", addr, I, chunk) );
             }
             addr++;

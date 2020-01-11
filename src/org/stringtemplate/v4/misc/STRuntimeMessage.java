@@ -71,7 +71,7 @@ public class STRuntimeMessage extends STMessage {
         Interval I = self.impl.sourceMap[ip];
         if ( I==null ) return null;
         // get left edge and get line/col
-        int i = I.a;
+        int i = I.getStart();
         Coordinate loc = Misc.getLineCharPosition(self.impl.template, i);
         return loc.toString();
     }

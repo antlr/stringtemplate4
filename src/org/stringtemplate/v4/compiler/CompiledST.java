@@ -222,7 +222,7 @@ public class CompiledST implements Cloneable {
 
     public String getTemplateSource() {
         Interval r = getTemplateRange();
-        return template.substring(r.a, r.b+1);
+        return template.substring(r.getStart(), r.getEnd() + 1);
     }
 
     public Interval getTemplateRange() {
@@ -234,8 +234,8 @@ public class CompiledST implements Cloneable {
                     continue;
                 }
 
-                start = Math.min(start, interval.a);
-                stop = Math.max(stop, interval.b);
+                start = Math.min(start, interval.getStart());
+                stop = Math.max(stop, interval.getEnd());
             }
 
             if (start <= stop + 1) {

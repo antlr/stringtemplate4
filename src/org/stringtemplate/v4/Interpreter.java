@@ -817,13 +817,13 @@ public class Interpreter {
 
     protected int getExprStartChar(InstanceScope scope) {
         Interval templateLocation = scope.getST().impl.sourceMap[scope.getInstructionPointer()];
-        if ( templateLocation!=null ) return templateLocation.a;
+        if ( templateLocation!=null ) return templateLocation.getStart();
         return -1;
     }
 
     protected int getExprStopChar(InstanceScope scope) {
         Interval templateLocation = scope.getST().impl.sourceMap[scope.getInstructionPointer()];
-        if ( templateLocation!=null ) return templateLocation.b;
+        if ( templateLocation!=null ) return templateLocation.getEnd();
         return -1;
     }
 
