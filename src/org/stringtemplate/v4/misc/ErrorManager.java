@@ -70,11 +70,19 @@ public class ErrorManager {
             }
         };
 
+    /**
+     * @deprecated since 4.3; use {@link #getListener()} instead
+     */
+    @Deprecated
     public final STErrorListener listener;
 
     public ErrorManager() { this(DEFAULT_ERROR_LISTENER); }
     public ErrorManager(STErrorListener listener) {
         this.listener = listener;
+    }
+
+    public STErrorListener getListener() {
+        return listener;
     }
 
     public void compileTimeError(ErrorType error, Token templateToken, Token t) {

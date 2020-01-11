@@ -870,7 +870,7 @@ public class STGroup {
     }
 
     public STErrorListener getListener() {
-        return errMgr.listener;
+        return errMgr.getListener();
     }
 
     public void setListener(STErrorListener listener) {
