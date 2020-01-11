@@ -92,10 +92,6 @@ public class STMessage {
         this(error,self,cause);
         this.arg = arg;
     }
-    public STMessage(ErrorType error, ST self, Throwable cause, Token where, Object arg) {
-        this(error,self,cause,where);
-        this.arg = arg;
-    }
     public STMessage(ErrorType error, ST self, Throwable cause, Object arg, Object arg2) {
         this(error,self,cause,arg);
         this.arg2 = arg2;
@@ -103,6 +99,19 @@ public class STMessage {
     public STMessage(ErrorType error, ST self, Throwable cause, Object arg, Object arg2, Object arg3) {
         this(error,self,cause,arg,arg2);
         this.arg3 = arg3;
+    }
+
+    /**
+     * @deprecated since 4.3; use {@link #STMessage(ErrorType, ST, Throwable, Object)} instead
+     * (parameter 'where' is ignored)
+     */
+    @Deprecated
+    public STMessage(ErrorType error, ST self, Throwable cause, Token where, Object arg) {
+        // previous implementation was:
+        // this(error,self,cause,where); // sets this.arg = where
+        // this.arg = arg;               // overrides previous assignment
+        // this effectively ignored the 'where' parameter completely.
+        this(error, self, cause, arg);
     }
 
     /**
