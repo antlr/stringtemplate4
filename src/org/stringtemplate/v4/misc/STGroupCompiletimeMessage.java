@@ -33,8 +33,16 @@ import org.antlr.runtime.Token;
 
 /** */
 public class STGroupCompiletimeMessage extends STMessage {
-    /** token inside group file */
+    /**
+     * @deprecated since 4.3; use {@link #getToken()} instead
+     */
+    @Deprecated
     public Token token;
+
+    /**
+     * @deprecated since 4.3; use {@link #getSourceName()} instead
+     */
+    @Deprecated
     public String srcName;
 
     public STGroupCompiletimeMessage(ErrorType error, String srcName, Token t, Throwable cause) {
@@ -51,6 +59,15 @@ public class STGroupCompiletimeMessage extends STMessage {
         super(error, null, cause, arg, arg2);
         this.token = t;
         this.srcName = srcName;
+    }
+
+    /** token inside group file */
+    public Token getToken() {
+        return token;
+    }
+
+    public String getSourceName() {
+        return srcName;
     }
 
     @Override
