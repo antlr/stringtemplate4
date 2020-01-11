@@ -53,8 +53,22 @@ public class STMessage {
     @Deprecated
     public ErrorType error;
 
+    /**
+     * @deprecated since 4.3; use {@link #getArgs()} instead
+     */
+    @Deprecated
     public Object arg;
+
+    /**
+     * @deprecated since 4.3; use {@link #getArgs()} instead
+     */
+    @Deprecated
     public Object arg2;
+
+    /**
+     * @deprecated since 4.3; use {@link #getArgs()} instead
+     */
+    @Deprecated
     public Object arg3;
 
     /**
@@ -102,6 +116,19 @@ public class STMessage {
         return error;
     }
 
+    public Object[] getArgs() {
+        if (this.arg == null) {
+            return new Object[0];
+        }
+        if (this.arg2 == null) {
+            return new Object[] { this.arg };
+        }
+        if (this.arg3 == null) {
+            return new Object[] { this.arg, this.arg2 };
+        }
+        return new Object[] { this.arg, this.arg2, this.arg3 };
+    }
+
     public Throwable getCause() {
         return cause;
     }
@@ -110,7 +137,7 @@ public class STMessage {
     public String toString() {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        String msg = String.format(error.getMessage(), arg, arg2, arg3);
+        String msg = String.format(error.getMessage(), this.getArgs());
         pw.print(msg);
         if ( cause!=null ) {
             pw.print("\nCaused by: ");
