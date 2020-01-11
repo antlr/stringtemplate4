@@ -38,6 +38,33 @@ to the `<dependencies>` element in your **pom.xml** file.
 </dependency>
 ```
 
+### Gradle
+
+In `build.gradle`, add the following dependency:
+
+```groovy
+dependecies {
+    // ...
+
+    // https://mvnrepository.com/artifact/org.antlr/ST4
+    compile group: 'org.antlr', name: 'ST4', version: '4.2'
+}
+```
+
+Make sure you are using the `mavenCentral` repository by adding it if necessary:
+
+```groovy
+repositories {
+    // ...
+    mavenCentral()
+}
+```
+
+### Other
+
+Select a version on [mvnrepository](https://mvnrepository.com/artifact/org.antlr/ST4),
+and copy the snippet relevant to your build tool.
+
 ## BUILDING FROM SOURCE
 
 The source is at github.com:
