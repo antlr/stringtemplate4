@@ -32,7 +32,7 @@ import org.stringtemplate.v4.Interpreter;
 
 /** Used to track errors that occur in the ST interpreter. */
 public class STRuntimeMessage extends STMessage {
-    final Interpreter interp;
+    private final Interpreter interp;
 
     /**
      * @deprecated since 4.3; use  instead
