@@ -33,12 +33,29 @@ import org.stringtemplate.v4.compiler.STException;
 
 /** {@code <name>} where {@code name} is not found up the dynamic scoping chain. */
 public class STNoSuchAttributeException extends STException {
+    /**
+     * @deprecated since 4.3; use {@link #getScope()} instead
+     */
+    @Deprecated
     public InstanceScope scope;
+
+    /**
+     * @deprecated since 4.3; use {@link #getAttributeName()} instead
+     */
+    @Deprecated
     public String name;
 
     public STNoSuchAttributeException(String name, InstanceScope scope) {
         this.name = name;
         this.scope = scope;
+    }
+
+    public InstanceScope getScope() {
+        return scope;
+    }
+
+    public String getAttributeName() {
+        return name;
     }
 
     @Override
