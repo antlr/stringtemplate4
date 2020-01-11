@@ -48,7 +48,16 @@ import java.net.URL;
  *  subtree (except via imports).
  */
 public class STGroupDir extends STGroup {
+    /**
+     * @deprecated since 4.3; use {@link #getName()} instead
+     */
+    @Deprecated
     public String groupDirName;
+
+    /**
+     * @deprecated since 4.3; use {@link #getRootDirURL()} instead
+     */
+    @Deprecated
     public URL root;
 
     public STGroupDir(String dirName) { this(dirName, '<', '>'); }
