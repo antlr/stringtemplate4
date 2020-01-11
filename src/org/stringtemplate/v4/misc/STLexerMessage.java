@@ -34,9 +34,22 @@ import org.stringtemplate.v4.compiler.GroupParser;
 
 /** */
 public class STLexerMessage extends STMessage {
+    /**
+     * @deprecated since 4.3; use {@link #getMessage()} instead
+     */
+    @Deprecated
     public String msg;
-    /** overall token pulled from group file */
+
+    /**
+     * @deprecated since 4.3; use {@link #getTemplateToken()} instead
+     */
+    @Deprecated
     public Token templateToken;
+
+    /**
+     * @deprecated since 4.3; use {@link #getSourceName()} instead
+     */
+    @Deprecated
     public String srcName;
 
     public STLexerMessage(String srcName, String msg, Token templateToken, Throwable cause) {
@@ -44,6 +57,19 @@ public class STLexerMessage extends STMessage {
         this.msg = msg;
         this.templateToken = templateToken;
         this.srcName = srcName;
+    }
+
+    public String getMessage() {
+        return msg;
+    }
+
+    /** overall token pulled from group file */
+    public Token getTemplateToken() {
+        return templateToken;
+    }
+
+    public String getSourceName() {
+        return srcName;
     }
 
     @Override
