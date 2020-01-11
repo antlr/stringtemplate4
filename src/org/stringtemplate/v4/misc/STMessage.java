@@ -101,6 +101,30 @@ public class STMessage {
         this.arg3 = arg3;
     }
 
+    // Preferred constructor, when removing the above three overloads, this will be selected at recompilation.
+    // But removing them is still a binary breaking change.
+    // They are also not deprecated because that would introduce an annoying warning
+    // that could not be fixed without using 'new Object[] { ... }'.
+    public STMessage(ErrorType error, ST self, Throwable cause, Object... args) {
+        this(error, self, cause);
+        switch (args.length) {
+        case 3:
+            this.arg3 = args[2];
+            // fallthrough
+        case 2:
+            this.arg2 = args[1];
+            // fallthrough
+        case 1:
+            this.arg = args[0];
+            break;
+        case 0:
+            // also ok
+            break;
+        default: // > 3
+            throw new IllegalArgumentException("more than 3 args are not supported by STMessage");
+        }
+    }
+
     /**
      * @deprecated since 4.3; use {@link #STMessage(ErrorType, ST, Throwable, Object)} instead
      * (parameter 'where' is ignored)
