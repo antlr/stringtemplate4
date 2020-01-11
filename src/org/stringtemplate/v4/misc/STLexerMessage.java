@@ -48,7 +48,7 @@ public class STLexerMessage extends STMessage {
 
     @Override
     public String toString() {
-        RecognitionException re = (RecognitionException)cause;
+        RecognitionException re = (RecognitionException) getCause();
         int line = re.line;
         int charPos = re.charPositionInLine;
         if ( templateToken!=null ) {
@@ -61,8 +61,8 @@ public class STLexerMessage extends STMessage {
         }
         String filepos = line+":"+charPos;
         if ( srcName!=null ) {
-            return srcName+" "+filepos+": "+String.format(error.getMessage(), msg);
+            return srcName+" "+filepos+": "+String.format(getError().getMessage(), msg);
         }
-        return filepos+": "+String.format(error.getMessage(), msg);
+        return filepos+": "+String.format(getError().getMessage(), msg);
     }
 }

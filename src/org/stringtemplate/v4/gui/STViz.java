@@ -245,7 +245,7 @@ public class STViz {
                         STMessage msg = (STMessage)model.getElementAt(i);
                         if ( msg instanceof STRuntimeMessage ) {
                             STRuntimeMessage rmsg = (STRuntimeMessage)msg;
-                            Interval I = rmsg.self.impl.sourceMap[rmsg.ip];
+                            Interval I = rmsg.getST().impl.sourceMap[rmsg.ip];
                             currentEvent = null;
                             currentScope = ((STRuntimeMessage) msg).scope;
                             updateCurrentST(viewFrame);

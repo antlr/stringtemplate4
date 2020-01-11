@@ -55,7 +55,7 @@ public class STGroupCompiletimeMessage extends STMessage {
 
     @Override
     public String toString() {
-        RecognitionException re = (RecognitionException)cause;
+        RecognitionException re = (RecognitionException) getCause();
         int line = 0;
         int charPos = -1;
         if ( token!=null ) {
@@ -68,8 +68,8 @@ public class STGroupCompiletimeMessage extends STMessage {
         }
         String filepos = line+":"+charPos;
         if ( srcName!=null ) {
-            return srcName+" "+filepos+": "+String.format(error.getMessage(), arg, arg2);
+            return srcName+" "+filepos+": "+String.format(getError().getMessage(), arg, arg2);
         }
-        return filepos+": "+String.format(error.getMessage(), arg, arg2);
+        return filepos+": "+String.format(getError().getMessage(), arg, arg2);
     }
 }

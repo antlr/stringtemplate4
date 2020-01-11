@@ -45,7 +45,7 @@ public class ErrorManager {
 
             @Override
             public void runTimeError(STMessage msg) {
-                if ( msg.error != ErrorType.NO_SUCH_PROPERTY ) { // ignore these
+                if (msg.getError() != ErrorType.NO_SUCH_PROPERTY ) { // ignore these
                     System.err.println(msg);
                 }
             }

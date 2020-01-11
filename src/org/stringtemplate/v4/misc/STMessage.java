@@ -40,14 +40,27 @@ import java.io.StringWriter;
  *  @see STCompiletimeMessage
  */
 public class STMessage {
-    /** if in debug mode, has created instance, add attr events and eval
-     *  template events.
+
+    /**
+     * @deprecated since 4.3; use {@link #getST()} instead
      */
+    @Deprecated
     public ST self;
+
+    /**
+     * @deprecated since 4.3; use {@link #getError()} instead
+     */
+    @Deprecated
     public ErrorType error;
+
     public Object arg;
     public Object arg2;
     public Object arg3;
+
+    /**
+     * @deprecated since 4.3; use {@link #getCause()} instead
+     */
+    @Deprecated
     public Throwable cause;
 
     public STMessage(ErrorType error) {
@@ -76,6 +89,21 @@ public class STMessage {
     public STMessage(ErrorType error, ST self, Throwable cause, Object arg, Object arg2, Object arg3) {
         this(error,self,cause,arg,arg2);
         this.arg3 = arg3;
+    }
+
+    /**
+     * if in debug mode, has created instance, add attr events and eval template events.
+     */
+    public ST getST() {
+        return self;
+    }
+
+    public ErrorType getError() {
+        return error;
+    }
+
+    public Throwable getCause() {
+        return cause;
     }
 
     @Override

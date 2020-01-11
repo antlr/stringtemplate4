@@ -74,7 +74,7 @@ public class TestModelAdaptors extends BaseTest {
         assertEquals(expecting, result);
 
         STRuntimeMessage msg = (STRuntimeMessage) errors.getErrors().get(0);
-        STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
+        STNoSuchPropertyException e = (STNoSuchPropertyException)msg.getCause();
         assertEquals("User.qqq", e.getPropertyName());
     }
 
