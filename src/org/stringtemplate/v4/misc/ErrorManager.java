@@ -36,7 +36,7 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STErrorListener;
 
 public class ErrorManager {
-    public static STErrorListener DEFAULT_ERROR_LISTENER =
+    private static final STErrorListener STDERR_LISTENER =
         new STErrorListener() {
             @Override
             public void compileTimeError(STMessage msg) {
@@ -63,14 +63,29 @@ public class ErrorManager {
         };
 
     /**
+     * @deprecated since 4.3; use {@link #getDefaultErrorListener()} or
+     * {@link #setDefaultErrorListener(STErrorListener)} instead
+     */
+    @Deprecated
+    public static STErrorListener DEFAULT_ERROR_LISTENER = STDERR_LISTENER;
+
+    /**
      * @deprecated since 4.3; use {@link #getListener()} instead
      */
     @Deprecated
     public final STErrorListener listener;
 
-    public ErrorManager() { this(DEFAULT_ERROR_LISTENER); }
+    public ErrorManager() { this(getDefaultErrorListener()); }
     public ErrorManager(STErrorListener listener) {
         this.listener = listener;
+    }
+
+    public static STErrorListener getDefaultErrorListener() {
+        return DEFAULT_ERROR_LISTENER;
+    }
+
+    public static void setDefaultErrorListener(STErrorListener defaultErrorListener) {
+        DEFAULT_ERROR_LISTENER = defaultErrorListener;
     }
 
     public STErrorListener getListener() {

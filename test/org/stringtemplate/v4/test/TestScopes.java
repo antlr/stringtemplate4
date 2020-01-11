@@ -74,7 +74,7 @@ public class TestScopes extends BaseTest {
 
         String expected = "xx";
         assertEquals(expected, result);
-        group.setListener(ErrorManager.DEFAULT_ERROR_LISTENER);
+        group.setListener(ErrorManager.getDefaultErrorListener());
     }
 
     @Test public void testIndexAttrVisibleLocallyOnly() throws Exception {
@@ -95,7 +95,7 @@ public class TestScopes extends BaseTest {
 
         String expected = ":Ter";
         assertEquals(expected, result);
-        group.setListener(ErrorManager.DEFAULT_ERROR_LISTENER);
+        group.setListener(ErrorManager.getDefaultErrorListener());
     }
 
 }
