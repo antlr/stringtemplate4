@@ -42,7 +42,7 @@ public class EvalExprEvent extends InterpEvent {
         this.exprStartChar = exprStartChar;
         this.exprStopChar = exprStopChar;
         if ( exprStartChar >=0 && exprStopChar >=0 ) {
-            expr = scope.st.impl.getTemplate().substring(exprStartChar, exprStopChar + 1);
+            expr = scope.st.getImpl().getTemplate().substring(exprStartChar, exprStopChar+1);
         }
         else {
             expr = "";

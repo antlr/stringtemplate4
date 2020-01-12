@@ -88,7 +88,7 @@ public class TestScopes extends BaseTest {
         ST st = group.getInstanceOf("t");
         st.add("names", "Ter");
         String result = st.render();
-        group.getInstanceOf("u").impl.dump();
+        group.getInstanceOf("u").getImpl().dump();
 
         String expectedError = "t.stg 2:11: implicitly-defined attribute i not visible"+newline;
         assertEquals(expectedError, errors.toString());

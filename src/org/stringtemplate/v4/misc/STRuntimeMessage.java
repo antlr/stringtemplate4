@@ -67,12 +67,12 @@ public class STRuntimeMessage extends STMessage {
      *  return it's template line:col.
      */
     public String getSourceLocation() {
-        if ( ip<0 || self==null || self.impl==null ) return null;
-        Interval I = self.impl.getSourceMap()[ip];
+        if ( ip<0 || self==null || self.getImpl()==null ) return null;
+        Interval I = self.getImpl().getSourceMap()[ip];
         if ( I==null ) return null;
         // get left edge and get line/col
         int i = I.a;
-        Coordinate loc = Misc.getLineCharPosition(self.impl.getTemplate(), i);
+        Coordinate loc = Misc.getLineCharPosition(self.getImpl().getTemplate(), i);
         return loc.toString();
     }
 

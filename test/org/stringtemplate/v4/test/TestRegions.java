@@ -407,7 +407,7 @@ public class TestRegions extends BaseTest {
         writeFile(dir, "group.stg", groupFile);
         STGroup group = new STGroupFile(dir+"/group.stg");
         ST st = group.getInstanceOf("a");
-        st.impl.dump();
+        st.getImpl().dump();
         String expected = "["+newline+"  bar"+newline+"]";
         String result = st.render();
         assertEquals(expected, result);

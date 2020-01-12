@@ -673,12 +673,12 @@ public class TestGroups extends BaseTest {
         assertEquals("foobar", sta.render());
 
         // Are the correct "ThatCreatedThisInstance" groups assigned
-        assertEquals("group1",sta.groupThatCreatedThisInstance.getName());
-        assertEquals("group1",stb.groupThatCreatedThisInstance.getName());
+        assertEquals("group1", sta.getCreatorGroup().getName());
+        assertEquals("group1", stb.getCreatorGroup().getName());
 
         // Are the correct (native) groups assigned for the templates
-        assertEquals("group1", sta.impl.getNativeGroup().getName());
-        assertEquals("group2", stb.impl.getNativeGroup().getName());
+        assertEquals("group1", sta.getImpl().getNativeGroup().getName());
+        assertEquals("group2", stb.getImpl().getNativeGroup().getName());
     }
 
     @Test

@@ -39,20 +39,9 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.MultiMap;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /** An instance of the StringTemplate. It consists primarily of
  *  a {@linkplain ST#impl reference} to its implementation (shared among all
@@ -97,7 +86,10 @@ public class ST {
      */
     public static final String IMPLICIT_ARG_NAME = "it";
 
-    /** The implementation for this template among all instances of same template . */
+    /**
+     * @deprecated since 4.3; use {@link #getImpl()} or {@link #setImpl(CompiledST)} instead
+     */
+    @Deprecated
     public CompiledST impl;
 
     /** Safe to simultaneously write via {@link #add}, which is synchronized.
@@ -107,33 +99,16 @@ public class ST {
      */
     protected Object[] locals;
 
-    /** Created as instance of which group? We need this to initialize interpreter
-     *  via render.  So, we create st and then it needs to know which
-     *  group created it for sake of polymorphism:
-     *
-     *  <pre>
-     *  st = skin1.getInstanceOf("searchbox");
-     *  result = st.render(); // knows skin1 created it
-     *  </pre>
-     *
-     *  Say we have a group {@code g1} with template {@code t} that imports
-     *  templates {@code t} and {@code u} from another group {@code g2}.
-     *  {@code g1.getInstanceOf("u")} finds {@code u} in {@code g2} but remembers
-     *  that {@code g1} created it.  If {@code u} includes {@code t}, it should
-     *  create {@code g1.t} not {@code g2.t}.
-     *
-     *  <pre>
-     *   g1 = {t(), u()}
-     *   |
-     *   v
-     *   g2 = {t()}
-     *  </pre>
+    /**
+     * @deprecated since 4.3; use {@link #getCreatorGroup()} or {@link #setCreatorGroup(STGroup)} instead
      */
+    @Deprecated
     public STGroup groupThatCreatedThisInstance;
 
-    /** If {@link STGroup#trackCreationEvents}, track creation and add
-     *  attribute events for each object. Create this object on first use.
+    /**
+     * @deprecated since 4.3; use {@link #getDebugState()} instead
      */
+    @Deprecated
     public DebugState debugState;
 
     /** Just an alias for {@link ArrayList}, but this way I can track whether a
@@ -201,6 +176,56 @@ public class ST {
             Arrays.fill(this.locals, EMPTY_ATTR);
         }
         this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
+    }
+
+    /**
+     * The implementation for this template among all instances of same template .
+     */
+    public CompiledST getImpl() {
+        return impl;
+    }
+
+    public void setImpl(CompiledST impl) {
+        this.impl = impl;
+    }
+
+    /**
+     * Created as instance of which group? We need this to initialize interpreter
+     * via render.  So, we create st and then it needs to know which
+     * group created it for sake of polymorphism:
+     *
+     * <pre>
+     *  st = skin1.getInstanceOf("searchbox");
+     *  result = st.render(); // knows skin1 created it
+     *  </pre>
+     * <p>
+     * Say we have a group {@code g1} with template {@code t} that imports
+     * templates {@code t} and {@code u} from another group {@code g2}.
+     * {@code g1.getInstanceOf("u")} finds {@code u} in {@code g2} but remembers
+     * that {@code g1} created it.  If {@code u} includes {@code t}, it should
+     * create {@code g1.t} not {@code g2.t}.
+     *
+     * <pre>
+     *   g1 = {t(), u()}
+     *   |
+     *   v
+     *   g2 = {t()}
+     *  </pre>
+     */
+    public STGroup getCreatorGroup() {
+        return groupThatCreatedThisInstance;
+    }
+
+    public void setCreatorGroup(STGroup groupThatCreatedThisInstance) {
+        this.groupThatCreatedThisInstance = groupThatCreatedThisInstance;
+    }
+
+    /**
+     * If {@link STGroup#trackCreationEvents}, track creation and add
+     * attribute events for each object. Create this object on first use.
+     */
+    public DebugState getDebugState() {
+        return debugState;
     }
 
     /** Inject an attribute (name/value pair). If there is already an attribute

@@ -225,7 +225,7 @@ public class STGroup {
     {
         String fullyQualifiedName = name;
         if ( name.charAt(0)!='/' ) {
-            fullyQualifiedName = scope.st.impl.getPrefix() + name;
+            fullyQualifiedName = scope.st.getImpl().getPrefix()+name;
         }
         if ( verbose ) System.out.println("getEmbeddedInstanceOf(" + fullyQualifiedName +")");
         ST st = getInstanceOf(fullyQualifiedName);
@@ -237,7 +237,7 @@ public class STGroup {
         }
         // this is only called internally. wack any debug ST create events
         if ( trackCreationEvents ) {
-            st.debugState.newSTEvent = null; // toss it out
+            st.getDebugState().newSTEvent = null; // toss it out
         }
         return st;
     }
@@ -253,10 +253,10 @@ public class STGroup {
         }
         CompiledST impl = compile(getFileName(), null, null, template, templateToken);
         ST st = createStringTemplateInternally(impl);
-        st.groupThatCreatedThisInstance = this;
-        st.impl.setHasFormalArgs(false);
-        st.impl.setName(ST.UNKNOWN_NAME);
-        st.impl.defineImplicitlyDefinedTemplates(this);
+        st.setCreatorGroup(this);
+        st.getImpl().setHasFormalArgs(false);
+        st.getImpl().setName(ST.UNKNOWN_NAME);
+        st.getImpl().defineImplicitlyDefinedTemplates(this);
         return st;
     }
 
@@ -801,8 +801,8 @@ public class STGroup {
 
     public ST createStringTemplate(CompiledST impl) {
         ST st = new ST();
-        st.impl = impl;
-        st.groupThatCreatedThisInstance = this;
+        st.setImpl(impl);
+        st.setCreatorGroup(this);
         if (impl.getFormalArguments() != null ) {
             st.locals = new Object[impl.getFormalArguments().size()];
             Arrays.fill(st.locals, ST.EMPTY_ATTR);
@@ -815,8 +815,8 @@ public class STGroup {
      */
     public ST createStringTemplateInternally(CompiledST impl) {
         ST st = createStringTemplate(impl);
-        if ( trackCreationEvents && st.debugState!=null ) {
-            st.debugState.newSTEvent = null; // toss it out
+        if ( trackCreationEvents && st.getDebugState()!=null ) {
+            st.getDebugState().newSTEvent = null; // toss it out
         }
         return st;
     }
