@@ -71,11 +71,35 @@ public class ST {
 
     /** Events during template hierarchy construction (not evaluation) */
     public static class DebugState {
-        /** Record who made us? {@link ConstructionEvent} creates {@link Exception} to grab stack */
+        /**
+         * @deprecated since 4.3; use {@link #getNewSTEvent()} or {@link #setNewSTEvent(ConstructionEvent)} instead
+         */
+        @Deprecated
         public ConstructionEvent newSTEvent;
 
-        /** Track construction-time add attribute "events"; used for ST user-level debugging */
+        /**
+         * @deprecated since 4.3; use {@link #getAddAttrEvents()} instead
+         */
+        @Deprecated
         public MultiMap<String, AddAttributeEvent> addAttrEvents = new MultiMap<String, AddAttributeEvent>();
+
+        /**
+         * Record who made us? {@link ConstructionEvent} creates {@link Exception} to grab stack
+         */
+        public ConstructionEvent getNewSTEvent() {
+            return newSTEvent;
+        }
+
+        public void setNewSTEvent(ConstructionEvent newSTEvent) {
+            this.newSTEvent = newSTEvent;
+        }
+
+        /**
+         * Track construction-time add attribute "events"; used for ST user-level debugging
+         */
+        public MultiMap<String, AddAttributeEvent> getAddAttrEvents() {
+            return addAttrEvents;
+        }
     }
 
     public static final String UNKNOWN_NAME = "anonymous";
@@ -123,7 +147,7 @@ public class ST {
     protected ST() {
         if ( STGroup.trackCreationEvents ) {
             if ( debugState==null ) debugState = new ST.DebugState();
-            debugState.newSTEvent = new ConstructionEvent();
+            debugState.setNewSTEvent(new ConstructionEvent());
         }
     }
 
@@ -250,7 +274,7 @@ public class ST {
 
         if ( STGroup.trackCreationEvents ) {
             if ( debugState==null ) debugState = new ST.DebugState();
-            debugState.addAttrEvents.map(name, new AddAttributeEvent(name, value));
+            debugState.getAddAttrEvents().map(name, new AddAttributeEvent(name, value));
         }
 
         FormalArgument arg = null;

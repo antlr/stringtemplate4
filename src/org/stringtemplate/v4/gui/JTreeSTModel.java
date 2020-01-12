@@ -60,8 +60,9 @@ public class JTreeSTModel implements TreeModel {
         public String toString() {
             ST st = event.scope.st;
             if ( st.isAnonSubtemplate() ) return "{...}";
-            if ( st.getDebugState()!=null && st.getDebugState().newSTEvent!=null ) {
-                String label = st.toString()+" @ "+st.getDebugState().newSTEvent.getFileName()+":"+st.getDebugState().newSTEvent.getLine();
+            if ( st.getDebugState()!=null && st.getDebugState().getNewSTEvent()!=null ) {
+                String label = st.toString()+" @ "+st.getDebugState().getNewSTEvent().getFileName()+":"+st
+                    .getDebugState().getNewSTEvent().getLine();
                 return "<html><b>" + StringRenderer.escapeHTML(label) + "</b></html>";
             }
             else {

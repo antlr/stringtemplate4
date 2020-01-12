@@ -237,7 +237,7 @@ public class STGroup {
         }
         // this is only called internally. wack any debug ST create events
         if ( trackCreationEvents ) {
-            st.getDebugState().newSTEvent = null; // toss it out
+            st.getDebugState().setNewSTEvent(null); // toss it out
         }
         return st;
     }
@@ -816,7 +816,7 @@ public class STGroup {
     public ST createStringTemplateInternally(CompiledST impl) {
         ST st = createStringTemplate(impl);
         if ( trackCreationEvents && st.getDebugState()!=null ) {
-            st.getDebugState().newSTEvent = null; // toss it out
+            st.getDebugState().setNewSTEvent(null); // toss it out
         }
         return st;
     }
