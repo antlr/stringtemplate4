@@ -244,7 +244,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testInclude() throws Exception {
         String template = "load <box()>;";
         ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box", "kewl" + newline + "daddy");
+        st.getImpl().getNativeGroup().defineTemplate("box", "kewl"+newline+"daddy");
         String expected =
             "load kewl"+newline+"daddy;";
         String result = st.render();
@@ -254,8 +254,8 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testIncludeWithArg() throws Exception {
         String template = "load <box(\"arg\")>;";
         ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box", "x", "kewl <x> daddy");
-        st.impl.dump();
+        st.getImpl().getNativeGroup().defineTemplate("box", "x", "kewl <x> daddy");
+        st.getImpl().dump();
         st.add("name", "Ter");
         String expected = "load kewl arg daddy;";
         String result = st.render();
@@ -265,8 +265,8 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testIncludeWithEmptySubtemplateArg() throws Exception {
         String template = "load <box({})>;";
         ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box", "x", "kewl <x> daddy");
-        st.impl.dump();
+        st.getImpl().getNativeGroup().defineTemplate("box", "x", "kewl <x> daddy");
+        st.getImpl().dump();
         st.add("name", "Ter");
         String expected = "load kewl  daddy;";
         String result = st.render();
@@ -276,8 +276,8 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testIncludeWithArg2() throws Exception {
         String template = "load <box(\"arg\", foo())>;";
         ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box", "x,y", "kewl <x> <y> daddy");
-        st.impl.nativeGroup.defineTemplate("foo", "blech");
+        st.getImpl().getNativeGroup().defineTemplate("box", "x,y", "kewl <x> <y> daddy");
+        st.getImpl().getNativeGroup().defineTemplate("foo", "blech");
         st.add("name", "Ter");
         String expected = "load kewl arg blech daddy;";
         String result = st.render();
@@ -287,8 +287,8 @@ public class TestCoreBasics extends BaseTest {
     @Test public void testIncludeWithNestedArgs() throws Exception {
         String template = "load <box(foo(\"arg\"))>;";
         ST st = new ST(template);
-        st.impl.nativeGroup.defineTemplate("box", "y", "kewl <y> daddy");
-        st.impl.nativeGroup.defineTemplate("foo", "x", "blech <x>");
+        st.getImpl().getNativeGroup().defineTemplate("box", "y", "kewl <y> daddy");
+        st.getImpl().getNativeGroup().defineTemplate("foo", "x", "blech <x>");
         st.add("name", "Ter");
         String expected = "load kewl blech arg daddy;";
         String result = st.render();
@@ -661,7 +661,7 @@ public class TestCoreBasics extends BaseTest {
         writeFile(dir, "group.stg", groupFile);
         STGroupFile group = new STGroupFile(dir+"/group.stg");
         ST st = group.getInstanceOf("a");
-        st.impl.dump();
+        st.getImpl().dump();
         String expected = "foo" +newline+
             "bar";
         String result = st.render();
@@ -1050,7 +1050,7 @@ public class TestCoreBasics extends BaseTest {
     @Test public void playing() throws Exception {
         String template = "<a:t(x,y),u()>";
         ST st = new ST(template);
-        st.impl.dump();
+        st.getImpl().dump();
     }
 
     @Test public void testPrototype() {

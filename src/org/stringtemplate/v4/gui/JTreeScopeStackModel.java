@@ -82,8 +82,8 @@ public class JTreeScopeStackModel implements TreeModel {
         if ( attrs==null ) return;
         for (String a : attrs.keySet()) {
             String descr;
-            if ( st.debugState!=null && st.debugState.addAttrEvents!=null ) {
-                List<AddAttributeEvent> events = st.debugState.addAttrEvents.get(a);
+            if (st.getDebugState() != null && st.getDebugState().getAddAttrEvents()!=null ) {
+                List<AddAttributeEvent> events = st.getDebugState().getAddAttrEvents().get(a);
                 StringBuilder locations = new StringBuilder();
                 int i = 0;
                 if ( events!=null ) {

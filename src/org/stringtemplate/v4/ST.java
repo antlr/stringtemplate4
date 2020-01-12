@@ -39,20 +39,9 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.MultiMap;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /** An instance of the StringTemplate. It consists primarily of
  *  a {@linkplain ST#impl reference} to its implementation (shared among all
@@ -82,11 +71,35 @@ public class ST {
 
     /** Events during template hierarchy construction (not evaluation) */
     public static class DebugState {
-        /** Record who made us? {@link ConstructionEvent} creates {@link Exception} to grab stack */
+        /**
+         * @deprecated since 4.3; use {@link #getNewSTEvent()} or {@link #setNewSTEvent(ConstructionEvent)} instead
+         */
+        @Deprecated
         public ConstructionEvent newSTEvent;
 
-        /** Track construction-time add attribute "events"; used for ST user-level debugging */
+        /**
+         * @deprecated since 4.3; use {@link #getAddAttrEvents()} instead
+         */
+        @Deprecated
         public MultiMap<String, AddAttributeEvent> addAttrEvents = new MultiMap<String, AddAttributeEvent>();
+
+        /**
+         * Record who made us? {@link ConstructionEvent} creates {@link Exception} to grab stack
+         */
+        public ConstructionEvent getNewSTEvent() {
+            return newSTEvent;
+        }
+
+        public void setNewSTEvent(ConstructionEvent newSTEvent) {
+            this.newSTEvent = newSTEvent;
+        }
+
+        /**
+         * Track construction-time add attribute "events"; used for ST user-level debugging
+         */
+        public MultiMap<String, AddAttributeEvent> getAddAttrEvents() {
+            return addAttrEvents;
+        }
     }
 
     public static final String UNKNOWN_NAME = "anonymous";
@@ -97,7 +110,10 @@ public class ST {
      */
     public static final String IMPLICIT_ARG_NAME = "it";
 
-    /** The implementation for this template among all instances of same template . */
+    /**
+     * @deprecated since 4.3; use {@link #getImpl()} or {@link #setImpl(CompiledST)} instead
+     */
+    @Deprecated
     public CompiledST impl;
 
     /** Safe to simultaneously write via {@link #add}, which is synchronized.
@@ -107,33 +123,16 @@ public class ST {
      */
     protected Object[] locals;
 
-    /** Created as instance of which group? We need this to initialize interpreter
-     *  via render.  So, we create st and then it needs to know which
-     *  group created it for sake of polymorphism:
-     *
-     *  <pre>
-     *  st = skin1.getInstanceOf("searchbox");
-     *  result = st.render(); // knows skin1 created it
-     *  </pre>
-     *
-     *  Say we have a group {@code g1} with template {@code t} that imports
-     *  templates {@code t} and {@code u} from another group {@code g2}.
-     *  {@code g1.getInstanceOf("u")} finds {@code u} in {@code g2} but remembers
-     *  that {@code g1} created it.  If {@code u} includes {@code t}, it should
-     *  create {@code g1.t} not {@code g2.t}.
-     *
-     *  <pre>
-     *   g1 = {t(), u()}
-     *   |
-     *   v
-     *   g2 = {t()}
-     *  </pre>
+    /**
+     * @deprecated since 4.3; use {@link #getCreatorGroup()} or {@link #setCreatorGroup(STGroup)} instead
      */
+    @Deprecated
     public STGroup groupThatCreatedThisInstance;
 
-    /** If {@link STGroup#trackCreationEvents}, track creation and add
-     *  attribute events for each object. Create this object on first use.
+    /**
+     * @deprecated since 4.3; use {@link #getDebugState()} instead
      */
+    @Deprecated
     public DebugState debugState;
 
     /** Just an alias for {@link ArrayList}, but this way I can track whether a
@@ -148,7 +147,7 @@ public class ST {
     protected ST() {
         if ( STGroup.trackCreationEvents ) {
             if ( debugState==null ) debugState = new ST.DebugState();
-            debugState.newSTEvent = new ConstructionEvent();
+            debugState.setNewSTEvent(new ConstructionEvent());
         }
     }
 
@@ -172,8 +171,8 @@ public class ST {
         groupThatCreatedThisInstance = group;
         impl = groupThatCreatedThisInstance.compile(group.getFileName(), null,
                                                     null, template, null);
-        impl.hasFormalArgs = false;
-        impl.name = UNKNOWN_NAME;
+        impl.setHasFormalArgs(false);
+        impl.setName(UNKNOWN_NAME);
         impl.defineImplicitlyDefinedTemplates(groupThatCreatedThisInstance);
     }
 
@@ -196,11 +195,61 @@ public class ST {
             this.locals = new Object[proto.locals.length];
             System.arraycopy(proto.locals, 0, this.locals, 0, proto.locals.length);
         }
-        else if (impl.formalArguments != null && !impl.formalArguments.isEmpty()) {
-            this.locals = new Object[impl.formalArguments.size()];
+        else if (impl.getFormalArguments() != null && !impl.getFormalArguments().isEmpty()) {
+            this.locals = new Object[impl.getFormalArguments().size()];
             Arrays.fill(this.locals, EMPTY_ATTR);
         }
         this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
+    }
+
+    /**
+     * The implementation for this template among all instances of same template .
+     */
+    public CompiledST getImpl() {
+        return impl;
+    }
+
+    public void setImpl(CompiledST impl) {
+        this.impl = impl;
+    }
+
+    /**
+     * Created as instance of which group? We need this to initialize interpreter
+     * via render.  So, we create st and then it needs to know which
+     * group created it for sake of polymorphism:
+     *
+     * <pre>
+     *  st = skin1.getInstanceOf("searchbox");
+     *  result = st.render(); // knows skin1 created it
+     *  </pre>
+     * <p>
+     * Say we have a group {@code g1} with template {@code t} that imports
+     * templates {@code t} and {@code u} from another group {@code g2}.
+     * {@code g1.getInstanceOf("u")} finds {@code u} in {@code g2} but remembers
+     * that {@code g1} created it.  If {@code u} includes {@code t}, it should
+     * create {@code g1.t} not {@code g2.t}.
+     *
+     * <pre>
+     *   g1 = {t(), u()}
+     *   |
+     *   v
+     *   g2 = {t()}
+     *  </pre>
+     */
+    public STGroup getCreatorGroup() {
+        return groupThatCreatedThisInstance;
+    }
+
+    public void setCreatorGroup(STGroup groupThatCreatedThisInstance) {
+        this.groupThatCreatedThisInstance = groupThatCreatedThisInstance;
+    }
+
+    /**
+     * If {@link STGroup#trackCreationEvents}, track creation and add
+     * attribute events for each object. Create this object on first use.
+     */
+    public DebugState getDebugState() {
+        return debugState;
     }
 
     /** Inject an attribute (name/value pair). If there is already an attribute
@@ -225,29 +274,29 @@ public class ST {
 
         if ( STGroup.trackCreationEvents ) {
             if ( debugState==null ) debugState = new ST.DebugState();
-            debugState.addAttrEvents.map(name, new AddAttributeEvent(name, value));
+            debugState.getAddAttrEvents().map(name, new AddAttributeEvent(name, value));
         }
 
         FormalArgument arg = null;
-        if ( impl.hasFormalArgs ) {
-            if ( impl.formalArguments!=null ) arg = impl.formalArguments.get(name);
+        if (impl.hasFormalArgs()) {
+            if (impl.getFormalArguments() != null ) arg = impl.getFormalArguments().get(name);
             if ( arg==null ) {
                 throw new IllegalArgumentException("no such attribute: "+name);
             }
         }
         else {
             // define and make room in locals (a hack to make new ST("simple template") work.)
-            if ( impl.formalArguments!=null ) {
-                arg = impl.formalArguments.get(name);
+            if (impl.getFormalArguments() != null ) {
+                arg = impl.getFormalArguments().get(name);
             }
             if ( arg==null ) { // not defined
                 arg = new FormalArgument(name);
                 impl.addArg(arg);
                 if ( locals==null ) locals = new Object[1];
                 else {
-                    Object[] copy = new Object[impl.formalArguments.size()];
+                    Object[] copy = new Object[impl.getFormalArguments().size()];
                     System.arraycopy(locals, 0, copy, 0,
-                                     Math.min(locals.length, impl.formalArguments.size()));
+                                     Math.min(locals.length, impl.getFormalArguments().size()));
                     locals = copy;
                 }
                 locals[arg.getIndex()] = EMPTY_ATTR;
@@ -326,13 +375,13 @@ public class ST {
 
     /** Remove an attribute value entirely (can't remove attribute definitions). */
     public void remove(String name) {
-        if ( impl.formalArguments==null ) {
-            if ( impl.hasFormalArgs ) {
+        if (impl.getFormalArguments() == null ) {
+            if (impl.hasFormalArgs()) {
                 throw new IllegalArgumentException("no such attribute: "+name);
             }
             return;
         }
-        FormalArgument arg = impl.formalArguments.get(name);
+        FormalArgument arg = impl.getFormalArguments().get(name);
         if ( arg==null ) {
             throw new IllegalArgumentException("no such attribute: "+name);
         }
@@ -344,10 +393,10 @@ public class ST {
      *  outside so toss an exception to notify them.
      */
     protected void rawSetAttribute(String name, Object value) {
-        if ( impl.formalArguments==null ) {
+        if (impl.getFormalArguments() == null ) {
             throw new IllegalArgumentException("no such attribute: "+name);
         }
-        FormalArgument arg = impl.formalArguments.get(name);
+        FormalArgument arg = impl.getFormalArguments().get(name);
         if ( arg==null ) {
             throw new IllegalArgumentException("no such attribute: "+name);
         }
@@ -357,7 +406,7 @@ public class ST {
     /** Find an attribute in this template only. */
     public Object getAttribute(String name) {
         FormalArgument localArg = null;
-        if ( impl.formalArguments!=null ) localArg = impl.formalArguments.get(name);
+        if (impl.getFormalArguments() != null ) localArg = impl.getFormalArguments().get(name);
         if ( localArg!=null ) {
             Object o = locals[localArg.getIndex()];
             if ( o==ST.EMPTY_ATTR ) o = null;
@@ -367,9 +416,9 @@ public class ST {
     }
 
     public Map<String, Object> getAttributes() {
-        if ( impl.formalArguments==null ) return null;
+        if (impl.getFormalArguments() == null ) return null;
         Map<String, Object> attributes = new HashMap<String, Object>();
-        for (FormalArgument a : impl.formalArguments.values()) {
+        for (FormalArgument a : impl.getFormalArguments().values()) {
             Object o = locals[a.getIndex()];
             if ( o==ST.EMPTY_ATTR ) o = null;
             attributes.put(a.getName(), o);
@@ -414,13 +463,13 @@ public class ST {
         return multi;
     }
 
-    public String getName() { return impl.name; }
+    public String getName() { return impl.getName(); }
 
-    public boolean isAnonSubtemplate() { return impl.isAnonSubtemplate; }
+    public boolean isAnonSubtemplate() { return impl.isAnonymousSubtemplate(); }
 
     public int write(STWriter out) throws IOException {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
-                                             impl.nativeGroup.errMgr,
+                                             impl.getNativeGroup().errMgr,
                                              false);
         InstanceScope scope = new InstanceScope(null, this);
         return interp.exec(out, scope);
@@ -429,7 +478,7 @@ public class ST {
     public int write(STWriter out, Locale locale) {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
                                              locale,
-                                             impl.nativeGroup.errMgr,
+                                             impl.getNativeGroup().errMgr,
                                              false);
         InstanceScope scope = new InstanceScope(null, this);
         return interp.exec(out, scope);
@@ -511,16 +560,16 @@ public class ST {
     public STViz inspect() { return inspect(Locale.getDefault()); }
 
     public STViz inspect(int lineWidth) {
-        return inspect(impl.nativeGroup.errMgr, Locale.getDefault(), lineWidth);
+        return inspect(impl.getNativeGroup().errMgr, Locale.getDefault(), lineWidth);
     }
 
     public STViz inspect(Locale locale) {
-        return inspect(impl.nativeGroup.errMgr, locale, STWriter.NO_WRAP);
+        return inspect(impl.getNativeGroup().errMgr, locale, STWriter.NO_WRAP);
     }
 
     public STViz inspect(ErrorManager errMgr, Locale locale, int lineWidth) {
         ErrorBuffer errors = new ErrorBuffer();
-        impl.nativeGroup.setListener(errors);
+        impl.getNativeGroup().setListener(errors);
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
@@ -559,8 +608,8 @@ public class ST {
     @Override
     public String toString() {
         if ( impl==null ) return "bad-template()";
-        String name = impl.name+"()";
-        if (this.impl.isRegion) {
+        String name = impl.getName() + "()";
+        if (this.impl.isRegion()) {
             name = "@" + STGroup.getUnMangledTemplateName(name);
         }
 

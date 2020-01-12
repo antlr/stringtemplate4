@@ -87,7 +87,7 @@ public class TestLineWrap extends BaseTest {
         org.stringtemplate.v4.STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir+"/"+"t.stg");
 
         final org.stringtemplate.v4.ST x = new org.stringtemplate.v4.ST("<\\n>{ <stuff; anchor, separator=\",\\n\"> }<\\n>");
-        x.groupThatCreatedThisInstance = group;
+        x.setCreatorGroup(group);
         x.add("stuff", "1");
         x.add("stuff", "2");
         x.add("stuff", "3");

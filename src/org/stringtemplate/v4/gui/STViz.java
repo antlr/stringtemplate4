@@ -134,7 +134,7 @@ public class STViz {
             }
         );
 
-        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.getST().impl.ast);
+        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.getST().getImpl().getAST());
         viewFrame.ast.setModel(astModel);
         viewFrame.ast.addTreeSelectionListener(
             new TreeSelectionListener() {
@@ -150,8 +150,8 @@ public class STViz {
                         if ( path==null ) return;
                         CommonTree node = (CommonTree)treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
                         //System.out.println("select AST: "+node);
-                        CommonToken a = (CommonToken) currentScope.getST().impl.tokens.get(node.getTokenStartIndex());
-                        CommonToken b = (CommonToken) currentScope.getST().impl.tokens.get(node.getTokenStopIndex());
+                        CommonToken a = (CommonToken) currentScope.getST().getImpl().getTokens().get(node.getTokenStartIndex());
+                        CommonToken b = (CommonToken) currentScope.getST().getImpl().getTokens().get(node.getTokenStopIndex());
                         highlight(viewFrame.template, a.getStartIndex(), b.getStopIndex());
                     }
                     finally {
@@ -245,7 +245,7 @@ public class STViz {
                         STMessage msg = (STMessage)model.getElementAt(i);
                         if ( msg instanceof STRuntimeMessage ) {
                             STRuntimeMessage rmsg = (STRuntimeMessage)msg;
-                            Interval I = rmsg.getST().impl.sourceMap[rmsg.getInstructionPointer()];
+                            Interval I = rmsg.getST().getImpl().getSourceMap()[rmsg.getInstructionPointer()];
                             currentEvent = null;
                             currentScope = ((STRuntimeMessage) msg).getScope();
                             updateCurrentST(viewFrame);
@@ -281,8 +281,8 @@ public class STViz {
         viewFrame.setSize(900, 700);
 
         setText(viewFrame.output, output);
-        setText(viewFrame.template, currentScope.getST().impl.template);
-        setText(viewFrame.bytecode, currentScope.getST().impl.disasm());
+        setText(viewFrame.template, currentScope.getST().getImpl().getTemplate());
+        setText(viewFrame.bytecode, currentScope.getST().getImpl().disasm());
         setText(viewFrame.trace, Misc.join(trace.iterator(), "\n"));
 
         viewFrame.setVisible(true);
@@ -325,9 +325,9 @@ public class STViz {
         // update all views according to currentScope.st
         updateStack(currentScope, m);                      // STACK
         updateAttributes(currentScope, m);                 // ATTRIBUTES
-        setText(m.bytecode, currentScope.getST().impl.disasm()); // BYTECODE DIS.
-        setText(m.template, currentScope.getST().impl.template); // TEMPLATE SRC
-        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.getST().impl.ast);
+        setText(m.bytecode, currentScope.getST().getImpl().disasm()); // BYTECODE DIS.
+        setText(m.template, currentScope.getST().getImpl().getTemplate()); // TEMPLATE SRC
+        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.getST().getImpl().getAST());
         viewFrame.ast.setModel(astModel);
 
         // highlight output text and, if {...} subtemplate, region in ST src
@@ -352,7 +352,7 @@ public class STViz {
             }
 
             if ( currentScope.getST().isAnonSubtemplate() ) {
-                Interval r = currentScope.getST().impl.getTemplateRange();
+                Interval r = currentScope.getST().getImpl().getTemplateRange();
                 //System.out.println("currentScope.st src range="+r);
                 //m.template.moveCaretPosition(r.a);
                 highlight(m.template, r.getStart(), r.getEnd());
@@ -523,7 +523,7 @@ public class STViz {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         ST st = group.getInstanceOf("method");
-        st.impl.dump();
+        st.getImpl().dump();
         st.add("type", "float");
         st.add("name", "foo");
         st.add("locals", 3);
