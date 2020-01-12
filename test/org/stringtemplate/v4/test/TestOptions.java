@@ -52,7 +52,7 @@ public class TestOptions extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; separator= \", \">!");
         ST st = group.getInstanceOf("test");
-        System.out.println(st.impl.ast.toStringTree());
+        System.out.println(st.impl.getAST().toStringTree());
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", "Sumana");

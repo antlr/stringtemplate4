@@ -134,7 +134,7 @@ public class STViz {
             }
         );
 
-        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
+        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.getAST());
         viewFrame.ast.setModel(astModel);
         viewFrame.ast.addTreeSelectionListener(
             new TreeSelectionListener() {
@@ -150,8 +150,8 @@ public class STViz {
                         if ( path==null ) return;
                         CommonTree node = (CommonTree)treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
                         //System.out.println("select AST: "+node);
-                        CommonToken a = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStartIndex());
-                        CommonToken b = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStopIndex());
+                        CommonToken a = (CommonToken) currentScope.st.impl.getTokens().get(node.getTokenStartIndex());
+                        CommonToken b = (CommonToken) currentScope.st.impl.getTokens().get(node.getTokenStopIndex());
                         highlight(viewFrame.template, a.getStartIndex(), b.getStopIndex());
                     }
                     finally {
@@ -245,7 +245,7 @@ public class STViz {
                         STMessage msg = (STMessage)model.getElementAt(i);
                         if ( msg instanceof STRuntimeMessage ) {
                             STRuntimeMessage rmsg = (STRuntimeMessage)msg;
-                            Interval I = rmsg.self.impl.sourceMap[rmsg.ip];
+                            Interval I = rmsg.self.impl.getSourceMap()[rmsg.ip];
                             currentEvent = null;
                             currentScope = ((STRuntimeMessage) msg).scope;
                             updateCurrentST(viewFrame);
@@ -281,7 +281,7 @@ public class STViz {
         viewFrame.setSize(900, 700);
 
         setText(viewFrame.output, output);
-        setText(viewFrame.template, currentScope.st.impl.template);
+        setText(viewFrame.template, currentScope.st.impl.getTemplate());
         setText(viewFrame.bytecode, currentScope.st.impl.disasm());
         setText(viewFrame.trace, Misc.join(trace.iterator(), "\n"));
 
@@ -326,8 +326,8 @@ public class STViz {
         updateStack(currentScope, m);                      // STACK
         updateAttributes(currentScope, m);                 // ATTRIBUTES
         setText(m.bytecode, currentScope.st.impl.disasm()); // BYTECODE DIS.
-        setText(m.template, currentScope.st.impl.template); // TEMPLATE SRC
-        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
+        setText(m.template, currentScope.st.impl.getTemplate()); // TEMPLATE SRC
+        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.getAST());
         viewFrame.ast.setModel(astModel);
 
         // highlight output text and, if {...} subtemplate, region in ST src

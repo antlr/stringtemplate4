@@ -172,8 +172,8 @@ public class ST {
         groupThatCreatedThisInstance = group;
         impl = groupThatCreatedThisInstance.compile(group.getFileName(), null,
                                                     null, template, null);
-        impl.hasFormalArgs = false;
-        impl.name = UNKNOWN_NAME;
+        impl.setHasFormalArgs(false);
+        impl.setName(UNKNOWN_NAME);
         impl.defineImplicitlyDefinedTemplates(groupThatCreatedThisInstance);
     }
 
@@ -196,8 +196,8 @@ public class ST {
             this.locals = new Object[proto.locals.length];
             System.arraycopy(proto.locals, 0, this.locals, 0, proto.locals.length);
         }
-        else if (impl.formalArguments != null && !impl.formalArguments.isEmpty()) {
-            this.locals = new Object[impl.formalArguments.size()];
+        else if (impl.getFormalArguments() != null && !impl.getFormalArguments().isEmpty()) {
+            this.locals = new Object[impl.getFormalArguments().size()];
             Arrays.fill(this.locals, EMPTY_ATTR);
         }
         this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
@@ -229,25 +229,25 @@ public class ST {
         }
 
         FormalArgument arg = null;
-        if ( impl.hasFormalArgs ) {
-            if ( impl.formalArguments!=null ) arg = impl.formalArguments.get(name);
+        if (impl.hasFormalArgs()) {
+            if (impl.getFormalArguments() != null ) arg = impl.getFormalArguments().get(name);
             if ( arg==null ) {
                 throw new IllegalArgumentException("no such attribute: "+name);
             }
         }
         else {
             // define and make room in locals (a hack to make new ST("simple template") work.)
-            if ( impl.formalArguments!=null ) {
-                arg = impl.formalArguments.get(name);
+            if (impl.getFormalArguments() != null ) {
+                arg = impl.getFormalArguments().get(name);
             }
             if ( arg==null ) { // not defined
                 arg = new FormalArgument(name);
                 impl.addArg(arg);
                 if ( locals==null ) locals = new Object[1];
                 else {
-                    Object[] copy = new Object[impl.formalArguments.size()];
+                    Object[] copy = new Object[impl.getFormalArguments().size()];
                     System.arraycopy(locals, 0, copy, 0,
-                                     Math.min(locals.length, impl.formalArguments.size()));
+                                     Math.min(locals.length, impl.getFormalArguments().size()));
                     locals = copy;
                 }
                 locals[arg.index] = EMPTY_ATTR;
@@ -326,13 +326,13 @@ public class ST {
 
     /** Remove an attribute value entirely (can't remove attribute definitions). */
     public void remove(String name) {
-        if ( impl.formalArguments==null ) {
-            if ( impl.hasFormalArgs ) {
+        if (impl.getFormalArguments() == null ) {
+            if (impl.hasFormalArgs()) {
                 throw new IllegalArgumentException("no such attribute: "+name);
             }
             return;
         }
-        FormalArgument arg = impl.formalArguments.get(name);
+        FormalArgument arg = impl.getFormalArguments().get(name);
         if ( arg==null ) {
             throw new IllegalArgumentException("no such attribute: "+name);
         }
@@ -344,10 +344,10 @@ public class ST {
      *  outside so toss an exception to notify them.
      */
     protected void rawSetAttribute(String name, Object value) {
-        if ( impl.formalArguments==null ) {
+        if (impl.getFormalArguments() == null ) {
             throw new IllegalArgumentException("no such attribute: "+name);
         }
-        FormalArgument arg = impl.formalArguments.get(name);
+        FormalArgument arg = impl.getFormalArguments().get(name);
         if ( arg==null ) {
             throw new IllegalArgumentException("no such attribute: "+name);
         }
@@ -357,7 +357,7 @@ public class ST {
     /** Find an attribute in this template only. */
     public Object getAttribute(String name) {
         FormalArgument localArg = null;
-        if ( impl.formalArguments!=null ) localArg = impl.formalArguments.get(name);
+        if (impl.getFormalArguments() != null ) localArg = impl.getFormalArguments().get(name);
         if ( localArg!=null ) {
             Object o = locals[localArg.index];
             if ( o==ST.EMPTY_ATTR ) o = null;
@@ -367,9 +367,9 @@ public class ST {
     }
 
     public Map<String, Object> getAttributes() {
-        if ( impl.formalArguments==null ) return null;
+        if (impl.getFormalArguments() == null ) return null;
         Map<String, Object> attributes = new HashMap<String, Object>();
-        for (FormalArgument a : impl.formalArguments.values()) {
+        for (FormalArgument a : impl.getFormalArguments().values()) {
             Object o = locals[a.index];
             if ( o==ST.EMPTY_ATTR ) o = null;
             attributes.put(a.name, o);
@@ -414,13 +414,13 @@ public class ST {
         return multi;
     }
 
-    public String getName() { return impl.name; }
+    public String getName() { return impl.getName(); }
 
-    public boolean isAnonSubtemplate() { return impl.isAnonSubtemplate; }
+    public boolean isAnonSubtemplate() { return impl.isAnonymousSubtemplate(); }
 
     public int write(STWriter out) throws IOException {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
-                                             impl.nativeGroup.errMgr,
+                                             impl.getNativeGroup().errMgr,
                                              false);
         InstanceScope scope = new InstanceScope(null, this);
         return interp.exec(out, scope);
@@ -429,7 +429,7 @@ public class ST {
     public int write(STWriter out, Locale locale) {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
                                              locale,
-                                             impl.nativeGroup.errMgr,
+                                             impl.getNativeGroup().errMgr,
                                              false);
         InstanceScope scope = new InstanceScope(null, this);
         return interp.exec(out, scope);
@@ -511,16 +511,16 @@ public class ST {
     public STViz inspect() { return inspect(Locale.getDefault()); }
 
     public STViz inspect(int lineWidth) {
-        return inspect(impl.nativeGroup.errMgr, Locale.getDefault(), lineWidth);
+        return inspect(impl.getNativeGroup().errMgr, Locale.getDefault(), lineWidth);
     }
 
     public STViz inspect(Locale locale) {
-        return inspect(impl.nativeGroup.errMgr, locale, STWriter.NO_WRAP);
+        return inspect(impl.getNativeGroup().errMgr, locale, STWriter.NO_WRAP);
     }
 
     public STViz inspect(ErrorManager errMgr, Locale locale, int lineWidth) {
         ErrorBuffer errors = new ErrorBuffer();
-        impl.nativeGroup.setListener(errors);
+        impl.getNativeGroup().setListener(errors);
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
@@ -559,8 +559,8 @@ public class ST {
     @Override
     public String toString() {
         if ( impl==null ) return "bad-template()";
-        String name = impl.name+"()";
-        if (this.impl.isRegion) {
+        String name = impl.getName() + "()";
+        if (this.impl.isRegion()) {
             name = "@" + STGroup.getUnMangledTemplateName(name);
         }
 

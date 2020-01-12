@@ -677,8 +677,8 @@ public class TestGroups extends BaseTest {
         assertEquals("group1",stb.groupThatCreatedThisInstance.getName());
 
         // Are the correct (native) groups assigned for the templates
-        assertEquals("group1",sta.impl.nativeGroup.getName());
-        assertEquals("group2",stb.impl.nativeGroup.getName());
+        assertEquals("group1", sta.impl.getNativeGroup().getName());
+        assertEquals("group2", stb.impl.getNativeGroup().getName());
     }
 
     @Test

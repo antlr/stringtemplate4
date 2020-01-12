@@ -41,15 +41,15 @@ public class BytecodeDisassembler {
     public String instrs() {
         StringBuilder buf = new StringBuilder();
         int ip=0;
-        while (ip<code.codeSize) {
+        while (ip < code.getCodeSize()) {
             if ( ip>0 ) buf.append(", ");
-            int opcode = code.instrs[ip];
+            int opcode = code.getInstructions()[ip];
             Bytecode.Instruction I = Bytecode.instructions[opcode];
             buf.append(I.name);
             ip++;
             for (int opnd=0; opnd<I.nopnds; opnd++) {
                 buf.append(' ');
-                buf.append(getShort(code.instrs, ip));
+                buf.append(getShort(code.getInstructions(), ip));
                 ip += Bytecode.OPND_SIZE_IN_BYTES;
             }
         }
@@ -59,7 +59,7 @@ public class BytecodeDisassembler {
     public String disassemble() {
         StringBuilder buf = new StringBuilder();
         int i=0;
-        while (i<code.codeSize) {
+        while (i < code.getCodeSize()) {
             i = disassembleInstruction(buf, i);
             buf.append('\n');
         }
@@ -67,8 +67,8 @@ public class BytecodeDisassembler {
     }
 
     public int disassembleInstruction(StringBuilder buf, int ip) {
-        int opcode = code.instrs[ip];
-        if ( ip>=code.codeSize ) {
+        int opcode = code.getInstructions()[ip];
+        if (ip >= code.getCodeSize()) {
             throw new IllegalArgumentException("ip out of range: "+ip);
         }
         Bytecode.Instruction I =
@@ -86,7 +86,7 @@ public class BytecodeDisassembler {
         }
         List<String> operands = new ArrayList<String>();
         for (int i=0; i<I.nopnds; i++) {
-            int opnd = getShort(code.instrs, ip);
+            int opnd = getShort(code.getInstructions(), ip);
             ip += Bytecode.OPND_SIZE_IN_BYTES;
             switch ( I.type[i] ) {
                 case STRING :
@@ -114,11 +114,11 @@ public class BytecodeDisassembler {
         buf.append("#");
         buf.append(poolIndex);
         String s = "<bad string index>";
-        if ( poolIndex<code.strings.length ) {
-            if ( code.strings[poolIndex]==null ) s = "null";
+        if (poolIndex < code.getStrings().length ) {
+            if (code.getStrings()[poolIndex] == null ) s = "null";
             else {
-                s = code.strings[poolIndex];
-                if (code.strings[poolIndex] != null) {
+                s = code.getStrings()[poolIndex];
+                if (code.getStrings()[poolIndex] != null) {
                     s = Misc.replaceEscapes(s);
                     s='"'+s+'"';
                 }
@@ -139,8 +139,8 @@ public class BytecodeDisassembler {
     public String strings() {
         StringBuilder buf = new StringBuilder();
         int addr = 0;
-        if ( code.strings!=null ) {
-            for (Object o : code.strings) {
+        if (code.getStrings() != null ) {
+            for (Object o : code.getStrings()) {
                 if ( o instanceof String ) {
                     String s = (String)o;
                     s = Misc.replaceEscapes(s);
@@ -158,9 +158,9 @@ public class BytecodeDisassembler {
     public String sourceMap() {
         StringBuilder buf = new StringBuilder();
         int addr = 0;
-        for (Interval I : code.sourceMap) {
+        for (Interval I : code.getSourceMap()) {
             if ( I!=null ) {
-                String chunk = code.template.substring(I.a,I.b+1);
+                String chunk = code.getTemplate().substring(I.a, I.b + 1);
                 buf.append( String.format("%04d: %s\t\"%s\"\n", addr, I, chunk) );
             }
             addr++;
