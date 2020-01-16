@@ -33,7 +33,7 @@ to the `<dependencies>` element in your **pom.xml** file.
 <dependency>
   <groupId>org.antlr</groupId>
   <artifactId>ST4</artifactId>
-  <version>4.2</version>
+  <version>4.3</version>
   <scope>compile</scope>
 </dependency>
 ```
@@ -47,7 +47,7 @@ dependecies {
     // ...
 
     // https://mvnrepository.com/artifact/org.antlr/ST4
-    compile group: 'org.antlr', name: 'ST4', version: '4.2'
+    compile group: 'org.antlr', name: 'ST4', version: '4.3'
 }
 ```
 
