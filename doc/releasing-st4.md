@@ -77,12 +77,12 @@ Here is the file template
 
 ## Maven deploy snapshot
 
-The goal is to get a snapshot, such as `4.1-SNAPSHOT`, to the staging server: [antlr4 tool](https://oss.sonatype.org/content/repositories/snapshots/org/antlr/antlr4) and [antlr4 java runtime](https://oss.sonatype.org/content/repositories/snapshots/org/antlr/antlr4-runtime).
+The goal is to get a snapshot, such as `4.3-SNAPSHOT`, to the [staging server](https://oss.sonatype.org/#stagingRepositories).
 
 Do this:
 
 ```bash
-$ export JAVA_HOME=`/usr/libexec/java_home -v 1.7`; mvn deploy -DskipTests
+$ export JAVA_HOME=`/usr/libexec/java_home -v 1.8`; mvn deploy -DskipTests
 ...
 [INFO] --- maven-deploy-plugin:2.7:deploy (default-deploy) @ ST4 ---
 Downloading from sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.1-SNAPSHOT/maven-metadata.xml
@@ -110,22 +110,22 @@ Uploaded to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositor
 The maven deploy lifecycle phased deploys the artifacts and the poms for the ANTLR project to the [sonatype remote staging server](https://oss.sonatype.org/content/repositories/snapshots/).
 
 ```bash
-export JAVA_HOME=`/usr/libexec/java_home -v 1.7`; mvn deploy -DskipTests
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`; mvn deploy -DskipTests
 ```
 
 Now, do this:
 
 ```bash
-export JAVA_HOME=`/usr/libexec/java_home -v 1.7`; mvn release:prepare -Darguments="-DskipTests"
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`; mvn release:prepare -Darguments="-DskipTests"
 ```
 
-Hm...per https://github.com/keybase/keybase-issues/issues/1712 we need this to make gpg work:
+Hm...per https://github.com/keybase/keybase-issues/issues/1712 we need this to make gpg work (needed for releasing not build):
 
 ```bash
 export GPG_TTY=$(tty)
 ```
 
-Side note to set jdk 1.7 on os x:
+Side note to set jdk 1.8 on os x:
 
 ```bash
 alias java='/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home/bin/java'
