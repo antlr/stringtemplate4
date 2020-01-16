@@ -10,7 +10,7 @@
 	<artifactId>ST4</artifactId>
 	<packaging>jar</packaging>
 
-	<version>4.3-SNAPSHOT</version>
+	<version>4.3</version>
 
 	<name>StringTemplate 4</name>
 	<description>StringTemplate is a java template engine for generating source code,
@@ -56,7 +56,15 @@
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
 		<plugins>
-			<plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-javadoc-plugin</artifactId>
+               <configuration>
+                  <additionalOptions>-Xdoclint:none</additionalOptions>
+                  <additionalJOption>-Xdoclint:none</additionalJOption>
+               </configuration>
+            </plugin>
+            <plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 				<version>1.8</version>
