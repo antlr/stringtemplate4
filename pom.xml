@@ -94,12 +94,13 @@
 					</execution>
 				</executions>
 			</plugin>
-            <!--
             <plugin>
+                <!-- https://mvnrepository.com/artifact/org.revapi/revapi-maven-plugin -->
                 <groupId>org.revapi</groupId>
                 <artifactId>revapi-maven-plugin</artifactId>
                 <version>0.11.2</version>
                 <dependencies>
+                    <!-- https://mvnrepository.com/artifact/org.revapi/revapi-java -->
                     <dependency>
                         <groupId>org.revapi</groupId>
                         <artifactId>revapi-java</artifactId>
@@ -123,7 +124,6 @@
                     </analysisConfigurationFiles>
                 </configuration>
             </plugin>
-            -->
         </plugins>
 	</build>
 
