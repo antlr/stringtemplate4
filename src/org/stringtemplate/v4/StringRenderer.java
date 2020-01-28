@@ -40,13 +40,13 @@ import java.util.Locale;
  *  <li>{@code xml-encode}:</li>
  * </ul>
  */
-public class StringRenderer implements AttributeRenderer<Object> {
+public class StringRenderer implements AttributeRenderer<CharSequence> {
     // accepts Object for backward compatibility,
     // but fails when value is not a String at runtime
 
     @Override
-    public String toString(Object value, String formatString, Locale locale) {
-        return toString((String) value, formatString, locale);
+    public String toString(CharSequence value, String formatString, Locale locale) {
+        return toString(value.toString(), formatString, locale);
     }
 
     // trim(s) and strlen(s) built-in funcs; these are format options
