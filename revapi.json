@@ -1,4 +1,28 @@
 {
+  "base": {
+    "revapi": {
+      "ignore": [
+        {
+          "code": "java.field.constantValueChanged",
+          "old": "field org.stringtemplate.v4.ST.VERSION",
+          "new": "field org.stringtemplate.v4.ST.VERSION",
+          "justification": "this constant changes with every release because it indicates the current version"
+        }
+      ]
+    }
+  },
+  "4.2+": {
+    "revapi": {
+      "ignore": [
+        {
+          "code": "java.field.typeChanged",
+          "old": "field org.stringtemplate.v4.compiler.Compiler.subtemplateCount",
+          "new": "field org.stringtemplate.v4.compiler.Compiler.subtemplateCount",
+          "justification": "https://github.com/antlr/stringtemplate4/pull/220"
+        }
+      ]
+    }
+  },
   "4.3+": {
     "revapi": {
       "ignore": [
