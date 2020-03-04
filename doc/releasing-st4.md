@@ -132,13 +132,13 @@ alias java='/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home/bin/
 alias javac='/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home/bin/javac'
 alias javadoc='/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home/bin/javadoc'
 alias jar='/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home/bin/jar'
-export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
 ```
 
 But I think just this on front of mvn works:
 
 ```
-export JAVA_HOME=`/usr/libexec/java_home -v 1.7`; mvn ...
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`; mvn ...
 ```
 
 It will start out by asking you the version number:
@@ -154,7 +154,7 @@ What is the new development version for "StringTemplate 4"? (org.antlr:ST4) 4.2-
 Now release
 
 ```bash
-export JAVA_HOME=`/usr/libexec/java_home -v 1.7`; mvn release:perform -Darguments="-DskipTests"
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`; mvn release:perform -Darguments="-DskipTests"
 ```
 
 Maven will use git to push pom.xml changes.
@@ -173,20 +173,29 @@ Seems to take a while to propogate.
 ## Javadoc
 
 ```bash
-export JAVA_HOME=`/usr/libexec/java_home -v 1.7`; mvn javadoc:javadoc
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`; mvn javadoc:javadoc
 ```
 
 ```bash
-cp -r ~/antlr/code/stringtemplate4/target/site/apidocs/* ~/antlr/sites/website-st4/api```
+cp -r ~/antlr/code/stringtemplate4/target/apidocs/* ~/antlr/sites/website-st4/api```
 
 # Update website
 
 Copy the jars to stringtemplate.org site and update download/index.html
 
 ```bash
-cp ~/.m2/repository/org/antlr/ST4/4.1/ST4-4.1.jar ~/antlr/sites/website-st4/download/ST-4.1.jar
+cp ~/.m2/repository/org/antlr/ST4/4.3/ST4-4.3.jar ~/antlr/sites/website-st4/download/ST-4.3.jar
 cd ~/antlr/sites/website-st4/download
-git add ST-4.1.jar
+git add ST-4.3.jar
 ```
 
+## Update site
+
+Find stuff:
+
+```
+cd ~/antlr/sites/website-st4
+find . -type f -exec grep '4\.2' {} \;
+vi index.html scripts/topnav.js download.html 
+```
 
