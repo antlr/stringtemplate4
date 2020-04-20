@@ -152,10 +152,12 @@ public class ErrorManager {
 
     private String sourceName(Token t) {
         CharStream input = t.getInputStream();
-        String srcName = null;
-        if ( input!=null ) {
-            srcName = input.getSourceName();
-            if ( srcName!=null ) srcName = Misc.getFileName(srcName);
+        if ( input==null ) {
+            return null;
+        }
+        String srcName = input.getSourceName();
+        if ( srcName!=null ) {
+            srcName = Misc.getFileName(srcName);
         }
         return srcName;
     }
