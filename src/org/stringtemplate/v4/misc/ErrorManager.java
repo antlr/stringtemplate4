@@ -78,12 +78,7 @@ public class ErrorManager {
     }
 
     public void compileTimeError(ErrorType error, Token templateToken, Token t) {
-        CharStream input = t.getInputStream();
-        String srcName = null;
-        if ( input!=null ) {
-            srcName = input.getSourceName();
-            if ( srcName!=null ) srcName = Misc.getFileName(srcName);
-        }
+        String srcName = sourceName(t);
         listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,templateToken,t,null,t.getText())
         );
@@ -97,16 +92,14 @@ public class ErrorManager {
     }
 
     public void compileTimeError(ErrorType error, Token templateToken, Token t, Object arg) {
-        String srcName = t.getInputStream().getSourceName();
-        if ( srcName!=null ) srcName = Misc.getFileName(srcName);
+        String srcName = sourceName(t);
         listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,templateToken,t,null,arg)
         );
     }
 
     public void compileTimeError(ErrorType error, Token templateToken, Token t, Object arg, Object arg2) {
-        String srcName = t.getInputStream().getSourceName();
-        if ( srcName!=null ) srcName = Misc.getFileName(srcName);
+        String srcName = sourceName(t);
         listener.compileTimeError(
             new STCompiletimeMessage(error,srcName,templateToken,t,null,arg,arg2)
         );
@@ -155,5 +148,17 @@ public class ErrorManager {
 
     public void internalError(ST self, String msg, Throwable e) {
         listener.internalError(new STMessage(ErrorType.INTERNAL_ERROR, self, e, msg));
+    }
+
+    private String sourceName(Token t) {
+        CharStream input = t.getInputStream();
+        if ( input==null ) {
+            return null;
+        }
+        String srcName = input.getSourceName();
+        if ( srcName!=null ) {
+            srcName = Misc.getFileName(srcName);
+        }
+        return srcName;
     }
 }
