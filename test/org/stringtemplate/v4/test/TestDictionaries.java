@@ -42,7 +42,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class TestDictionaries extends BaseTest {
-    @Test public void testDict() throws Exception {
+    @Test public void testDict() {
         String templates =
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -57,7 +57,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictValuesAreTemplates() throws Exception {
+    @Test public void testDictValuesAreTemplates() {
         String templates =
                 "typeInit ::= [\"int\":{0<w>}, \"float\":{0.0<w>}] "+newline+
                 "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -74,7 +74,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictKeyLookupViaTemplate() throws Exception {
+    @Test public void testDictKeyLookupViaTemplate() {
         // Make sure we try rendering stuff to string if not found as regular object
         String templates =
                 "typeInit ::= [\"int\":{0<w>}, \"float\":{0.0<w>}] "+newline+
@@ -91,7 +91,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictKeyLookupAsNonToStringableObject() throws Exception {
+    @Test public void testDictKeyLookupAsNonToStringableObject() {
         // Make sure we try rendering stuff to string if not found as regular object
         String templates =
                 "foo(m,k) ::= \"<m.(k)>\""+newline
@@ -110,7 +110,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictMissingDefaultValueIsEmpty() throws Exception {
+    @Test public void testDictMissingDefaultValueIsEmpty() {
         String templates =
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -126,7 +126,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictMissingDefaultValueIsEmptyForNullKey() throws Exception {
+    @Test public void testDictMissingDefaultValueIsEmptyForNullKey() {
         String templates =
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "var(type,w,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -142,7 +142,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictHiddenByFormalArg() throws Exception {
+    @Test public void testDictHiddenByFormalArg() {
         String templates =
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "var(typeInit,type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -157,7 +157,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictEmptyValueAndAngleBracketStrings() throws Exception {
+    @Test public void testDictEmptyValueAndAngleBracketStrings() {
         String templates =
                 "typeInit ::= [\"int\":\"0\", \"float\":, \"double\":<<0.0L>>] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -172,7 +172,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictDefaultValue() throws Exception {
+    @Test public void testDictDefaultValue() {
         String templates =
                 "typeInit ::= [\"int\":\"0\", default:\"null\"] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -187,7 +187,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictNullKeyGetsDefaultValue() throws Exception {
+    @Test public void testDictNullKeyGetsDefaultValue() {
         String templates =
                 "typeInit ::= [\"int\":\"0\", default:\"null\"] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -202,7 +202,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictEmptyDefaultValue() throws Exception {
+    @Test public void testDictEmptyDefaultValue() {
         String templates =
                 "typeInit ::= [\"int\":\"0\", default:] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -217,7 +217,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDictDefaultValueIsKey() throws Exception {
+    @Test public void testDictDefaultValueIsKey() {
         String templates =
                 "typeInit ::= [\"int\":\"0\", default:key] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -235,7 +235,7 @@ public class TestDictionaries extends BaseTest {
     /**
      * Test that a map can have only the default entry.
      */
-    @Test public void testDictDefaultStringAsKey() throws Exception {
+    @Test public void testDictDefaultStringAsKey() {
         String templates =
                 "typeInit ::= [\"default\":\"foo\"] "+newline+
                 "var(type,name) ::= \"<type> <name> = <typeInit.(type)>;\""+newline
@@ -253,7 +253,7 @@ public class TestDictionaries extends BaseTest {
     /**
      * Test that a map can return a <b>string</b> with the word: default.
      */
-    @Test public void testDictDefaultIsDefaultString() throws Exception {
+    @Test public void testDictDefaultIsDefaultString() {
         String templates =
                 "map ::= [default: \"default\"] "+newline+
                 "t() ::= << <map.(\"1\")> >>"+newline
@@ -266,7 +266,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictViaEnclosingTemplates() throws Exception {
+    @Test public void testDictViaEnclosingTemplates() {
         String templates =
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "intermediate(type,name) ::= \"<var(type,name)>\""+newline+
@@ -282,7 +282,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testDictViaEnclosingTemplates2() throws Exception {
+    @Test public void testDictViaEnclosingTemplates2() {
         String templates =
                 "typeInit ::= [\"int\":\"0\", \"float\":\"0.0\"] "+newline+
                 "intermediate(stuff) ::= \"<stuff>\""+newline+
@@ -337,7 +337,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testImportDictionary() throws Exception {
+    @Test public void testImportDictionary() {
         String Root =
             "d ::= [\"a\":\"b\"]\n";
 
@@ -354,7 +354,7 @@ public class TestDictionaries extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testStringsInDictionary() throws Exception {
+    @Test public void testStringsInDictionary() {
         String templates =
             "auxMap ::= [\n" +
             "   \"E\": \"electric <field>\",\n" +
@@ -383,7 +383,7 @@ public class TestDictionaries extends BaseTest {
         Assert.assertEquals(expecting, st.render());
     }
 
-    @Test public void testTemplatesInDictionary() throws Exception {
+    @Test public void testTemplatesInDictionary() {
         String templates =
             "auxMap ::= [\n" +
             "   \"E\": {electric <field>},\n" +
@@ -413,7 +413,7 @@ public class TestDictionaries extends BaseTest {
     }
 
     @Test
-    public void testDictionaryBehaviorTrue() throws Exception {
+    public void testDictionaryBehaviorTrue() {
         String templates =
             "d ::= [\n" +
             "   \"x\" : true,\n" +
@@ -433,7 +433,7 @@ public class TestDictionaries extends BaseTest {
     }
 
     @Test
-    public void testDictionaryBehaviorFalse() throws Exception {
+    public void testDictionaryBehaviorFalse() {
         String templates =
             "d ::= [\n" +
             "   \"x\" : false,\n" +
@@ -453,7 +453,7 @@ public class TestDictionaries extends BaseTest {
     }
 
     @Test
-    public void testDictionaryBehaviorEmptyTemplate() throws Exception {
+    public void testDictionaryBehaviorEmptyTemplate() {
         String templates =
             "d ::= [\n" +
             "   \"x\" : {},\n" +
@@ -473,7 +473,7 @@ public class TestDictionaries extends BaseTest {
     }
 
     @Test
-    public void testDictionaryBehaviorEmptyList() throws Exception {
+    public void testDictionaryBehaviorEmptyList() {
         String templates =
             "d ::= [\n" +
             "   \"x\" : [],\n" +
@@ -499,7 +499,7 @@ public class TestDictionaries extends BaseTest {
      * https://github.com/antlr/stringtemplate4/issues/114
      */
     @Test
-    public void testDictionaryBehaviorNoNewlineTemplate() throws Exception {
+    public void testDictionaryBehaviorNoNewlineTemplate() {
         String templates =
             "d ::= [\n" +
             "   \"x\" : <%hi%>\n" +
@@ -518,7 +518,7 @@ public class TestDictionaries extends BaseTest {
     }
 
     @Test
-    public void testDictionarySpecialValues() throws Exception {
+    public void testDictionarySpecialValues() {
         String templates =
             "t(id) ::= <<\n" +
             "<identifier.(id)>\n" +
@@ -552,7 +552,8 @@ public class TestDictionaries extends BaseTest {
     }
 
     @Test
-    public void testDictionarySpecialValuesOverride() throws Exception {
+    public void testDictionarySpecialValuesOverride()
+    {
         String templates =
             "t(id) ::= <<\n" +
             "<identifier.(id)>\n" +

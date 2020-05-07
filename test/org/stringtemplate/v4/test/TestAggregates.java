@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 
 /** */
 public class TestAggregates extends BaseTest {
-    @Test public void testApplyAnonymousTemplateToAggregateAttribute() throws Exception {
+    @Test public void testApplyAnonymousTemplateToAggregateAttribute() {
         ST st =
             new ST("<items:{it|<it.id>: <it.lastName>, <it.firstName>\n}>");
         // also testing wacky spaces in aggregate spec
@@ -57,7 +57,7 @@ public class TestAggregates extends BaseTest {
         public String getType() {return type;}
     }
 
-    @Test public void testComplicatedIndirectTemplateApplication() throws Exception {
+    @Test public void testComplicatedIndirectTemplateApplication() {
         String templates =
             "group Java;"+newline +
             ""+newline +

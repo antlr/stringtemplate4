@@ -199,28 +199,24 @@ public class Compiler {
     }
 
     protected void reportMessageAndThrowSTException(TokenStream tokens, Token templateToken,
-                                                    Parser parser, RecognitionException re)
-    {
+                                                    Parser parser, RecognitionException re) {
+        final String msg;
         if ( re.token.getType() == STLexer.EOF_TYPE ) {
-            String msg = "premature EOF";
-            group.errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
+            msg = "premature EOF";
         }
         else if ( re instanceof NoViableAltException) {
-            String msg = "'"+re.token.getText()+"' came as a complete surprise to me";
-            group.errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
+            msg = "'"+re.token.getText()+"' came as a complete surprise to me";
         }
         else if ( tokens.index() == 0 ) { // couldn't parse anything
-            String msg = "this doesn't look like a template: \""+tokens+"\"";
-            group.errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
+            msg = "this doesn't look like a template: \""+tokens+"\"";
         }
         else if ( tokens.LA(1) == STLexer.LDELIM ) { // couldn't parse expr
-            String msg = "doesn't look like an expression";
-            group.errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
+            msg = "doesn't look like an expression";
         }
         else {
-            String msg = parser.getErrorMessage(re, parser.getTokenNames());
-            group.errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
+            msg = parser.getErrorMessage(re, parser.getTokenNames());
         }
+        group.errMgr.compileTimeError(ErrorType.SYNTAX_ERROR, templateToken, re.token, msg);
         throw new STException(); // we have reported the error, so just blast out
     }
 

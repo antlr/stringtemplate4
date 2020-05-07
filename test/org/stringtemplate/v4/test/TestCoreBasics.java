@@ -48,7 +48,8 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class TestCoreBasics extends BaseTest {
-    @Test public void testNullAttr() throws Exception {
+    @Test public void testNullAttr()
+    {
         String template = "hi <name>!";
         ST st = new ST(template);
         String expected =
@@ -57,7 +58,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAttr() throws Exception {
+    @Test public void testAttr()
+    {
         String template = "hi <name>!";
         ST st = new ST(template);
         st.add("name", "Ter");
@@ -66,7 +68,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testChainAttr() throws Exception {
+    @Test public void testChainAttr()
+    {
         String template = "<x>:<names>!";
         ST st = new ST(template);
         st.add("names", "Ter").add("names", "Tom").add("x", 1);
@@ -75,7 +78,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSetUnknownAttr() throws Exception {
+    @Test public void testSetUnknownAttr()
+    {
         String templates =
             "t() ::= <<hi <name>!>>\n";
         ErrorBuffer errors = new ErrorBuffer();
@@ -94,7 +98,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMultiAttr() throws Exception {
+    @Test public void testMultiAttr()
+    {
         String template = "hi <name>!";
         ST st = new ST(template);
         st.add("name", "Ter");
@@ -105,7 +110,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAttrIsList() throws Exception {
+    @Test public void testAttrIsList()
+    {
         String template = "hi <name>!";
         ST st = new ST(template);
         List<String> names = new ArrayList<String>() {{add("Ter"); add("Tom");}};
@@ -118,7 +124,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(2, names.size()); // my names list is still just 2
     }
 
-    @Test public void testAttrIsArray() throws Exception {
+    @Test public void testAttrIsArray()
+    {
         String template = "hi <name>!";
         ST st = new ST(template);
         String[] names = new String[] {"Ter", "Tom"};
@@ -130,7 +137,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testProp() throws Exception {
+    @Test public void testProp()
+    {
         String template = "<u.id>: <u.name>"; // checks field and method getter
         ST st = new ST(template);
         st.add("u", new User(1, "parrt"));
@@ -139,7 +147,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testPropWithNoAttr() throws Exception {
+    @Test public void testPropWithNoAttr()
+    {
         String template = "<foo.a>: <ick>";
         ST st = new ST(template);
         st.add("foo", new HashMap<String, String>() {{put("a","b");}});
@@ -148,7 +157,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMapAcrossDictionaryUsesKeys() throws Exception {
+    @Test public void testMapAcrossDictionaryUsesKeys()
+    {
         String template = "<foo:{f | <f>}>"; // checks field and method getter
         ST st = new ST(template);
         st.add("foo", new LinkedHashMap<String, String>() {{put("a","b"); put("c","d");}});
@@ -157,7 +167,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSTProp() throws Exception {
+    @Test public void testSTProp()
+    {
         String template = "<t.x>"; // get x attr of template t
         ST st = new ST(template);
         ST t = new ST("<x>");
@@ -168,7 +179,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testBooleanISProp() throws Exception {
+    @Test public void testBooleanISProp()
+    {
         String template = "<t.manager>"; // call isManager
         ST st = new ST(template);
         st.add("t", new User(32, "Ter"));
@@ -177,7 +189,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testBooleanHASProp() throws Exception {
+    @Test public void testBooleanHASProp()
+    {
         String template = "<t.parkingSpot>"; // call hasParkingSpot
         ST st = new ST(template);
         st.add("t", new User(32, "Ter"));
@@ -186,7 +199,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNullAttrProp() throws Exception {
+    @Test public void testNullAttrProp()
+    {
         String template = "<u.id>: <u.name>";
         ST st = new ST(template);
         String expected = ": ";
@@ -194,7 +208,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNoSuchProp() throws Exception {
+    @Test public void testNoSuchProp()
+    {
         ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
         String template = "<u.qqq>";
         STGroup group = new STGroup();
@@ -209,7 +224,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals("org.stringtemplate.v4.test.BaseTest$User.qqq", e.propertyName);
     }
 
-    @Test public void testNullIndirectProp() throws Exception {
+    @Test public void testNullIndirectProp()
+    {
         ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
         STGroup group = new STGroup();
         group.setListener(errors);
@@ -225,7 +241,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals("org.stringtemplate.v4.test.BaseTest$User.null", e.propertyName);
     }
 
-    @Test public void testPropConvertsToString() throws Exception {
+    @Test public void testPropConvertsToString()
+    {
         ErrorBufferAllErrors errors = new ErrorBufferAllErrors();
         STGroup group = new STGroup();
         group.setListener(errors);
@@ -241,7 +258,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals("org.stringtemplate.v4.test.BaseTest$User.100", e.propertyName);
     }
 
-    @Test public void testInclude() throws Exception {
+    @Test public void testInclude()
+    {
         String template = "load <box()>;";
         ST st = new ST(template);
         st.impl.nativeGroup.defineTemplate("box", "kewl" + newline + "daddy");
@@ -251,7 +269,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIncludeWithArg() throws Exception {
+    @Test public void testIncludeWithArg()
+    {
         String template = "load <box(\"arg\")>;";
         ST st = new ST(template);
         st.impl.nativeGroup.defineTemplate("box", "x", "kewl <x> daddy");
@@ -262,7 +281,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIncludeWithEmptySubtemplateArg() throws Exception {
+    @Test public void testIncludeWithEmptySubtemplateArg()
+    {
         String template = "load <box({})>;";
         ST st = new ST(template);
         st.impl.nativeGroup.defineTemplate("box", "x", "kewl <x> daddy");
@@ -273,7 +293,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIncludeWithArg2() throws Exception {
+    @Test public void testIncludeWithArg2()
+    {
         String template = "load <box(\"arg\", foo())>;";
         ST st = new ST(template);
         st.impl.nativeGroup.defineTemplate("box", "x,y", "kewl <x> <y> daddy");
@@ -284,7 +305,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIncludeWithNestedArgs() throws Exception {
+    @Test public void testIncludeWithNestedArgs()
+    {
         String template = "load <box(foo(\"arg\"))>;";
         ST st = new ST(template);
         st.impl.nativeGroup.defineTemplate("box", "y", "kewl <y> daddy");
@@ -295,7 +317,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testPassThru() throws Exception {
+    @Test public void testPassThru()
+    {
         String templates =
             "a(x,y) ::= \"<b(...)>\"\n" +
             "b(x,y) ::= \"<x><y>\"\n";
@@ -308,7 +331,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testPassThruWithDefaultValue() throws Exception {
+    @Test public void testPassThruWithDefaultValue()
+    {
         String templates =
             "a(x,y) ::= \"<b(...)>\"\n" + // should not set y when it sees "no value" from above
             "b(x,y={99}) ::= \"<x><y>\"\n";
@@ -320,7 +344,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testPassThruWithDefaultValueThatLacksDefinitionAbove() throws Exception {
+    @Test public void testPassThruWithDefaultValueThatLacksDefinitionAbove()
+    {
         String templates =
             "a(x) ::= \"<b(...)>\"\n" + // should not set y when it sees "no definition" from above
             "b(x,y={99}) ::= \"<x><y>\"\n";
@@ -332,7 +357,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testPassThruPartialArgs() throws Exception {
+    @Test public void testPassThruPartialArgs()
+    {
         String templates =
             "a(x,y) ::= \"<b(y={99},...)>\"\n" +
             "b(x,y) ::= \"<x><y>\"\n";
@@ -345,7 +371,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testPassThruNoMissingArgs() throws Exception {
+    @Test public void testPassThruNoMissingArgs()
+    {
         String templates =
             "a(x,y) ::= \"<b(y={99},x={1},...)>\"\n" +
             "b(x,y) ::= \"<x><y>\"\n";
@@ -358,7 +385,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefineTemplate() throws Exception {
+    @Test public void testDefineTemplate()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("inc", "x", "<x>+1");
         group.defineTemplate("test", "name", "hi <name>!");
@@ -372,7 +400,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMap() throws Exception {
+    @Test public void testMap()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("inc", "x", "[<x>]");
         group.defineTemplate("test", "name", "hi <name:inc()>!");
@@ -386,7 +415,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIndirectMap() throws Exception {
+    @Test public void testIndirectMap()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("inc", "x", "[<x>]");
         group.defineTemplate("test", "t,name", "<name:(t)()>!");
@@ -401,7 +431,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMapWithExprAsTemplateName() throws Exception {
+    @Test public void testMapWithExprAsTemplateName()
+    {
         String templates =
             "d ::= [\"foo\":\"bold\"]\n" +
             "test(name) ::= \"<name:(d.foo)()>\"\n" +
@@ -417,7 +448,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testParallelMap() throws Exception {
+    @Test public void testParallelMap()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names,phones", "hi <names,phones:{n,p | <n>:<p>;}>");
         ST st = group.getInstanceOf("test");
@@ -433,7 +465,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testParallelMapWith3Versus2Elements() throws Exception {
+    @Test public void testParallelMapWith3Versus2Elements()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names,phones", "hi <names,phones:{n,p | <n>:<p>;}>");
         ST st = group.getInstanceOf("test");
@@ -448,7 +481,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testParallelMapThenMap() throws Exception {
+    @Test public void testParallelMapThenMap()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("bold", "x", "[<x>]");
         group.defineTemplate("test", "names,phones",
@@ -465,7 +499,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMapThenParallelMap() throws Exception {
+    @Test public void testMapThenParallelMap()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("bold", "x", "[<x>]");
         group.defineTemplate("test", "names,phones",
@@ -482,7 +517,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMapIndexes() throws Exception {
+    @Test public void testMapIndexes()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("inc", "x,i", "<i>:<x>");
         group.defineTemplate("test", "name", "<name:{n|<inc(n,i)>}; separator=\", \">");
@@ -497,7 +533,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMapIndexes2() throws Exception {
+    @Test public void testMapIndexes2()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "<name:{n | <i>:<n>}; separator=\", \">");
         ST st = group.getInstanceOf("test");
@@ -511,7 +548,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMapSingleValue() throws Exception {
+    @Test public void testMapSingleValue()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("a", "x", "[<x>]");
         group.defineTemplate("test", "name", "hi <name:a()>!");
@@ -522,7 +560,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMapNullValue() throws Exception {
+    @Test public void testMapNullValue()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("a", "x", "[<x>]");
         group.defineTemplate("test", "name", "hi <name:a()>!");
@@ -532,7 +571,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMapNullValueInList() throws Exception {
+    @Test public void testMapNullValueInList()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "<name; separator=\", \">");
         ST st = group.getInstanceOf("test");
@@ -546,7 +586,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testRepeatedMap() throws Exception {
+    @Test public void testRepeatedMap()
+    {
      STGroup group = new STGroup();
      group.defineTemplate("a", "x", "[<x>]");
      group.defineTemplate("b", "x", "(<x>)");
@@ -561,7 +602,8 @@ public class TestCoreBasics extends BaseTest {
      assertEquals(expected, result);
  }
 
-    @Test public void testRepeatedMapWithNullValue() throws Exception {
+    @Test public void testRepeatedMapWithNullValue()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("a", "x", "[<x>]");
         group.defineTemplate("b", "x", "(<x>)");
@@ -576,7 +618,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testRepeatedMapWithNullValueAndNullOption() throws Exception {
+    @Test public void testRepeatedMapWithNullValueAndNullOption()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("a", "x", "[<x>]");
         group.defineTemplate("b", "x", "(<x>)");
@@ -591,7 +634,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testRoundRobinMap() throws Exception {
+    @Test public void testRoundRobinMap()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("a", "x", "[<x>]");
         group.defineTemplate("b", "x", "(<x>)");
@@ -606,7 +650,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTrueCond() throws Exception {
+    @Test public void testTrueCond()
+    {
         String template = "<if(name)>works<endif>";
         ST st = new ST(template);
         st.add("name", "Ter");
@@ -615,7 +660,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEmptyIFTemplate() throws Exception {
+    @Test public void testEmptyIFTemplate()
+    {
         String template = "<if(x)>fail<elseif(name)><endif>";
         ST st = new ST(template);
         st.add("name", "Ter");
@@ -624,7 +670,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testCondParens() throws Exception {
+    @Test public void testCondParens()
+    {
         String template = "<if(!(x||y)&&!z)>works<endif>";
         ST st = new ST(template);
         String expected = "works";
@@ -632,7 +679,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testFalseCond() throws Exception {
+    @Test public void testFalseCond()
+    {
         String template = "<if(name)>works<endif>";
         ST st = new ST(template);
         String expected = "";
@@ -640,7 +688,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testFalseCond2() throws Exception {
+    @Test public void testFalseCond2()
+    {
         String template = "<if(name)>works<endif>";
         ST st = new ST(template);
         st.add("name", null);
@@ -649,7 +698,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testFalseCondWithFormalArgs() throws Exception {
+    @Test public void testFalseCondWithFormalArgs()
+    {
         // insert of indent instr was not working; ok now
         String dir = getRandomDir();
         String groupFile =
@@ -668,7 +718,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testElseIf2() throws Exception {
+    @Test public void testElseIf2()
+    {
         String template =
             "<if(x)>fail1<elseif(y)>fail2<elseif(z)>works<else>fail3<endif>";
         ST st = new ST(template);
@@ -678,7 +729,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testElseIf3() throws Exception {
+    @Test public void testElseIf3()
+    {
         String template =
             "<if(x)><elseif(y)><elseif(z)>works<else><endif>";
         ST st = new ST(template);
@@ -688,7 +740,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNotTrueCond() throws Exception {
+    @Test public void testNotTrueCond()
+    {
         String template = "<if(!name)>works<endif>";
         ST st = new ST(template);
         st.add("name", "Ter");
@@ -697,7 +750,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNotFalseCond() throws Exception {
+    @Test public void testNotFalseCond()
+    {
         String template = "<if(!name)>works<endif>";
         ST st = new ST(template);
         String expected = "works";
@@ -705,7 +759,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testParensInConditonal() throws Exception {
+    @Test public void testParensInConditonal()
+    {
         String template = "<if((a||b)&&(c||d))>works<endif>";
         ST st = new ST(template);
         st.add("a", true);
@@ -717,7 +772,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testParensInConditonal2() throws Exception {
+    @Test public void testParensInConditonal2()
+    {
         String template = "<if((!a||b)&&!(c||d))>broken<else>works<endif>";
         ST st = new ST(template);
         st.add("a", true);
@@ -729,7 +785,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testTrueCondWithElse() throws Exception {
+    @Test public void testTrueCondWithElse()
+    {
         String template = "<if(name)>works<else>fail<endif>";
         ST st = new ST(template);
         st.add("name", "Ter");
@@ -738,7 +795,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testFalseCondWithElse() throws Exception {
+    @Test public void testFalseCondWithElse()
+    {
         String template = "<if(name)>fail<else>works<endif>";
         ST st = new ST(template);
         String expected = "works";
@@ -746,7 +804,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testElseIf() throws Exception {
+    @Test public void testElseIf()
+    {
         String template = "<if(name)>fail<elseif(id)>works<else>fail<endif>";
         ST st = new ST(template);
         st.add("id", "2DF3DF");
@@ -755,7 +814,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testElseIfNoElseAllFalse() throws Exception {
+    @Test public void testElseIfNoElseAllFalse()
+    {
         String template = "<if(name)>fail<elseif(id)>fail<endif>";
         ST st = new ST(template);
         String expected = "";
@@ -763,7 +823,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testElseIfAllExprFalse() throws Exception {
+    @Test public void testElseIfAllExprFalse()
+    {
         String template = "<if(name)>fail<elseif(id)>fail<else>works<endif>";
         ST st = new ST(template);
         String expected = "works";
@@ -771,7 +832,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testOr() throws Exception {
+    @Test public void testOr()
+    {
         String template = "<if(name||notThere)>works<else>fail<endif>";
         ST st = new ST(template);
         st.add("name", "Ter");
@@ -780,7 +842,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMapConditionAndEscapeInside() throws Exception {
+    @Test public void testMapConditionAndEscapeInside()
+    {
         String template = "<if(m.name)>works \\\\<endif>";
         ST st = new ST(template);
         Map<String, String> m = new HashMap<String, String>();
@@ -791,7 +854,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAnd() throws Exception {
+    @Test public void testAnd()
+    {
         String template = "<if(name&&notThere)>fail<else>works<endif>";
         ST st = new ST(template);
         st.add("name", "Ter");
@@ -800,7 +864,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAndNot() throws Exception {
+    @Test public void testAndNot()
+    {
         String template = "<if(name&&!notThere)>works<else>fail<endif>";
         ST st = new ST(template);
         st.add("name", "Ter");
@@ -809,7 +874,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testCharLiterals() throws Exception {
+    @Test public void testCharLiterals()
+    {
         ST st = new ST(
                 "Foo <\\n><\\n><\\t> bar\n"
                 );
@@ -836,7 +902,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testUnicodeLiterals() throws Exception {
+    @Test public void testUnicodeLiterals()
+    {
         ST st = new ST(
                 "Foo <\\uFEA5><\\n><\\u00C2> bar\n"
                 );
@@ -857,7 +924,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testSubtemplateExpr() throws Exception {
+    @Test public void testSubtemplateExpr()
+    {
         String template = "<{name\n}>";
         ST st = new ST(template);
         String expected =
@@ -866,7 +934,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparator() throws Exception {
+    @Test public void testSeparator()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
         ST st = group.getInstanceOf("test");
@@ -878,7 +947,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorInList() throws Exception {
+    @Test public void testSeparatorInList()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
         ST st = group.getInstanceOf("test");
@@ -892,7 +962,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorInList2() throws Exception {
+    @Test public void testSeparatorInList2()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
         ST st = group.getInstanceOf("test");
@@ -907,7 +978,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorInArray() throws Exception {
+    @Test public void testSeparatorInArray()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
         ST st = group.getInstanceOf("test");
@@ -918,7 +990,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorInArray2() throws Exception {
+    @Test public void testSeparatorInArray2()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
         ST st = group.getInstanceOf("test");
@@ -930,7 +1003,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorInPrimitiveArray() throws Exception {
+    @Test public void testSeparatorInPrimitiveArray()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
         ST st = group.getInstanceOf("test");
@@ -941,7 +1015,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorInPrimitiveArray2() throws Exception {
+    @Test public void testSeparatorInPrimitiveArray2()
+    {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "<names:{n | case <n>}; separator=\", \">");
         ST st = group.getInstanceOf("test");
@@ -956,7 +1031,8 @@ public class TestCoreBasics extends BaseTest {
     /** (...) forces early eval to string. early eval {@code <(x)>} using new
      *  STWriter derived from type of current STWriter. e.g., AutoIndentWriter.
      */
-    @Test public void testEarlyEvalIndent() throws Exception {
+    @Test public void testEarlyEvalIndent()
+    {
         String templates =
             "t() ::= <<  abc>>\n" +
             "main() ::= <<\n" +
@@ -978,7 +1054,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEarlyEvalNoIndent() throws Exception {
+    @Test public void testEarlyEvalNoIndent()
+    {
         String templates =
             "t() ::= <<  abc>>\n" +
             "main() ::= <<\n" +
@@ -1003,7 +1080,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testArrayOfTemplates() throws Exception {
+    @Test public void testArrayOfTemplates()
+    {
         String template = "<foo>!";
         ST st = new ST(template);
         ST[] t = new ST[] {new ST("hi"), new ST("mom")};
@@ -1013,7 +1091,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testArrayOfTemplatesInTemplate() throws Exception {
+    @Test public void testArrayOfTemplatesInTemplate()
+    {
         String template = "<foo>!";
         ST st = new ST(template);
         ST[] t = new ST[] {new ST("hi"), new ST("mom")};
@@ -1025,7 +1104,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testListOfTemplates() throws Exception {
+    @Test public void testListOfTemplates()
+    {
         String template = "<foo>!";
         ST st = new ST(template);
         List<ST> t = new ArrayList<ST>() {{add(new ST("hi")); add(new ST("mom"));}};
@@ -1035,7 +1115,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testListOfTemplatesInTemplate() throws Exception {
+    @Test public void testListOfTemplatesInTemplate()
+    {
         String template = "<foo>!";
         ST st = new ST(template);
         List<ST> t = new ArrayList<ST>() {{add(new ST("hi")); add(new ST("mom"));}};
@@ -1047,7 +1128,8 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void playing() throws Exception {
+    @Test public void playing()
+    {
         String template = "<a:t(x,y),u()>";
         ST st = new ST(template);
         st.impl.dump();

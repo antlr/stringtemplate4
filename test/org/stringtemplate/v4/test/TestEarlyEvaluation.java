@@ -151,7 +151,8 @@ public class TestEarlyEvaluation extends BaseTest {
     }
 
     @Test
-    public void testEarlyEvalInIfExpr() throws Exception {
+    public void testEarlyEvalInIfExpr()
+    {
         String templates = "main(x) ::= << <if((x))>foo<else>bar<endif> >>";
         writeFile(tmpdir, "t.stg", templates);
 
@@ -168,7 +169,8 @@ public class TestEarlyEvaluation extends BaseTest {
     }
 
     @Test
-    public void testEarlyEvalOfSubtemplateInIfExpr() throws Exception {
+    public void testEarlyEvalOfSubtemplateInIfExpr()
+    {
         String templates = "main(x) ::= << <if(({a<x>b}))>foo<else>bar<endif> >>";
         writeFile(tmpdir, "t.stg", templates);
 
@@ -181,7 +183,8 @@ public class TestEarlyEvaluation extends BaseTest {
     }
 
     @Test
-    public void testEarlyEvalOfMapInIfExpr() throws Exception {
+    public void testEarlyEvalOfMapInIfExpr()
+    {
         String templates =
             "m ::= [\n"+
             "   \"parrt\": \"value\",\n"+
@@ -204,7 +207,8 @@ public class TestEarlyEvaluation extends BaseTest {
     }
 
     @Test
-    public void testEarlyEvalOfMapInIfExprPassInHashMap() throws Exception {
+    public void testEarlyEvalOfMapInIfExprPassInHashMap()
+    {
         String templates =
             "main(m,x) ::= << p<x>t: <m.({p<x>t})>, <if(m.({p<x>t}))>if<else>else<endif> >>\n";
         writeFile(tmpdir, "t.stg", templates);

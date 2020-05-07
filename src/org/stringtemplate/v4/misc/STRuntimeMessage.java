@@ -88,8 +88,8 @@ public class STRuntimeMessage extends STMessage {
             }
             buf.append("]");
         }
-        if ( loc!=null ) buf.append(" "+loc);
-        buf.append(" "+super.toString());
+        if ( loc!=null ) buf.append(" ").append(loc);
+        buf.append(" ").append(super.toString());
         return buf.toString();
     }
 }

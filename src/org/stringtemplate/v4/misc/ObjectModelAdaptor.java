@@ -111,7 +111,7 @@ public class ObjectModelAdaptor<T> implements ModelAdaptor<T> {
 
             // try getXXX and isXXX properties, look up using reflection
             String methodSuffix = Character.toUpperCase(memberName.charAt(0)) +
-                memberName.substring(1, memberName.length());
+                memberName.substring(1);
             
             member = tryGetMethod(clazz, "get" + methodSuffix);
             if (member == null) {
@@ -139,8 +139,8 @@ public class ObjectModelAdaptor<T> implements ModelAdaptor<T> {
             }
 
             return method;
-        } catch (NoSuchMethodException ex) {
-        } catch (SecurityException ex) {
+        } catch (NoSuchMethodException ignored) {
+        } catch (SecurityException ignored) {
         }
 
         return null;
@@ -154,8 +154,8 @@ public class ObjectModelAdaptor<T> implements ModelAdaptor<T> {
             }
 
             return field;
-        } catch (NoSuchFieldException ex) {
-        } catch (SecurityException ex) {
+        } catch (NoSuchFieldException ignored) {
+        } catch (SecurityException ignored) {
         }
 
         return null;

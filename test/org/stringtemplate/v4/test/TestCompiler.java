@@ -66,7 +66,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TestCompiler extends BaseTest {
 
-    @Test public void testAttr() throws Exception {
+    @Test public void testAttr() {
         String template = "hi <name>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -80,7 +80,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testInclude() throws Exception {
+    @Test public void testInclude() {
         String template = "hi <foo()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -92,7 +92,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testIncludeWithPassThrough() throws Exception {
+    @Test public void testIncludeWithPassThrough() {
         String template = "hi <foo(...)>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -104,7 +104,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testIncludeWithPartialPassThrough() throws Exception {
+    @Test public void testIncludeWithPartialPassThrough() {
         String template = "hi <foo(x=y,...)>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -116,7 +116,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testSuperInclude() throws Exception {
+    @Test public void testSuperInclude() {
         String template = "<super.foo()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -129,7 +129,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testSuperIncludeWithArgs() throws Exception {
+    @Test public void testSuperIncludeWithArgs() {
         String template = "<super.foo(a,{b})>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -141,7 +141,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testSuperIncludeWithNamedArgs() throws Exception {
+    @Test public void testSuperIncludeWithNamedArgs() {
         String template = "<super.foo(x=a,y={b})>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -153,7 +153,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testIncludeWithArgs() throws Exception {
+    @Test public void testIncludeWithArgs() {
         String template = "hi <foo(a,b)>";
         CompiledST code = new org.stringtemplate.v4.compiler.Compiler().compile(template);
         String asmExpected =
@@ -165,7 +165,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testAnonIncludeArgs() throws Exception {
+    @Test public void testAnonIncludeArgs() {
         String template = "<({ a, b | <a><b>})>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -177,7 +177,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testAnonIncludeArgMismatch() throws Exception {
+    @Test public void testAnonIncludeArgMismatch() {
         STErrorListener errors = new ErrorBuffer();
         String template = "<a:{foo}>";
         STGroup g = new STGroup();
@@ -187,7 +187,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(expected, errors.toString());
     }
 
-    @Test public void testAnonIncludeArgMismatch2() throws Exception {
+    @Test public void testAnonIncludeArgMismatch2() {
         STErrorListener errors = new ErrorBuffer();
         String template = "<a,b:{x|foo}>";
         STGroup g = new STGroup();
@@ -197,7 +197,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(expected, errors.toString());
     }
 
-    @Test public void testAnonIncludeArgMismatch3() throws Exception {
+    @Test public void testAnonIncludeArgMismatch3() {
         STErrorListener errors = new ErrorBuffer();
         String template = "<a:{x|foo},{bar}>";
         STGroup g = new STGroup();
@@ -207,7 +207,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(expected, errors.toString());
     }
 
-    @Test public void testIndirectIncludeWitArgs() throws Exception {
+    @Test public void testIndirectIncludeWitArgs() {
         String template = "hi <(foo)(a,b)>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -219,7 +219,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testProp() throws Exception {
+    @Test public void testProp() {
         String template = "hi <a.b>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -231,7 +231,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testProp2() throws Exception {
+    @Test public void testProp2() {
         String template = "<u.id>: <u.name>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -244,7 +244,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testMap() throws Exception {
+    @Test public void testMap() {
         String template = "<name:bold()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -256,7 +256,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testMapAsOption() throws Exception {
+    @Test public void testMapAsOption() {
         String template = "<a; wrap=name:bold()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -269,7 +269,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testMapArg() throws Exception {
+    @Test public void testMapArg() {
         String template = "<name:bold(x)>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -281,7 +281,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testIndirectMapArg() throws Exception {
+    @Test public void testIndirectMapArg() {
         String template = "<name:(t)(x)>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -293,7 +293,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testRepeatedMap() throws Exception {
+    @Test public void testRepeatedMap() {
         String template = "<name:bold():italics()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -305,7 +305,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testRepeatedMapArg() throws Exception {
+    @Test public void testRepeatedMapArg() {
         String template = "<name:bold(x):italics(x,y)>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -318,7 +318,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testRotMap() throws Exception {
+    @Test public void testRotMap() {
         String template = "<name:bold(),italics()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -330,7 +330,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testRotMapArg() throws Exception {
+    @Test public void testRotMapArg() {
         String template = "<name:bold(x),italics()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -342,7 +342,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testZipMap() throws Exception {
+    @Test public void testZipMap() {
         String template = "<names,phones:bold()>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -354,7 +354,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testZipMapArg() throws Exception {
+    @Test public void testZipMapArg() {
         String template = "<names,phones:bold(x)>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -366,7 +366,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testAnonMap() throws Exception {
+    @Test public void testAnonMap() {
         String template = "<name:{n | <n>}>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -378,7 +378,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testAnonZipMap() throws Exception {
+    @Test public void testAnonZipMap() {
         String template = "<a,b:{x,y | <x><y>}>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -390,7 +390,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testIf() throws Exception {
+    @Test public void testIf() {
         String template = "go: <if(name)>hi, foo<endif>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -402,7 +402,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testIfElse() throws Exception {
+    @Test public void testIfElse() {
         String template = "go: <if(name)>hi, foo<else>bye<endif>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -419,7 +419,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testElseIf() throws Exception {
+    @Test public void testElseIf() {
         String template = "go: <if(name)>hi, foo<elseif(user)>a user<endif>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -438,7 +438,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testElseIfElse() throws Exception {
+    @Test public void testElseIfElse() {
         String template = "go: <if(name)>hi, foo<elseif(user)>a user<else>bye<endif>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -459,7 +459,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testOption() throws Exception {
+    @Test public void testOption() {
         String template = "hi <name; separator=\"x\">";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -471,7 +471,7 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testOptionAsTemplate() throws Exception {
+    @Test public void testOptionAsTemplate() {
         String template = "hi <name; separator={, }>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -483,7 +483,8 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testOptions() throws Exception {
+    @Test public void testOptions()
+    {
         String template = "hi <name; anchor, wrap=foo(), separator=\", \">";
         CompiledST code = new Compiler().compile(template);
         String asmExpected =
@@ -505,7 +506,8 @@ public class TestCompiler extends BaseTest {
         assertEquals(asmExpected, asmResult);
     }
 
-    @Test public void testEmptyList() throws Exception {
+    @Test public void testEmptyList()
+    {
         String template = "<[]>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected = "list, write";
@@ -516,7 +518,8 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testList() throws Exception {
+    @Test public void testList()
+    {
         String template = "<[a,b]>";
         CompiledST code = new Compiler().compile(template);
         String asmExpected = "list, load_attr 0, add, load_attr 1, add, write";
@@ -527,7 +530,8 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testEmbeddedRegion() throws Exception {
+    @Test public void testEmbeddedRegion()
+    {
         String template = "<@r>foo<@end>";
         // compile as if in root dir and in template 'a'
         CompiledST code = new Compiler().compile("a", template);
@@ -540,7 +544,8 @@ public class TestCompiler extends BaseTest {
         assertEquals(stringsExpected, stringsResult);
     }
 
-    @Test public void testRegion() throws Exception {
+    @Test public void testRegion()
+    {
         String template = "x:<@r()>";
         // compile as if in root dir and in template 'a'
         CompiledST code = new Compiler().compile("a", template);

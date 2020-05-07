@@ -41,7 +41,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class TestGroupSyntax extends BaseTest {
-    @Test public void testSimpleGroup() throws Exception {
+    @Test public void testSimpleGroup()
+    {
         String templates =
             "t() ::= <<foo>>" + Misc.newline;
 
@@ -55,7 +56,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEscapedQuote() throws Exception {
+    @Test public void testEscapedQuote()
+    {
         // setTest(ranges) ::= "<ranges; separator=\"||\">"
         // has to unescape the strings.
         String templates =
@@ -71,7 +73,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMultiTemplates() throws Exception {
+    @Test public void testMultiTemplates()
+    {
         String templates =
             "ta(x) ::= \"[<x>]\"" + Misc.newline +
             "duh() ::= <<hi there>>" + Misc.newline +
@@ -93,7 +96,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSetDefaultDelimiters() throws Exception {
+    @Test public void testSetDefaultDelimiters()
+    {
         String templates =
             "delimiters \"<\", \">\"" + Misc.newline +
             "ta(x) ::= \"[<x>]\"" + Misc.newline;
@@ -114,7 +118,8 @@ public class TestGroupSyntax extends BaseTest {
     /**
      * This is a regression test for antlr/stringtemplate4#131.
      */
-    @Test public void testSetDefaultDelimiters_STGroupString() throws Exception {
+    @Test public void testSetDefaultDelimiters_STGroupString()
+    {
         String templates =
             "delimiters \"<\", \">\"" + Misc.newline +
             "chapter(title) ::= <<" + Misc.newline +
@@ -133,7 +138,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals("[]", errors.errors.toString());
     }
 
-    @Test public void testSetNonDefaultDelimiters() throws Exception {
+    @Test public void testSetNonDefaultDelimiters()
+    {
         String templates =
             "delimiters \"%\", \"%\"" + Misc.newline +
             "ta(x) ::= \"[%x%]\"" + Misc.newline;
@@ -150,7 +156,8 @@ public class TestGroupSyntax extends BaseTest {
     /**
      * This is a regression test for antlr/stringtemplate4#84.
      */
-    @Test public void testSetUnsupportedDelimiters_At() throws Exception {
+    @Test public void testSetUnsupportedDelimiters_At()
+    {
         String templates =
             "delimiters \"@\", \"@\"" + Misc.newline +
             "ta(x) ::= \"[<x>]\"" + Misc.newline;
@@ -171,7 +178,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expectedErrors, resultErrors);
     }
 
-    @Test public void testSingleTemplateWithArgs() throws Exception {
+    @Test public void testSingleTemplateWithArgs()
+    {
         String templates =
             "t(a,b) ::= \"[<a>]\"" + Misc.newline;
 
@@ -185,7 +193,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefaultValues() throws Exception {
+    @Test public void testDefaultValues()
+    {
         String templates =
             "t(a={def1},b=\"def2\") ::= \"[<a>]\"" + Misc.newline;
 
@@ -199,7 +208,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefaultValues2() throws Exception {
+    @Test public void testDefaultValues2()
+    {
         String templates =
             "t(x, y, a={def1}, b=\"def2\") ::= \"[<a>]\"" + Misc.newline;
 
@@ -213,7 +223,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefaultValueTemplateWithArg() throws Exception {
+    @Test public void testDefaultValueTemplateWithArg()
+    {
         String templates =
             "t(a={x | 2*<x>}) ::= \"[<a>]\"" + Misc.newline;
 
@@ -228,7 +239,8 @@ public class TestGroupSyntax extends BaseTest {
     }
 
     @Test
-    public void testDefaultValueBehaviorTrue() throws Exception {
+    public void testDefaultValueBehaviorTrue()
+    {
         String templates =
             "t(a=true) ::= <<\n" +
             "<a><if(a)>+<else>-<endif>\n" +
@@ -243,7 +255,8 @@ public class TestGroupSyntax extends BaseTest {
     }
 
     @Test
-    public void testDefaultValueBehaviorFalse() throws Exception {
+    public void testDefaultValueBehaviorFalse()
+    {
         String templates =
             "t(a=false) ::= <<\n" +
             "<a><if(a)>+<else>-<endif>\n" +
@@ -258,7 +271,8 @@ public class TestGroupSyntax extends BaseTest {
     }
 
     @Test
-    public void testDefaultValueBehaviorEmptyTemplate() throws Exception {
+    public void testDefaultValueBehaviorEmptyTemplate()
+    {
         String templates =
             "t(a={}) ::= <<\n" +
             "<a><if(a)>+<else>-<endif>\n" +
@@ -273,7 +287,8 @@ public class TestGroupSyntax extends BaseTest {
     }
 
     @Test
-    public void testDefaultValueBehaviorEmptyList() throws Exception {
+    public void testDefaultValueBehaviorEmptyList()
+    {
         String templates =
             "t(a=[]) ::= <<\n" +
             "<a><if(a)>+<else>-<endif>\n" +
@@ -287,7 +302,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNestedTemplateInGroupFile() throws Exception {
+    @Test public void testNestedTemplateInGroupFile()
+    {
         String templates =
             "t(a) ::= \"<a:{x | <x:{y | <y>}>}>\"" + Misc.newline;
 
@@ -301,7 +317,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNestedDefaultValueTemplate() throws Exception {
+    @Test public void testNestedDefaultValueTemplate()
+    {
         String templates =
             "t(a={x | <x:{y|<y>}>}) ::= \"ick\"" + Misc.newline;
 
@@ -316,7 +333,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNestedDefaultValueTemplateWithEscapes() throws Exception {
+    @Test public void testNestedDefaultValueTemplateWithEscapes()
+    {
         String templates =
             "t(a={x | \\< <x:{y|<y>\\}}>}) ::= \"[<a>]\"" + Misc.newline;
 
@@ -330,7 +348,8 @@ public class TestGroupSyntax extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMessedUpTemplateDoesntCauseRuntimeError() throws Exception {
+    @Test public void testMessedUpTemplateDoesntCauseRuntimeError()
+    {
         String templates =
             "main(p) ::= <<\n" +
             "<f(x=\"abc\")>\n" +
@@ -358,7 +377,8 @@ public class TestGroupSyntax extends BaseTest {
     /**
      * This is a regression test for antlr/stringtemplate4#138.
      */
-    @Test public void testIndentedComment() throws Exception {
+    @Test public void testIndentedComment()
+    {
         String templates =
             "t() ::= <<" + Misc.newline +
             "  <! a comment !>" + Misc.newline +

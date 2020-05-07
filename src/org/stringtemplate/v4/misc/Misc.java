@@ -126,9 +126,9 @@ public class Misc {
     }
 
     public static String replaceEscapes(String s) {
-        s = s.replaceAll("\n", "\\\\n");
-        s = s.replaceAll("\r", "\\\\r");
-        s = s.replaceAll("\t", "\\\\t");
+        s = s.replace("\n", "\\\\n");
+        s = s.replace("\r", "\\\\r");
+        s = s.replace("\t", "\\\\t");
         return s;
     }
 
@@ -140,19 +140,17 @@ public class Misc {
         int i = 0;
         while ( i<s.length() ) {
             char c = s.charAt(i);
-            if ( c=='<' && s.substring(i).startsWith("<\\\\>") ) {
+            if ( c=='<' && s.startsWith("<\\\\>", i) ) {
                 buf.append("<\\\\>");
                 i += "<\\\\>".length();
                 continue;
             }
-            if ( c=='>' && s.substring(i).startsWith(">\\>") ) {
+            if ( c=='>' && s.startsWith(">\\>", i) ) {
                 buf.append(">>");
                 i += ">\\>".length();
                 continue;
             }
-            if ( c=='\\' && s.substring(i).startsWith("\\>>") &&
-                !s.substring(i).startsWith("\\>>>") )
-            {
+            if ( c=='\\' && s.startsWith("\\>>", i) && !s.startsWith("\\>>>", i) ) {
                 buf.append(">>");
                 i += "\\>>".length();
                 continue;

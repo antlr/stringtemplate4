@@ -89,7 +89,7 @@ public class JTreeScopeStackModel implements TreeModel {
                 if ( events!=null ) {
                     for (AddAttributeEvent ae : events) {
                         if ( i>0 ) locations.append(", ");
-                        locations.append(ae.getFileName()+":"+ae.getLine());
+                        locations.append(ae.getFileName()).append(":").append(ae.getLine());
                         i++;
                     }
                 }
@@ -105,11 +105,7 @@ public class JTreeScopeStackModel implements TreeModel {
             }
 
             if (!names.add(a)) {
-                StringBuilder builder = new StringBuilder();
-                builder.append("<html><font color=\"gray\">");
-                builder.append(StringRenderer.escapeHTML(descr));
-                builder.append("</font></html>");
-                descr = builder.toString();
+                descr = "<html><font color=\"gray\">"+StringRenderer.escapeHTML(descr)+"</font></html>";
             }
 
             node.addChild( new StringTree(descr) );

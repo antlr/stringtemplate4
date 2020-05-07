@@ -98,7 +98,7 @@ public class Interpreter {
     protected List<String> executeTrace;
 
     /** When {@code true}, track events inside templates and in {@link #events}. */
-    public boolean debug = false;
+    public boolean debug;
 
     /**
      * Track everything happening in interpreter across all templates if
@@ -481,14 +481,12 @@ public class Interpreter {
 
     void load_str(ST self, int ip) {
         int strIndex = getShort(self.impl.instrs, ip);
-        ip += Bytecode.OPND_SIZE_IN_BYTES;
         operands[++sp] = self.impl.strings[strIndex];
     }
 
-    // TODO: refactor to remove dup'd code
-    void super_new(InstanceScope scope, String name, int nargs) {
+    private ST resolveST(InstanceScope scope, String name, boolean embedded) {
         final ST self = scope.st;
-        ST st = null;
+        ST st;
         CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
         if ( imported==null ) {
             errMgr.runTimeError(this, scope, ErrorType.NO_IMPORTED_TEMPLATE,
@@ -496,9 +494,23 @@ public class Interpreter {
             st = self.groupThatCreatedThisInstance.createStringTemplateInternally(new CompiledST());
         }
         else {
-            st = imported.nativeGroup.getEmbeddedInstanceOf(this, scope, name);
+            // TODO as this method was extracted from the two super_new overloads,
+            //      there was this difference in which method was called,
+            //      hence the addition of the 'embedded' parameter.
+            //      One of the calls is probably wrong.
+            if (embedded) {
+                st = imported.nativeGroup.getEmbeddedInstanceOf(this, scope, name);
+            }
+            else {
+                st = imported.nativeGroup.createStringTemplateInternally(imported);
+            }
             st.groupThatCreatedThisInstance = group;
         }
+        return st;
+    }
+
+    void super_new(InstanceScope scope, String name, int nargs) {
+        ST st = resolveST(scope, name, true);
         // get n args and store into st's attr list
         storeArgs(scope, nargs, st);
         sp -= nargs;
@@ -506,19 +518,7 @@ public class Interpreter {
     }
 
     void super_new(InstanceScope scope, String name, Map<String,Object> attrs) {
-        final ST self = scope.st;
-        ST st = null;
-        CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
-        if ( imported==null ) {
-            errMgr.runTimeError(this, scope, ErrorType.NO_IMPORTED_TEMPLATE,
-                                name);
-            st = self.groupThatCreatedThisInstance.createStringTemplateInternally(new CompiledST());
-        }
-        else {
-            st = imported.nativeGroup.createStringTemplateInternally(imported);
-            st.groupThatCreatedThisInstance = group;
-        }
-
+        ST st = resolveST(scope, name, false);
         // get n args and store into st's attr list
         storeArgs(scope, attrs, st);
         operands[++sp] = st;
@@ -840,7 +840,7 @@ public class Interpreter {
         }
         attr = convertAnythingIteratableToIterator(scope, attr);
         if ( attr instanceof Iterator ) {
-            List<ST> mapped = rot_map_iterator(scope, (Iterator) attr, prototypes);
+            List<ST> mapped = rot_map_iterator(scope, (Iterator<?>) attr, prototypes);
             operands[++sp] = mapped;
         }
         else { // if only single value, just apply first template to sole value
@@ -860,9 +860,8 @@ public class Interpreter {
         }
     }
 
-    protected List<ST> rot_map_iterator(InstanceScope scope, Iterator<?> attr, List<ST> prototypes) {
+    protected List<ST> rot_map_iterator(InstanceScope scope, Iterator<?> iter, List<ST> prototypes) {
         List<ST> mapped = new ArrayList<ST>();
-        Iterator<?> iter = attr;
         int i0 = 0;
         int i = 1;
         int ti = 0;
@@ -910,7 +909,7 @@ public class Interpreter {
         }
 
         // todo: track formal args not names for efficient filling of locals
-        String[] formalArgumentNames = formalArguments.keySet().toArray(new String[formalArguments.size()]);
+        String[] formalArgumentNames = formalArguments.keySet().toArray(new String[0]);
         int nformalArgs = formalArgumentNames.length;
         if ( prototype.isAnonSubtemplate() ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
         if ( nformalArgs != numExprs ) {
@@ -1242,8 +1241,7 @@ public class Interpreter {
             FormalArgument localArg = null;
             if ( p.impl.formalArguments!=null ) localArg = p.impl.formalArguments.get(name);
             if ( localArg!=null ) {
-                Object o = p.locals[localArg.index];
-                return o;
+                return p.locals[localArg.index];
             }
             current = current.parent; // look up enclosing scope chain
         }
@@ -1261,11 +1259,9 @@ public class Interpreter {
         if ( g.isDictionary(name) ) {
             return g.rawGetDictionary(name);
         }
-        if ( g.imports!=null ) {
-            for (STGroup sup : g.imports) {
-                Object o = getDictionary(sup, name);
-                if ( o!=null ) return o;
-            }
+        for (STGroup sup : g.imports) {
+            Object o = getDictionary(sup, name);
+            if ( o!=null ) return o;
         }
         return null;
     }
@@ -1384,7 +1380,7 @@ public class Interpreter {
         }
         tr.append(" ], calls=");
         tr.append(getEnclosingInstanceStackString(scope));
-        tr.append(", sp="+sp+", nw="+ nwline);
+        tr.append(", sp=").append(sp).append(", nw=").append(nwline);
         String s = tr.toString();
         if ( debug ) executeTrace.add(s);
         if ( trace ) System.out.println(s);
@@ -1393,7 +1389,7 @@ public class Interpreter {
     protected void printForTrace(StringBuilder tr, InstanceScope scope, Object o) {
         if ( o instanceof ST ) {
             if ( ((ST)o).impl ==null ) tr.append("bad-template()");
-            else tr.append(" "+((ST)o).impl.name+"()");
+            else tr.append(" ").append(((ST)o).impl.name).append("()");
             return;
         }
         o = convertAnythingIteratableToIterator(scope, o);
@@ -1407,7 +1403,7 @@ public class Interpreter {
             tr.append(" ]");
         }
         else {
-            tr.append(" "+o);
+            tr.append(" ").append(o);
         }
     }
 
@@ -1439,7 +1435,7 @@ public class Interpreter {
     public static int getShort(byte[] memory, int index) {
         int b1 = memory[index]&0xFF; // mask off sign-extended bits
         int b2 = memory[index+1]&0xFF;
-        return b1<<(8*1) | b2;
+        return b1<<8 | b2;
     }
 
     protected static class ObjectList extends ArrayList<Object> {

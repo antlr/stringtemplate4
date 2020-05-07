@@ -35,9 +35,7 @@ import org.stringtemplate.v4.STGroupFile;
 import static org.junit.Assert.assertEquals;
 
 public class TestIndentation extends BaseTest {
-    @Test public void testIndentInFrontOfTwoExpr()
-            throws Exception
-    {
+    @Test public void testIndentInFrontOfTwoExpr() {
         String templates =
                 "list(a,b) ::= <<" +
                 "  <a><b>"+newline+
@@ -54,9 +52,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, t.render());
     }
 
-    @Test public void testSimpleIndentOfAttributeList()
-            throws Exception
-    {
+    @Test public void testSimpleIndentOfAttributeList() {
         String templates =
                 "list(names) ::= <<" +
                 "  <names; separator=\"\\n\">"+newline+
@@ -75,9 +71,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, t.render());
     }
 
-    @Test public void testIndentOfMultilineAttributes()
-            throws Exception
-    {
+    @Test public void testIndentOfMultilineAttributes() {
         String templates =
                 "list(names) ::= <<" +
                 "  <names; separator=\"\n\">"+newline+
@@ -100,9 +94,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, t.render());
     }
 
-    @Test public void testIndentOfMultipleBlankLines()
-            throws Exception
-    {
+    @Test public void testIndentOfMultipleBlankLines() {
         String templates =
                 "list(names) ::= <<" +
                 "  <names>"+newline+
@@ -118,9 +110,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, t.render());
     }
 
-    @Test public void testIndentBetweenLeftJustifiedLiterals()
-            throws Exception
-    {
+    @Test public void testIndentBetweenLeftJustifiedLiterals() {
         String templates =
                 "list(names) ::= <<" +
                 "Before:"+newline +
@@ -142,9 +132,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, t.render());
     }
 
-    @Test public void testNestedIndent()
-            throws Exception
-    {
+    @Test public void testNestedIndent() {
         String templates =
                 "method(name,stats) ::= <<" +
                 "void <name>() {"+newline +
@@ -188,7 +176,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, t.render());
     }
 
-    @Test public void testIndentedIFWithValueExpr() throws Exception {
+    @Test public void testIndentedIFWithValueExpr() {
         ST t = new ST(
             "begin"+newline+
             "    <if(x)>foo<endif>"+newline+
@@ -199,7 +187,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIndentedIFWithElse() throws Exception {
+    @Test public void testIndentedIFWithElse() {
         ST t = new ST(
             "begin"+newline+
             "    <if(x)>foo<else>bar<endif>"+newline+
@@ -210,7 +198,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIndentedIFWithElse2() throws Exception {
+    @Test public void testIndentedIFWithElse2() {
         ST t = new ST(
             "begin"+newline+
             "    <if(x)>foo<else>bar<endif>"+newline+
@@ -221,7 +209,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIndentedIFWithNewlineBeforeText() throws Exception {
+    @Test public void testIndentedIFWithNewlineBeforeText() {
         STGroup group = new STGroup();
         group.defineTemplate("t", "x",
             "begin"+newline+
@@ -236,7 +224,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIndentedIFWithEndifNextLine() throws Exception {
+    @Test public void testIndentedIFWithEndifNextLine() {
         STGroup group = new STGroup();
         group.defineTemplate("t", "x",
             "begin"+newline+
@@ -250,7 +238,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIFWithIndentOnMultipleLines() throws Exception {
+    @Test public void testIFWithIndentOnMultipleLines() {
         ST t = new ST(
             "begin"+newline+
             "   <if(x)>"+newline+
@@ -264,7 +252,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIFWithIndentAndExprOnMultipleLines() throws Exception {
+    @Test public void testIFWithIndentAndExprOnMultipleLines() {
         ST t = new ST(
             "begin"+newline+
             "   <if(x)>"+newline+
@@ -279,7 +267,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIFWithIndentAndExprWithIndentOnMultipleLines() throws Exception {
+    @Test public void testIFWithIndentAndExprWithIndentOnMultipleLines() {
         ST t = new ST(
             "begin"+newline+
             "   <if(x)>"+newline+
@@ -294,7 +282,7 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testNestedIFWithIndentOnMultipleLines() throws Exception {
+    @Test public void testNestedIFWithIndentOnMultipleLines() {
         ST t = new ST(
             "begin"+newline+
             "   <if(x)>"+newline+
@@ -314,7 +302,8 @@ public class TestIndentation extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testIFInSubtemplate() throws Exception {
+    @Test public void testIFInSubtemplate()
+    {
         ST t = new ST(
             "<names:{n |"+newline+
             "   <if(x)>"+newline+

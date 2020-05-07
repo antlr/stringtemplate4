@@ -36,7 +36,7 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import static org.junit.Assert.assertEquals;
 
 public class TestOptions extends BaseTest {
-    @Test public void testSeparator() throws Exception {
+    @Test public void testSeparator() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; separator=\", \">!");
         ST st = group.getInstanceOf("test");
@@ -48,7 +48,7 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorWithSpaces() throws Exception {
+    @Test public void testSeparatorWithSpaces() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; separator= \", \">!");
         ST st = group.getInstanceOf("test");
@@ -61,7 +61,7 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAttrSeparator() throws Exception {
+    @Test public void testAttrSeparator() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name,sep", "hi <name; separator=sep>!");
         ST st = group.getInstanceOf("test");
@@ -74,7 +74,7 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIncludeSeparator() throws Exception {
+    @Test public void testIncludeSeparator() {
         STGroup group = new STGroup();
         group.defineTemplate("foo", "|");
         group.defineTemplate("test", "name,sep", "hi <name; separator=foo()>!");
@@ -88,7 +88,7 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSubtemplateSeparator() throws Exception {
+    @Test public void testSubtemplateSeparator() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name,sep", "hi <name; separator={<sep> _}>!");
         ST st = group.getInstanceOf("test");
@@ -101,7 +101,7 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorWithNullFirstValueAndNullOption() throws Exception {
+    @Test public void testSeparatorWithNullFirstValueAndNullOption() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; null=\"n/a\", separator=\", \">!");
         ST st = group.getInstanceOf("test");
@@ -113,7 +113,7 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSeparatorWithNull2ndValueAndNullOption() throws Exception {
+    @Test public void testSeparatorWithNull2ndValueAndNullOption() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; null=\"n/a\", separator=\", \">!");
         ST st = group.getInstanceOf("test");
@@ -126,7 +126,7 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNullValueAndNullOption() throws Exception {
+    @Test public void testNullValueAndNullOption() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "<name; null=\"n/a\">");
         ST st = group.getInstanceOf("test");
@@ -136,7 +136,7 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testListApplyWithNullValueAndNullOption() throws Exception {
+    @Test public void testListApplyWithNullValueAndNullOption() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "<name:{n | <n>}; null=\"n/a\">");
         ST st = group.getInstanceOf("test");
@@ -148,7 +148,7 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDoubleListApplyWithNullValueAndNullOption() throws Exception {
+    @Test public void testDoubleListApplyWithNullValueAndNullOption() {
         // first apply sends [ST, null, ST] to second apply, which puts [] around
         // the value.  This verifies that null not blank comes out of first apply
         // since we don't get [null].
@@ -163,7 +163,7 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMissingValueAndNullOption() throws Exception {
+    @Test public void testMissingValueAndNullOption() {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "<name; null=\"n/a\">");
         ST st = group.getInstanceOf("test");
@@ -172,7 +172,7 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testOptionDoesntApplyToNestedTemplate() throws Exception {
+    @Test public void testOptionDoesntApplyToNestedTemplate() {
         STGroup group = new STGroup();
         group.defineTemplate("foo", "<zippo>");
         group.defineTemplate("test", "zippo", "<foo(); null=\"n/a\">");
@@ -183,7 +183,8 @@ public class TestOptions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIllegalOption() throws Exception {
+    @Test public void testIllegalOption()
+    {
         ErrorBuffer errors = new ErrorBuffer();
         STGroup group = new STGroup();
         group.setListener(errors);

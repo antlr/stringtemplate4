@@ -45,7 +45,7 @@ public class TestInterptimeErrors extends BaseTest {
         public UserHiddenNameField(String name) { this.name = name; }
     }
 
-    @Test public void testMissingEmbeddedTemplate() throws Exception {
+    @Test public void testMissingEmbeddedTemplate() {
         ErrorBuffer errors = new ErrorBuffer();
 
         String templates =
@@ -61,7 +61,7 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMissingSuperTemplate() throws Exception {
+    @Test public void testMissingSuperTemplate() {
         ErrorBuffer errors = new ErrorBuffer();
 
         String templates =
@@ -83,7 +83,7 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testNoPropertyNotError() throws Exception {
+    @Test public void testNoPropertyNotError() {
         ErrorBuffer errors = new ErrorBuffer();
 
         String templates =
@@ -100,7 +100,7 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testHiddenPropertyNotError() throws Exception {
+    @Test public void testHiddenPropertyNotError() {
         ErrorBuffer errors = new ErrorBuffer();
 
         String templates =
@@ -117,7 +117,7 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testHiddenFieldNotError() throws Exception {
+    @Test public void testHiddenFieldNotError() {
         ErrorBuffer errors = new ErrorBuffer();
 
         String templates =
@@ -134,7 +134,7 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSoleArg() throws Exception {
+    @Test public void testSoleArg() {
         ErrorBuffer errors = new ErrorBuffer();
 
         String templates =
@@ -151,7 +151,7 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testSoleArgUsingApplySyntax() throws Exception {
+    @Test public void testSoleArgUsingApplySyntax() {
         ErrorBuffer errors = new ErrorBuffer();
 
         String templates =
@@ -171,7 +171,7 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testUndefinedAttr() throws Exception {
+    @Test public void testUndefinedAttr() {
         ErrorBuffer errors = new ErrorBuffer();
 
         String templates =
@@ -188,7 +188,7 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testParallelAttributeIterationWithMissingArgs() throws Exception {
+    @Test public void testParallelAttributeIterationWithMissingArgs() {
         ErrorBuffer errors = new ErrorBuffer();
         STGroup group = new STGroup();
         group.setListener(errors);
@@ -210,7 +210,8 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(expecting, e.render());
     }
 
-    @Test public void testStringTypeMismatch() throws Exception {
+    @Test public void testStringTypeMismatch()
+    {
         ErrorBuffer errors = new ErrorBuffer();
         STGroup group = new STGroup();
         group.setListener(errors);
@@ -221,7 +222,8 @@ public class TestInterptimeErrors extends BaseTest {
         assertEquals(errorExpecting, errors.toString());
     }
 
-    @Test public void testStringTypeMismatch2() throws Exception {
+    @Test public void testStringTypeMismatch2()
+    {
         ErrorBuffer errors = new ErrorBuffer();
         STGroup group = new STGroup();
         group.setListener(errors);

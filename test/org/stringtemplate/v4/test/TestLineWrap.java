@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import static org.junit.Assert.assertEquals;
 
 public class TestLineWrap extends BaseTest {
-    @Test public void testLineWrap() throws Exception {
+    @Test public void testLineWrap() {
         String templates =
                 "array(values) ::= <<int[] a = { <values; wrap=\"\\n\", separator=\",\"> };>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
@@ -60,7 +60,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testLineWrapAnchored() throws Exception {
+    @Test public void testLineWrapAnchored() {
         String templates =
             "array(values) ::= <<int[] a = { <values; anchor, wrap, separator=\",\"> };>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
@@ -80,7 +80,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, a.render(40));
     }
 
-    @Test public void testSubtemplatesAnchorToo() throws Exception {
+    @Test public void testSubtemplatesAnchorToo() {
         String templates =
                 "array(values) ::= <<{ <values; anchor, separator=\", \"> }>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
@@ -104,7 +104,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, a.render(40));
     }
 
-    @Test public void testFortranLineWrap() throws Exception {
+    @Test public void testFortranLineWrap() {
         String templates =
                 "func(args) ::= <<       FUNCTION line( <args; wrap=\"\\n      c\", separator=\",\"> )>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
@@ -119,7 +119,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, a.render(30));
     }
 
-    @Test public void testLineWrapWithDiffAnchor() throws Exception {
+    @Test public void testLineWrapWithDiffAnchor() {
         String templates =
                 "array(values) ::= <<int[] a = { <{1,9,2,<values; wrap, separator=\",\">}; anchor> };>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
@@ -138,7 +138,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, a.render(30));
     }
 
-    @Test public void testLineWrapEdgeCase() throws Exception {
+    @Test public void testLineWrapEdgeCase() {
         String templates =
             "duh(chars) ::= \"<chars; wrap={<\\n>}>\""+newline;
         writeFile(tmpdir, "t.stg", templates);
@@ -153,7 +153,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, a.render(3));
     }
 
-    @Test public void testLineWrapLastCharIsNewline() throws Exception {
+    @Test public void testLineWrapLastCharIsNewline() {
         String templates =
                 "duh(chars) ::= <<" + newline +
                 "<chars; wrap=\"\\n\"\\>" + newline +
@@ -170,7 +170,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting,a.render(3));
     }
 
-    @Test public void testLineWrapCharAfterWrapIsNewline() throws Exception {
+    @Test public void testLineWrapCharAfterWrapIsNewline() {
         String templates =
                 "duh(chars) ::= <<" + newline +
                 "<chars; wrap=\"\\n\"\\>" + newline +
@@ -190,7 +190,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, a.render(3));
     }
 
-    @Test public void testLineWrapForList() throws Exception {
+    @Test public void testLineWrapForList() {
         String templates =
                 "duh(data) ::= <<!<data; wrap>!>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
@@ -205,7 +205,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting,a.render(4));
     }
 
-    @Test public void testLineWrapForAnonTemplate() throws Exception {
+    @Test public void testLineWrapForAnonTemplate() {
         String templates =
                 "duh(data) ::= <<!<data:{v|[<v>]}; wrap>!>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
@@ -220,7 +220,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting,a.render(9));
     }
 
-    @Test public void testLineWrapForAnonTemplateAnchored() throws Exception {
+    @Test public void testLineWrapForAnonTemplateAnchored() {
         String templates =
                 "duh(data) ::= <<!<data:{v|[<v>]}; anchor, wrap>!>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
@@ -235,7 +235,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, a.render(9));
     }
 
-    @Test public void testLineWrapForAnonTemplateComplicatedWrap() throws Exception {
+    @Test public void testLineWrapForAnonTemplateComplicatedWrap() {
         String templates =
                 "top(s) ::= <<  <s>.>>"+
                 "str(data) ::= <<!<data:{v|[<v>]}; wrap=\"!+\\n!\">!>>"+newline;
@@ -255,7 +255,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting,t.render(9));
     }
 
-    @Test public void testIndentBeyondLineWidth() throws Exception {
+    @Test public void testIndentBeyondLineWidth() {
         String templates =
                 "duh(chars) ::= <<" +newline+
                 "    <chars; wrap=\"\\n\">" + newline +
@@ -275,7 +275,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, a.render(2));
     }
 
-    @Test public void testIndentedExpr() throws Exception {
+    @Test public void testIndentedExpr() {
         String templates =
                 "duh(chars) ::= <<" +newline+
                 "    <chars; wrap=\"\\n\">" +newline+
@@ -294,7 +294,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, a.render(6));
     }
 
-    @Test public void testNestedIndentedExpr() throws Exception {
+    @Test public void testNestedIndentedExpr() {
         String templates =
                 "top(d) ::= <<  <d>!>>"+newline+
                 "duh(chars) ::= <<" +newline+
@@ -315,7 +315,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, top.render(6));
     }
 
-    @Test public void testNestedWithIndentAndTrackStartOfExpr() throws Exception {
+    @Test public void testNestedWithIndentAndTrackStartOfExpr() {
         String templates =
                 "top(d) ::= <<  <d>!>>"+newline+
                 "duh(chars) ::= <<" +newline+
@@ -336,7 +336,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, top.render(7));
     }
 
-    @Test public void testLineDoesNotWrapDueToLiteral() throws Exception {
+    @Test public void testLineDoesNotWrapDueToLiteral() {
         String templates =
                 "m(args,body) ::= <<@Test public voidfoo(<args; wrap=\"\\n\",separator=\", \">) throws Ick { <body> }>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
@@ -353,7 +353,7 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, a.render(n));
     }
 
-    @Test public void testSingleValueWrap() throws Exception {
+    @Test public void testSingleValueWrap() {
         String templates =
                 "m(args,body) ::= <<{ <body; anchor, wrap=\"\\n\"> }>>"+newline;
         writeFile(tmpdir, "t.stg", templates);
@@ -368,7 +368,8 @@ public class TestLineWrap extends BaseTest {
         assertEquals(expecting, m.render(2));
     }
 
-    @Test public void testLineWrapInNestedExpr() throws Exception {
+    @Test public void testLineWrapInNestedExpr()
+    {
         String templates =
                 "top(arrays) ::= <<Arrays: <arrays>done>>"+newline+
                 "array(values) ::= <%int[] a = { <values; anchor, wrap=\"\\n\", separator=\",\"> };<\\n>%>"+newline;

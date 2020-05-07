@@ -147,7 +147,7 @@ public class ST {
     /** Used by group creation routine, not by users */
     protected ST() {
         if ( STGroup.trackCreationEvents ) {
-            if ( debugState==null ) debugState = new ST.DebugState();
+            debugState = new DebugState();
             debugState.newSTEvent = new ConstructionEvent();
         }
     }
@@ -201,6 +201,7 @@ public class ST {
             Arrays.fill(this.locals, EMPTY_ATTR);
         }
         this.groupThatCreatedThisInstance = proto.groupThatCreatedThisInstance;
+        // TODO copy debugState?
     }
 
     /** Inject an attribute (name/value pair). If there is already an attribute
@@ -303,8 +304,9 @@ public class ST {
         String aggrName = aggrSpec.substring(0, dot);
         String propString = aggrSpec.substring(dot+2, aggrSpec.length()-1);
         propString = propString.trim();
-        String[] propNames = propString.split("\\ *,\\ *");
-        if ( propNames==null || propNames.length==0 ) {
+        // TODO perhaps we can use \s* and allow tabs and other whitespace as separators?
+        String[] propNames = propString.split(" *, *");
+        if (propNames.length == 0) {
             throw new IllegalArgumentException("invalid aggregate attribute format: "+
                                                aggrSpec);
         }
@@ -381,7 +383,7 @@ public class ST {
         AttributeList multi;
         if ( curvalue == null ) {
             multi = new AttributeList(); // make list to hold multiple values
-            multi.add(curvalue);                 // add previous single-valued attribute
+            multi.add(null);             // add previous single-valued attribute
         }
         else if ( curvalue instanceof AttributeList ) { // already a list made by ST
             multi = (AttributeList)curvalue;
@@ -418,7 +420,7 @@ public class ST {
 
     public boolean isAnonSubtemplate() { return impl.isAnonSubtemplate; }
 
-    public int write(STWriter out) throws IOException {
+    public int write(STWriter out) {
         Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
                                              impl.nativeGroup.errMgr,
                                              false);

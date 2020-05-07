@@ -34,7 +34,8 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import static org.junit.Assert.assertEquals;
 
 public class TestRegions extends BaseTest {
-    @Test public void testEmbeddedRegion() throws Exception {
+    @Test public void testEmbeddedRegion()
+    {
         String dir = getRandomDir();
         String groupFile =
             "a() ::= <<\n" +
@@ -48,7 +49,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testRegion() throws Exception {
+    @Test public void testRegion()
+    {
         String dir = getRandomDir();
         String groupFile =
             "a() ::= <<\n" +
@@ -62,7 +64,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefineRegionInSubgroup() throws Exception {
+    @Test public void testDefineRegionInSubgroup()
+    {
         String dir = getRandomDir();
         writeFile(dir, "g1.stg", "a() ::= <<[<@r()>]>>\n");
         writeFile(dir, "g2.stg", "@a.r() ::= <<foo>>\n");
@@ -76,7 +79,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefineRegionInSubgroupOneInSubdir() throws Exception {
+    @Test public void testDefineRegionInSubgroupOneInSubdir()
+    {
         String dir = getRandomDir();
         writeFile(dir, "g1.stg", "a() ::= <<[<@r()>]>>\n");
         writeFile(dir+"/subdir", "g2.stg", "@a.r() ::= <<foo>>\n");
@@ -90,7 +94,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefineRegionInSubgroupBothInSubdir() throws Exception {
+    @Test public void testDefineRegionInSubgroupBothInSubdir()
+    {
         String dir = getRandomDir();
         writeFile(dir+"/subdir", "g1.stg", "a() ::= <<[<@r()>]>>\n");
         writeFile(dir+"/subdir", "g2.stg", "@a.r() ::= <<foo>>\n");
@@ -104,7 +109,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefineRegionInSubgroupThatRefsSuper() throws Exception {
+    @Test public void testDefineRegionInSubgroupThatRefsSuper()
+    {
         String dir = getRandomDir();
         String g1 = "a() ::= <<[<@r>foo<@end>]>>\n";
         writeFile(dir, "g1.stg", g1);
@@ -120,7 +126,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefineRegionInSubgroup2() throws Exception {
+    @Test public void testDefineRegionInSubgroup2()
+    {
         String dir = getRandomDir();
         String g1 = "a() ::= <<[<@r()>]>>\n";
         writeFile(dir, "g1.stg", g1);
@@ -136,7 +143,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testDefineRegionInSameGroup() throws Exception {
+    @Test public void testDefineRegionInSameGroup()
+    {
         String dir = getRandomDir();
         String g = "a() ::= <<[<@r()>]>>\n"+
                    "@a.r() ::= <<foo>>\n";
@@ -149,7 +157,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAnonymousTemplateInRegion() throws Exception {
+    @Test public void testAnonymousTemplateInRegion()
+    {
         String dir = getRandomDir();
         String g = "a() ::= <<[<@r()>]>>\n" +
                    "@a.r() ::= <<\n" +
@@ -164,7 +173,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAnonymousTemplateInRegionInSubdir() throws Exception {
+    @Test public void testAnonymousTemplateInRegionInSubdir()
+    {
         //fails since it makes region name /region__/g/a/_r
         String dir = getRandomDir();
         String g = "a() ::= <<[<@r()>]>>\n" +
@@ -181,7 +191,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testCantDefineEmbeddedRegionAgain() throws Exception {
+    @Test public void testCantDefineEmbeddedRegionAgain()
+    {
         String dir = getRandomDir();
         String g = "a() ::= <<[<@r>foo<@end>]>>\n"+
                    "@a.r() ::= <<bar>>\n"; // error; dup
@@ -196,7 +207,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testCantDefineEmbeddedRegionAgainInTemplate() throws Exception {
+    @Test public void testCantDefineEmbeddedRegionAgainInTemplate()
+    {
         String dir = getRandomDir();
         String g =
             "a() ::= <<\n" +
@@ -216,7 +228,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMissingRegionName() throws Exception {
+    @Test public void testMissingRegionName()
+    {
         String dir = getRandomDir();
         String g = "@t.() ::= \"\"\n";
         writeFile(dir, "g.stg", g);
@@ -230,7 +243,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testIndentBeforeRegionIsIgnored() throws Exception {
+    @Test public void testIndentBeforeRegionIsIgnored()
+    {
         String dir = getRandomDir();
         String g = "a() ::= <<[\n" +
                    "  <@r>\n" +
@@ -248,7 +262,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testRegionOverrideStripsNewlines() throws Exception {
+    @Test public void testRegionOverrideStripsNewlines()
+    {
         String dir = getRandomDir();
         String g =
                 "a() ::= \"X<@r()>Y\"" +
@@ -272,7 +287,8 @@ public class TestRegions extends BaseTest {
 
     //
 
-    @Test public void testRegionOverrideRefSuperRegion() throws Exception {
+    @Test public void testRegionOverrideRefSuperRegion()
+    {
         String dir = getRandomDir();
         String g =
                 "a() ::= \"X<@r()>Y\"" +
@@ -292,7 +308,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testRegionOverrideRefSuperRegion2Levels() throws Exception {
+    @Test public void testRegionOverrideRefSuperRegion2Levels()
+    {
         String g =
                 "a() ::= \"X<@r()>Y\"\n" +
                 "@a.r() ::= \"foo\"\n";
@@ -310,7 +327,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testRegionOverrideRefSuperRegion3Levels() throws Exception {
+    @Test public void testRegionOverrideRefSuperRegion3Levels()
+    {
         String dir = getRandomDir();
         String g =
                 "a() ::= \"X<@r()>Y\"" +
@@ -337,7 +355,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testRegionOverrideRefSuperImplicitRegion() throws Exception {
+    @Test public void testRegionOverrideRefSuperImplicitRegion()
+    {
         String dir = getRandomDir();
         String g =
                 "a() ::= \"X<@r>foo<@end>Y\""+newline;
@@ -356,7 +375,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testUnknownRegionDefError() throws Exception {
+    @Test public void testUnknownRegionDefError()
+    {
         String dir = getRandomDir();
         String g =
                 "a() ::= <<\n" +
@@ -374,7 +394,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testSuperRegionRefMissingOk() throws Exception {
+    @Test public void testSuperRegionRefMissingOk()
+    {
         String dir = getRandomDir();
         String g =
             "a() ::= \"X<@r()>Y\"" +
@@ -396,7 +417,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testEmbeddedRegionOnOneLine() throws Exception {
+    @Test public void testEmbeddedRegionOnOneLine()
+    {
         String dir = getRandomDir();
         String groupFile =
             "a() ::= <<\n" +
@@ -413,7 +435,8 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testEmbeddedRegionTagsOnSeparateLines() throws Exception {
+    @Test public void testEmbeddedRegionTagsOnSeparateLines()
+    {
         String dir = getRandomDir();
         String groupFile =
             "a() ::= <<\n" +
@@ -432,7 +455,8 @@ public class TestRegions extends BaseTest {
     }
 
     @Ignore("will revisit the behavior of indented expressions spanning multiple lines for a future release")
-    @Test public void testEmbeddedSubtemplate() throws Exception {
+    @Test public void testEmbeddedSubtemplate()
+    {
         String dir = getRandomDir();
         String groupFile =
             "a() ::= <<\n" +

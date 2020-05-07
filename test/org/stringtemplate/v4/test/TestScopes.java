@@ -7,7 +7,8 @@ import org.stringtemplate.v4.misc.*;
 import static org.junit.Assert.assertEquals;
 
 public class TestScopes extends BaseTest {
-    @Test public void testSeesEnclosingAttr() throws Exception {
+    @Test public void testSeesEnclosingAttr()
+    {
         String templates =
             "t(x,y) ::= \"<u()>\"\n" +
             "u() ::= \"<x><y>\"";
@@ -27,7 +28,8 @@ public class TestScopes extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testMissingArg() throws Exception {
+    @Test public void testMissingArg()
+    {
         String templates =
             "t() ::= \"<u()>\"\n" +
             "u(z) ::= \"\"";
@@ -42,7 +44,8 @@ public class TestScopes extends BaseTest {
         assertEquals(expectedError, errors.toString());
     }
 
-    @Test public void testUnknownAttr() throws Exception {
+    @Test public void testUnknownAttr()
+    {
         String templates =
             "t() ::= \"<x>\"\n";
         ErrorBuffer errors = new ErrorBuffer();
@@ -56,7 +59,8 @@ public class TestScopes extends BaseTest {
         assertEquals(expectedError, errors.toString());
     }
 
-    @Test public void testArgWithSameNameAsEnclosing() throws Exception {
+    @Test public void testArgWithSameNameAsEnclosing()
+    {
         String templates =
             "t(x,y) ::= \"<u(x)>\"\n" +
             "u(y) ::= \"<x><y>\"";
@@ -77,7 +81,8 @@ public class TestScopes extends BaseTest {
         group.setListener(ErrorManager.DEFAULT_ERROR_LISTENER);
     }
 
-    @Test public void testIndexAttrVisibleLocallyOnly() throws Exception {
+    @Test public void testIndexAttrVisibleLocallyOnly()
+    {
         String templates =
             "t(names) ::= \"<names:{n | <u(n)>}>\"\n" +
             "u(x) ::= \"<i>:<x>\"";
