@@ -139,8 +139,7 @@ public class ObjectModelAdaptor<T> implements ModelAdaptor<T> {
             }
 
             return method;
-        } catch (NoSuchMethodException ex) {
-        } catch (SecurityException ex) {
+        } catch (Exception ex) {
         }
 
         return null;
@@ -154,8 +153,7 @@ public class ObjectModelAdaptor<T> implements ModelAdaptor<T> {
             }
 
             return field;
-        } catch (NoSuchFieldException ex) {
-        } catch (SecurityException ex) {
+        } catch (Exception ex) {
         }
 
         return null;
