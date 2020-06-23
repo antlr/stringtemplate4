@@ -107,7 +107,7 @@ Uploaded to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositor
 
 ## Maven release
 
-The maven deploy lifecycle phased deploys the artifacts and the poms for the ANTLR project to the [sonatype remote staging server](https://oss.sonatype.org/content/repositories/snapshots/).
+The maven deploy lifecycle phased deploys the artifacts and the poms for the ANTLR project to the [sonatype remote staging server](https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4).
 
 ```bash
 export JAVA_HOME=`/usr/libexec/java_home -v 1.8`; mvn deploy -DskipTests
