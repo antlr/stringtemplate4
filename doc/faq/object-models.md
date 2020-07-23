@@ -1,121 +1,168 @@
-# Altering property lookup for Scala
+# A Model Adaptor for Scala Case Classes
 
-Sriram Srinivasan contributed this Scala code that lets you directly access scala properties. It's a model adapter that adds a lookup for a method called "foo()" when the property name is "foo". The problem is using classes in scala with the extremely convenient case class:
-
-```scala
-case class Person(name: String, salary: Double)
-```
-
-This creates a class of the form
+One issue with the original adaptors is that they fail to access Scala case classes. In Scala, case classes of the following form are extremely convenient to use: 
 
 ```scala
-class Person {  public String name(),  public String name(String)}
+  case class Point(x: Int, y: Int)
+  case class Triangle(p1: Point, p2: Point, p3: Point)
 ```
 
-etc. 
+Below, we have included one implementation of an adaptor that works with the aforementioned Scala case classes. The adaptor uses Scala reflection to fetch the desired property, and then converts it back to Java before passing it along to the interpreter. Of note, there is also a handy `register()` method in the companion object that allows for quicker and less verbose registering of a new adaptor to an `STGroup `. 
 
-Sriram could make scala to generate beans style accessors. For that he would have to do the much uglier:
-
-```scala
-case class Person(@BeanProperty name: String, @BeanProperty salary: Double)
-```
-
-Anyway, the following code shows how to create an adapter that works better with Scala.
-
+Note also that an adaptor for each case class (and each sub-class) must be registered for the template to render correctly. For example, to use the `Triangle` case class from above, you would have to register an adaptor for both the `Point` and `Triangle` classes.
 ```scala
 import org.stringtemplate.v4._
 import org.stringtemplate.v4.misc._
-import scala.collection.JavaConversions._
-class ScalaObjectAdaptor extends ObjectModelAdaptor {
- @throws(classOf[STNoSuchPropertyException])
- override
- def getProperty(interp: Interpreter, self:ST, o:Object, property:Object, propertyName:String): Object = {
-   var value: Object = null
-   val c = o.getClass
-   if ( property==null ) {
-     return throwNoSuchProperty(c.getName() + "." + propertyName)
-   }
-   // Look in cache for Member first
-   var member = classAndPropertyToMemberCache.get(c, propertyName)
-   if ( member == null ) {
-     member = Misc.getMethod(c, propertyName)
-   }
-   if (member == null) {
-     return toJava(super.getProperty(interp, self, o, property, propertyName))
-   }
-   try {
-     member match {
-       case m: java.lang.reflect.Method => toJava(Misc.invokeMethod(m, o, value))
-       case f: java.lang.reflect.Field => toJava(f.get(o))
-     }
-   }
-   catch {
-     case _ => throwNoSuchProperty(c.getName() + "." + propertyName)
-   }
- }
- // recursively convert scala collections (and nested collections) to nested java collections
- def toJava(o: Object): Object = {
-   o match {
-     case l:List[_] => {
-     var lo = l.asInstanceOf[List[Object]]
-     // Convert to a Scala list of java objects, then make into an array
-     lo.map (elem => toJava(elem)).toArray
-     }
-     case m:Map[_,_] => {
-     // convert map values to java values.
-     var om = m mapValues (v => toJava(v.asInstanceOf[Object]))
-     // return map as a java hash map
-     mapAsJavaMap(om)
-     }
-     case s:Set[_] => s.asInstanceOf[Set[Object]].map(v => toJava(v)).toArray
-     case _ => o // no change
-   }
- }
+
+import scala.collection.mutable
+import scala.reflect.ClassTag
+import scala.reflect.runtime.universe._
+
+trait ToJava {
+  import scala.collection.JavaConverters._
+
+  /**
+    * Recursively converts to java object that is usable by ST4
+    * Note: For Options, None is converted to empty string ("")
+    * @see library docs at: [[https://github.com/antlr/stringtemplate4/blob/master/doc/faq/object-models.md]]
+    */
+  def toObject(o: Any): Object = {
+    o match {
+      case opt: Option[_] => opt.fold[Object]("")(toObject)
+      case map: Map[_, _] => map.map {
+        case (k, v) => toObject(k) -> toObject(v)
+      }.asJava
+      case it: Iterable[_] => it.map(toObject).asJava
+      case obj: AnyRef => obj
+      case primitive => primitive.asInstanceOf[Object]
+    }
+  }
+}
+
+// A Scala-friendly adaptor for use with ST4
+class ScalaModelAdaptor[T: TypeTag: ClassTag] extends ObjectModelAdaptor[T] with ToJava {
+  import ScalaModelAdaptor._
+
+  // stores seen fields/methods in mirrors for future reference
+  private val mirrorCache = mutable.Map.empty[String, MethodMirror]
+
+  // tells ST4 how to get the fields from an object of type T
+  override def getProperty(interp: Interpreter, self: ST, model: T, property: Any, propertyName: String): Object = {
+    mirrorCache.get(propertyName) match {
+      case Some(mirror) => toObject(mirror.bind(model).apply())
+      case _ =>
+        typeOf[T].member(TermName(propertyName)) match {
+          case NoSymbol => "" // skip over mismatched properties
+          case refl =>
+            val mirror = getMirror(refl, model)
+            mirrorCache.put(propertyName, mirror)
+            toObject(mirror.apply())
+        }
+    }
+  }
+}
+
+object ScalaModelAdaptor {
+  import scala.reflect.classTag
+
+  // Registers a new ScalaModelAdaptor to a given STGroup
+  def register[T: TypeTag: ClassTag](st: STGroup): STGroup = {
+    val adaptor = new ScalaModelAdaptor[T]
+    st.registerModelAdaptor(classTag[T].runtimeClass.asInstanceOf[Class[T]], adaptor)
+    st
+  }
+
+  private def getMirror[T: TypeTag: ClassTag](refl: Symbol, model: T): MethodMirror = {
+    scala.reflect.runtime.universe
+      .runtimeMirror(getClass.getClassLoader)
+      .reflect(model)
+      .reflectMethod(refl.asMethod)
+  }
+}
+
+// and a representative test:
+object STest {  
+  case class Point(x: Int, y: Int)
+  case class PointClss(name: String, pointList: List[Point], pointMap: Map[Int, Point], pointSet: Set[Point], pointLL: List[List[Point]])
+
+  val p = Point(4, 5)
+  val q = Point(1, 6)
+  val r = Point(3, 2)
+  val pl = PointClss("Point Test", List(p, q ,r), Map(1 -> p, 2 -> q, 3 -> r), Set(p, q, r), List(List(p, q), List(q, r)))
+
+  val group = {
+    val template =
+      """
+        |pointPrinter(p) ::= "(<p.x>, <p.y>)"
+        |
+        |mapKeyVal(m) ::= <<
+        |{<m.keys:{k | <k> -> <m.(k)>}; separator = ", ">}
+        |>>
+        |
+        |ll(p) ::= <<
+        |[<p:pointPrinter(); separator = ", ">]
+        |>>
+        |
+        |test(t) ::= <<
+        |<t.name>: 
+        |List: [<t.pointList:pointPrinter(); separator = ", ">];
+        |Map: <mapKeyVal(t.pointMap)>;
+        |Set: {<t.pointSet:pointPrinter(); separator = ", ">};
+        |List of list: [<t.pointLL:ll(); separator = ", ">]
+        |>>
+        |""".stripMargin
+    val g = new STGroupString(template)
+
+    ScalaModelAdaptor.register[PointClss](g)
+    ScalaModelAdaptor.register[Point](g)
+  }
+
+  group.getInstanceOf("test").add("t", pl).render()
+
+  /* should print: 
+  Point Test:
+  List: [(4, 5), (1, 6), (3, 2)];
+  Map: {1 -> Point(4,5), 2 -> Point(1,6), 3 -> Point(3,2)};
+  Set: {(4, 5), (1, 6), (3, 2)};
+  List of list: [[(4, 5), (1, 6)], [(1, 6), (3, 2)]]
+  */
 }
 ```
 
+## Advanced Customization for More Specific Adaptors
+
+You can also extend this adaptor and override the `getProperty()` function to encode functionality that is specific to a certain case class. If the `toObject()` method is needed in the `getProperty()` override (for example, special casing with iterables, maps, or options), the new class can be extended with the `toJava` trait. For example, if you wanted to modify how the `x` and `y` values of the `Point` class outputted, you could write it like this: 
+
 ```scala
-// Test driver.
-object STest {
-   var template = """
-                   |fld(f) ::= "<f.name> .... <f.ty>"
-                   |il(i) ::= "'<i>'"
-                   |prop(m) ::= "<m.name> @ <m.city>"
-                   |clss(cls) ::= <<
-                   |structure <cls.clsname> {
-                   |  <cls.flds:fld();separator="\n">
-                   |  dict[foo] = <cls.dict.foo>
-                   |  dict[bar] = <cls.dict.bar>
-                   |  <cls.intlist:il(); separator=" ">
-                   |  Props: {
-                   |    <cls.listmap:prop(); separator="\n">
-                   |  }
-                   |}
-                   |>>""".stripMargin
- def main(args: Array[String]) = {
-    var stg = new STGroupString(template)
-    stg.registerModelAdaptor(classOf[Object], new ScalaObjectAdaptor())
-   case class Fld(name: String, ty: String)
-   case class Clss(clsname: String, flds: Set[Fld], dict: Map[String, Int], intlist: List[Int], listmap: List[Map[String, String]])
-   var flds = Set(new Fld("x", "Int"), new Fld("y", "Float"))
-   var dict = Map("foo" -> 1, "bar" -> 2)
-   var intlist = List(1,2,3,4,5)
-   var listmap = List(Map("name" -> "ter", "city" -> "sf"), Map("name" -> "sriram", "city" -> "berkeley"))
-   var st = stg.getInstanceOf("clss")
-   st.add("cls", new Clss("Foo", flds, dict, intlist, listmap))
-   println(st.render())
-   // Should print
-   /*structure Foo {
-        x .... Int
-        y .... Float
-        dict[foo] = 1
-        dict[bar] = 2
-        '1' '2' '3' '4' '5'
-        Props: {
-          ter @ sf
-          sriram @ berkeley
-        }
-    }*/
- }
+class PointAdaptor extends ScalaModelAdaptor[Point] with ToJava {
+  override def getProperty(interp: Interpreter, self: ST, model: Point, property: Any, propertyName: String): Object = {
+    propertyName match {
+      case "x" => s"x: ${super.getProperty(interp, self, model, property, propertyName)}"
+      case "y" => s"y: ${super.getProperty(interp, self, model, property, propertyName)}"
+      case "x_times" =>
+        val x = super.getProperty(interp, self, model, property, "x").asInstanceOf[Int]
+        toObject(Seq.tabulate(x)(_ => model))
+      case _ => super.getProperty(interp, self, model, property, propertyName)
+    }
+  }
+}
+
+object PointTest extends App {
+  val p = Point(2, 5)
+
+  val group = {
+    val template =
+      """
+        |id(x) ::= "<x>"
+        |point(p) ::= <<
+        |(<p.x>, <p.y>); <p.x_times:id(); separator = ", ">
+        |>>""".stripMargin
+    val g = new STGroupString(template)
+    g.registerModelAdaptor(classTag[Point].runtimeClass.asInstanceOf[Class[Point]], new PointAdaptor)
+    g
+  }
+
+  group.getInstanceOf("point").add("p", p).render()
+  // should render as: (x: 2, y: 5); Point(2,5), Point(2,5)
 }
 ```
