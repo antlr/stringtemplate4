@@ -10,5 +10,5 @@ This is the main landing page for the StringTemplate 4 FAQ. The links below will
 
 ## Object models
 
-* [Altering property lookup for Scala](object-models.md)
+* [Altering property lookup for Scala](../scala-model-adaptor.md)
 

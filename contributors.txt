@@ -61,3 +61,7 @@ YYYY/MM/DD, github id, Full name, email
 2019/09/09, seanabraham, Sean Abraham, Sean.A208@gmail.com
 2019/12/22, Clashsoft, Adrian Kunz, clashsoft at hotmail dot com
 2020/04/21, steinybot, Jason Pickens, jasonpickensnz@gmail.com
+2020/07/23, mma-tapad, Marvin Ma, marvin.ma@tapad.com
+2020/07/23, zjzsliyang, Yang Li, zjzsliyang@gmail.com
+2020/07/23, jamesmahler2, James Mahler, jmahler@andrew.cmu.edu
+2020/07/23, dyuan0226, David Yuan, dyuan1@andrew.cmu.edu
