@@ -24,7 +24,6 @@ trait ToJava {
   /**
     * Recursively converts to java object that is usable by ST4
     * Note: For Options, None is converted to empty string ("")
-    * @see library docs at: [[https://github.com/antlr/stringtemplate4/blob/master/doc/faq/object-models.md]]
     */
   def toObject(o: Any): Object = {
     o match {
