@@ -76,8 +76,8 @@ public class StringRenderer implements AttributeRenderer<Object> {
         }
         StringBuilder buf = new StringBuilder( s.length() );
         int len = s.length();
-        for (int i=0; i<len; i++) {
-            char c = s.charAt(i);
+        for (int i=0; i<len;) {
+            int c = s.codePointAt(i);
             switch ( c ) {
                 case '&' :
                     buf.append("&amp;");
@@ -98,11 +98,14 @@ public class StringRenderer implements AttributeRenderer<Object> {
                     boolean aboveASCII = c > 126;
                     if ( control || aboveASCII ) {
                         buf.append("&#");
-                        buf.append((int)c);
+                        buf.append(c);
                         buf.append(";");
                     }
-                    else buf.append(c);
+                    else {
+                        buf.append((char)c);
+                    }
             }
+            i += Character.charCount(c);
         }
         return buf.toString();
     }
