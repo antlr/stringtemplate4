@@ -91,7 +91,7 @@ public class StringRenderer implements AttributeRenderer<Object> {
                 case '\r':
                 case '\n':
                 case '\t':
-                    buf.append(c);
+                    buf.append((char)c);
                     break;
                 default:
                     boolean control = c < ' '; // 32
