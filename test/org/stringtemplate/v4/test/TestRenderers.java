@@ -265,6 +265,20 @@ public class TestRenderers extends BaseTest {
         assertEquals(expecting, result);
     }
 
+    @Test public void testStringRendererWithFormat_xml_encode_emoji() throws Exception {
+        String templates =
+            "foo(x) ::= << <x; format=\"xml-encode\"> >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.registerRenderer(String.class, new StringRenderer());
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "\uD83E\uDE73");
+        String expecting = " &#129651; ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
     @Test public void testStringRendererWithPrintfFormat() throws Exception {
         String templates =
                 "foo(x) ::= << <x; format=\"%6s\"> >>\n";
