@@ -73,6 +73,17 @@ public class TestGroups extends BaseTest {
         assertEquals(expected, result);
     }
 
+    @Test public void testEscapeOneRightAngle2() throws Exception {
+        String dir = getRandomDir();
+        writeFile(dir, "a.st", "a(x) ::= << \\> >>");
+        STGroup group = new STGroupDir(dir);
+        ST st = group.getInstanceOf("a");
+        st.add("x", "parrt");
+        String expected = " > ";
+        String result = st.render();
+        assertEquals(expected, result);
+    }
+
     @Test public void testEscapeJavaRightShift() throws Exception {
         String dir = getRandomDir();
         writeFile(dir, "a.st", "a(x) ::= << \\>> >>");
