@@ -132,29 +132,33 @@ public class Misc {
         return s;
     }
 
-    /** Replace &gt;\&gt; with &gt;&gt; in s. Replace \&gt;&gt; unless prefix of \&gt;&gt;&gt; with &gt;&gt;.
-     *  Do NOT replace if it's &lt;\\&gt;
+    /**
+     * Replace &gt;\&gt; with &gt;&gt; in s.
+     * <p>
+     * Replace \&gt; with &gt; in s, unless prefix of \&gt;&gt;&gt;.
+     * <p>
+     * Do NOT replace if it's &lt;\\&gt;
      */
     public static String replaceEscapedRightAngle(String s) {
         StringBuilder buf = new StringBuilder();
         int i = 0;
         while ( i<s.length() ) {
             char c = s.charAt(i);
-            if ( c=='<' && s.substring(i).startsWith("<\\\\>") ) {
+            if ( c=='<' && s.startsWith("<\\\\>", i) ) {
                 buf.append("<\\\\>");
                 i += "<\\\\>".length();
                 continue;
             }
-            if ( c=='>' && s.substring(i).startsWith(">\\>") ) {
+            if ( c=='>' && s.startsWith(">\\>", i) ) {
                 buf.append(">>");
                 i += ">\\>".length();
                 continue;
             }
-            if ( c=='\\' && s.substring(i).startsWith("\\>>") &&
-                !s.substring(i).startsWith("\\>>>") )
+            if ( c=='\\' && s.startsWith("\\>", i) &&
+                !s.startsWith("\\>>>", i) )
             {
-                buf.append(">>");
-                i += "\\>>".length();
+                buf.append(">");
+                i += "\\>".length();
                 continue;
             }
             buf.append(c);
