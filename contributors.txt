@@ -66,3 +66,4 @@ YYYY/MM/DD, github id, Full name, email
 2020/07/23, jamesmahler2, James Mahler, jmahler@andrew.cmu.edu
 2020/07/23, dyuan0226, David Yuan, dyuan1@andrew.cmu.edu
 2020/09/06, peteruhnak, Peter Uhnak, i.uhnak@gmail.com
+2020/09/16, Dvoreth, Jarmila Emanuela Panwitz, jaremapan@gmail.com
