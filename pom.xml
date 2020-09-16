@@ -28,6 +28,14 @@
 		and maintainable; it also provides an excellent defense against malicious
 		template authors.
 	</description>
+    
+    <licenses>
+	    <license>
+		    <name>The BSD License</name>
+		    <url>http://www.antlr.org/license.html</url>
+		    <distribution>repo</distribution>
+	    </license>
+    </licenses>
 
 	<dependencies>
 		<dependency>
