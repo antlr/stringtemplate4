@@ -837,12 +837,12 @@ public class STGroup {
     public URL getRootDirURL() { return null; }
 
     public URL getURL(String fileName) {
-        URL url;
+        URL url = null;
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        url = cl.getResource(fileName);
+        if ( cl!=null ) url = cl.getResource(fileName);
         if ( url==null ) {
             cl = this.getClass().getClassLoader();
-            url = cl.getResource(fileName);
+            if ( cl!=null ) url = cl.getResource(fileName);
         }
         return url;
     }
