@@ -34,21 +34,47 @@ import org.stringtemplate.v4.compiler.GroupParser;
 
 /** */
 public class STLexerMessage extends STMessage {
+    /**
+     * @deprecated since 4.3; use {@link #getMessage()} instead
+     */
+    @Deprecated
     public String msg;
-    /** overall token pulled from group file */
+
+    /**
+     * @deprecated since 4.3; use {@link #getTemplateToken()} instead
+     */
+    @Deprecated
     public Token templateToken;
+
+    /**
+     * @deprecated since 4.3; use {@link #getSourceName()} instead
+     */
+    @Deprecated
     public String srcName;
 
     public STLexerMessage(String srcName, String msg, Token templateToken, Throwable cause) {
-        super(ErrorType.LEXER_ERROR, null, cause, null);
+        super(ErrorType.LEXER_ERROR, null, cause);
         this.msg = msg;
         this.templateToken = templateToken;
         this.srcName = srcName;
     }
 
+    public String getMessage() {
+        return msg;
+    }
+
+    /** overall token pulled from group file */
+    public Token getTemplateToken() {
+        return templateToken;
+    }
+
+    public String getSourceName() {
+        return srcName;
+    }
+
     @Override
     public String toString() {
-        RecognitionException re = (RecognitionException)cause;
+        RecognitionException re = (RecognitionException) getCause();
         int line = re.line;
         int charPos = re.charPositionInLine;
         if ( templateToken!=null ) {
@@ -61,8 +87,8 @@ public class STLexerMessage extends STMessage {
         }
         String filepos = line+":"+charPos;
         if ( srcName!=null ) {
-            return srcName+" "+filepos+": "+String.format(error.message, msg);
+            return srcName+" "+filepos+": "+String.format(getError().getMessage(), msg);
         }
-        return filepos+": "+String.format(error.message, msg);
+        return filepos+": "+String.format(getError().getMessage(), msg);
     }
 }

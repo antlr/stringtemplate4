@@ -55,7 +55,7 @@ public class TestTemplateNames extends BaseTest {
         writeFile(dir+"/subdir", "a.st", "a() ::= << <b()> >>\n");
         writeFile(dir+"/subdir", "b.st", "b() ::= <<bar>>\n");
         STGroup group = new STGroupDir(dir);
-        group.getInstanceOf("/subdir/a").impl.dump();
+        group.getInstanceOf("/subdir/a").getImpl().dump();
         assertEquals(" bar ", group.getInstanceOf("/subdir/a").render());
     }
 
@@ -124,7 +124,7 @@ public class TestTemplateNames extends BaseTest {
         String result = template.render();
         assertEquals(expected, result);
 
-        assertEquals("[]", errors.errors.toString());
+        assertEquals("[]", errors.getErrors().toString());
     }
 
     // TODO: test <a/b()> is RELATIVE NOT ABSOLUTE

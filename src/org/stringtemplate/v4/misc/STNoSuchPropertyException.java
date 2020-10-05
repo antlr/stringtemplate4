@@ -32,12 +32,31 @@ import org.stringtemplate.v4.compiler.STException;
 
 /** For {@code <a.b>}, object {@code a} does not have a property {@code b}. */
 public class STNoSuchPropertyException extends STException {
+
+    /**
+     * @deprecated since 4.3; use {@link #getObject()} instead
+     */
+    @Deprecated
     public Object o;
+
+    /**
+     * @deprecated since 4.3; use {@link #getPropertyName()} instead
+     */
+    @Deprecated
     public String propertyName;
+
     public STNoSuchPropertyException(Exception e, Object o, String propertyName) {
         super(null, e);
         this.o = o;
         this.propertyName = propertyName;
+    }
+
+    public Object getObject() {
+        return o;
+    }
+
+    public String getPropertyName() {
+        return propertyName;
     }
 
     @Override

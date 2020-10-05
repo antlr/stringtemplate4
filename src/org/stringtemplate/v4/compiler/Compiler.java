@@ -75,7 +75,7 @@ public class Compiler {
         defaultOptionValues = Collections.unmodifiableMap(map);
     }
 
-    public static Map<String, Short> funcs;
+    public static final Map<String, Short> funcs;
 
     static {
         final Map<String, Short> map = new HashMap<String, Short>();
@@ -91,9 +91,18 @@ public class Compiler {
         funcs = Collections.unmodifiableMap(map);
     }
 
-    /** Name subtemplates {@code _sub1}, {@code _sub2}, ... */
-    public static AtomicInteger subtemplateCount = new AtomicInteger(0);
+    /**
+     * Name subtemplates {@code _sub1}, {@code _sub2}, ...
+     *
+     * @deprecated since 4.3; for internal use only
+     */
+    @Deprecated
+    public static final AtomicInteger subtemplateCount = new AtomicInteger(0);
 
+    /**
+     * @deprecated since 4.3; for internal use only
+     */
+    @Deprecated
     public STGroup group;
 
     public Compiler() { this(STGroup.defaultGroup); }
@@ -101,14 +110,14 @@ public class Compiler {
 
     public CompiledST compile(String template) {
         CompiledST code = compile(null, null, null, template, null);
-        code.hasFormalArgs = false;
+        code.setHasFormalArgs(false);
         return code;
     }
 
     /** Compile full template with unknown formal arguments. */
     public CompiledST compile(String name, String template) {
         CompiledST code = compile(null, name, null, template, null);
-        code.hasFormalArgs = false;
+        code.setHasFormalArgs(false);
         return code;
     }
 
@@ -168,11 +177,11 @@ public class Compiler {
         CompiledST impl=null;
         try {
             impl = gen.template(name,args);
-            impl.nativeGroup = group;
-            impl.template = template;
-            impl.ast = r.getTree();
-            impl.ast.setUnknownTokenBoundaries();
-            impl.tokens = tokens;
+            impl.setNativeGroup(group);
+            impl.setTemplate(template);
+            impl.setAST(r.getTree());
+            impl.getAST().setUnknownTokenBoundaries();
+            impl.setTokens(tokens);
         }
         catch (RecognitionException re) {
             group.errMgr.internalError(null, "bad tree structure", re);
@@ -182,13 +191,13 @@ public class Compiler {
     }
 
     public static CompiledST defineBlankRegion(CompiledST outermostImpl, Token nameToken) {
-        String outermostTemplateName = outermostImpl.name;
+        String outermostTemplateName = outermostImpl.getName();
         String mangled = STGroup.getMangledRegionName(outermostTemplateName, nameToken.getText());
         CompiledST blank = new CompiledST();
-        blank.isRegion = true;
-        blank.templateDefStartToken = nameToken;
-        blank.regionDefType = ST.RegionType.IMPLICIT;
-        blank.name = mangled;
+        blank.setRegion(true);
+        blank.setTemplateDefStartToken(nameToken);
+        blank.setRegionDefType(ST.RegionType.IMPLICIT);
+        blank.setName(mangled);
         outermostImpl.addImplicitlyDefinedTemplate(blank);
         return blank;
     }

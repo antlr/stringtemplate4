@@ -32,13 +32,20 @@ import org.stringtemplate.v4.Interpreter;
 
 /** Used to track errors that occur in the ST interpreter. */
 public class STRuntimeMessage extends STMessage {
-    /** Which interpreter was executing?  If {@code null}, can be IO error or
-     *  bad URL etc...
+    private final Interpreter interp;
+
+    /**
+     * @deprecated since 4.3; use  instead
      */
-    final Interpreter interp;
-    /** Where error occurred in bytecode memory. */
+    @Deprecated
     public final int ip;
+
+    /**
+     * @deprecated since 4.3; use  instead
+     */
+    @Deprecated
     public final InstanceScope scope;
+
     //List<ST> enclosingStack;
 
     public STRuntimeMessage(Interpreter interp, ErrorType error, int ip) {
@@ -57,7 +64,7 @@ public class STRuntimeMessage extends STMessage {
         this(interp, error, ip, scope, e, arg, arg2, null);
     }
     public STRuntimeMessage(Interpreter interp, ErrorType error, int ip, InstanceScope scope, Throwable e, Object arg, Object arg2, Object arg3) {
-        super(error, scope != null ? scope.st : null, e, arg, arg2, arg3);
+        super(error, scope != null ? scope.getST() : null, e, arg, arg2, arg3);
         this.interp = interp;
         this.ip = ip;
         this.scope = scope;
@@ -67,20 +74,36 @@ public class STRuntimeMessage extends STMessage {
      *  return it's template line:col.
      */
     public String getSourceLocation() {
-        if ( ip<0 || self==null || self.impl==null ) return null;
-        Interval I = self.impl.sourceMap[ip];
+        if ( ip<0 || getST() == null || getST().getImpl() == null ) return null;
+        Interval I = getST().getImpl().getSourceMap()[ip];
         if ( I==null ) return null;
         // get left edge and get line/col
-        int i = I.a;
-        Coordinate loc = Misc.getLineCharPosition(self.impl.template, i);
+        int i = I.getStart();
+        Coordinate loc = Misc.getLineCharPosition(getST().getImpl().getTemplate(), i);
         return loc.toString();
+    }
+
+    /** Which interpreter was executing?  If {@code null}, can be IO error or
+     *  bad URL etc...
+     */
+    public Interpreter getInterpreter() {
+        return interp;
+    }
+
+    /** Where error occurred in bytecode memory. */
+    public int getInstructionPointer() {
+        return ip;
+    }
+
+    public InstanceScope getScope() {
+        return scope;
     }
 
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         String loc = null;
-        if ( self!=null ) {
+        if (getST() != null ) {
             loc = getSourceLocation();
             buf.append("context [");
             if ( interp!=null ) {

@@ -40,6 +40,6 @@ public class AggregateModelAdaptor implements ModelAdaptor<Aggregate> {
     public Object getProperty(Interpreter interp, ST self, Aggregate o, Object property, String propertyName)
         throws STNoSuchPropertyException
     {
-        return mapAdaptor.getProperty(interp, self, o.properties, property, propertyName);
+        return mapAdaptor.getProperty(interp, self, o.getProperties(), property, propertyName);
     }
 }

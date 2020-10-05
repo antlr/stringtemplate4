@@ -155,7 +155,7 @@ public class TestWhitespace extends BaseTest {
         st.add("names", "Sumana");
         String expected = "    Ter"+newline+"    Tom"+newline+"    Sumana"+newline+"!";
         String result = st.render();
-        st.impl.dump();
+        st.getImpl().dump();
         assertEquals(expected, result);
     }
 

@@ -110,7 +110,7 @@ public class STViz {
         updateStack(currentScope, viewFrame);
         updateAttributes(currentScope, viewFrame);
 
-        List<InterpEvent> events = currentScope.events;
+        List<InterpEvent> events = currentScope.getEvents();
         tmodel = new JTreeSTModel(interp, (EvalTemplateEvent)events.get(events.size()-1));
         viewFrame.tree.setModel(tmodel);
         viewFrame.tree.addTreeSelectionListener(
@@ -134,7 +134,7 @@ public class STViz {
             }
         );
 
-        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
+        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.getST().getImpl().getAST());
         viewFrame.ast.setModel(astModel);
         viewFrame.ast.addTreeSelectionListener(
             new TreeSelectionListener() {
@@ -150,8 +150,8 @@ public class STViz {
                         if ( path==null ) return;
                         CommonTree node = (CommonTree)treeSelectionEvent.getNewLeadSelectionPath().getLastPathComponent();
                         //System.out.println("select AST: "+node);
-                        CommonToken a = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStartIndex());
-                        CommonToken b = (CommonToken)currentScope.st.impl.tokens.get(node.getTokenStopIndex());
+                        CommonToken a = (CommonToken) currentScope.getST().getImpl().getTokens().get(node.getTokenStartIndex());
+                        CommonToken b = (CommonToken) currentScope.getST().getImpl().getTokens().get(node.getTokenStopIndex());
                         highlight(viewFrame.template, a.getStartIndex(), b.getStopIndex());
                     }
                     finally {
@@ -245,12 +245,12 @@ public class STViz {
                         STMessage msg = (STMessage)model.getElementAt(i);
                         if ( msg instanceof STRuntimeMessage ) {
                             STRuntimeMessage rmsg = (STRuntimeMessage)msg;
-                            Interval I = rmsg.self.impl.sourceMap[rmsg.ip];
+                            Interval I = rmsg.getST().getImpl().getSourceMap()[rmsg.getInstructionPointer()];
                             currentEvent = null;
-                            currentScope = ((STRuntimeMessage) msg).scope;
+                            currentScope = ((STRuntimeMessage) msg).getScope();
                             updateCurrentST(viewFrame);
                             if ( I!=null ) { // highlight template
-                                highlight(viewFrame.template, I.a, I.b);
+                                highlight(viewFrame.template, I.getStart(), I.getEnd());
                             }
                         }
                     }
@@ -281,8 +281,8 @@ public class STViz {
         viewFrame.setSize(900, 700);
 
         setText(viewFrame.output, output);
-        setText(viewFrame.template, currentScope.st.impl.template);
-        setText(viewFrame.bytecode, currentScope.st.impl.disasm());
+        setText(viewFrame.template, currentScope.getST().getImpl().getTemplate());
+        setText(viewFrame.bytecode, currentScope.getST().getImpl().disasm());
         setText(viewFrame.trace, Misc.join(trace.iterator(), "\n"));
 
         viewFrame.setVisible(true);
@@ -325,17 +325,17 @@ public class STViz {
         // update all views according to currentScope.st
         updateStack(currentScope, m);                      // STACK
         updateAttributes(currentScope, m);                 // ATTRIBUTES
-        setText(m.bytecode, currentScope.st.impl.disasm()); // BYTECODE DIS.
-        setText(m.template, currentScope.st.impl.template); // TEMPLATE SRC
-        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.st.impl.ast);
+        setText(m.bytecode, currentScope.getST().getImpl().disasm()); // BYTECODE DIS.
+        setText(m.template, currentScope.getST().getImpl().getTemplate()); // TEMPLATE SRC
+        JTreeASTModel astModel = new JTreeASTModel(new CommonTreeAdaptor(), currentScope.getST().getImpl().getAST());
         viewFrame.ast.setModel(astModel);
 
         // highlight output text and, if {...} subtemplate, region in ST src
         // get last event for currentScope.st; it's the event that captures ST eval
         if (currentEvent instanceof EvalExprEvent) {
             EvalExprEvent exprEvent = (EvalExprEvent)currentEvent;
-            highlight(m.output, exprEvent.outputStartChar, exprEvent.outputStopChar);
-            highlight(m.template, exprEvent.exprStartChar, exprEvent.exprStopChar);
+            highlight(m.output, exprEvent.getOutputStartChar(), exprEvent.getOutputStopChar());
+            highlight(m.template, exprEvent.getExprStartChar(), exprEvent.getExprStopChar());
         }
         else {
             EvalTemplateEvent templateEvent;
@@ -343,19 +343,19 @@ public class STViz {
                 templateEvent = (EvalTemplateEvent)currentEvent;
             }
             else {
-                List<InterpEvent> events = currentScope.events;
+                List<InterpEvent> events = currentScope.getEvents();
                 templateEvent = (EvalTemplateEvent)events.get(events.size() - 1);
             }
 
             if (templateEvent != null) {
-                highlight(m.output, templateEvent.outputStartChar, templateEvent.outputStopChar);
+                highlight(m.output, templateEvent.getOutputStartChar(), templateEvent.getOutputStopChar());
             }
 
-            if ( currentScope.st.isAnonSubtemplate() ) {
-                Interval r = currentScope.st.impl.getTemplateRange();
+            if ( currentScope.getST().isAnonSubtemplate() ) {
+                Interval r = currentScope.getST().getImpl().getTemplateRange();
                 //System.out.println("currentScope.st src range="+r);
                 //m.template.moveCaretPosition(r.a);
-                highlight(m.template, r.a, r.b);
+                highlight(m.template, r.getStart(), r.getEnd());
             }
         }
     }
@@ -423,7 +423,7 @@ public class STViz {
             }
         }
         catch (BadLocationException ble) {
-            errMgr.internalError(tmodel.root.event.scope.st, "bad highlight location", ble);
+            errMgr.internalError(tmodel.root.event.scope.getST(), "bad highlight location", ble);
         }
     }
 
@@ -479,15 +479,21 @@ public class STViz {
                                                  int charIndex)
     {
         for (InterpEvent e : events) {
-            if (e.scope.earlyEval) {
+            if (e.scope.isEarlyEval()) {
                 continue;
             }
 
-            if ( charIndex>=e.outputStartChar && charIndex<=e.outputStopChar) return e;
+            if ( charIndex>=e.getOutputStartChar() && charIndex<=e.getOutputStopChar()) return e;
         }
         return null;
     }
 
+    /**
+     * Internal test method.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void main(String[] args) throws IOException { // test rig
         if ( args.length>0 && args[0].equals("1") ) test1();
         else if ( args.length>0 && args[0].equals("2") ) test2();
@@ -495,6 +501,12 @@ public class STViz {
         else if ( args.length>0 && args[0].equals("4") ) test4();
     }
 
+    /**
+     * Internal test method.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void test1() throws IOException { // test rig
         String templates =
             "method(type,name,locals,args,stats) ::= <<\n" +
@@ -511,7 +523,7 @@ public class STViz {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         ST st = group.getInstanceOf("method");
-        st.impl.dump();
+        st.getImpl().dump();
         st.add("type", "float");
         st.add("name", "foo");
         st.add("locals", 3);
@@ -534,6 +546,12 @@ public class STViz {
         System.out.println(st.render()); // should not mess up ST event lists
     }
 
+    /**
+     * Internal test method.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void test2() throws IOException { // test rig
         String templates =
             "t1(q1=\"Some\\nText\") ::= <<\n" +
@@ -557,6 +575,12 @@ public class STViz {
         STViz viz = st.inspect();
     }
 
+    /**
+     * Internal test method.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void test3() throws IOException {
         String templates =
             "main() ::= <<\n" +
@@ -570,6 +594,12 @@ public class STViz {
         st.inspect();
     }
 
+    /**
+     * Internal test method.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void test4() throws IOException {
         String templates =
             "main(t) ::= <<\n" +
@@ -589,6 +619,12 @@ public class STViz {
         st.render();
     }
 
+    /**
+     * Used by internal test methods.
+     *
+     * @deprecated since 4.3
+     */
+    @Deprecated
     public static void writeFile(String dir, String fileName, String content) {
         try {
             File f = new File(dir, fileName);

@@ -30,11 +30,28 @@ package org.stringtemplate.v4.debug;
 import org.stringtemplate.v4.InstanceScope;
 
 public class EvalExprEvent extends InterpEvent {
-    /** Index of first char in template. */
+    /**
+     * Index of first char in template.
+     *
+     * @deprecated since 4.3; use {@link #getExprStartChar()} instead
+     */
+    @Deprecated
     public final int exprStartChar;
-    /** Index of last char in template (inclusive). */
+
+    /**
+     * Index of last char in template (inclusive).
+     *
+     * @deprecated since 4.3; use {@link #getExprStopChar()} instead
+     */
+    @Deprecated
     public final int exprStopChar;
+
+    /**
+     * @deprecated since 4.3; use {@link #getExpr()} instead
+     */
+    @Deprecated
     public final String expr;
+
     public EvalExprEvent(InstanceScope scope, int start, int stop,
                          int exprStartChar, int exprStopChar)
     {
@@ -42,22 +59,40 @@ public class EvalExprEvent extends InterpEvent {
         this.exprStartChar = exprStartChar;
         this.exprStopChar = exprStopChar;
         if ( exprStartChar >=0 && exprStopChar >=0 ) {
-            expr = scope.st.impl.template.substring(exprStartChar, exprStopChar +1);
+            expr = scope.getST().getImpl().getTemplate().substring(exprStartChar, exprStopChar+ 1);
         }
         else {
             expr = "";
         }
     }
 
+    /**
+     * Index of first char in template.
+     */
+    public int getExprStartChar() {
+        return exprStartChar;
+    }
+
+    /**
+     * Index of last char in template (inclusive).
+     */
+    public int getExprStopChar() {
+        return exprStopChar;
+    }
+
+    public String getExpr() {
+        return expr;
+    }
+
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"{" +
-               "self=" + scope.st +
-               ", expr='" + expr + '\'' +
-               ", exprStartChar=" + exprStartChar +
-               ", exprStopChar=" + exprStopChar +
-               ", start=" + outputStartChar +
-               ", stop=" + outputStopChar +
+        return getClass().getSimpleName() + "{" +
+               "self=" + scope.getST() +
+               ", expr='" + getExpr() + '\'' +
+               ", exprStartChar=" + getExprStartChar() +
+               ", exprStopChar=" + getExprStopChar() +
+               ", start=" + getOutputStartChar() +
+               ", stop=" + getOutputStopChar() +
                '}';
     }
 

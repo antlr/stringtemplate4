@@ -74,7 +74,7 @@ public class TestScopes extends BaseTest {
 
         String expected = "xx";
         assertEquals(expected, result);
-        group.setListener(ErrorManager.DEFAULT_ERROR_LISTENER);
+        group.setListener(ErrorManager.getDefaultErrorListener());
     }
 
     @Test public void testIndexAttrVisibleLocallyOnly() throws Exception {
@@ -88,14 +88,14 @@ public class TestScopes extends BaseTest {
         ST st = group.getInstanceOf("t");
         st.add("names", "Ter");
         String result = st.render();
-        group.getInstanceOf("u").impl.dump();
+        group.getInstanceOf("u").getImpl().dump();
 
         String expectedError = "t.stg 2:11: implicitly-defined attribute i not visible"+newline;
         assertEquals(expectedError, errors.toString());
 
         String expected = ":Ter";
         assertEquals(expected, result);
-        group.setListener(ErrorManager.DEFAULT_ERROR_LISTENER);
+        group.setListener(ErrorManager.getDefaultErrorListener());
     }
 
 }

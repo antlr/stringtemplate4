@@ -52,7 +52,7 @@ public class TestOptions extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; separator= \", \">!");
         ST st = group.getInstanceOf("test");
-        System.out.println(st.impl.ast.toStringTree());
+        System.out.println(st.getImpl().getAST().toStringTree());
         st.add("name", "Ter");
         st.add("name", "Tom");
         st.add("name", "Sumana");
@@ -117,7 +117,7 @@ public class TestOptions extends BaseTest {
         STGroup group = new STGroup();
         group.defineTemplate("test", "name", "hi <name; null=\"n/a\", separator=\", \">!");
         ST st = group.getInstanceOf("test");
-        st.impl.dump();
+        st.getImpl().dump();
         st.add("name", "Ter");
         st.add("name", null);
         st.add("name", "Sumana");
@@ -194,6 +194,6 @@ public class TestOptions extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
         expected = "[test 1:7: no such option: bad]";
-        assertEquals(expected, errors.errors.toString());
+        assertEquals(expected, errors.getErrors().toString());
     }
 }

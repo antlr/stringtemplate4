@@ -27,12 +27,17 @@
  */
 package org.stringtemplate.v4.compiler;
 
-import org.antlr.runtime.*;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
-import org.stringtemplate.v4.*;
-import org.stringtemplate.v4.misc.*;
+import org.stringtemplate.v4.Interpreter;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.misc.Interval;
+import org.stringtemplate.v4.misc.Misc;
 
-import java.io.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 
 /** The result of compiling an {@link ST}.  Contains all the bytecode instructions,
@@ -41,7 +46,128 @@ import java.util.*;
  *  of the same template share a single implementation ({@link ST#impl} field).
  */
 public class CompiledST implements Cloneable {
+    /**
+     * @deprecated since 4.3; use {@link #getName()} or {@link #setName(String)} instead
+     */
+    @Deprecated
     public String name;
+
+    /**
+     * @deprecated since 4.3; use {@link #getPrefix()} or {@link #setPrefix(String)} instead
+     */
+    @Deprecated
+    public String prefix = "/";
+
+    /**
+     * @deprecated since 4.3; use {@link #getTemplate()} or {@link #setTemplate(String)} instead
+     */
+    @Deprecated
+    public String template;
+
+    /**
+     * @deprecated since 4.3; use {@link #getTemplateDefStartToken()} or {@link #setTemplateDefStartToken(Token)} instead
+     */
+    @Deprecated
+    public Token templateDefStartToken;
+
+    /**
+     * @deprecated since 4.3; use {@link #getTokens()} or {@link #setTokens(TokenStream)} instead
+     */
+    @Deprecated
+    public TokenStream tokens;
+
+    /**
+     * @deprecated since 4.3; use {@link #getAST()} or {@link #setAST(CommonTree)} instead
+     */
+    @Deprecated
+    public CommonTree ast;
+
+    /**
+     * @deprecated since 4.3; use {@link #getFormalArguments()} instead
+     */
+    @Deprecated
+    public Map<String, FormalArgument> formalArguments;
+
+    /**
+     * @deprecated since 4.3; use {@link #hasFormalArgs()} or {@link #setHasFormalArgs(boolean)} instead
+     */
+    @Deprecated
+    public boolean hasFormalArgs;
+
+    /**
+     * @deprecated since 4.3; use {@link #getNumberOfArgsWithDefaultValues()} instead
+     */
+    @Deprecated
+    public int numberOfArgsWithDefaultValues;
+
+    /**
+     * A list of all regions and subtemplates.
+     *
+     * @deprecated since 4.3; for internal use only
+     */
+    public List<CompiledST> implicitlyDefinedTemplates;
+
+    /**
+     * @deprecated since 4.3; use {@link #getNativeGroup()} or {@link #setNativeGroup(STGroup)} instead
+     */
+    @Deprecated
+    public STGroup nativeGroup = STGroup.defaultGroup;
+
+    /**
+     * @deprecated since 4.3; use {@link #isRegion()} or {@link #setRegion(boolean)} instead
+     */
+    @Deprecated
+    public boolean isRegion;
+
+    /**
+     * @deprecated since 4.3; use {@link #getRegionDefType()} or {@link #setRegionDefType(ST.RegionType)} instead
+     */
+    @Deprecated
+    public ST.RegionType regionDefType;
+
+    /**
+     * @deprecated since 4.3; use {@link #isAnonymousSubtemplate()} or {@link #setAnonymousSubtemplate(boolean)} instead
+     */
+    @Deprecated
+    public boolean isAnonSubtemplate; // {...}
+
+    /**
+     * @deprecated since 4.3; use {@link #getStrings()} or {@link #setStrings(String[])} instead
+     */
+    @Deprecated
+    public String[] strings; // string operands of instructions
+
+    /**
+     * @deprecated since 4.3; use {@link #getInstructions()} or {@link #setInstructions(byte[])} instead
+     */
+    @Deprecated
+    public byte[] instrs;        // byte-addressable code memory.
+
+    /**
+     * @deprecated since 4.3; use {@link #getCodeSize()} or {@link #setCodeSize(int)} instead
+     */
+    @Deprecated
+    public int codeSize;
+
+    /**
+     * @deprecated since 4.3; use {@link #getSourceMap()} or {@link #setSourceMap(Interval[])} instead
+     */
+    @Deprecated
+    public Interval[] sourceMap; // maps IP to range in template pattern
+
+    public CompiledST() {
+        instrs = new byte[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
+        sourceMap = new Interval[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
+        template = "";
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /**
      * Every template knows where it is relative to the group that loaded it.
@@ -59,31 +185,75 @@ public class CompiledST implements Cloneable {
      * <p>
      * Always ends with {@code "/"}.</p>
      */
-    public String prefix = "/";
+    public String getPrefix() {
+        return prefix;
+    }
 
-    /** The original, immutable pattern (not really used again after
-     *  initial "compilation"). Useful for debugging.  Even for
-     *  subtemplates, this is entire overall template.
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    /**
+     * The original, immutable pattern (not really used again after
+     * initial "compilation"). Useful for debugging.  Even for
+     * subtemplates, this is entire overall template.
      */
-    public String template;
+    public String getTemplate() {
+        return template;
+    }
 
-    /** The token that begins template definition; could be {@code <@r>} of region. */
-    public Token templateDefStartToken;
+    public void setTemplate(String template) {
+        this.template = template;
+    }
 
-    /** Overall token stream for template (debug only). */
-    public TokenStream tokens;
+    /**
+     * The token that begins template definition; could be {@code <@r>} of region.
+     */
+    public Token getTemplateDefStartToken() {
+        return templateDefStartToken;
+    }
 
-    /** How do we interpret syntax of template? (debug only) */
-    public CommonTree ast;
+    public void setTemplateDefStartToken(Token templateDefStartToken) {
+        this.templateDefStartToken = templateDefStartToken;
+    }
 
-    public Map<String, FormalArgument> formalArguments;
+    /**
+     * Overall token stream for template (debug only).
+     */
+    public TokenStream getTokens() {
+        return tokens;
+    }
 
-    public boolean hasFormalArgs;
+    public void setTokens(TokenStream tokens) {
+        this.tokens = tokens;
+    }
 
-    public int numberOfArgsWithDefaultValues;
+    /**
+     * How do we interpret syntax of template? (debug only)
+     */
+    public CommonTree getAST() {
+        return ast;
+    }
 
-    /** A list of all regions and subtemplates. */
-    public List<CompiledST> implicitlyDefinedTemplates;
+    public void setAST(CommonTree ast) {
+        this.ast = ast;
+    }
+
+    public Map<String, FormalArgument> getFormalArguments() {
+        return formalArguments;
+    }
+
+    public boolean hasFormalArgs() {
+        return hasFormalArgs;
+    }
+
+    public void setHasFormalArgs(boolean hasFormalArgs) {
+        this.hasFormalArgs = hasFormalArgs;
+    }
+
+    public int getNumberOfArgsWithDefaultValues() {
+        return numberOfArgsWithDefaultValues;
+    }
 
     /**
      * The group that physically defines this {@link ST} definition. We use it
@@ -91,12 +261,24 @@ public class CompiledST implements Cloneable {
      * becomes field {@link Interpreter#group} and is fixed until rendering
      * completes.
      */
-    public STGroup nativeGroup = STGroup.defaultGroup;
+    public STGroup getNativeGroup() {
+        return nativeGroup;
+    }
+
+    public void setNativeGroup(STGroup nativeGroup) {
+        this.nativeGroup = nativeGroup;
+    }
 
     /** Does this template come from a {@code <@region>...<@end>} embedded in
      *  another template?
      */
-    public boolean isRegion;
+    public boolean isRegion() {
+        return isRegion;
+    }
+
+    public void setRegion(boolean region) {
+        isRegion = region;
+    }
 
     /**
      * If someone refs {@code <@r()>} in template t, an implicit
@@ -108,19 +290,52 @@ public class CompiledST implements Cloneable {
      * to prevent more than one manual def though. Between this var and
      * {@link #isRegion} we can determine these cases.</p>
      */
-    public ST.RegionType regionDefType;
+    public ST.RegionType getRegionDefType() {
+        return regionDefType;
+    }
 
-    public boolean isAnonSubtemplate; // {...}
+    public void setRegionDefType(ST.RegionType regionDefType) {
+        this.regionDefType = regionDefType;
+    }
 
-    public String[] strings;     // string operands of instructions
-    public byte[] instrs;        // byte-addressable code memory.
-    public int codeSize;
-    public Interval[] sourceMap; // maps IP to range in template pattern
+    public boolean isAnonymousSubtemplate() {
+        return isAnonSubtemplate;
+    }
 
-    public CompiledST() {
-        instrs = new byte[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
-        sourceMap = new Interval[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
-        template = "";
+    public void setAnonymousSubtemplate(boolean anonSubtemplate) {
+        isAnonSubtemplate = anonSubtemplate;
+    }
+
+    public String[] getStrings() {
+        return strings;
+    }
+
+    public void setStrings(String[] strings) {
+        this.strings = strings;
+    }
+
+    public byte[] getInstructions() {
+        return instrs;
+    }
+
+    public void setInstructions(byte[] instrs) {
+        this.instrs = instrs;
+    }
+
+    public int getCodeSize() {
+        return codeSize;
+    }
+
+    public void setCodeSize(int codeSize) {
+        this.codeSize = codeSize;
+    }
+
+    public Interval[] getSourceMap() {
+        return sourceMap;
+    }
+
+    public void setSourceMap(Interval[] sourceMap) {
+        this.sourceMap = sourceMap;
     }
 
     /**
@@ -158,32 +373,31 @@ public class CompiledST implements Cloneable {
         if ( formalArguments==null ) return;
         for (String a : formalArguments.keySet()) {
             FormalArgument fa = formalArguments.get(a);
-            if ( fa.defaultValueToken!=null ) {
+            if (fa.getDefaultValueToken() != null ) {
                 numberOfArgsWithDefaultValues++;
-                switch (fa.defaultValueToken.getType()) {
+                switch (fa.getDefaultValueToken().getType()) {
                 case GroupParser.ANONYMOUS_TEMPLATE:
-                    String argSTname = fa.name + "_default_value";
+                    String argSTname = fa.getName() + "_default_value";
                     Compiler c2 = new Compiler(group);
                     String defArgTemplate =
-                        Misc.strip(fa.defaultValueToken.getText(), 1);
-                    fa.compiledDefaultValue =
-                        c2.compile(group.getFileName(), argSTname, null,
-                                   defArgTemplate, fa.defaultValueToken);
-                    fa.compiledDefaultValue.name = argSTname;
-                    fa.compiledDefaultValue.defineImplicitlyDefinedTemplates(group);
+                        Misc.strip(fa.getDefaultValueToken().getText(), 1);
+                    fa.setCompiledDefaultValue(c2.compile(group.getFileName(), argSTname, null,
+                                                          defArgTemplate, fa.getDefaultValueToken()));
+                    fa.getCompiledDefaultValue().name = argSTname;
+                    fa.getCompiledDefaultValue().defineImplicitlyDefinedTemplates(group);
                     break;
 
                 case GroupParser.STRING:
-                    fa.defaultValue = Misc.strip(fa.defaultValueToken.getText(), 1);
+                    fa.setDefaultValue(Misc.strip(fa.getDefaultValueToken().getText(), 1));
                     break;
 
                 case GroupParser.LBRACK:
-                    fa.defaultValue = Collections.emptyList();
+                    fa.setDefaultValue(Collections.emptyList());
                     break;
 
                 case GroupParser.TRUE:
                 case GroupParser.FALSE:
-                    fa.defaultValue = fa.defaultValueToken.getType()==GroupParser.TRUE;
+                    fa.setDefaultValue(fa.getDefaultValueToken().getType() == GroupParser.TRUE);
                     break;
 
                 default:
@@ -204,12 +418,12 @@ public class CompiledST implements Cloneable {
         if ( formalArguments==null ) {
             formalArguments = Collections.synchronizedMap(new LinkedHashMap<String,FormalArgument>());
         }
-        else if (formalArguments.containsKey(a.name)) {
-            throw new IllegalArgumentException(String.format("Formal argument %s already exists.", a.name));
+        else if (formalArguments.containsKey(a.getName())) {
+            throw new IllegalArgumentException(String.format("Formal argument %s already exists.", a.getName()));
         }
 
-        a.index = formalArguments.size();
-        formalArguments.put(a.name, a);
+        a.setIndex(formalArguments.size());
+        formalArguments.put(a.getName(), a);
     }
 
     public void defineImplicitlyDefinedTemplates(STGroup group) {
@@ -223,7 +437,7 @@ public class CompiledST implements Cloneable {
 
     public String getTemplateSource() {
         Interval r = getTemplateRange();
-        return template.substring(r.a, r.b+1);
+        return template.substring(r.getStart(), r.getEnd() + 1);
     }
 
     public Interval getTemplateRange() {
@@ -235,8 +449,8 @@ public class CompiledST implements Cloneable {
                     continue;
                 }
 
-                start = Math.min(start, interval.a);
-                stop = Math.max(stop, interval.b);
+                start = Math.min(start, interval.getStart());
+                stop = Math.max(stop, interval.getEnd());
             }
 
             if (start <= stop + 1) {

@@ -108,7 +108,7 @@ public class TestGroupSyntax extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
 
-        assertEquals("[]", errors.errors.toString());
+        assertEquals("[]", errors.getErrors().toString());
     }
 
     /**
@@ -130,7 +130,7 @@ public class TestGroupSyntax extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
 
-        assertEquals("[]", errors.errors.toString());
+        assertEquals("[]", errors.getErrors().toString());
     }
 
     @Test public void testSetNonDefaultDelimiters() throws Exception {
@@ -167,7 +167,7 @@ public class TestGroupSyntax extends BaseTest {
 
         String expectedErrors = "[t.stg 1:11: unsupported delimiter character: @, "
             + "t.stg 1:16: unsupported delimiter character: @]";
-        String resultErrors = errors.errors.toString();
+        String resultErrors = errors.getErrors().toString();
         assertEquals(expectedErrors, resultErrors);
     }
 
@@ -351,7 +351,7 @@ public class TestGroupSyntax extends BaseTest {
         String expected = "[context [/main] 1:1 attribute x isn't defined," +
                           " context [/main] 1:1 passed 1 arg(s) to template /f with 0 declared arg(s)," +
                           " context [/main /f] 1:1 attribute x isn't defined]";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 
@@ -370,13 +370,13 @@ public class TestGroupSyntax extends BaseTest {
         group.setListener(errors);
         ST template = group.getInstanceOf("t");
 
-        assertEquals("[]", errors.errors.toString());
+        assertEquals("[]", errors.getErrors().toString());
         assertNotNull(template);
 
         String expected = "";
         String result = template.render();
         assertEquals(expected, result);
 
-        assertEquals("[]", errors.errors.toString());
+        assertEquals("[]", errors.getErrors().toString());
     }
 }

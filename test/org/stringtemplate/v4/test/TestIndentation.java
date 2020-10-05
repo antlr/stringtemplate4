@@ -46,7 +46,7 @@ public class TestIndentation extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         ST t = group.getInstanceOf("list");
-        t.impl.dump();
+        t.getImpl().dump();
         t.add("a", "Terence");
         t.add("b", "Jim");
         String expecting =

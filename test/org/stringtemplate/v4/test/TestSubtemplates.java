@@ -217,7 +217,7 @@ public class TestSubtemplates extends BaseTest {
         String expected = "hi hi hi ";
         String result = outerST.render();
 
-        assertEquals(errors.errors.size(), 0); // ignores no such prop errors
+        assertEquals(errors.getErrors().size(), 0); // ignores no such prop errors
 
         assertEquals(expected, result);
     }
@@ -239,7 +239,7 @@ public class TestSubtemplates extends BaseTest {
         String expected = "hi ";
         String result = outerST.render();
 
-        assertEquals(errors.errors.size(), 0); // ignores no such prop errors
+        assertEquals(errors.getErrors().size(), 0); // ignores no such prop errors
 
         assertEquals(expected, result);
     }
@@ -261,7 +261,7 @@ public class TestSubtemplates extends BaseTest {
         String expected = "inner";
         String result = outerST.render();
 
-        assertEquals(errors.errors.size(), 0); // ignores no such prop errors
+        assertEquals(errors.getErrors().size(), 0); // ignores no such prop errors
 
         assertEquals(expected, result);
     }

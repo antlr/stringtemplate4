@@ -76,7 +76,7 @@ public class TestDebugEvents extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
         ST st = group.getInstanceOf("t");
-        group.getInstanceOf("u").impl.dump();
+        group.getInstanceOf("u").getImpl().dump();
         List<InterpEvent> events = st.getEvents();
         String expected =
             "[EvalExprEvent{self=/t(), expr='[', exprStartChar=0, exprStopChar=0, start=0, stop=0}," +
@@ -101,7 +101,7 @@ public class TestDebugEvents extends BaseTest {
         //                       01 2        01 2 3
         STGroupString g = new STGroupString(templates);
         ST st = g.getInstanceOf("t");
-        st.impl.dump();
+        st.getImpl().dump();
         List<InterpEvent> events = st.getEvents();
         int n = newline.length();
         String expected =

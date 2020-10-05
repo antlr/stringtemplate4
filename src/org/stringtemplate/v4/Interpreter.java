@@ -88,16 +88,19 @@ public class Interpreter {
     ErrorManager errMgr;
 
     /**
-     * Dump bytecode instructions as they are executed. This field is mostly for
-     * StringTemplate development.
+     * @deprecated since 4.3; use {@link #isTrace()} or {@link #setTrace(boolean)} instead
      */
+    @Deprecated
     public static boolean trace = false;
 
     /** If {@link #trace} is {@code true}, track trace here. */
     // TODO: track the pieces not a string and track what it contributes to output
     protected List<String> executeTrace;
 
-    /** When {@code true}, track events inside templates and in {@link #events}. */
+    /**
+     * @deprecated since 4.3; use {@link #isDebug()} instead
+     */
+    @Deprecated
     public boolean debug = false;
 
     /**
@@ -130,6 +133,23 @@ public class Interpreter {
         }
     }
 
+    /** When {@code true}, track events inside templates and in {@link #events}. */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * Dump bytecode instructions as they are executed. This field is mostly for
+     * StringTemplate development.
+     */
+    public static boolean isTrace() {
+        return trace;
+    }
+
+    public static void setTrace(boolean trace) {
+        Interpreter.trace = trace;
+    }
+
 //  public static int[] count = new int[Bytecode.MAX_BYTECODE+1];
 
 //  public static void dumpOpcodeFreq() {
@@ -144,7 +164,7 @@ public class Interpreter {
      * @return the number of characters written to {@code out}
      */
     public int exec(STWriter out, InstanceScope scope) {
-        final ST self = scope.st;
+        final ST self = scope.getST();
         if ( trace ) System.out.println("exec("+self.getName()+")");
         try {
             setDefaultArguments(out, scope);
@@ -162,7 +182,7 @@ public class Interpreter {
     }
 
     protected int _exec(STWriter out, InstanceScope scope) {
-        final ST self = scope.st;
+        final ST self = scope.getST();
         int start = out.index(); // track char we're about to write
         int prevOpcode = 0;
         int n = 0; // how many char we write out
@@ -173,13 +193,13 @@ public class Interpreter {
         Object o, left, right;
         ST st;
         Object[] options;
-        byte[] code = self.impl.instrs;        // which code block are we executing
+        byte[] code = self.getImpl().getInstructions();        // which code block are we executing
         int ip = 0;
-        while ( ip < self.impl.codeSize ) {
+        while ( ip<self.getImpl().getCodeSize()) {
             if ( trace || debug ) trace(scope, ip);
             short opcode = code[ip];
             //count[opcode]++;
-            scope.ip = ip;
+            scope.setInstructionPointer(ip);
             ip++; //jump to next instruction or first byte of operand
             switch (opcode) {
                 case Bytecode.INSTR_LOAD_STR :
@@ -190,7 +210,7 @@ public class Interpreter {
                 case Bytecode.INSTR_LOAD_ATTR :
                     nameIndex = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
-                    name = self.impl.strings[nameIndex];
+                    name = self.getImpl().getStrings()[nameIndex];
                     try {
                         o = getAttribute(scope, name);
                         if ( o==ST.EMPTY_ATTR ) o = null;
@@ -212,7 +232,7 @@ public class Interpreter {
                     nameIndex = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
                     o = operands[sp--];
-                    name = self.impl.strings[nameIndex];
+                    name = self.getImpl().getStrings()[nameIndex];
                     operands[++sp] = getObjectProperty(out, scope, o, name);
                     break;
                 case Bytecode.INSTR_LOAD_PROP_IND :
@@ -223,12 +243,12 @@ public class Interpreter {
                 case Bytecode.INSTR_NEW :
                     nameIndex = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
-                    name = self.impl.strings[nameIndex];
+                    name = self.getImpl().getStrings()[nameIndex];
                     nargs = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
                     // look up in original hierarchy not enclosing template (variable group)
                     // see TestSubtemplates.testEvalSTFromAnotherGroup()
-                    st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, scope, name);
+                    st = self.getCreatorGroup().getEmbeddedInstanceOf(this, scope, name);
                     // get n args and store into st's attr list
                     storeArgs(scope, nargs, st);
                     sp -= nargs;
@@ -238,7 +258,7 @@ public class Interpreter {
                     nargs = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
                     name = (String)operands[sp-nargs];
-                    st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, scope, name);
+                    st = self.getCreatorGroup().getEmbeddedInstanceOf(this, scope, name);
                     storeArgs(scope, nargs, st);
                     sp -= nargs;
                     sp--; // pop template name
@@ -247,11 +267,11 @@ public class Interpreter {
                 case Bytecode.INSTR_NEW_BOX_ARGS :
                     nameIndex = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
-                    name = self.impl.strings[nameIndex];
+                    name = self.getImpl().getStrings()[nameIndex];
                     Map<String, Object> attrs = (ArgumentsMap)operands[sp--];
                     // look up in original hierarchy not enclosing template (variable group)
                     // see TestSubtemplates.testEvalSTFromAnotherGroup()
-                    st = self.groupThatCreatedThisInstance.getEmbeddedInstanceOf(this, scope, name);
+                    st = self.getCreatorGroup().getEmbeddedInstanceOf(this, scope, name);
                     // get n args and store into st's attr list
                     storeArgs(scope, attrs, st);
                     operands[++sp] = st;
@@ -259,7 +279,7 @@ public class Interpreter {
                 case Bytecode.INSTR_SUPER_NEW :
                     nameIndex = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
-                    name = self.impl.strings[nameIndex];
+                    name = self.getImpl().getStrings()[nameIndex];
                     nargs = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
                     super_new(scope, name, nargs);
@@ -267,7 +287,7 @@ public class Interpreter {
                 case Bytecode.INSTR_SUPER_NEW_BOX_ARGS :
                     nameIndex = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
-                    name = self.impl.strings[nameIndex];
+                    name = self.getImpl().getStrings()[nameIndex];
                     attrs = (ArgumentsMap)operands[sp--];
                     super_new(scope, name, attrs);
                     break;
@@ -280,7 +300,7 @@ public class Interpreter {
                     break;
                 case Bytecode.INSTR_STORE_ARG:
                     nameIndex = getShort(code, ip);
-                    name = self.impl.strings[nameIndex];
+                    name = self.getImpl().getStrings()[nameIndex];
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
                     o = operands[sp--];
                     attrs = (ArgumentsMap)operands[sp];
@@ -340,7 +360,7 @@ public class Interpreter {
                 case Bytecode.INSTR_PASSTHRU :
                     nameIndex = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
-                    name = self.impl.strings[nameIndex];
+                    name = self.getImpl().getStrings()[nameIndex];
                     attrs = (ArgumentsMap)operands[sp];
                     passthru(scope, name, attrs);
                     break;
@@ -420,7 +440,7 @@ public class Interpreter {
                     break;
                 case Bytecode.INSTR_NEWLINE :
                     try {
-                        if ( (prevOpcode==0 && !self.isAnonSubtemplate() && !self.impl.isRegion) ||
+                        if ( (prevOpcode==0 && !self.isAnonSubtemplate() && !self.getImpl().isRegion()) ||
                             prevOpcode==Bytecode.INSTR_NEWLINE ||
                             prevOpcode==Bytecode.INSTR_INDENT ||
                             nwline>0 )
@@ -450,7 +470,7 @@ public class Interpreter {
                 case Bytecode.INSTR_WRITE_STR :
                     strIndex = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
-                    o = self.impl.strings[strIndex];
+                    o = self.getImpl().getStrings()[strIndex];
                     n1 = writeObjectNoOptions(out, scope, o);
                     n += n1;
                     nwline += n1;
@@ -467,7 +487,7 @@ public class Interpreter {
 //                  break;
                 default :
                     errMgr.internalError(self, "invalid bytecode @ "+(ip-1)+": "+opcode, null);
-                    self.impl.dump();
+                    self.getImpl().dump();
             }
             prevOpcode = opcode;
         }
@@ -480,24 +500,24 @@ public class Interpreter {
     }
 
     void load_str(ST self, int ip) {
-        int strIndex = getShort(self.impl.instrs, ip);
+        int strIndex = getShort(self.getImpl().getInstructions(), ip);
         ip += Bytecode.OPND_SIZE_IN_BYTES;
-        operands[++sp] = self.impl.strings[strIndex];
+        operands[++sp] = self.getImpl().getStrings()[strIndex];
     }
 
     // TODO: refactor to remove dup'd code
     void super_new(InstanceScope scope, String name, int nargs) {
-        final ST self = scope.st;
+        final ST self = scope.getST();
         ST st = null;
-        CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
+        CompiledST imported = self.getImpl().getNativeGroup().lookupImportedTemplate(name);
         if ( imported==null ) {
             errMgr.runTimeError(this, scope, ErrorType.NO_IMPORTED_TEMPLATE,
                                 name);
-            st = self.groupThatCreatedThisInstance.createStringTemplateInternally(new CompiledST());
+            st = self.getCreatorGroup().createStringTemplateInternally(new CompiledST());
         }
         else {
-            st = imported.nativeGroup.getEmbeddedInstanceOf(this, scope, name);
-            st.groupThatCreatedThisInstance = group;
+            st = imported.getNativeGroup().getEmbeddedInstanceOf(this, scope, name);
+            st.setCreatorGroup(group);
         }
         // get n args and store into st's attr list
         storeArgs(scope, nargs, st);
@@ -506,17 +526,17 @@ public class Interpreter {
     }
 
     void super_new(InstanceScope scope, String name, Map<String,Object> attrs) {
-        final ST self = scope.st;
+        final ST self = scope.getST();
         ST st = null;
-        CompiledST imported = self.impl.nativeGroup.lookupImportedTemplate(name);
+        CompiledST imported = self.getImpl().getNativeGroup().lookupImportedTemplate(name);
         if ( imported==null ) {
             errMgr.runTimeError(this, scope, ErrorType.NO_IMPORTED_TEMPLATE,
                                 name);
-            st = self.groupThatCreatedThisInstance.createStringTemplateInternally(new CompiledST());
+            st = self.getCreatorGroup().createStringTemplateInternally(new CompiledST());
         }
         else {
-            st = imported.nativeGroup.createStringTemplateInternally(imported);
-            st.groupThatCreatedThisInstance = group;
+            st = imported.getNativeGroup().createStringTemplateInternally(imported);
+            st.setCreatorGroup(group);
         }
 
         // get n args and store into st's attr list
@@ -527,29 +547,29 @@ public class Interpreter {
     void passthru(InstanceScope scope, String templateName, Map<String,Object> attrs) {
         CompiledST c = group.lookupTemplate(templateName);
         if ( c==null ) return; // will get error later
-        if ( c.formalArguments==null ) return;
-        for (FormalArgument arg : c.formalArguments.values()) {
+        if (c.getFormalArguments() == null ) return;
+        for (FormalArgument arg : c.getFormalArguments().values()) {
             // if not already set by user, set to value from outer scope
-            if ( !attrs.containsKey(arg.name) ) {
+            if ( !attrs.containsKey(arg.getName()) ) {
                 //System.out.println("arg "+arg.name+" missing");
                 try {
-                    Object o = getAttribute(scope, arg.name);
+                    Object o = getAttribute(scope, arg.getName());
                     // If the attribute exists but there is no value and
                     // the formal argument has no default value, make it null.
-                    if ( o==ST.EMPTY_ATTR && arg.defaultValueToken==null ) {
-                        attrs.put(arg.name, null);
+                    if ( o==ST.EMPTY_ATTR && arg.getDefaultValueToken() == null ) {
+                        attrs.put(arg.getName(), null);
                     }
                     // Else, the attribute has an existing value, set arg.
                     else if ( o!=ST.EMPTY_ATTR ) {
-                        attrs.put(arg.name, o);
+                        attrs.put(arg.getName(), o);
                     }
                 }
                 catch (STNoSuchAttributeException nsae) {
                     // if no such attribute exists for arg.name, set parameter
                     // if no default value
-                    if ( arg.defaultValueToken==null ) {
-                        errMgr.runTimeError(this, scope, ErrorType.NO_SUCH_ATTRIBUTE_PASS_THROUGH, arg.name);
-                        attrs.put(arg.name, null);
+                    if (arg.getDefaultValueToken() == null ) {
+                        errMgr.runTimeError(this, scope, ErrorType.NO_SUCH_ATTRIBUTE_PASS_THROUGH, arg.getName());
+                        attrs.put(arg.getName(), null);
                     }
                 }
             }
@@ -560,12 +580,12 @@ public class Interpreter {
         boolean noSuchAttributeReported = false;
         if (attrs != null) {
             for (Map.Entry<String, Object> argument : attrs.entrySet()) {
-                if (!st.impl.hasFormalArgs) {
-                    if (st.impl.formalArguments == null || !st.impl.formalArguments.containsKey(argument.getKey())) {
+                if (!st.getImpl().hasFormalArgs()) {
+                    if ( st.getImpl().getFormalArguments()==null || !st.getImpl().getFormalArguments().containsKey(argument.getKey())) {
                         try {
                             // we clone the CompiledST to prevent modifying the original
                             // formalArguments map during interpretation.
-                            st.impl = st.impl.clone();
+                            st.setImpl(st.getImpl().clone());
                             st.add(argument.getKey(), argument.getValue());
                         } catch (CloneNotSupportedException ex) {
                             noSuchAttributeReported = true;
@@ -580,7 +600,7 @@ public class Interpreter {
                 }
                 else {
                     // don't let it throw an exception in rawSetAttribute
-                    if ( st.impl.formalArguments==null || !st.impl.formalArguments.containsKey(argument.getKey()) ) {
+                    if ( st.getImpl().getFormalArguments()==null || !st.getImpl().getFormalArguments().containsKey(argument.getKey()) ) {
                         noSuchAttributeReported = true;
                         errMgr.runTimeError(this, scope,
                                             ErrorType.NO_SUCH_ATTRIBUTE,
@@ -593,9 +613,9 @@ public class Interpreter {
             }
         }
 
-        if (st.impl.hasFormalArgs) {
+        if ( st.getImpl().hasFormalArgs()) {
             boolean argumentCountMismatch = false;
-            Map<String, FormalArgument> formalArguments = st.impl.formalArguments;
+            Map<String, FormalArgument> formalArguments = st.getImpl().getFormalArguments();
             if (formalArguments == null) {
                 formalArguments = Collections.emptyMap();
             }
@@ -604,7 +624,9 @@ public class Interpreter {
             // ignore this check if a NO_SUCH_ATTRIBUTE error already occurred
             if (!noSuchAttributeReported) {
                 for (Map.Entry<String, FormalArgument> formalArgument : formalArguments.entrySet()) {
-                    if (formalArgument.getValue().defaultValueToken != null || formalArgument.getValue().defaultValue != null) {
+                    if (formalArgument.getValue().getDefaultValueToken() != null || formalArgument.getValue()
+                                                                                                  .getDefaultValue()
+                                                                                    != null) {
                         // this argument has a default value, so it doesn't need to appear in attrs
                         continue;
                     }
@@ -628,37 +650,35 @@ public class Interpreter {
                 int nformalArgs = formalArguments.size();
                 errMgr.runTimeError(this, scope,
                                     ErrorType.ARGUMENT_COUNT_MISMATCH,
-                                    nargs,
-                                    st.impl.name,
+                                    nargs, st.getImpl().getName(),
                                     nformalArgs);
             }
         }
     }
 
     void storeArgs(InstanceScope scope, int nargs, ST st) {
-        if ( nargs>0 && !st.impl.hasFormalArgs && st.impl.formalArguments==null ) {
+        if ( nargs>0 && !st.getImpl().hasFormalArgs() && st.getImpl().getFormalArguments()==null ) {
             st.add(ST.IMPLICIT_ARG_NAME, null); // pretend we have "it" arg
         }
 
         int nformalArgs = 0;
-        if ( st.impl.formalArguments!=null ) nformalArgs = st.impl.formalArguments.size();
+        if ( st.getImpl().getFormalArguments()!=null ) nformalArgs = st.getImpl().getFormalArguments().size();
         int firstArg = sp-(nargs-1);
         int numToStore = Math.min(nargs, nformalArgs);
-        if ( st.impl.isAnonSubtemplate ) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
+        if ( st.getImpl().isAnonymousSubtemplate()) nformalArgs -= predefinedAnonSubtemplateAttributes.size();
 
-        if ( nargs < (nformalArgs-st.impl.numberOfArgsWithDefaultValues) ||
+        if ( nargs < (nformalArgs-st.getImpl().getNumberOfArgsWithDefaultValues()) ||
              nargs > nformalArgs )
         {
             errMgr.runTimeError(this, scope,
                                 ErrorType.ARGUMENT_COUNT_MISMATCH,
-                                nargs,
-                                st.impl.name,
+                                nargs, st.getImpl().getName(),
                                 nformalArgs);
         }
 
-        if ( st.impl.formalArguments==null ) return;
+        if ( st.getImpl().getFormalArguments()==null ) return;
 
-        Iterator<String> argNames = st.impl.formalArguments.keySet().iterator();
+        Iterator<String> argNames = st.getImpl().getFormalArguments().keySet().iterator();
         for (int i=0; i<numToStore; i++) {
             Object o = operands[firstArg+i];    // value to store
             String argName = argNames.next();
@@ -667,7 +687,7 @@ public class Interpreter {
     }
 
     protected void indent(STWriter out, InstanceScope scope, int strIndex) {
-        String indent = scope.st.impl.strings[strIndex];
+        String indent = scope.getST().getImpl().getStrings()[strIndex];
         if ( debug ) {
             int start = out.index(); // track char we're about to write
             EvalExprEvent e = new IndentEvent(scope,
@@ -749,7 +769,7 @@ public class Interpreter {
                     out.writeWrap(options[Option.WRAP.ordinal()]);
                 }
                 catch (IOException ioe) {
-                    errMgr.IOError(scope.st, ErrorType.WRITE_IO_ERROR, ioe);
+                    errMgr.IOError(scope.getST(), ErrorType.WRITE_IO_ERROR, ioe);
                 }
             }
             n = exec(out, scope);
@@ -761,7 +781,7 @@ public class Interpreter {
                 else n = writePOJO(out, scope, o, options);
             }
             catch (IOException ioe) {
-                errMgr.IOError(scope.st, ErrorType.WRITE_IO_ERROR, ioe, o);
+                errMgr.IOError(scope.getST(), ErrorType.WRITE_IO_ERROR, ioe, o);
             }
         }
         return n;
@@ -805,7 +825,7 @@ public class Interpreter {
 
     private <T> String renderObject(InstanceScope scope, String formatString, Object o, Class<T> attributeType) {
         // ask the native group defining the surrounding template for the renderer
-        AttributeRenderer<? super T> r = scope.st.impl.nativeGroup.getAttributeRenderer(attributeType);
+        AttributeRenderer<? super T> r = scope.getST().getImpl().getNativeGroup().getAttributeRenderer(attributeType);
         if ( r!=null ) {
             return r.toString(attributeType.cast(o), formatString, locale);
         } else {
@@ -814,14 +834,14 @@ public class Interpreter {
     }
 
     protected int getExprStartChar(InstanceScope scope) {
-        Interval templateLocation = scope.st.impl.sourceMap[scope.ip];
-        if ( templateLocation!=null ) return templateLocation.a;
+        Interval templateLocation = scope.getST().getImpl().getSourceMap()[scope.getInstructionPointer()];
+        if ( templateLocation!=null ) return templateLocation.getStart();
         return -1;
     }
 
     protected int getExprStopChar(InstanceScope scope) {
-        Interval templateLocation = scope.st.impl.sourceMap[scope.ip];
-        if ( templateLocation!=null ) return templateLocation.b;
+        Interval templateLocation = scope.getST().getImpl().getSourceMap()[scope.getInstructionPointer()];
+        if ( templateLocation!=null ) return templateLocation.getEnd();
         return -1;
     }
 
@@ -848,7 +868,7 @@ public class Interpreter {
             ST st = group.createStringTemplateInternally(proto);
             if ( st!=null ) {
                 setFirstArgument(scope, st, attr);
-                if ( st.impl.isAnonSubtemplate ) {
+                if ( st.getImpl().isAnonymousSubtemplate()) {
                     st.rawSetAttribute("i0", 0);
                     st.rawSetAttribute("i", 1);
                 }
@@ -874,7 +894,7 @@ public class Interpreter {
             ST proto = prototypes.get(templateIndex);
             ST st = group.createStringTemplateInternally(proto);
             setFirstArgument(scope, st, iterValue);
-            if ( st.impl.isAnonSubtemplate ) {
+            if ( st.getImpl().isAnonymousSubtemplate()) {
                 st.rawSetAttribute("i0", i0);
                 st.rawSetAttribute("i", i);
             }
@@ -902,9 +922,9 @@ public class Interpreter {
 
         // ensure arguments line up
         int numExprs = exprs.size();
-        CompiledST code = prototype.impl;
-        Map<String, FormalArgument> formalArguments = code.formalArguments;
-        if ( !code.hasFormalArgs || formalArguments==null ) {
+        CompiledST code = prototype.getImpl();
+        Map<String, FormalArgument> formalArguments = code.getFormalArguments();
+        if (!code.hasFormalArgs() || formalArguments == null ) {
             errMgr.runTimeError(this, scope, ErrorType.MISSING_FORMAL_ARGUMENTS);
             return null;
         }
@@ -958,19 +978,18 @@ public class Interpreter {
     }
 
     protected void setFirstArgument(InstanceScope scope, ST st, Object attr) {
-        if ( !st.impl.hasFormalArgs ) {
-            if ( st.impl.formalArguments==null ) {
+        if ( !st.getImpl().hasFormalArgs()) {
+            if ( st.getImpl().getFormalArguments()==null ) {
                 st.add(ST.IMPLICIT_ARG_NAME, attr);
                 return;
             }
             // else fall thru to set locals[0]
         }
-        if ( st.impl.formalArguments==null ) {
+        if ( st.getImpl().getFormalArguments()==null ) {
             errMgr.runTimeError(this, scope,
-                                      ErrorType.ARGUMENT_COUNT_MISMATCH,
-                                      1,
-                                      st.impl.name,
-                                      0);
+                                ErrorType.ARGUMENT_COUNT_MISMATCH,
+                                1, st.getImpl().getName(),
+                                0);
             return;
         }
         st.locals[0] = attr;
@@ -1155,9 +1174,9 @@ public class Interpreter {
                 errMgr.runTimeError(this, scope, ErrorType.WRITER_CTOR_ISSUE, out.getClass().getSimpleName());
             }
 
-            if (debug && !scope.earlyEval) {
-                scope = new InstanceScope(scope, scope.st);
-                scope.earlyEval = true;
+            if (debug && !scope.isEarlyEval()) {
+                scope = new InstanceScope(scope, scope.getST());
+                scope.setEarlyEval(true);
             }
 
             writeObjectNoOptions(stw, scope, value);
@@ -1174,7 +1193,7 @@ public class Interpreter {
         else if ( o instanceof Object[] )  iter = Arrays.asList((Object[])o).iterator();
         else if ( o.getClass().isArray() ) iter = new ArrayIterator(o);
         else if ( o instanceof Map ) {
-            if (scope.st.groupThatCreatedThisInstance.iterateAcrossValues) {
+            if ( scope.getST().getCreatorGroup().iterateAcrossValues) {
                 iter = ((Map<?, ?>)o).values().iterator();
             }
             else {
@@ -1217,8 +1236,8 @@ public class Interpreter {
         }
 
         try {
-            final ST self = scope.st;
-            ModelAdaptor adap = self.groupThatCreatedThisInstance.getModelAdaptor(o.getClass());
+            final ST self = scope.getST();
+            ModelAdaptor adap = self.getCreatorGroup().getModelAdaptor(o.getClass());
             return adap.getProperty(this, self, o, property, toString(out,scope,property));
         }
         catch (STNoSuchPropertyException e) {
@@ -1238,18 +1257,18 @@ public class Interpreter {
     public Object getAttribute(InstanceScope scope, String name) {
         InstanceScope current = scope;
         while ( current!=null ) {
-            ST p = current.st;
+            ST p = current.getST();
             FormalArgument localArg = null;
-            if ( p.impl.formalArguments!=null ) localArg = p.impl.formalArguments.get(name);
+            if ( p.getImpl().getFormalArguments()!=null ) localArg = p.getImpl().getFormalArguments().get(name);
             if ( localArg!=null ) {
-                Object o = p.locals[localArg.index];
+                Object o = p.locals[localArg.getIndex()];
                 return o;
             }
-            current = current.parent; // look up enclosing scope chain
+            current = current.getParent(); // look up enclosing scope chain
         }
         // got to root scope and no definition, try dictionaries in group and up
-        final ST self = scope.st;
-        STGroup g = self.impl.nativeGroup;
+        final ST self = scope.getST();
+        STGroup g = self.getImpl().getNativeGroup();
         Object o = getDictionary(g, name);
         if ( o!=null ) return o;
 
@@ -1279,40 +1298,40 @@ public class Interpreter {
      * template default arguments can see other arguments.</p>
      */
     public void setDefaultArguments(STWriter out, InstanceScope scope) {
-        final ST invokedST = scope.st;
-        if ( invokedST.impl.formalArguments==null ||
-             invokedST.impl.numberOfArgsWithDefaultValues==0 ) {
+        final ST invokedST = scope.getST();
+        if ( invokedST.getImpl().getFormalArguments()==null ||
+             invokedST.getImpl().getNumberOfArgsWithDefaultValues()==0 ) {
             return;
         }
-        for (FormalArgument arg : invokedST.impl.formalArguments.values()) {
+        for (FormalArgument arg : invokedST.getImpl().getFormalArguments().values()) {
             // if no value for attribute and default arg, inject default arg into self
-            if ( invokedST.locals[arg.index]!=ST.EMPTY_ATTR || arg.defaultValueToken==null ) {
+            if (invokedST.locals[arg.getIndex()] != ST.EMPTY_ATTR || arg.getDefaultValueToken() == null ) {
                 continue;
             }
             //System.out.println("setting def arg "+arg.name+" to "+arg.defaultValueToken);
-            if ( arg.defaultValueToken.getType()==GroupParser.ANONYMOUS_TEMPLATE ) {
-                CompiledST code = arg.compiledDefaultValue;
+            if (arg.getDefaultValueToken().getType() == GroupParser.ANONYMOUS_TEMPLATE ) {
+                CompiledST code = arg.getCompiledDefaultValue();
                 if (code == null) {
                     code = new CompiledST();
                 }
                 ST defaultArgST = group.createStringTemplateInternally(code);
-                defaultArgST.groupThatCreatedThisInstance = group;
+                defaultArgST.setCreatorGroup(group);
                 // If default arg is template with single expression
                 // wrapped in parens, x={<(...)>}, then eval to string
                 // rather than setting x to the template for later
                 // eval.
-                String defArgTemplate = arg.defaultValueToken.getText();
+                String defArgTemplate = arg.getDefaultValueToken().getText();
                 if ( defArgTemplate.startsWith("{"+group.delimiterStartChar+"(") &&
                     defArgTemplate.endsWith(")"+group.delimiterStopChar+"}") ) {
 
-                    invokedST.rawSetAttribute(arg.name, toString(out, new InstanceScope(scope, invokedST), defaultArgST));
+                    invokedST.rawSetAttribute(arg.getName(), toString(out, new InstanceScope(scope, invokedST), defaultArgST));
                 }
                 else {
-                    invokedST.rawSetAttribute(arg.name, defaultArgST);
+                    invokedST.rawSetAttribute(arg.getName(), defaultArgST);
                 }
             }
             else {
-                invokedST.rawSetAttribute(arg.name, arg.defaultValue);
+                invokedST.rawSetAttribute(arg.getName(), arg.getDefaultValue());
             }
         }
     }
@@ -1338,9 +1357,9 @@ public class Interpreter {
         List<ST> stack = new LinkedList<ST>();
         InstanceScope p = scope;
         while ( p!=null ) {
-            if ( topdown ) stack.add(0,p.st);
-            else stack.add(p.st);
-            p = p.parent;
+            if ( topdown ) stack.add(0, p.getST());
+            else stack.add(p.getST());
+            p = p.getParent();
         }
         return stack;
     }
@@ -1351,7 +1370,7 @@ public class Interpreter {
         while ( p!=null ) {
             if ( topdown ) stack.add(0,p);
             else stack.add(p);
-            p = p.parent;
+            p = p.getParent();
         }
         return stack;
     }
@@ -1360,22 +1379,22 @@ public class Interpreter {
         List<EvalTemplateEvent> stack = new LinkedList<EvalTemplateEvent>();
         InstanceScope p = scope;
         while ( p!=null ) {
-            EvalTemplateEvent eval = (EvalTemplateEvent)p.events.get(p.events.size()-1);
+            EvalTemplateEvent eval = (EvalTemplateEvent) p.getEvents().get(p.getEvents().size() - 1);
             if ( topdown ) stack.add(0,eval);
             else stack.add(eval);
-            p = p.parent;
+            p = p.getParent();
         }
         return stack;
     }
 
     protected void trace(InstanceScope scope, int ip) {
-        final ST self = scope.st;
+        final ST self = scope.getST();
         StringBuilder tr = new StringBuilder();
-        BytecodeDisassembler dis = new BytecodeDisassembler(self.impl);
+        BytecodeDisassembler dis = new BytecodeDisassembler(self.getImpl());
         StringBuilder buf = new StringBuilder();
         dis.disassembleInstruction(buf,ip);
-        String name = self.impl.name+":";
-        if ( Misc.referenceEquals(self.impl.name, ST.UNKNOWN_NAME) ) name = "";
+        String name = self.getImpl().getName()+":";
+        if ( Misc.referenceEquals(self.getImpl().getName(), ST.UNKNOWN_NAME) ) name = "";
         tr.append(String.format("%-40s",name+buf));
         tr.append("\tstack=[");
         for (int i = 0; i <= sp; i++) {
@@ -1392,8 +1411,8 @@ public class Interpreter {
 
     protected void printForTrace(StringBuilder tr, InstanceScope scope, Object o) {
         if ( o instanceof ST ) {
-            if ( ((ST)o).impl ==null ) tr.append("bad-template()");
-            else tr.append(" "+((ST)o).impl.name+"()");
+            if ( ((ST)o).getImpl()==null ) tr.append("bad-template()");
+            else tr.append(" "+((ST)o).getImpl().getName()+"()");
             return;
         }
         o = convertAnythingIteratableToIterator(scope, o);
@@ -1415,21 +1434,21 @@ public class Interpreter {
 
     /**
      * For every event, we track in overall {@link #events} list and in
-     * {@code self}'s {@link InstanceScope#events} list so that each template
+     * {@code self}'s {@link InstanceScope#getEvents() event list} so that each template
      * has a list of events used to create it. If {@code e} is an
      * {@link EvalTemplateEvent}, store in parent's
-     * {@link InstanceScope#childEvalTemplateEvents} list for {@link STViz} tree
+     * {@link InstanceScope#getChildEvalTemplateEvents() child eval template event list} for {@link STViz} tree
      * view.
      */
     protected void trackDebugEvent(InstanceScope scope, InterpEvent e) {
 //      System.out.println(e);
         this.events.add(e);
-        scope.events.add(e);
+        scope.getEvents().add(e);
         if ( e instanceof EvalTemplateEvent ) {
-            InstanceScope parent = scope.parent;
+            InstanceScope parent = scope.getParent();
             if ( parent!=null ) {
                 // System.out.println("add eval "+e.self.getName()+" to children of "+parent.getName());
-                scope.parent.childEvalTemplateEvents.add((EvalTemplateEvent)e);
+                scope.getParent().getChildEvalTemplateEvents().add((EvalTemplateEvent)e);
             }
         }
     }

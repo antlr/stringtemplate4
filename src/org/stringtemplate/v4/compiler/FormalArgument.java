@@ -64,13 +64,36 @@ public class FormalArgument {
     protected int cardinality = REQUIRED;
      */
 
+    /**
+     * @deprecated since 4.3; use {@link #getName()} instead
+     */
+    @Deprecated
     public String name;
 
+    /**
+     * @deprecated since 4.3; use {@link #getIndex()} or {@link #setIndex(int)} instead
+     */
+    @Deprecated
     public int index; // which argument is it? from 0..n-1
 
-    /** If they specified default value {@code x=y}, store the token here */
+    /**
+     * If they specified default value {@code x=y}, store the token here
+     *
+     * @deprecated since 4.3; use {@link #getDefaultValueToken()} or {@link #setDefaultValueToken(Token)} instead
+     */
+    @Deprecated
     public Token defaultValueToken;
+
+    /**
+     * @deprecated since 4.3; use {@link #getDefaultValue()} or {@link #setDefaultValue(Object)} instead
+     */
+    @Deprecated
     public Object defaultValue; // x="str", x=true, x=false
+
+    /**
+     * @deprecated since 4.3; use {@link #getCompiledDefaultValue()} or {@link #setCompiledDefaultValue(CompiledST)} instead
+     */
+    @Deprecated
     public CompiledST compiledDefaultValue; // x={...}
 
     public FormalArgument(String name) { this.name = name; }
@@ -78,6 +101,42 @@ public class FormalArgument {
     public FormalArgument(String name, Token defaultValueToken) {
         this.name = name;
         this.defaultValueToken = defaultValueToken;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public Token getDefaultValueToken() {
+        return defaultValueToken;
+    }
+
+    public void setDefaultValueToken(Token defaultValueToken) {
+        this.defaultValueToken = defaultValueToken;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public CompiledST getCompiledDefaultValue() {
+        return compiledDefaultValue;
+    }
+
+    public void setCompiledDefaultValue(CompiledST compiledDefaultValue) {
+        this.compiledDefaultValue = compiledDefaultValue;
     }
 
     /*

@@ -34,9 +34,24 @@ public class Bytecode {
     public enum OperandType { NONE, STRING, ADDR, INT }
 
     public static class Instruction {
+        /**
+         * @deprecated since 4.3; use {@link #getName()} instead
+         */
+        @Deprecated
         public String name; // E.g., "load_str", "new"
+
+        /**
+         * @deprecated since 4.3; use {@link #getOperandType(int)}} instead
+         */
+        @Deprecated
         public OperandType[] type = new OperandType[MAX_OPNDS];
-        public int nopnds = 0;
+
+        /**
+         * @deprecated since 4.3; use {@link #getOperandCount()} instead
+         */
+        @Deprecated
+        public int nopnds;
+
         public Instruction(String name) {
             this(name,OperandType.NONE,OperandType.NONE); nopnds =0;
         }
@@ -47,7 +62,20 @@ public class Bytecode {
             this.name = name;
             type[0] = a;
             type[1] = b;
+            // TODO using 2 instead of MAX_OPNDS makes more sense
             nopnds = MAX_OPNDS;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public OperandType getOperandType(int i) {
+            return type[i];
+        }
+
+        public int getOperandCount() {
+            return nopnds;
         }
     }
 

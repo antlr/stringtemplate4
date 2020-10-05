@@ -42,14 +42,16 @@ import java.net.URL;
  *  or an import.
  */
 public class STGroupFile extends STGroup {
-    /** Just records how user "spelled" the file name they wanted to load.
-     *  The url is the key field here for loading content.
-     *
-     *  If they use ctor with URL arg, this field is null.
+    /**
+     * @deprecated since 4.3; use {@link #getRawFileName()} instead
      */
+    @Deprecated
     public String fileName;
 
-    /** Where to find the group file. NonNull. */
+    /**
+     * @deprecated since 4.3; use {@link #getURL()} instead
+     */
+    @Deprecated
     public URL url;
 
     protected boolean alreadyLoaded = false;
@@ -112,6 +114,21 @@ public class STGroupFile extends STGroup {
 
     /** Convenience ctor */
     public STGroupFile(URL url) { this(url, "UTF-8",'<', '>'); }
+
+    /**
+     * Just records how user "spelled" the file name they wanted to load.
+     * The url is the key field here for loading content.
+     *
+     * If they use ctor with URL arg, this is null.
+     */
+    public String getRawFileName() {
+        return fileName;
+    }
+
+    /** Where to find the group file. NonNull. */
+    public URL getURL() {
+        return url;
+    }
 
     @Override
     public boolean isDictionary(String name) {

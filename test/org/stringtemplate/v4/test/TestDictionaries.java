@@ -65,7 +65,7 @@ public class TestDictionaries extends BaseTest {
         writeFile(tmpdir, "test.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/"+"test.stg");
         ST st = group.getInstanceOf("var");
-        st.impl.dump();
+        st.getImpl().dump();
         st.add("w", "L");
         st.add("type", "int");
         st.add("name", "x");
@@ -213,7 +213,7 @@ public class TestDictionaries extends BaseTest {
         group.setListener(errors);
         group.load();
         String expected = "[test.stg 1:33: missing value for key at ']']";
-        String result = errors.errors.toString();
+        String result = errors.getErrors().toString();
         assertEquals(expected, result);
     }
 

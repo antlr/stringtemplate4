@@ -33,8 +33,16 @@ import org.antlr.runtime.Token;
 
 /** */
 public class STGroupCompiletimeMessage extends STMessage {
-    /** token inside group file */
+    /**
+     * @deprecated since 4.3; use {@link #getToken()} instead
+     */
+    @Deprecated
     public Token token;
+
+    /**
+     * @deprecated since 4.3; use {@link #getSourceName()} instead
+     */
+    @Deprecated
     public String srcName;
 
     public STGroupCompiletimeMessage(ErrorType error, String srcName, Token t, Throwable cause) {
@@ -53,9 +61,18 @@ public class STGroupCompiletimeMessage extends STMessage {
         this.srcName = srcName;
     }
 
+    /** token inside group file */
+    public Token getToken() {
+        return token;
+    }
+
+    public String getSourceName() {
+        return srcName;
+    }
+
     @Override
     public String toString() {
-        RecognitionException re = (RecognitionException)cause;
+        RecognitionException re = (RecognitionException) getCause();
         int line = 0;
         int charPos = -1;
         if ( token!=null ) {
@@ -68,8 +85,8 @@ public class STGroupCompiletimeMessage extends STMessage {
         }
         String filepos = line+":"+charPos;
         if ( srcName!=null ) {
-            return srcName+" "+filepos+": "+String.format(error.message, arg, arg2);
+            return srcName+" "+filepos+": "+String.format(getError().getMessage(), this.getArgs());
         }
-        return filepos+": "+String.format(error.message, arg, arg2);
+        return filepos+": "+String.format(getError().getMessage(), this.getArgs());
     }
 }

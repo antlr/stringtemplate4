@@ -120,7 +120,7 @@ import org.stringtemplate.v4.*;
 	public void write(int addr, short value) {
 		$template::state.write(addr,value);
 	}
-	public int address() { return $template::state.ip; }
+	public int address() { return $template::state.getInstructionPointer(); }
 	public void func(CommonTree id) { $template::state.func(templateToken, id); }
 	public void refAttr(CommonTree id) { $template::state.refAttr(templateToken, id); }
 	public int defineString(String s) { return $template::state.defineString(s); }
@@ -146,7 +146,7 @@ scope {
 }
 @init {
  	$template::state = new CompilationState(errMgr, name, input.getTokenStream());
-	$impl = $template::state.impl;
+	$impl = $template::state.getCompiledST();
  	if ( $template.size() == 1 ) outermostImpl = $impl;
 	$impl.defineFormalArgs($args); // make sure args are defined prior to compilation
 	if ( name!=null && name.startsWith(Compiler.SUBTEMPLATE_PREFIX) ) {
@@ -157,8 +157,9 @@ scope {
 }
 	:	chunk
 		{ // finish off the CompiledST result
-        if ( $template::state.stringtable!=null ) $impl.strings = $template::state.stringtable.toArray();
-        $impl.codeSize = $template::state.ip;
+        StringTable stringTable = $template::state.getStringTable();
+        if ( stringTable!=null ) $impl.strings = stringTable.toArray();
+        $impl.codeSize = $template::state.getInstructionPointer();
 		}
 	;
 
@@ -196,9 +197,10 @@ exprElement
 		{
 		/*
 		CompilationState state = $template::state;
-		CompiledST impl = state.impl;
-		if ( impl.instrs[state.ip-1] == Bytecode.INSTR_LOAD_LOCAL ) {
-			impl.instrs[state.ip-1] = Bytecode.INSTR_WRITE_LOCAL;
+		int ip = state.getInstructionPointer();
+		CompiledST impl = state.getCompiledST();
+		if ( impl.instrs[ip-1] == Bytecode.INSTR_LOAD_LOCAL ) {
+			impl.instrs[ip-1] = Bytecode.INSTR_WRITE_LOCAL;
 		}
 		else {
 			emit($EXPR, op);

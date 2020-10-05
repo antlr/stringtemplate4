@@ -34,10 +34,22 @@ import org.stringtemplate.v4.compiler.GroupParser;
  *  interpretation. For ST parsing ONLY not group parsing.
  */
 public class STCompiletimeMessage extends STMessage {
-    /** overall token pulled from group file */
+    /**
+     * @deprecated since 4.3; use {@link #getTemplateToken()} instead
+     */
+    @Deprecated
     public Token templateToken;
-    /** token inside template */
+
+    /**
+     * @deprecated since 4.3; use {@link #getToken()} instead
+     */
+    @Deprecated
     public Token token;
+
+    /**
+     * @deprecated since 4.3; use {@link #getSourceName()}
+     */
+    @Deprecated
     public String srcName;
 
     public STCompiletimeMessage(ErrorType error, String srcName, Token templateToken, Token t) {
@@ -60,6 +72,20 @@ public class STCompiletimeMessage extends STMessage {
         this.srcName = srcName;
     }
 
+    /** overall token pulled from group file */
+    public Token getTemplateToken() {
+        return templateToken;
+    }
+
+    /** token inside template */
+    public Token getToken() {
+        return token;
+    }
+
+    public String getSourceName() {
+        return srcName;
+    }
+
     @Override
     public String toString() {
         int line = 0;
@@ -79,8 +105,8 @@ public class STCompiletimeMessage extends STMessage {
         }
         String filepos = line+":"+charPos;
         if ( srcName!=null ) {
-            return srcName+" "+filepos+": "+String.format(error.message, arg, arg2);
+            return srcName+" "+filepos+": "+String.format(getError().getMessage(), this.getArgs());
         }
-        return filepos+": "+String.format(error.message, arg, arg2);
+        return filepos+": "+String.format(getError().getMessage(), this.getArgs());
     }
 }

@@ -38,36 +38,48 @@ import org.stringtemplate.v4.misc.*;
  */
 public class CompilationState {
     /** The compiled code implementation to fill in. */
-    CompiledST impl = new CompiledST();
+    private final CompiledST impl = new CompiledST();
 
     /** Track unique strings; copy into {@link CompiledST#strings} after compilation. */
-    StringTable stringtable = new StringTable();
+    private final StringTable stringtable = new StringTable();
+
+    private final TokenStream tokens;
+
+    private final ErrorManager errMgr;
 
     /**
      * Track instruction location within
      * {@code impl.}{@link CompiledST#instrs instrs} array; this is next address
      * to write to. Byte-addressable memory.
      */
-    int ip = 0;
-
-    TokenStream tokens;
-
-    ErrorManager errMgr;
+    private int ip = 0;
 
     public CompilationState(ErrorManager errMgr, String name, TokenStream tokens) {
         this.errMgr = errMgr;
         this.tokens = tokens;
-        impl.name = name;
-        impl.prefix = Misc.getPrefix(name);
+        impl.setName(name);
+        impl.setPrefix(Misc.getPrefix(name));
+    }
+
+    public CompiledST getCompiledST() {
+        return impl;
+    }
+
+    public StringTable getStringTable() {
+        return stringtable;
+    }
+
+    public int getInstructionPointer() {
+        return ip;
     }
 
     public int defineString(String s) { return stringtable.add(s); }
 
     public void refAttr(Token templateToken, CommonTree id) {
         String name = id.getText();
-        if ( impl.formalArguments!=null && impl.formalArguments.get(name)!=null ) {
-            FormalArgument arg = impl.formalArguments.get(name);
-            int index = arg.index;
+        if (impl.getFormalArguments() != null && impl.getFormalArguments().get(name) != null ) {
+            FormalArgument arg = impl.getFormalArguments().get(name);
+            int index = arg.getIndex();
             emit1(id, Bytecode.INSTR_LOAD_LOCAL, index);
         }
         else {
@@ -107,24 +119,24 @@ public class CompilationState {
             int j = opAST.getTokenStopIndex();
             int p = ((CommonToken)tokens.get(i)).getStartIndex();
             int q = ((CommonToken)tokens.get(j)).getStopIndex();
-            if ( !(p<0 || q<0) ) impl.sourceMap[ip] = new Interval(p, q);
+            if ( !(p<0 || q<0) ) impl.getSourceMap()[ip] = new Interval(p, q);
         }
-        impl.instrs[ip++] = (byte)opcode;
+        impl.getInstructions()[ip++] = (byte)opcode;
     }
 
     public void emit1(CommonTree opAST, short opcode, int arg) {
         emit(opAST, opcode);
         ensureCapacity(Bytecode.OPND_SIZE_IN_BYTES);
-        writeShort(impl.instrs, ip, (short)arg);
+        writeShort(impl.getInstructions(), ip, (short)arg);
         ip += Bytecode.OPND_SIZE_IN_BYTES;
     }
 
     public void emit2(CommonTree opAST, short opcode, int arg, int arg2) {
         emit(opAST, opcode);
         ensureCapacity(Bytecode.OPND_SIZE_IN_BYTES * 2);
-        writeShort(impl.instrs, ip, (short)arg);
+        writeShort(impl.getInstructions(), ip, (short)arg);
         ip += Bytecode.OPND_SIZE_IN_BYTES;
-        writeShort(impl.instrs, ip, (short)arg2);
+        writeShort(impl.getInstructions(), ip, (short)arg2);
         ip += Bytecode.OPND_SIZE_IN_BYTES;
     }
 
@@ -142,8 +154,7 @@ public class CompilationState {
         //System.out.println("before insert of "+opcode+"("+s+"):"+ Arrays.toString(impl.instrs));
         ensureCapacity(1+Bytecode.OPND_SIZE_IN_BYTES);
         int instrSize = 1 + Bytecode.OPND_SIZE_IN_BYTES;
-        System.arraycopy(impl.instrs, addr,
-                         impl.instrs, addr + instrSize,
+        System.arraycopy(impl.getInstructions(), addr, impl.getInstructions(), addr+instrSize,
                          ip-addr); // make room for opcode, opnd
         int save = ip;
         ip = addr;
@@ -153,29 +164,29 @@ public class CompilationState {
         // adjust addresses for BR and BRF
         int a=addr+instrSize;
         while ( a < ip ) {
-            byte op = impl.instrs[a];
+            byte op = impl.getInstructions()[a];
             Bytecode.Instruction I = Bytecode.instructions[op];
             if ( op == Bytecode.INSTR_BR || op == Bytecode.INSTR_BRF ) {
-                int opnd = BytecodeDisassembler.getShort(impl.instrs, a+1);
-                writeShort(impl.instrs, a+1, (short)(opnd+instrSize));
+                int opnd = BytecodeDisassembler.getShort(impl.getInstructions(), a+1);
+                writeShort(impl.getInstructions(), a+1, (short)(opnd+instrSize));
             }
-            a += I.nopnds * Bytecode.OPND_SIZE_IN_BYTES + 1;
+            a += I.getOperandCount() * Bytecode.OPND_SIZE_IN_BYTES + 1;
         }
         //System.out.println("after  insert of "+opcode+"("+s+"):"+ Arrays.toString(impl.instrs));
     }
 
     public void write(int addr, short value) {
-        writeShort(impl.instrs, addr, value);
+        writeShort(impl.getInstructions(), addr, value);
     }
 
     protected void ensureCapacity(int n) {
-        if ( (ip+n) >= impl.instrs.length ) { // ensure room for full instruction
-            byte[] c = new byte[impl.instrs.length*2];
-            System.arraycopy(impl.instrs, 0, c, 0, impl.instrs.length);
-            impl.instrs = c;
-            Interval[] sm = new Interval[impl.sourceMap.length*2];
-            System.arraycopy(impl.sourceMap, 0, sm, 0, impl.sourceMap.length);
-            impl.sourceMap = sm;
+        if ((ip+n) >= impl.getInstructions().length ) { // ensure room for full instruction
+            byte[] c = new byte[impl.getInstructions().length*2];
+            System.arraycopy(impl.getInstructions(), 0, c, 0, impl.getInstructions().length);
+            impl.setInstructions(c);
+            Interval[] sm = new Interval[impl.getSourceMap().length * 2];
+            System.arraycopy(impl.getSourceMap(), 0, sm, 0, impl.getSourceMap().length);
+            impl.setSourceMap(sm);
         }
     }
 

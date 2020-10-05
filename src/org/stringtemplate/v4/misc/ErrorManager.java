@@ -36,7 +36,7 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STErrorListener;
 
 public class ErrorManager {
-    public static STErrorListener DEFAULT_ERROR_LISTENER =
+    private static final STErrorListener STDERR_LISTENER =
         new STErrorListener() {
             @Override
             public void compileTimeError(STMessage msg) {
@@ -45,7 +45,7 @@ public class ErrorManager {
 
             @Override
             public void runTimeError(STMessage msg) {
-                if ( msg.error != ErrorType.NO_SUCH_PROPERTY ) { // ignore these
+                if (msg.getError() != ErrorType.NO_SUCH_PROPERTY ) { // ignore these
                     System.err.println(msg);
                 }
             }
@@ -60,21 +60,36 @@ public class ErrorManager {
                 System.err.println(msg);
                 // throw new Error("internal error", msg.cause);
             }
-
-            public void error(String s) { error(s, null); }
-            public void error(String s, Throwable e) {
-                System.err.println(s);
-                if ( e!=null ) {
-                    e.printStackTrace(System.err);
-                }
-            }
         };
 
+    /**
+     * @deprecated since 4.3; use {@link #getDefaultErrorListener()} or
+     * {@link #setDefaultErrorListener(STErrorListener)} instead
+     */
+    @Deprecated
+    public static STErrorListener DEFAULT_ERROR_LISTENER = STDERR_LISTENER;
+
+    /**
+     * @deprecated since 4.3; use {@link #getListener()} instead
+     */
+    @Deprecated
     public final STErrorListener listener;
 
-    public ErrorManager() { this(DEFAULT_ERROR_LISTENER); }
+    public ErrorManager() { this(getDefaultErrorListener()); }
     public ErrorManager(STErrorListener listener) {
         this.listener = listener;
+    }
+
+    public static STErrorListener getDefaultErrorListener() {
+        return DEFAULT_ERROR_LISTENER;
+    }
+
+    public static void setDefaultErrorListener(STErrorListener defaultErrorListener) {
+        DEFAULT_ERROR_LISTENER = defaultErrorListener;
+    }
+
+    public STErrorListener getListener() {
+        return listener;
     }
 
     public void compileTimeError(ErrorType error, Token templateToken, Token t) {
@@ -119,23 +134,23 @@ public class ErrorManager {
     }
 
     public void runTimeError(Interpreter interp, InstanceScope scope, ErrorType error) {
-        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.ip : 0, scope));
+        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.getInstructionPointer() : 0, scope));
     }
 
     public void runTimeError(Interpreter interp, InstanceScope scope, ErrorType error, Object arg) {
-        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.ip : 0, scope,arg));
+        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.getInstructionPointer() : 0, scope, arg));
     }
 
     public void runTimeError(Interpreter interp, InstanceScope scope, ErrorType error, Throwable e, Object arg) {
-        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.ip : 0, scope,e,arg));
+        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.getInstructionPointer() : 0, scope, e, arg));
     }
 
     public void runTimeError(Interpreter interp, InstanceScope scope, ErrorType error, Object arg, Object arg2) {
-        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.ip : 0, scope,null,arg,arg2));
+        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.getInstructionPointer() : 0, scope, null, arg, arg2));
     }
 
     public void runTimeError(Interpreter interp, InstanceScope scope, ErrorType error, Object arg, Object arg2, Object arg3) {
-        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.ip : 0, scope,null,arg,arg2,arg3));
+        listener.runTimeError(new STRuntimeMessage(interp, error, scope != null ? scope.getInstructionPointer() : 0, scope, null, arg, arg2, arg3));
     }
 
     public void IOError(ST self, ErrorType error, Throwable e) {

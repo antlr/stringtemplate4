@@ -37,12 +37,73 @@ import java.util.List;
 
 /** */
 public class InstanceScope {
-    /** Template that invoked us. */
+    /**
+     * @deprecated since 4.3; use {@link #getParent()} instead
+     */
+    @Deprecated
     public final InstanceScope parent;
-    /** Template we're executing. */
+
+    /**
+     * @deprecated since 4.3; use {@link #getST()} instead
+     */
+    @Deprecated
     public final ST st;
-    /** Current instruction pointer. */
+
+    /**
+     * @deprecated since 4.3; use {@link #getInstructionPointer()} or {@link #setInstructionPointer(int)} instead
+     */
+    @Deprecated
     public int ip;
+
+    /**
+     * @deprecated since 4.3; use {@link #getEvents()} instead
+     */
+    @Deprecated
+    public List<InterpEvent> events = new ArrayList<InterpEvent>();
+
+    /**
+     * @deprecated since 4.3; use {@link #getChildEvalTemplateEvents()} instead
+     */
+    @Deprecated
+    public List<EvalTemplateEvent> childEvalTemplateEvents =
+        new ArrayList<EvalTemplateEvent>();
+
+    /**
+     * @deprecated since 4.3; use {@link #isEarlyEval()} or {@link #setEarlyEval(boolean)} instead
+     */
+    @Deprecated
+    public boolean earlyEval;
+
+    public InstanceScope(InstanceScope parent, ST st) {
+        this.parent = parent;
+        this.st = st;
+        this.earlyEval = parent != null && parent.earlyEval;
+    }
+
+    /**
+     * Template that invoked us.
+     */
+    public InstanceScope getParent() {
+        return parent;
+    }
+
+    /**
+     * Template we're executing.
+     */
+    public ST getST() {
+        return st;
+    }
+
+    /**
+     * Current instruction pointer.
+     */
+    public int getInstructionPointer() {
+        return ip;
+    }
+
+    public void setInstructionPointer(int ip) {
+        this.ip = ip;
+    }
 
     /**
      * Includes the {@link EvalTemplateEvent} for this template. This is a
@@ -50,7 +111,7 @@ public class InstanceScope {
      * {@link EvalTemplateEvent} is stored in 3 places:
      *
      * <ol>
-     *  <li>In {@link #parent}'s {@link #childEvalTemplateEvents} list</li>
+     *  <li>In {@link #getParent() parent}'s {@link #getChildEvalTemplateEvents() child eval template event list}</li>
      *  <li>In this list</li>
      *  <li>In the {@link Interpreter#events} list</li>
      * </ol>
@@ -59,19 +120,23 @@ public class InstanceScope {
      * <p>
      * All events get added to the {@link #parent}'s event list.</p>
      */
-    public List<InterpEvent> events = new ArrayList<InterpEvent>();
+    public List<InterpEvent> getEvents() {
+        return events;
+    }
 
-    /** All templates evaluated and embedded in this {@link ST}. Used
-     *  for tree view in {@link STViz}.
+    /**
+     * All templates evaluated and embedded in this {@link ST}. Used
+     * for tree view in {@link STViz}.
      */
-    public List<EvalTemplateEvent> childEvalTemplateEvents =
-        new ArrayList<EvalTemplateEvent>();
+    public List<EvalTemplateEvent> getChildEvalTemplateEvents() {
+        return childEvalTemplateEvents;
+    }
 
-    public boolean earlyEval;
+    public boolean isEarlyEval() {
+        return earlyEval;
+    }
 
-    public InstanceScope(InstanceScope parent, ST st) {
-        this.parent = parent;
-        this.st = st;
-        this.earlyEval = parent != null && parent.earlyEval;
+    public void setEarlyEval(boolean earlyEval) {
+        this.earlyEval = earlyEval;
     }
 }
