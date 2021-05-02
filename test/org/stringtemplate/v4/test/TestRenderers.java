@@ -30,6 +30,7 @@ package org.stringtemplate.v4.test;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.stringtemplate.v4.AttributeRenderer;
 import org.stringtemplate.v4.DateRenderer;
 import org.stringtemplate.v4.NumberRenderer;
 import org.stringtemplate.v4.ST;
@@ -289,6 +290,27 @@ public class TestRenderers extends BaseTest {
         ST st = group.getInstanceOf("foo");
         st.add("x", "hi");
         String expecting = "     hi ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testStringRendererUsedOnlyForAttribute() throws Exception {
+        String templates =
+            "foo(x) ::= << begin <x> end >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+
+        group.registerRenderer(String.class, new AttributeRenderer<String>() {
+            @Override
+            public String toString(String value, String formatString, Locale locale) {
+                return value.toUpperCase();
+            }
+        });
+
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "attribute");
+        String expecting = " begin ATTRIBUTE end ";
         String result = st.render();
         assertEquals(expecting, result);
     }
