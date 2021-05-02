@@ -451,7 +451,7 @@ public class Interpreter {
                     strIndex = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
                     o = self.impl.strings[strIndex];
-                    n1 = writeObjectNoOptions(out, scope, o);
+                    n1 = writeText(out, scope, (String)o);
                     n += n1;
                     nwline += n1;
                     break;
@@ -693,6 +693,31 @@ public class Interpreter {
             trackDebugEvent(scope, e);
         }
         return n;
+    }
+
+    /** Write out a text element, i.e. a part of the template that is neither expression nor comment
+     */
+    protected int writeText(STWriter out, InstanceScope scope, String o) {
+        int start = out.index(); // track char we're about to write
+        int n = writeTextObject(out, scope, o);
+        if ( debug ) {
+            EvalExprEvent e = new EvalExprEvent(scope,
+                                                start, out.index() - 1,
+                                                getExprStartChar(scope),
+                                                getExprStopChar(scope));
+            trackDebugEvent(scope, e);
+        }
+        return n;
+    }
+
+    protected int writeTextObject(STWriter out, InstanceScope scope, String v) {
+        try {
+            return out.write(v);
+        }
+        catch (IOException ioe) {
+            errMgr.IOError(scope.st, ErrorType.WRITE_IO_ERROR, ioe, v);
+            return 0;
+        }
     }
 
     /** Write out an expression result that uses expression options.
