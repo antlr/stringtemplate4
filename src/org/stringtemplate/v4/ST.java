@@ -427,10 +427,19 @@ public class ST {
     }
 
     public int write(STWriter out, Locale locale) {
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
-                                             locale,
-                                             impl.nativeGroup.errMgr,
-                                             false);
+        Interpreter interp;
+        if ( groupThatCreatedThisInstance.strictRendering ) {
+            interp = new StrictInterpreter(groupThatCreatedThisInstance,
+                                           locale,
+                                           impl.nativeGroup.errMgr,
+                                           false);
+        }
+        else {
+            interp = new Interpreter(groupThatCreatedThisInstance,
+                                     locale,
+                                     impl.nativeGroup.errMgr,
+                                     false);
+        }
         InstanceScope scope = new InstanceScope(null, this);
         return interp.exec(out, scope);
     }
@@ -444,10 +453,19 @@ public class ST {
     }
 
     public int write(STWriter out, Locale locale, STErrorListener listener) {
-        Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
-                                             locale,
-                                             new ErrorManager(listener),
-                                             false);
+        Interpreter interp;
+        if ( groupThatCreatedThisInstance.strictRendering ) {
+            interp = new StrictInterpreter(groupThatCreatedThisInstance,
+                                           locale,
+                                           new ErrorManager(listener),
+                                           false);
+        }
+        else {
+            interp = new Interpreter(groupThatCreatedThisInstance,
+                                     locale,
+                                     new ErrorManager(listener),
+                                     false);
+        }
         InstanceScope scope = new InstanceScope(null, this);
         return interp.exec(out, scope);
     }
@@ -524,8 +542,13 @@ public class ST {
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
-        Interpreter interp =
-            new Interpreter(groupThatCreatedThisInstance, locale, true);
+        Interpreter interp;
+        if ( groupThatCreatedThisInstance.strictRendering ) {
+            interp = new StrictInterpreter(groupThatCreatedThisInstance, locale, true);
+        }
+        else {
+            interp = new Interpreter(groupThatCreatedThisInstance, locale, true);
+        }
         InstanceScope scope = new InstanceScope(null, this);
         interp.exec(wr, scope); // render and track events
         List<InterpEvent> events = interp.getEvents();
@@ -549,8 +572,13 @@ public class ST {
         StringWriter out = new StringWriter();
         STWriter wr = new AutoIndentWriter(out);
         wr.setLineWidth(lineWidth);
-        Interpreter interp =
-            new Interpreter(groupThatCreatedThisInstance, locale, true);
+        Interpreter interp;
+        if ( groupThatCreatedThisInstance.strictRendering ) {
+            interp = new StrictInterpreter(groupThatCreatedThisInstance, locale, true);
+        }
+        else {
+            interp = new Interpreter(groupThatCreatedThisInstance, locale, true);
+        }
         InstanceScope scope = new InstanceScope(null, this);
         interp.exec(wr, scope); // render and track events
         return interp.getEvents();

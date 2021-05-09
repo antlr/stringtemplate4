@@ -294,12 +294,34 @@ public class TestRenderers extends BaseTest {
         assertEquals(expecting, result);
     }
 
-    @Test public void testStringRendererUsedOnlyForAttribute() throws Exception {
+    @Test public void testDefaultRenderingUsesAttributeRendererForText() throws Exception {
         String templates =
             "foo(x) ::= << begin <x> end >>\n";
 
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir+"/t.stg");
+
+        group.registerRenderer(String.class, new AttributeRenderer<String>() {
+            @Override
+            public String toString(String value, String formatString, Locale locale) {
+                return value.toUpperCase();
+            }
+        });
+
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "attribute");
+        String expecting = " BEGIN ATTRIBUTE END ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testStrictRenderingBypassesAttributeRendererForText() throws Exception {
+        String templates =
+            "foo(x) ::= << begin <x> end >>\n";
+
+        writeFile(tmpdir, "t.stg", templates);
+        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        group.setStrictRendering(true);
 
         group.registerRenderer(String.class, new AttributeRenderer<String>() {
             @Override

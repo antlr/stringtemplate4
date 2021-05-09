@@ -698,28 +698,10 @@ public class Interpreter {
     /** Write out a text element, i.e. a part of the template that is neither expression nor comment
      */
     protected int writeText(STWriter out, InstanceScope scope, String o) {
-        int start = out.index(); // track char we're about to write
-        int n = writeTextObject(out, scope, o);
-        if ( debug ) {
-            EvalExprEvent e = new EvalExprEvent(scope,
-                                                start, out.index() - 1,
-                                                getExprStartChar(scope),
-                                                getExprStopChar(scope));
-            trackDebugEvent(scope, e);
-        }
-        return n;
+        // By default, we pass text elements to attribute renderers. See STGroup.setStrictRendering() for details.
+        return writeObjectNoOptions(out, scope, o);
     }
-
-    protected int writeTextObject(STWriter out, InstanceScope scope, String v) {
-        try {
-            return out.write(v);
-        }
-        catch (IOException ioe) {
-            errMgr.IOError(scope.st, ErrorType.WRITE_IO_ERROR, ioe, v);
-            return 0;
-        }
-    }
-
+    
     /** Write out an expression result that uses expression options.
      *  E.g., {@code <names; separator=", ">}
      */

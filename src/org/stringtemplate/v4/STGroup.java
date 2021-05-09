@@ -149,6 +149,8 @@ public class STGroup {
      */
     protected Map<Class<?>, AttributeRenderer<?>> renderers;
 
+    protected boolean strictRendering;
+
     /** A dictionary that allows people to register a model adaptor for
      *  a particular kind of object (subclass or implementation). Applies
      *  for any template evaluated relative to this group.
@@ -886,5 +888,19 @@ public class STGroup {
             }
         }
         return result;
+    }
+
+    /** Sets whether rendering of text elements should bypass attribute renderers.
+     * The default behavior of ST is to apply registered renderers (e.g.
+     * {@link StringRenderer}) not only to attribute expressions, but also to
+     * text elements. If you don't need backwards compatibility and your attribute
+     * renderers must not be applied to text elements, use this method to enable
+     * the new "strict rendering" mode.
+     *
+     * @param strictRendering {@code true} to render text elements directly,
+     * {@code false} (the default) to apply attribute renderers.
+     */
+    public void setStrictRendering(boolean strictRendering) {
+        this.strictRendering = strictRendering;
     }
 }
