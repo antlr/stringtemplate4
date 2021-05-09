@@ -1,5 +1,7 @@
 # Attribute Renderers
 
+## Introduction
+
 The atomic element of a template is a simple attribute (object) that is rendered to text by its the appropriate string evaluation method for the port's language (toString, ToString, `_str_`, ...).
 For example, an integer object is converted to text as a sequence of characters representing the numeric value. 
 What if we want commas to separate the 1000's places like 1,000,000? 
@@ -15,7 +17,9 @@ public interface AttributeRenderer<T> {
     public String toString(T value, String formatString, Locale locale);
 }
 ```
- 
+
+## How ST invokes renderers 
+
 To render expression `<e>`, StringTemplate looks for a renderer associated with the object type of `e`, say, *t*. 
 If *t* is associated with a registered renderer, *r*, it is suitable and StringTemplate invokes the renderer method:
  
@@ -27,6 +31,7 @@ If *t* is associated with a registered renderer, *r*, it is suitable and StringT
 StringTemplate supplies either the default locale, or whatever locale was set by the programmer. 
 If the format string passed to the renderer is not recognized then the renderer should simply call the usual string evaluation method.
 
+## Renderer registration
 To register a renderer, we tell the group to associate an object type with a renderer object. 
 Here's an example that tells StringTemplate to render numbers with an instance of NumberRenderer using the Polish locale:
  
@@ -77,3 +82,9 @@ g.registerRenderer(String.class, new NumberRenderer()); // error
 ```
 
 StringTemplate comes with three predefined renderers: `DateRenderer`, `StringRenderer`, and `NumberRenderer`.
+
+## Interaction with Text Elements
+
+Strictly speaking, attribute renderers should only be applied to _attribute expressions_. However, the default behavior
+of StringTemplate is to also apply them to the _text elements_ contained in the template itself. Starting with
+StringTemplate 4.3.1, you can disable this by calling `setStrictRendering(true)` on `STGroup`.

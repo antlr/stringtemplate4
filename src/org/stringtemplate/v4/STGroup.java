@@ -899,6 +899,8 @@ public class STGroup {
      *
      * @param strictRendering {@code true} to render text elements directly,
      * {@code false} (the default) to apply attribute renderers.
+     *
+     * @since 4.3.1
      */
     public void setStrictRendering(boolean strictRendering) {
         this.strictRendering = strictRendering;
