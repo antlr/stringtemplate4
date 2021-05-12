@@ -451,7 +451,7 @@ public class Interpreter {
                     strIndex = getShort(code, ip);
                     ip += Bytecode.OPND_SIZE_IN_BYTES;
                     o = self.impl.strings[strIndex];
-                    n1 = writeObjectNoOptions(out, scope, o);
+                    n1 = writeText(out, scope, (String)o);
                     n += n1;
                     nwline += n1;
                     break;
@@ -695,6 +695,13 @@ public class Interpreter {
         return n;
     }
 
+    /** Write out a text element, i.e. a part of the template that is neither expression nor comment
+     */
+    protected int writeText(STWriter out, InstanceScope scope, String o) {
+        // By default, we pass text elements to attribute renderers. See STGroup.setStrictRendering() for details.
+        return writeObjectNoOptions(out, scope, o);
+    }
+    
     /** Write out an expression result that uses expression options.
      *  E.g., {@code <names; separator=", ">}
      */

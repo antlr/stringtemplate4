@@ -30,11 +30,12 @@ package org.stringtemplate.v4.test;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.stringtemplate.v4.AttributeRenderer;
 import org.stringtemplate.v4.DateRenderer;
 import org.stringtemplate.v4.NumberRenderer;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.STGroupString;
 import org.stringtemplate.v4.StringRenderer;
 
 import java.util.ArrayList;
@@ -69,8 +70,7 @@ public class TestRenderers extends BaseTest {
     @Test public void testRendererForGroup() throws Exception {
         String templates =
                 "dateThing(created) ::= \"datetime: <created>\"\n";
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
@@ -85,8 +85,7 @@ public class TestRenderers extends BaseTest {
     @Test public void testRendererWithFormat() throws Exception {
         String templates =
                 "dateThing(created) ::= << date: <created; format=\"yyyy.MM.dd\"> >>\n";
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
@@ -98,8 +97,7 @@ public class TestRenderers extends BaseTest {
     @Test public void testRendererWithPredefinedFormat() throws Exception {
         String templates =
                 "dateThing(created) ::= << datetime: <created; format=\"short\"> >>\n";
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
@@ -114,8 +112,7 @@ public class TestRenderers extends BaseTest {
     @Test public void testRendererWithPredefinedFormat2() throws Exception {
         String templates =
                 "dateThing(created) ::= << datetime: <created; format=\"full\"> >>\n";
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
         TimeZone origTimeZone = TimeZone.getDefault();
@@ -140,8 +137,7 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "dateThing(created) ::= << date: <created; format=\"date:medium\"> >>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
@@ -154,8 +150,7 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "dateThing(created) ::= << time: <created; format=\"time:medium\"> >>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(GregorianCalendar.class, new DateRenderer());
         ST st = group.getInstanceOf("dateThing");
         st.add("created", new GregorianCalendar(2005, 7 - 1, 5));
@@ -168,8 +163,7 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "foo(x) ::= << <x; format=\"cap\"> >>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(String.class, new StringRenderer());
         ST st = group.getInstanceOf("foo");
         st.add("x", "hi");
@@ -184,8 +178,7 @@ public class TestRenderers extends BaseTest {
                 "foo(x) ::= << <(t()); format=\"cap\"> >>\n" +
                 "t() ::= <<ack>>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(String.class, new StringRenderer());
         ST st = group.getInstanceOf("foo");
         st.add("x", "hi");
@@ -199,8 +192,7 @@ public class TestRenderers extends BaseTest {
                 "foo(x) ::= << <({ack}); format=\"cap\"> >>\n" +
                 "t() ::= <<ack>>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(String.class, new StringRenderer());
         ST st = group.getInstanceOf("foo");
         st.add("x", "hi");
@@ -213,8 +205,7 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "foo(x) ::= << <x; format=\"cap\"> >>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(String.class, new StringRenderer());
         ST st = group.getInstanceOf("foo");
         st.add("x", "");
@@ -227,8 +218,7 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "foo(x) ::= << <x; format=\"url-encode\"> >>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(String.class, new StringRenderer());
         ST st = group.getInstanceOf("foo");
         st.add("x", "a b");
@@ -241,8 +231,7 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "foo(x) ::= << <x; format=\"xml-encode\"> >>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(String.class, new StringRenderer());
         ST st = group.getInstanceOf("foo");
         st.add("x", "a<b> &\t\b");
@@ -255,8 +244,7 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "foo(x) ::= << <x; format=\"xml-encode\"> >>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(String.class, new StringRenderer());
         ST st = group.getInstanceOf("foo");
         st.add("x", null);
@@ -269,8 +257,7 @@ public class TestRenderers extends BaseTest {
         String templates =
             "foo(x) ::= << <x; format=\"xml-encode\"> >>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(String.class, new StringRenderer());
         ST st = group.getInstanceOf("foo");
         st.add("x", "\uD83E\uDE73");
@@ -283,8 +270,7 @@ public class TestRenderers extends BaseTest {
         String templates =
                 "foo(x) ::= << <x; format=\"%6s\"> >>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(String.class, new StringRenderer());
         ST st = group.getInstanceOf("foo");
         st.add("x", "hi");
@@ -293,12 +279,52 @@ public class TestRenderers extends BaseTest {
         assertEquals(expecting, result);
     }
 
+    @Test public void testDefaultRenderingUsesAttributeRendererForText() throws Exception {
+        String templates =
+            "foo(x) ::= << begin <x> end >>\n";
+
+        STGroup group = new STGroupString(templates);
+
+        group.registerRenderer(String.class, new AttributeRenderer<String>() {
+            @Override
+            public String toString(String value, String formatString, Locale locale) {
+                return value.toUpperCase();
+            }
+        });
+
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "attribute");
+        String expecting = " BEGIN ATTRIBUTE END ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
+    @Test public void testStrictRenderingBypassesAttributeRendererForText() throws Exception {
+        String templates =
+            "foo(x) ::= << begin <x> end >>\n";
+
+        STGroup group = new STGroupString(templates);
+        group.setStrictRendering(true);
+
+        group.registerRenderer(String.class, new AttributeRenderer<String>() {
+            @Override
+            public String toString(String value, String formatString, Locale locale) {
+                return value.toUpperCase();
+            }
+        });
+
+        ST st = group.getInstanceOf("foo");
+        st.add("x", "attribute");
+        String expecting = " begin ATTRIBUTE end ";
+        String result = st.render();
+        assertEquals(expecting, result);
+    }
+
     @Test public void testNumberRendererWithPrintfFormat() throws Exception {
         String templates =
                 "foo(x,y) ::= << <x; format=\"%d\"> <y; format=\"%2.3f\"> >>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(Integer.class, new NumberRenderer());
         group.registerRenderer(Double.class, new NumberRenderer());
         ST st = group.getInstanceOf("foo");
@@ -312,8 +338,7 @@ public class TestRenderers extends BaseTest {
     @Test public void testInstanceofRenderer() throws Exception {
         String templates =
                 "numberThing(x,y,z) ::= \"numbers: <x>, <y>; <z>\"\n";
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(Number.class, new NumberRenderer());
         ST st = group.getInstanceOf("numberThing");
         st.add("x", -2100);
@@ -330,8 +355,7 @@ public class TestRenderers extends BaseTest {
                 "<x; format=\"%,d\"> <y; format=\"%,2.3f\">\n" +
                 ">>\n";
 
-        writeFile(tmpdir, "t.stg", templates);
-        STGroup group = new STGroupFile(tmpdir+"/t.stg");
+        STGroup group = new STGroupString(templates);
         group.registerRenderer(Integer.class, new NumberRenderer());
         group.registerRenderer(Double.class, new NumberRenderer());
         ST st = group.getInstanceOf("foo");
