@@ -87,4 +87,4 @@ StringTemplate comes with three predefined renderers: `DateRenderer`, `StringRen
 
 Strictly speaking, attribute renderers should only be applied to _attribute expressions_. However, the default behavior
 of StringTemplate is to also apply them to the _text elements_ contained in the template itself. Starting with
-StringTemplate 4.3.1, you can disable this by calling `setStrictRendering(true)` on `STGroup`.
+StringTemplate 4.3.2, you can disable this by calling `setStrictRendering(true)` on `STGroup`.
