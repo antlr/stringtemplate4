@@ -8,6 +8,8 @@ This is the main landing page for the StringTemplate 4 FAQ. The links below will
 
 * ok, so somebody needs to help build this faq ;)
 
+### Can I be confident in allowing user-provided templates?
+
 ## Object models
 
 * [Altering property lookup for Scala](../scala-model-adaptor.md)
