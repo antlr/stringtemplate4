@@ -68,3 +68,4 @@ YYYY/MM/DD, github id, Full name, email
 2020/09/06, peteruhnak, Peter Uhnak, i.uhnak@gmail.com
 2020/09/16, Dvoreth, Jarmila Emanuela Panwitz, jaremapan@gmail.com
 2020/10/01, beccagaspard, Becca Gaspard, beccagaspard at gmail dot com
+2021/11/10, StephanRichter, Stephan Richter, postbox: s.richter domain: srsoftware.de

@@ -38,6 +38,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 // TODO: caching?
@@ -125,9 +127,9 @@ public class STGroupDir extends STGroup {
 
         URL groupFileURL;
         try { // see if parent of template name is a group file
-            groupFileURL = new URL(root+parent+GROUP_FILE_EXTENSION);
+            groupFileURL = new URI(root+parent+GROUP_FILE_EXTENSION).normalize().toURL();
         }
-        catch (MalformedURLException e) {
+        catch (MalformedURLException | URISyntaxException e) {
             errMgr.internalError(null, "bad URL: "+root+parent+GROUP_FILE_EXTENSION, e);
             return null;
         }
@@ -160,9 +162,9 @@ public class STGroupDir extends STGroup {
                                           "from "+root+" prefix="+prefix);
         URL f;
         try {
-            f = new URL(root+prefix+unqualifiedFileName);
+            f = new URI(root+prefix+unqualifiedFileName).normalize().toUrl();
         }
-        catch (MalformedURLException me) {
+        catch (MalformedURLException | URISyntaxException me) {
             errMgr.runTimeError(null, null, ErrorType.INVALID_TEMPLATE_NAME,
                                 me, root + unqualifiedFileName);
             return null;
