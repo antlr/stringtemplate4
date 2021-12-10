@@ -1,0 +1,31 @@
+workspace(name = "stringtemplate4")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
+
+# This needs to be identical to the one used in https://github.com/antlr/antlr3/blob/master/WORKSPACE.bazel.
+http_jar(
+    name = "antlr3_bootstrap",
+    sha256 = "46531814ba9739cdf20c6c1789c252d3d95b68932813d79fb8bbfdf8d5840417",
+    url = "http://www.antlr3.org/download/antlr-3.5.2-complete-no-st3.jar",
+)
+
+http_jar(
+    name = "junit",
+    sha256 = "8e495b634469d64fb8acfa3495a065cbacc8a0fff55ce1e31007be4c16dc57d3",
+    url = "https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar",
+)
+
+http_jar(
+    name = "hamcrest_core",
+    sha256 = "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9",
+    url = "https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar",
+)
+
+# TODO: Switch to http_archive once antlr3 has Bazel support. This approach is necessary to avoid
+#       an awkward situation where we need to update stringtemplate4 and antlr3 simultaneously.
+new_git_repository(
+    name = "antlr3",
+    branch = "master",
+    remote = "https://github.com/antlr/antlr3.git",
+)

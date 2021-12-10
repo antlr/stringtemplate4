@@ -162,7 +162,7 @@ public class STGroupDir extends STGroup {
                                           "from "+root+" prefix="+prefix);
         URL f;
         try {
-            f = new URI(root+prefix+unqualifiedFileName).normalize().toUrl();
+            f = new URI(root+prefix+unqualifiedFileName).normalize().toURL();
         }
         catch (MalformedURLException | URISyntaxException me) {
             errMgr.runTimeError(null, null, ErrorType.INVALID_TEMPLATE_NAME,
