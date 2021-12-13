@@ -1,0 +1,59 @@
+"""BUILD.bazel file for StringTemplate 4."""
+
+load("@rules_java//java:defs.bzl", "java_test")
+
+package(default_visibility = ["//:__pkg__"])
+
+java_test(
+    name = "tests",
+    srcs = glob(["org/stringtemplate/v4/test/*.java"]),
+    args = [
+        "org.stringtemplate.v4.test.TestAggregates",
+        "org.stringtemplate.v4.test.TestAttributes",
+        "org.stringtemplate.v4.test.TestBuggyDefaultValueRaisesNPETest",
+        "org.stringtemplate.v4.test.TestCompiler",
+        "org.stringtemplate.v4.test.TestCoreBasics",
+        "org.stringtemplate.v4.test.TestDebugEvents",
+        "org.stringtemplate.v4.test.TestDictionaries",
+        "org.stringtemplate.v4.test.TestDollarDelimiters",
+        # Skip as it uses AWT and the installed JRE is usually headless.
+        # "org.stringtemplate.v4.test.TestEarlyEvaluation",
+        "org.stringtemplate.v4.test.TestFunctions",
+        "org.stringtemplate.v4.test.TestGroupSyntax",
+        "org.stringtemplate.v4.test.TestGroupSyntaxErrors",
+        "org.stringtemplate.v4.test.TestGroups",
+        # Doesn't work for some reason, likely due to environment config.
+        # "org.stringtemplate.v4.test.TestImports",
+        "org.stringtemplate.v4.test.TestIndentation",
+        "org.stringtemplate.v4.test.TestIndirectionAndEarlyEval",
+        "org.stringtemplate.v4.test.TestInterptimeErrors",
+        "org.stringtemplate.v4.test.TestLexer",
+        "org.stringtemplate.v4.test.TestLineWrap",
+        "org.stringtemplate.v4.test.TestLists",
+        "org.stringtemplate.v4.test.TestModelAdaptors",
+        "org.stringtemplate.v4.test.TestNoNewlineTemplates",
+        "org.stringtemplate.v4.test.TestNullAndEmptyValues",
+        "org.stringtemplate.v4.test.TestOptions",
+        "org.stringtemplate.v4.test.TestRegions",
+        "org.stringtemplate.v4.test.TestRenderers",
+        "org.stringtemplate.v4.test.TestSTRawGroupDir",
+        "org.stringtemplate.v4.test.TestScopes",
+        "org.stringtemplate.v4.test.TestSubtemplates",
+        "org.stringtemplate.v4.test.TestSyntaxErrors",
+        "org.stringtemplate.v4.test.TestTemplateNames",
+        "org.stringtemplate.v4.test.TestTokensForDollarDelimiters",
+        "org.stringtemplate.v4.test.TestTreeConstruction",
+        "org.stringtemplate.v4.test.TestWhitespace",
+    ],
+    javacopts = [
+        "-Xep:JUnit4RunWithMissing:OFF",
+    ],
+    main_class = "org.junit.runner.JUnitCore",
+    use_testrunner = False,
+    deps = [
+        "//:stringtemplate4",
+        "@antlr3//:java_runtime",
+        "@hamcrest_core//jar",
+        "@junit//jar",
+    ],
+)

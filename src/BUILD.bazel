@@ -1,0 +1,42 @@
+"""BUILD.bazel file for StringTemplate 4."""
+
+load("@rules_java//java:defs.bzl", "java_library")
+
+package(default_visibility = ["//:__pkg__"])
+
+java_library(
+    name = "stringtemplate4",
+    srcs = glob(["**/*.java"]) + [
+        "org/stringtemplate/v4/compiler/CodeGenerator.java",
+        "org/stringtemplate/v4/compiler/GroupLexer.java",
+        "org/stringtemplate/v4/compiler/GroupParser.java",
+        "org/stringtemplate/v4/compiler/STParser.java",
+    ],
+    resources = glob(["**/*.jfd"]),
+    deps = ["@antlr3//:java_runtime"],
+)
+
+genrule(
+    name = "stringtemplate4_bootstrap",
+    srcs = [
+        "org/stringtemplate/v4/compiler/CodeGenerator.g",
+        "org/stringtemplate/v4/compiler/Group.g",
+        "org/stringtemplate/v4/compiler/STParser.g",
+        "org/stringtemplate/v4/compiler/STLexer.tokens",
+    ],
+    outs = [
+        "org/stringtemplate/v4/compiler/CodeGenerator.java",
+        "org/stringtemplate/v4/compiler/GroupLexer.java",
+        "org/stringtemplate/v4/compiler/GroupParser.java",
+        "org/stringtemplate/v4/compiler/STParser.java",
+    ],
+    cmd = """
+      cp $(location :org/stringtemplate/v4/compiler/STLexer.tokens) $(RULEDIR)/org/stringtemplate/v4/compiler/STLexer.tokens
+      $(JAVA) -cp $(location @antlr3_bootstrap//jar) org.antlr.Tool -fo $(RULEDIR)/org/stringtemplate/v4/compiler $(location :org/stringtemplate/v4/compiler/STParser.g)
+      $(JAVA) -cp $(location @antlr3_bootstrap//jar) org.antlr.Tool -fo $(RULEDIR)/org/stringtemplate/v4/compiler $(location :org/stringtemplate/v4/compiler/Group.g)
+      $(JAVA) -cp $(location @antlr3_bootstrap//jar) org.antlr.Tool -fo $(RULEDIR)/org/stringtemplate/v4/compiler $(location :org/stringtemplate/v4/compiler/CodeGenerator.g)
+      rm -f $(RULEDIR)/org/stringtemplate/v4/compiler/STLexer.tokens
+    """,
+    toolchains = ["@bazel_tools//tools/jdk:current_host_java_runtime"],
+    tools = ["@antlr3_bootstrap//jar"],
+)

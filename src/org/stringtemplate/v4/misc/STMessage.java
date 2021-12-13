@@ -65,6 +65,7 @@ public class STMessage {
         this(error,self,cause);
         this.arg = arg;
     }
+    @SuppressWarnings("ChainingConstructorIgnoresParameter")
     public STMessage(ErrorType error, ST self, Throwable cause, Token where, Object arg) {
         this(error,self,cause,where);
         this.arg = arg;

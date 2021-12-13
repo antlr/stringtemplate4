@@ -20,3 +20,9 @@ nbactions*.xml
 .project
 .classpath
 .settings/
+
+# Bazel
+bazel-bin
+bazel-out
+bazel-stringtemplate4
+bazel-testlogs
