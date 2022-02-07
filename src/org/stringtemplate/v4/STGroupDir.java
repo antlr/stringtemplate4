@@ -125,12 +125,33 @@ public class STGroupDir extends STGroup {
 //            return loadTemplateFile("/", name+TEMPLATE_FILE_EXTENSION); // load t.st file
 //      }
 
+        // Avoid creating invalid file URLs when root ends with '/'
+        // and parent starts with '/'
+        if (root.toString().endsWith("/")) {
+            if (parent.startsWith("/")) {
+                // root: 'a/', parent: '/b' -> 'b'
+                parent = parent.substring(1);
+            }
+        }
+        // Avoid creating invalid file URLs when root doesn't end with '/'
+        // and parent doesn't start with '/'
+        else if (!parent.startsWith("/")) {
+            // root: 'a', parent: 'b' -> '/b'
+            parent = "/" + parent;
+        }
+
+        String groupFileString = root+parent+GROUP_FILE_EXTENSION;
+
         URL groupFileURL;
         try { // see if parent of template name is a group file
-            groupFileURL = new URI(root+parent+GROUP_FILE_EXTENSION).normalize().toURL();
+            groupFileURL = new URI(groupFileString).normalize().toURL();
         }
-        catch (MalformedURLException | URISyntaxException e) {
-            errMgr.internalError(null, "bad URL: "+root+parent+GROUP_FILE_EXTENSION, e);
+        catch (MalformedURLException e) {
+            badURLError(groupFileString, e);
+            return null;
+        }
+        catch (URISyntaxException e) {
+            badURLError(groupFileString, e);
             return null;
         }
 
@@ -145,15 +166,19 @@ public class STGroupDir extends STGroup {
         }
         finally { // clean up
             try {
-                if (is!=null ) is.close();
+                if (is!=null) is.close();
             }
             catch (IOException ioe) {
                 errMgr.internalError(null, "can't close template file stream "+name, ioe);
             }
         }
 
-        loadGroupFile(prefix, root+parent+GROUP_FILE_EXTENSION);
+        loadGroupFile(prefix, groupFileString);
         return rawGetTemplate(name);
+    }
+
+    private void badURLError(String fullPath, Exception e) {
+        errMgr.internalError(null, "bad URL: "+fullPath, e);
     }
 
     /** Load .st as relative file name relative to root by {@code prefix}. */
@@ -164,9 +189,12 @@ public class STGroupDir extends STGroup {
         try {
             f = new URI(root+prefix+unqualifiedFileName).normalize().toURL();
         }
-        catch (MalformedURLException | URISyntaxException me) {
-            errMgr.runTimeError(null, null, ErrorType.INVALID_TEMPLATE_NAME,
-                                me, root + unqualifiedFileName);
+        catch (MalformedURLException e) {
+            invalidTemplateError(unqualifiedFileName, e);
+            return null;
+        }
+        catch (URISyntaxException e) {
+            invalidTemplateError(unqualifiedFileName, e);
             return null;
         }
 
@@ -182,6 +210,11 @@ public class STGroupDir extends STGroup {
         }
 
         return loadTemplateFile(prefix, unqualifiedFileName, fs);
+    }
+
+    private void invalidTemplateError(String unqualifiedFileName, Exception e) {
+        errMgr.runTimeError(null, null, ErrorType.INVALID_TEMPLATE_NAME,
+        e, root + unqualifiedFileName);
     }
 
     @Override
