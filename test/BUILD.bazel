@@ -19,6 +19,7 @@ java_test(
         # Skip as it uses AWT and the installed JRE is usually headless.
         # "org.stringtemplate.v4.test.TestEarlyEvaluation",
         "org.stringtemplate.v4.test.TestFunctions",
+        "org.stringtemplate.v4.test.TestGroupDirPaths",
         "org.stringtemplate.v4.test.TestGroupSyntax",
         "org.stringtemplate.v4.test.TestGroupSyntaxErrors",
         "org.stringtemplate.v4.test.TestGroups",
@@ -56,4 +57,8 @@ java_test(
         "@hamcrest_core//jar",
         "@junit//jar",
     ],
+    resources = [
+        "//test-resources/test-templates:TestGroupDirPathsGroupFile.stg",
+    ],
+    resource_strip_prefix = "test-resources",
 )
