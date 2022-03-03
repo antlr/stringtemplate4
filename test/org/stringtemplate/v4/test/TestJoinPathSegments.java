@@ -12,13 +12,11 @@ public class TestJoinPathSegments extends BaseTest {
 
     @Test
     public void testBareRootDirAndBareGroupDir() {
-
         assertEquals(EXPECTED, Misc.joinPathSegments(ROOT_DIR, TEMPLATE_GROUP_FILE));
     }
 
     @Test
     public void testRootDirWithTrailingSlashAndBareGroupDir() {
-
         assertEquals(EXPECTED, Misc.joinPathSegments(ROOT_DIR + "/", TEMPLATE_GROUP_FILE));
     }
 

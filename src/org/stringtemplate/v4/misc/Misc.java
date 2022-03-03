@@ -81,8 +81,8 @@ public class Misc {
 
     /** Strip a single newline character from the end of {@code s}. */
     public static String trimOneTrailingNewline(String s) {
-        if ( s.endsWith("\r\n") ) s = s.substring(0, s.length()-2);
-        else if ( s.endsWith("\n") ) s = s.substring(0, s.length()-1);
+        if ( s.endsWith("\r\n") ) s = stripRight(s, 2);
+        else if ( s.endsWith("\n") ) s = stripRight(s, 1);
         return s;
     }
 
@@ -137,16 +137,13 @@ public class Misc {
     public static String getPrefix(String name) {
         if (name==null) return "/";
         String parent = getParent(name);
-        String prefix = parent;
-        if ( !parent.endsWith("/") ) prefix += '/';
-        return prefix;
+        return parent.endsWith("/") ? parent : parent+"/";
     }
 
     public static String replaceEscapes(String s) {
-        s = s.replaceAll("\n", "\\\\n");
-        s = s.replaceAll("\r", "\\\\r");
-        s = s.replaceAll("\t", "\\\\t");
-        return s;
+        return s.replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t");
     }
 
     /**
@@ -196,8 +193,8 @@ public class Misc {
                 is.close();
             } catch (Throwable e) {
                 // Closing the input stream may throw an exception. See bug below. Most probabaly it was
-                // the true reason for this commit: 
-                // https://github.com/antlr/stringtemplate4/commit/21484ed46f1b20b2cdaec49f9d5a626fb26a493c             
+                // the true reason for this commit:
+                // https://github.com/antlr/stringtemplate4/commit/21484ed46f1b20b2cdaec49f9d5a626fb26a493c
                 // https://bugs.openjdk.java.net/browse/JDK-8080094
 //              e.printStackTrace();
             }
