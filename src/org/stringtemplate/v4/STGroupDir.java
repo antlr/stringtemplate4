@@ -125,22 +125,7 @@ public class STGroupDir extends STGroup {
 //            return loadTemplateFile("/", name+TEMPLATE_FILE_EXTENSION); // load t.st file
 //      }
 
-        // Avoid creating invalid file URLs when root ends with '/'
-        // and parent starts with '/'
-        if (root.toString().endsWith("/")) {
-            if (parent.startsWith("/")) {
-                // root: 'a/', parent: '/b' -> 'b'
-                parent = parent.substring(1);
-            }
-        }
-        // Avoid creating invalid file URLs when root doesn't end with '/'
-        // and parent doesn't start with '/'
-        else if (!parent.startsWith("/")) {
-            // root: 'a', parent: 'b' -> '/b'
-            parent = "/" + parent;
-        }
-
-        String groupFileString = root+parent+GROUP_FILE_EXTENSION;
+        String groupFileString = Misc.joinPathSegments(root.toString(), parent) + GROUP_FILE_EXTENSION;
 
         URL groupFileURL;
         try { // see if parent of template name is a group file

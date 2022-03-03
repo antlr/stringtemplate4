@@ -68,9 +68,9 @@ public class Misc {
         return s.substring(n, s.length()-n);
     }
 
-//    public static String stripRight(String s, int n) {
-//        return s.substring(0, s.length()-n);
-//    }
+    public static String stripRight(String s, int n) {
+        return s.substring(0, s.length()-n);
+    }
 
     /** Strip a single newline character from the front of {@code s}. */
     public static String trimOneStartingNewline(String s) {
@@ -84,6 +84,14 @@ public class Misc {
         if ( s.endsWith("\r\n") ) s = s.substring(0, s.length()-2);
         else if ( s.endsWith("\n") ) s = s.substring(0, s.length()-1);
         return s;
+    }
+
+    public static String trimOneStarting(String s, String trim) {
+        return s.startsWith(trim) ? s.substring(trim.length()) : s;
+    }
+
+    public static String trimOneTrailing(String s, String trim) {
+        return s.endsWith(trim) ? stripRight(s, trim.length()) : s;
     }
 
     /** Given, say, {@code file:/tmp/test.jar!/org/foo/templates/main.stg}
@@ -115,6 +123,15 @@ public class Misc {
         if (lastSlash==0) return "/";
         //System.out.println("getParent("+name+")="+p);
         return "";
+    }
+
+    /**
+     * Trims one trailing "/" from path1 and one initial "/" from path2 before
+     * joining them with one "/".
+     */
+    public static String joinPathSegments(String path1, String path2) {
+        return trimOneTrailing(path1, "/") + "/" +
+               trimOneStarting(path2, "/");
     }
 
     public static String getPrefix(String name) {
