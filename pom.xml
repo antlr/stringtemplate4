@@ -50,7 +50,14 @@
 			<version>3.5.2</version>
 			<scope>compile</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>ST4-testjar</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/test/test.jar</systemPath>
+        </dependency>
+    </dependencies>
 
 	<properties>
 	    <maven.compiler.source>1.7</maven.compiler.source>
@@ -63,6 +70,11 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>test/resources</directory>
+            </testResource>
+        </testResources>
 		<plugins>
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>

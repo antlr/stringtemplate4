@@ -51,9 +51,10 @@ import java.net.URL;
  */
 public class STGroupDir extends STGroup {
     public String groupDirName;
-    public URL root;
+    public URL url;
 
     public STGroupDir(String dirName) { this(dirName, '<', '>'); }
+    public STGroupDir(URL url) { this(url, "UTF-8", '<', '>'); }
 
     public STGroupDir(String dirName, char delimiterStartChar, char delimiterStopChar) {
         super(delimiterStartChar, delimiterStopChar);
@@ -62,26 +63,27 @@ public class STGroupDir extends STGroup {
         if ( dir.exists() && dir.isDirectory() ) {
             // we found the directory and it'll be file based
             try {
-                root = dir.toURI().toURL();
+                url = dir.toURI().toURL();
             }
             catch (MalformedURLException e) {
                 throw new STException("can't load dir "+dirName, e);
             }
-            if ( verbose ) System.out.println("STGroupDir("+dirName+") found at "+root);
+            if ( verbose ) System.out.println("STGroupDir("+dirName+") found at "+url);
         }
         else {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            root = cl.getResource(dirName);
-            if ( root==null ) {
+            url = cl.getResource(dirName);
+            if ( url==null ) {
                 cl = this.getClass().getClassLoader();
-                root = cl.getResource(dirName);
+                url = cl.getResource(dirName);
             }
-            if ( verbose ) System.out.println("STGroupDir("+dirName+") found via CLASSPATH at "+root);
-            if ( root==null ) {
+            if ( verbose ) System.out.println("STGroupDir("+dirName+") found via CLASSPATH at "+url);
+            if ( url==null ) {
                 throw new IllegalArgumentException("No such directory: "+
                                                        dirName);
             }
         }
+        url = normalizeURL(url);
     }
 
     public STGroupDir(String dirName, String encoding) {
@@ -100,8 +102,9 @@ public class STGroupDir extends STGroup {
     {
         super(delimiterStartChar, delimiterStopChar);
         this.groupDirName = new File(root.getFile()).getName();
-        this.root = root;
+        this.url = root;
         this.encoding = encoding;
+        url = normalizeURL(url);
     }
 
     @Override
@@ -127,10 +130,10 @@ public class STGroupDir extends STGroup {
 
         URL groupFileURL;
         try { // see if parent of template name is a group file
-            groupFileURL = new URI(root+parent+GROUP_FILE_EXTENSION).normalize().toURL();
+            groupFileURL = new URI(url+parent+GROUP_FILE_EXTENSION).normalize().toURL();
         }
         catch (MalformedURLException | URISyntaxException e) {
-            errMgr.internalError(null, "bad URL: "+root+parent+GROUP_FILE_EXTENSION, e);
+            errMgr.internalError(null, "bad URL: "+url+parent+GROUP_FILE_EXTENSION, e);
             return null;
         }
 
@@ -152,21 +155,21 @@ public class STGroupDir extends STGroup {
             }
         }
 
-        loadGroupFile(prefix, root+parent+GROUP_FILE_EXTENSION);
+        loadGroupFile(prefix, url+parent+GROUP_FILE_EXTENSION);
         return rawGetTemplate(name);
     }
 
     /** Load .st as relative file name relative to root by {@code prefix}. */
     public CompiledST loadTemplateFile(String prefix, String unqualifiedFileName) {
         if ( verbose ) System.out.println("loadTemplateFile("+unqualifiedFileName+") in groupdir "+
-                                          "from "+root+" prefix="+prefix);
+                                          "from "+url+" prefix="+prefix);
         URL f;
         try {
-            f = new URI(root+prefix+unqualifiedFileName).normalize().toURL();
+            f = new URI(url+prefix+unqualifiedFileName).normalize().toURL();
         }
         catch (MalformedURLException | URISyntaxException me) {
             errMgr.runTimeError(null, null, ErrorType.INVALID_TEMPLATE_NAME,
-                                me, root + unqualifiedFileName);
+                                me, url+ unqualifiedFileName);
             return null;
         }
 
@@ -176,7 +179,7 @@ public class STGroupDir extends STGroup {
             fs.name = unqualifiedFileName;
         }
         catch (IOException ioe) {
-            if ( verbose ) System.out.println(root+"/"+unqualifiedFileName+" doesn't exist");
+            if ( verbose ) System.out.println(url+"/"+unqualifiedFileName+" doesn't exist");
             //errMgr.IOError(null, ErrorType.NO_SUCH_TEMPLATE, ioe, unqualifiedFileName);
             return null;
         }
@@ -187,7 +190,21 @@ public class STGroupDir extends STGroup {
     @Override
     public String getName() { return groupDirName; }
     @Override
-    public String getFileName() { return root.getFile(); }
+    public String getFileName() { return url.getFile(); }
     @Override
-    public URL getRootDirURL() { return root; }
+    public URL getRootDirURL() { return url; }
+
+    /** verify there is no extra slash on the end of URL */
+    public URL normalizeURL(URL url) {
+        String urlS = url.toString();
+        if ( urlS.endsWith("/") ) {
+            try {
+                url = new URL(urlS.substring(0,urlS.length()-1));
+            }
+            catch (MalformedURLException e) {
+                errMgr.internalError(null, "bad URL: "+urlS, e);
+            }
+        }
+        return url;
+    }
 }
