@@ -180,7 +180,7 @@ Find stuff:
 
 ```
 cd ~/antlr/sites/website-st4
-find . -type f -exec grep '4\.2' {} \;
+find . -type f -exec grep -l '4\.3' {} \;|grep -v api
 vi index.html scripts/topnav.js download.html 
 ```
 
