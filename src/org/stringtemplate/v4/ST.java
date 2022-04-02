@@ -39,20 +39,9 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import org.stringtemplate.v4.misc.ErrorManager;
 import org.stringtemplate.v4.misc.MultiMap;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /** An instance of the StringTemplate. It consists primarily of
  *  a {@linkplain ST#impl reference} to its implementation (shared among all
@@ -68,7 +57,7 @@ import java.util.Map;
  *  says.</p>
  */
 public class ST {
-    public final static String VERSION = "4.3.1";
+    public final static String VERSION = "4.3.2";
 
     /** {@code <@r()>}, {@code <@r>...<@end>}, and {@code @t.r() ::= "..."} defined manually by coder */
     public enum RegionType {
