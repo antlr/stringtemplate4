@@ -77,8 +77,6 @@ Here is the file template
 
 ## Maven deploy snapshot
 
-The goal is to get a snapshot, such as `4.3.2-SNAPSHOT`, to the [staging server](https://oss.sonatype.org/#stagingRepositories).
-
 Do this:
 
 ```bash
@@ -107,11 +105,13 @@ Uploaded to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositor
 
 ## Maven release
 
-The maven deploy lifecycle phased deploys the artifacts and the poms for the ANTLR project to the [sonatype remote staging server](https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4).
+The maven deploy lifecycle phased deploys the artifacts and the poms for the ST4 project to the [sonatype remote staging server](https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4).
 
 ```bash
 mvn deploy -DskipTests
 ```
+
+Make sure `gpg` is installed (`brew install gpg` on mac). Also must [create a key and publish it](https://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven/) then update `.m2/settings` to use that public key.
 
 Now, do this:
 
