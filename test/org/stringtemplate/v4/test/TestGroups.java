@@ -29,24 +29,15 @@ package org.stringtemplate.v4.test;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STErrorListener;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupDir;
-import org.stringtemplate.v4.STGroupFile;
-import org.stringtemplate.v4.STGroupString;
+import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import java.io.File;
 import java.net.URL;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -812,7 +803,6 @@ public class TestGroups extends BaseTest {
   }
 
   public void testGroupString(STGroup group) throws Exception {
-
     assertTrue(group.isDefined("stat"));
 
     ST b = group.getInstanceOf("stat");

@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+            <version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -50,7 +50,7 @@
 			<version>3.5.2</version>
 			<scope>compile</scope>
 		</dependency>
-        <dependency>
+        <dependency> <!-- Hard code a jar we can try to load templates from; see TestGroupsFromCLASSPATH.java -->
             <groupId>org.antlr</groupId>
             <artifactId>ST4-testjar</artifactId>
             <version>1.0</version>
@@ -60,8 +60,8 @@
     </dependencies>
 
 	<properties>
-	    <maven.compiler.source>1.7</maven.compiler.source>
-	    <maven.compiler.target>1.7</maven.compiler.target>
+	    <maven.compiler.source>1.8</maven.compiler.source>
+	    <maven.compiler.target>1.8</maven.compiler.target>
 	    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -79,20 +79,31 @@
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-javadoc-plugin</artifactId>
-               <configuration>
-                  <additionalOptions>-Xdoclint:none</additionalOptions>
-                  <additionalJOption>-Xdoclint:none</additionalJOption>
-               </configuration>
+                <version>3.3.1</version>
+                <configuration>
+                    <javadocVersion>1.8</javadocVersion>
+                    <failOnError>false</failOnError>
+                    <additionalOptions>-Xdoclint:none</additionalOptions>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.8</version>
+                <version>3.2.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.12.4</version>
+                <version>2.22.0</version>
 				<configuration>
 					<argLine>-Dfile.encoding=UTF-8</argLine>
 				</configuration>
@@ -114,38 +125,6 @@
 					</execution>
 				</executions>
 			</plugin>
-            <plugin>
-                <!-- https://mvnrepository.com/artifact/org.revapi/revapi-maven-plugin -->
-                <groupId>org.revapi</groupId>
-                <artifactId>revapi-maven-plugin</artifactId>
-                <version>0.11.2</version>
-                <dependencies>
-                    <!-- https://mvnrepository.com/artifact/org.revapi/revapi-java -->
-                    <dependency>
-                        <groupId>org.revapi</groupId>
-                        <artifactId>revapi-java</artifactId>
-                        <version>0.20.0</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <goals><goal>check</goal></goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <oldVersion>4.1</oldVersion>
-                    <analysisConfigurationFiles>
-                        <configurationFile>
-                            <path>revapi.json</path>
-                            <roots>
-                                <root>base</root>
-                                <root>4.2+</root>
-                                <root>4.3+</root>
-                            </roots>
-                        </configurationFile>
-                    </analysisConfigurationFiles>
-                </configuration>
-            </plugin>
         </plugins>
 	</build>
 
