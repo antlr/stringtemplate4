@@ -50,12 +50,20 @@
 			<version>3.5.2</version>
 			<scope>compile</scope>
 		</dependency>
-        <dependency> <!-- Hard code a jar we can try to load templates from; see TestGroupsFromCLASSPATH.java -->
+        <!--
+         Include prepared jar so we can try to load templates from it; see TestGroupsFromCLASSPATH.java
+
+         Run:
+
+         mvn install:install-file -Dfile=test/test.jar -DgroupId=org.antlr -DartifactId=ST4-testjar -Dversion=1.0.0 -Dpackaging=jar
+
+         to install test jar in order to run tests
+         -->
+        <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>ST4-testjar</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/test/test.jar</systemPath>
+            <version>1.0.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
