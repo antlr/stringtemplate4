@@ -2,10 +2,10 @@
 
 ## Installation
 
-All you need to do is get the StringTemplate jar into your CLASSPATH as well as its dependent ANTLR jar. [Download Java StringTemplate 4.3.2 binary jar](http://www.stringtemplate.org/download.html) and put into your favorite lib directory such as `/usr/local/lib` on UNIX. Add to your CLASSPATH. On UNIX that looks like
+All you need to do is get the StringTemplate jar into your CLASSPATH as well as its dependent ANTLR jar. [Download Java StringTemplate 4.3.3 binary jar](http://www.stringtemplate.org/download.html) and put into your favorite lib directory such as `/usr/local/lib` on UNIX. Add to your CLASSPATH. On UNIX that looks like
  
 ```bash
-$ export CLASSPATH="/usr/local/lib/ST-4.3.2.jar:$CLASSPATH"
+$ export CLASSPATH="/usr/local/lib/ST-4.3.3.jar:$CLASSPATH"
 ```
  
 Java will now see all the libraries necessary to execute ST stuff. Also, check out the [StringTemplate repo](https://github.com/antlr/stringtemplate4).

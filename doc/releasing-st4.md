@@ -9,23 +9,23 @@ Create a pre-release or full release at github.
 Wack any existing tag as mvn will create one and it fails if already there.
 
 ```
-$ git tag -d 4.3.2
-$ git push origin :refs/tags/4.3.2
-$ git push upstream :refs/tags/4.3.2
+$ git tag -d 4.3.3
+$ git push origin :refs/tags/4.3.3
+$ git push upstream :refs/tags/4.3.3
 ```
 
 ## Bump version
  
-Here is a simple script to display any line from the critical files with, say, `4.3.2` in it:
+Here is a simple script to display any line from the critical files with, say, `4.3.3` in it:
 
 ```bash
-find . -type f -exec grep -l '4\.3\.2' {} \;
+find . -type f -exec grep -l '4\.3\.3' {} \;
 ```
 
 For sure change `ST.java`:
 
 ```java
-public final static String VERSION = "4.3.2";
+public final static String VERSION = "4.3.3";
 ```
 
 Commit to repository.
@@ -83,16 +83,16 @@ Do this:
 $ mvn deploy -DskipTests
 ...
 [INFO] --- maven-deploy-plugin:2.7:deploy (default-deploy) @ ST4 ---
-Downloading from sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.2-SNAPSHOT/maven-metadata.xml
+Downloading from sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/3.3.2-SNAPSHOT/maven-metadata.xml
 Downloaded from sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.2-SNAPSHOT/maven-metadata.xml (756 B at 925 B/s)
-Uploading to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.2-SNAPSHOT/ST4-4.3.2-20181110.190125-4.jar
-Uploaded to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.2-SNAPSHOT/ST4-4.3.2-20181110.190125-4.jar (302 kB at 257 kB/s)
-Uploading to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.2-SNAPSHOT/ST4-4.3.2-20181110.190125-4.pom
-Uploaded to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.2-SNAPSHOT/ST4-4.3.2-20181110.190125-4.pom (2.6 kB at 4.3.2 kB/s)
+Uploading to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.3-SNAPSHOT/ST4-4.3.2-20181110.190125-4.jar
+Uploaded to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.3SNAPSHOT/ST4-4.3.2-20181110.190125-4.jar (302 kB at 257 kB/s)
+Uploading to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.3-SNAPSHOT/ST4-4.3.2-20181110.190125-4.pom
+Uploaded to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.3SNAPSHOT/ST4-4.3.2-20181110.190125-4.pom (2.6 kB at 4.3.2 kB/s)
 Downloading from sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/maven-metadata.xml
 Downloaded from sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/maven-metadata.xml (370 B at 1.7 kB/s)
-Uploading to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.2-SNAPSHOT/maven-metadata.xml
-Uploaded to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.2-SNAPSHOT/maven-metadata.xml (756 B at 1.2 kB/s)
+Uploading to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.3-SNAPSHOT/maven-metadata.xml
+Uploaded to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.3-SNAPSHOT/maven-metadata.xml (756 B at 1.2 kB/s)
 Uploading to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/maven-metadata.xml
 Uploaded to sonatype-nexus-snapshots: https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/maven-metadata.xml (370 B at 599 B/s)
 [INFO] ------------------------------------------------------------------------
@@ -129,9 +129,9 @@ It will start out by asking you the version number:
 
 ```
 ...
-What is the release version for "StringTemplate 4"? (org.antlr:ST4) 4.3.2: : 
-What is SCM release tag or label for "StringTemplate 4"? (org.antlr:ST4) ST4-4.3.2: : 4.3.2           
-What is the new development version for "StringTemplate 4"? (org.antlr:ST4) 4.3.3-SNAPSHOT: : 4.3.3-SNAPSHOT
+What is the release version for "StringTemplate 4"? (org.antlr:ST4) 4.3.3: : 
+What is SCM release tag or label for "StringTemplate 4"? (org.antlr:ST4) ST4-4.3.3: : 4.3.3           
+What is the new development version for "StringTemplate 4"? (org.antlr:ST4) 4.3.3-SNAPSHOT: : 4.3.4-SNAPSHOT
 ...
 ```
 
@@ -149,7 +149,7 @@ Now, go here:
 
 and on the left click "Staging Repositories". You click the staging repo and close it, then you refresh, click it and release it. It's done when you see it here:
 
-&nbsp;&nbsp;&nbsp;&nbsp;[https://oss.sonatype.org/service/local/repositories/releases/content/org/antlr/ST4/4.3.2](https://oss.sonatype.org/service/local/repositories/releases/content/org/antlr/ST4/4.3.2)
+&nbsp;&nbsp;&nbsp;&nbsp;[https://oss.sonatype.org/service/local/repositories/releases/content/org/antlr/ST4/4.3.3](https://oss.sonatype.org/service/local/repositories/releases/content/org/antlr/ST4/4.3.3)
 
 All releases should be here: [https://repo1.maven.org/maven2/org/antlr/ST4/](https://repo1.maven.org/maven2/org/antlr/ST4/).
 
@@ -169,9 +169,9 @@ cp -r ~/antlr/code/stringtemplate4/target/apidocs/* ~/antlr/sites/website-st4/ap
 Copy the jars to stringtemplate.org site and update download/index.html
 
 ```bash
-cp ~/.m2/repository/org/antlr/ST4/4.3.2/ST4-4.3.2.jar ~/antlr/sites/website-st4/download/ST-4.3.2.jar
+cp ~/.m2/repository/org/antlr/ST4/4.3.3/ST4-4.3.3.jar ~/antlr/sites/website-st4/download/ST-4.3.3.jar
 cd ~/antlr/sites/website-st4/download
-git add ST-4.3.2.jar
+git add ST-4.3.3.jar
 ```
 
 ## Update site
