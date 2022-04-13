@@ -162,7 +162,8 @@ mvn javadoc:javadoc
 ```
 
 ```bash
-cp -r ~/antlr/code/stringtemplate4/target/apidocs/* ~/antlr/sites/website-st4/api```
+cp -r ~/antlr/code/stringtemplate4/target/apidocs/* ~/antlr/sites/website-st4/api
+```
 
 # Update website
 
