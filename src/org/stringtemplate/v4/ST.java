@@ -57,7 +57,7 @@ import java.util.*;
  *  says.</p>
  */
 public class ST {
-    public final static String VERSION = "4.3.3";
+    public final static String VERSION = "4.3.4";
 
     /** {@code <@r()>}, {@code <@r>...<@end>}, and {@code @t.r() ::= "..."} defined manually by coder */
     public enum RegionType {
