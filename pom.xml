@@ -10,7 +10,7 @@
 	<artifactId>ST4</artifactId>
 	<packaging>jar</packaging>
 
-	<version>4.3.4-SNAPSHOT</version>
+	<version>4.3.4</version>
 
 	<name>StringTemplate 4</name>
 	<description>StringTemplate is a java template engine for generating source code,
