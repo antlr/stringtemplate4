@@ -91,7 +91,7 @@ $ mvn deploy -DskipTests
 
 ## Maven release
 
-The maven deploy lifecycle phased deploys the artifacts and the poms for the ST4 project to the [sonatype remote staging server](https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4).
+The maven deploy lifecycle phased deploys the artifacts and the poms for the ST4 project to the [sonatype remote staging server](https://oss.sonatype.org/content/repositories/snapshots/org/antlr/ST4/4.3.4-SNAPSHOT).
 
 ```bash
 mvn deploy -DskipTests
