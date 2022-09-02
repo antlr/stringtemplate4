@@ -130,5 +130,6 @@
 		<url>https://github.com/antlr/stringtemplate4/tree/master</url>
 		<connection>scm:git:git://github.com/antlr/stringtemplate4.git</connection>
 		<developerConnection>scm:git:git@github.com:antlr/stringtemplate4.git</developerConnection>
+		<tag>HEAD</tag>
 	</scm>
 </project>
