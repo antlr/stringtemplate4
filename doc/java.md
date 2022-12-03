@@ -2,7 +2,7 @@
 
 ## Installation
 
-All you need to do is get the StringTemplate jar into your CLASSPATH as well as its dependent ANTLR jar. [Download Java StringTemplate 4.3.4 binary jar](http://www.stringtemplate.org/download.html) and put into your favorite lib directory such as `/usr/local/lib` on UNIX. Add to your CLASSPATH. On UNIX that looks like
+All you need to do is get the StringTemplate jar into your CLASSPATH as well as its dependent ANTLR jar. [Download Java StringTemplate 4.3.4 binary jar](https://www.stringtemplate.org/download.html) and put into your favorite lib directory such as `/usr/local/lib` on UNIX. Add to your CLASSPATH. On UNIX that looks like
  
 ```bash
 $ export CLASSPATH="/usr/local/lib/ST-4.3.4.jar:$CLASSPATH"
@@ -105,8 +105,8 @@ because it yields a file path to a jar and then inside:
 file:/somedirectory/AJARFILE.jar!/foo/main.stg
 ```
 
-This isn't a valid file system identifier. To use URL stuff, pass in a URL object not a string. See [Converting between URLs and Filesystem Paths](http://maven.apache.org/plugin-developers/common-bugs.html#Converting_between_URLs_and_Filesystem_Paths) for more information.
+This isn't a valid file system identifier. To use URL stuff, pass in a URL object not a string. See [Converting between URLs and Filesystem Paths](https://maven.apache.org/plugin-developers/common-bugs.html#Converting_between_URLs_and_Filesystem_Paths) for more information.
 
 ## API documentation
 
-[Java API](http://www.stringtemplate.org/api/index.html)
+[Java API](https://www.stringtemplate.org/api/index.html)

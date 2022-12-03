@@ -2,12 +2,12 @@ ST (StringTemplate) is a java template engine (with ports for C#, Python, and Ob
 
 The main website is:
 
-> http://www.stringtemplate.org
+> https://www.stringtemplate.org
 
 Its distinguishing characteristic is that it strictly enforces
 model-view separation, unlike other engines. See:
 
-> http://www.cs.usfca.edu/~parrt/papers/mvc.templates.pdf
+> https://www.cs.usfca.edu/~parrt/papers/mvc.templates.pdf
 
 The documentation is in this repo
 
@@ -41,7 +41,7 @@ to the `<dependencies>` element in your **pom.xml** file.
 In `build.gradle`, add the following dependency:
 
 ```groovy
-dependecies {
+dependencies {
     // ...
 
     // https://mvnrepository.com/artifact/org.antlr/ST4

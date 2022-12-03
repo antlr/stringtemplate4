@@ -41,7 +41,7 @@ StringTemplate has the following literals.
 
 For more on list semantics, see [The real story on null vs empty](null-vs-empty.md).
 
-<a name="expresssions"></a>
+<a name="expressions"></a>
 ## Attribute expressions
 
 |Syntax|Description|

@@ -50,7 +50,7 @@ Regions are like *subtemplates* scoped within a template, hence, the fully-quali
 
 Consider another problem where you would like, in a template subgroup, to replace a small portion of a large inherited template. Imagine you have a template that generates conditional statements in the output language, but you would also like to be able to generate a debug version of these statements which track the fact that an expression was evaluated.
 
-(To be clear about this example, ths template's purpose is to produce "if" statements in the output language, here Java. That "if" is unrelated to the issue of using template `<if(...)>` expressions, which we are discussing how to avoid.)
+(To be clear about this example, this template's purpose is to produce "if" statements in the output language, here Java. That "if" is unrelated to the issue of using template `<if(...)>` expressions, which we are discussing how to avoid.)
 
 Again, to avoid mingling debug version code with your main templates, you want to avoid "if dbg" type template expressions. Instead, mark the region within the template that might be replaced by an inheriting subgroup focusing on debugging. Here the code is marked with the pair of markers `<@eval>...<@end>`:
 

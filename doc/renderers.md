@@ -4,7 +4,7 @@ The atomic element of a template is a simple attribute (object) that is rendered
 For example, an integer object is converted to text as a sequence of characters representing the numeric value. 
 What if we want commas to separate the 1000's places like 1,000,000? 
 What if we want commas and sometimes periods depending on the locale? 
-For more, see [The Internationalization and Localization of Web Applications](http://www.cs.usfca.edu/~parrt/papers/i18n.pdf).
+For more, see [The Internationalization and Localization of Web Applications](https://www.cs.usfca.edu/~parrt/papers/i18n.pdf).
 
 StringTemplate lets you register objects that know how to format or otherwise render attributes to text appropriately.
 There is one registered renderer per type per group. 
@@ -51,7 +51,7 @@ Here's the renderer definition:
  *  Float, Double, and BigDecimal.  You pass in a format string suitable
  *  for Formatter object:
  *
- *  http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html
+ *  https://docs.oracle.com/javase/1.5.0/docs/api/java/util/Formatter.html
  *
  *  For example, "%10d" emits a number as a decimal int padding to 10 char.
  *  This can even do long to date conversions using the format string.
