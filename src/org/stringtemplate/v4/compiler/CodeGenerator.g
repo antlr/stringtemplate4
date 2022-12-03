@@ -93,7 +93,7 @@ import org.stringtemplate.v4.*;
 		args.add(new FormalArgument(name));
 	}
 
-	// convience funcs to hide offensive sending of emit messages to
+	// convenience funcs to hide offensive sending of emit messages to
 	// CompilationState temp data object.
 
 	public void emit1(CommonTree opAST, short opcode, int arg) {

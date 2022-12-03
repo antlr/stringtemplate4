@@ -49,7 +49,7 @@ public class TestEarlyEvaluation extends BaseTest {
 
     /**
      * see
-     * http://www.antlr3.org/pipermail/stringtemplate-interest/2011-May/003476.html
+     * https://www.antlr3.org/pipermail/stringtemplate-interest/2011-May/003476.html
      *
      * @throws Exception
      */
@@ -81,7 +81,7 @@ public class TestEarlyEvaluation extends BaseTest {
 
     /**
      * see
-     * http://www.antlr.org/pipermail/stringtemplate-interest/2011-May/003476.html
+     * https://www.antlr.org/pipermail/stringtemplate-interest/2011-May/003476.html
      *
      * @throws Exception
      */
@@ -113,7 +113,7 @@ public class TestEarlyEvaluation extends BaseTest {
 
 
     /**
-     * see http://www.antlr3.org/pipermail/stringtemplate-interest/2011-August/003758.html
+     * see https://www.antlr3.org/pipermail/stringtemplate-interest/2011-August/003758.html
      * @throws Exception
      */
     @Test

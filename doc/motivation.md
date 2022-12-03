@@ -17,7 +17,7 @@ Other benefits of model-view separation:
 
 ## Philosophy
 
-`StringTemplate` was born and evolved during the development of http://www.jGuru.com. The need for such dynamically-generated web pages has led to the development of numerous other template engines in an attempt to make web application development easier, improve flexibility, reduce maintenance costs, and allow parallel code and HTML development. These enticing benefits, which have driven the proliferation of template engines, **derive entirely from a single principle**: separating the specification of a page's business logic and data computations from the specification of how a page displays such information.
+`StringTemplate` was born and evolved during the development of https://www.jGuru.com. The need for such dynamically-generated web pages has led to the development of numerous other template engines in an attempt to make web application development easier, improve flexibility, reduce maintenance costs, and allow parallel code and HTML development. These enticing benefits, which have driven the proliferation of template engines, **derive entirely from a single principle**: separating the specification of a page's business logic and data computations from the specification of how a page displays such information.
 
 These template engines are in a sense a reaction to the completely entangled specifications encouraged by JSP (Java Server Pages), ASP (Active Server Pages) and, even ASP.NET. With separate encapsulated specifications, template engines promote component reuse, pluggable site "looks", single-points-of-change for common components, and high overall system clarity. In the code generation realm, model-view separation guarantees retargetability.
 
@@ -32,7 +32,7 @@ After examining hundreds of template files that I created over years of jGuru.co
 * conditional include of subtemplate (an IF statement); e.g., <if(title)><title><title></title><endif>
 * template application to list of attributes; e.g., <names:bold()> where template references can be recursive.
 
-Language theory supports my premise that even a minimal StringTemplate engine with only these features is very powerful--such an engine can generate the context-free languages; see [Enforcing Strict Model-View Separation in Template Engines](http://www.cs.usfca.edu/~parrt/papers/mvc.templates.pdf). E.g., most programming languages are context-free as are any XML pages whose form can be expressed with a DTD.
+Language theory supports my premise that even a minimal StringTemplate engine with only these features is very powerful--such an engine can generate the context-free languages; see [Enforcing Strict Model-View Separation in Template Engines](https://www.cs.usfca.edu/~parrt/papers/mvc.templates.pdf). E.g., most programming languages are context-free as are any XML pages whose form can be expressed with a DTD.
 
 While providing all sorts of dangerous features like assignment that promote the use of computations and logic in templates, many engines miss the key elements. Certain language semantics are absolutely required for generative programming and language translation. One is recursion. A template engine without recursion seems unlikely to be capable of generating recursive output structures such as nested tables or nested code blocks.
 

@@ -73,7 +73,7 @@ The default and other mappings cannot have empty values. They have empty values 
 
 Dictionaries are defined in the group's scope and are visible if no attribute hides them. For example, if you define a formal argument called typeInitMap in template foo then foo cannot see the map defined in the group (though you could pass it in as another parameter). If a name is not an attribute and it's not in the group's maps table, then any imported groups are consulted. You may not redefine a dictionary and it may not have the same name as a template in that group. The default clause must be at the end of the map.
 
-You'll notice that square brackets denote data structure in other areas too such as `[a,b,c,...]` which makes a singe multi-valued attribute out of other attributes so you can iterate across them.
+You'll notice that square brackets denote data structure in other areas too such as `[a,b,c,...]` which makes a single multi-valued attribute out of other attributes so you can iterate across them.
 
 ## Template definitions
 

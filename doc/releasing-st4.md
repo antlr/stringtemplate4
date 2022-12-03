@@ -139,7 +139,7 @@ and on the left click "Staging Repositories". You click the staging repo and clo
 
 All releases should be here: [https://repo1.maven.org/maven2/org/antlr/ST4/](https://repo1.maven.org/maven2/org/antlr/ST4/).
 
-Seems to take a while to propogate.
+Seems to take a while to propagate.
 
 ## Javadoc
 

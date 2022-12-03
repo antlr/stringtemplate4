@@ -1,6 +1,6 @@
 # Introduction
 
-First, to learn more about StringTemplate's philosophy, you can check out the very readable academic paper [Enforcing Strict Model-View Separation in Template Engines](http://www.cs.usfca.edu/~parrt/papers/mvc.templates.pdf) (*nominated for best paper at WWW2004*).
+First, to learn more about StringTemplate's philosophy, you can check out the very readable academic paper [Enforcing Strict Model-View Separation in Template Engines](https://www.cs.usfca.edu/~parrt/papers/mvc.templates.pdf) (*nominated for best paper at WWW2004*).
 
 Most programs that emit source code or other text output are unstructured blobs of generation logic interspersed with print statements. The primary reason is the lack of suitable tools and formalisms. The proper formalism is that of an output grammar because you are not generating random characters--you are generating sentences in an output language. This is analogous to using a grammar to describe the structure of input sentences. Rather than building a parser by hand, most programmers will use a parser generator. Similarly, we need some form of *unparser generator* to generate text. The most convenient manifestation of the output grammar is a template engine such as StringTemplate.
 
@@ -121,7 +121,7 @@ StringTemplate renders all injected attributes and any reference properties to t
 
 ### Injecting data aggregate attributes
 
-Being able to pass in objects and access their fields is very convenient but often we don't have a handy object to inject. Creating one-off data aggregates is a pain, you have to define a new class just to associate two pieces of data. StringTemplate makes it easy to group data during `add()` calls. You may pass in an aggregrate attribute name to `add()` with the data to aggregate. The syntax of the attribute name describes the properties. For example `a.{p1,p2,p3}` describes an attribute called a that has three properties `p1`, `p2`, `p3`. Here's an example:
+Being able to pass in objects and access their fields is very convenient but often we don't have a handy object to inject. Creating one-off data aggregates is a pain, you have to define a new class just to associate two pieces of data. StringTemplate makes it easy to group data during `add()` calls. You may pass in an aggregate attribute name to `add()` with the data to aggregate. The syntax of the attribute name describes the properties. For example `a.{p1,p2,p3}` describes an attribute called a that has three properties `p1`, `p2`, `p3`. Here's an example:
 
  
 ```java

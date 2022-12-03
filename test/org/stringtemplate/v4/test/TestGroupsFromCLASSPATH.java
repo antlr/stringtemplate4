@@ -36,7 +36,7 @@ public class TestGroupsFromCLASSPATH extends BaseTest {
      * adding: jarbase/dir1/sample.st(in = 24) (out= 26)(deflated -8%)
      * adding: jarbase/testgroupfile.stg(in = 18) (out= 20)(deflated -11%)
      *
-     * I set it up so the jar is in the CLASSPATH and URL of gropu file should be this
+     * I set it up so the jar is in the CLASSPATH and URL of group file should be this
      * at runtime:
      *
      *  jar:file:/Users/parrt/antlr/code/stringtemplate4/test/test.jar!/jarbase/testgroupfile.stg

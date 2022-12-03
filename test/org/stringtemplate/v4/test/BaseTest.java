@@ -70,7 +70,7 @@ public abstract class BaseTest {
     public String tmpdir = null;
 
     /**
-     * When runnning from Maven, the junit tests are run via the surefire plugin. It sets the
+     * When running from Maven, the junit tests are run via the surefire plugin. It sets the
      * classpath for the test environment into the following property. We need to pick this up
      * for the junit tests that are going to generate and try to run code.
      */

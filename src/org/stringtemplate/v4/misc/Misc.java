@@ -178,7 +178,7 @@ public class Misc {
             try {
                 is.close();
             } catch (Throwable e) {
-                // Closing the input stream may throw an exception. See bug below. Most probabaly it was
+                // Closing the input stream may throw an exception. See bug below. Most probably it was
                 // the true reason for this commit: 
                 // https://github.com/antlr/stringtemplate4/commit/21484ed46f1b20b2cdaec49f9d5a626fb26a493c             
                 // https://bugs.openjdk.java.net/browse/JDK-8080094
