@@ -160,35 +160,10 @@ public class CompiledST implements Cloneable {
             FormalArgument fa = formalArguments.get(a);
             if ( fa.defaultValueToken!=null ) {
                 numberOfArgsWithDefaultValues++;
-                switch (fa.defaultValueToken.getType()) {
-                case GroupParser.ANONYMOUS_TEMPLATE:
-                    String argSTname = fa.name + "_default_value";
-                    Compiler c2 = new Compiler(group);
-                    String defArgTemplate =
-                        Misc.strip(fa.defaultValueToken.getText(), 1);
-                    fa.compiledDefaultValue =
-                        c2.compile(group.getFileName(), argSTname, null,
-                                   defArgTemplate, fa.defaultValueToken);
-                    fa.compiledDefaultValue.name = argSTname;
-                    fa.compiledDefaultValue.defineImplicitlyDefinedTemplates(group);
-                    break;
 
-                case GroupParser.STRING:
-                    fa.defaultValue = Misc.strip(fa.defaultValueToken.getText(), 1);
-                    break;
-
-                case GroupParser.LBRACK:
-                    fa.defaultValue = Collections.emptyList();
-                    break;
-
-                case GroupParser.TRUE:
-                case GroupParser.FALSE:
-                    fa.defaultValue = fa.defaultValueToken.getType()==GroupParser.TRUE;
-                    break;
-
-                default:
-                    throw new UnsupportedOperationException("Unexpected default value token type.");
-                }
+                DefaultValueProcessor processor =
+                    DefaultValueProcessorFactory.createDefaultValueProcessor(fa.defaultValueToken.getType());
+                processor.process(fa, group);
             }
         }
     }
@@ -258,7 +233,7 @@ public class CompiledST implements Cloneable {
         System.out.println("Strings:");
         System.out.println(dis.strings());
         System.out.println("Bytecode to template map:");
-        System.out.println(dis.sourceMap());
+        System.out.println(dis.code.sourceMap());
     }
 
     public String disasm() {
@@ -269,8 +244,21 @@ public class CompiledST implements Cloneable {
         pw.println("Strings:");
         pw.println(dis.strings());
         pw.println("Bytecode to template map:");
-        pw.println(dis.sourceMap());
+        pw.println(dis.code.sourceMap());
         pw.close();
         return sw.toString();
+    }
+
+    public String sourceMap() {
+        StringBuilder buf = new StringBuilder();
+        int addr = 0;
+        for (Interval I : sourceMap) {
+            if ( I!=null ) {
+                String chunk = template.substring(I.a,I.b+1);
+                buf.append( String.format("%04d: %s\t\"%s\"\n", addr, I, chunk) );
+            }
+            addr++;
+        }
+        return buf.toString();
     }
 }

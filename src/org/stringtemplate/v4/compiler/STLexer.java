@@ -1,6 +1,6 @@
 /*
  * [The "BSD license"]
- *  Copyright (c) 2011 Terence Parr
+ *  Copyright (current_char) 2011 Terence Parr
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -149,7 +149,7 @@ public class STLexer implements TokenSource {
 
     CharStream input;
     /** current character */
-    char c;
+    char current_char;
 
     /** When we started token, track initial coordinates so we can properly
      *  build token objects.
@@ -177,7 +177,7 @@ public class STLexer implements TokenSource {
     {
         this.errMgr = errMgr;
         this.input = input;
-        c = (char)input.LA(1); // prime lookahead
+        current_char = (char)input.LA(1); // prime lookahead
         this.templateToken = templateToken;
         this.delimiterStartChar = delimiterStartChar;
         this.delimiterStopChar = delimiterStopChar;
@@ -195,28 +195,28 @@ public class STLexer implements TokenSource {
     /** Consume if {@code x} is next character on the input stream.
      */
     public void match(char x) {
-        if ( c != x ) {
+        if ( current_char != x ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            errMgr.lexerError(input.getSourceName(), "expecting '"+x+"', found '"+str(c)+"'", templateToken, e);
+            errMgr.lexerError(input.getSourceName(), "expecting '"+x+"', found '"+str(current_char)+"'", templateToken, e);
         }
         consume();
     }
 
     protected void consume() {
         input.consume();
-        c = (char)input.LA(1);
+        current_char = (char)input.LA(1);
     }
 
     public void emit(Token token) { tokens.add(token); }
 
     public Token _nextToken() {
-        //System.out.println("nextToken: c="+(char)c+"@"+input.index());
+        //System.out.println("nextToken: current_char="+(char)current_char+"@"+input.index());
         while ( true ) { // lets us avoid recursion when skipping stuff
             startCharIndex = input.index();
             startLine = input.getLine();
             startCharPositionInLine = input.getCharPositionInLine();
 
-            if ( c==EOF ) return newToken(EOF_TYPE);
+            if ( current_char==EOF ) return newToken(EOF_TYPE);
             Token t;
             if ( scanningInsideExpr ) t = inside();
             else t = outside();
@@ -225,21 +225,26 @@ public class STLexer implements TokenSource {
     }
 
     protected Token outside() {
-        if ( input.getCharPositionInLine()==0 && (c==' '||c=='\t') ) {
-            while ( c==' ' || c=='\t' ) consume(); // scarf indent
-            if ( c!=EOF ) return newToken(INDENT);
+        //breaking if statements to make it easier to debug
+        
+        int charPositionInLine= input.getCharPositionInLine();
+        boolean cIsSpaceOrTab= current_char==' '||current_char=='\t';
+        
+        if ( charPositionInLine==0 && cIsSpaceOrTab ) {
+            while ( current_char==' ' || current_char=='\t' ) consume(); // scarf indent
+            if ( current_char!=EOF ) return newToken(INDENT);
             return newToken(TEXT);
         }
-        if ( c==delimiterStartChar ) {
+        if ( current_char==delimiterStartChar ) {
             consume();
-            if ( c=='!' ) return COMMENT();
-            if ( c=='\\' ) return ESCAPE(); // <\\> <\uFFFF> <\n> etc...
+            if ( current_char=='!' ) return COMMENT();
+            if ( current_char=='\\' ) return ESCAPE(); // <\\> <\uFFFF> <\n> etc...
             scanningInsideExpr = true;
             return newToken(LDELIM);
         }
-        if ( c=='\r' ) { consume(); consume(); return newToken(NEWLINE); } // \r\n -> \n
-        if ( c=='\n') { consume(); return newToken(NEWLINE); }
-        if ( c=='}' && subtemplateDepth>0 ) {
+        if ( current_char=='\r' ) { consume(); consume(); return newToken(NEWLINE); } // \r\n -> \n
+        if ( current_char=='\n') { consume(); return newToken(NEWLINE); }
+        if ( current_char=='}' && subtemplateDepth>0 ) {
             scanningInsideExpr = true;
             subtemplateDepth--;
             consume();
@@ -250,7 +255,7 @@ public class STLexer implements TokenSource {
 
     protected Token inside() {
         while ( true ) {
-            switch ( c ) {
+            switch ( current_char ) {
                 case ' ': case '\t': case '\n': case '\r':
                     consume();
                     return SKIP;
@@ -274,7 +279,7 @@ public class STLexer implements TokenSource {
                 case '/' : consume(); return newToken(SLASH);
                 case '@' :
                     consume();
-                    if ( c=='e' && input.LA(2)=='n' && input.LA(3)=='d' ) {
+                    if ( current_char=='e' && input.LA(2)=='n' && input.LA(3)=='d' ) {
                         consume(); consume(); consume();
                         return newToken(REGION_END);
                     }
@@ -284,12 +289,12 @@ public class STLexer implements TokenSource {
                 case '|' : consume(); match('|'); return newToken(OR); // ||
                 case '{' : return subTemplate();
                 default:
-                    if ( c==delimiterStopChar ) {
+                    if ( current_char==delimiterStopChar ) {
                         consume();
                         scanningInsideExpr =false;
                         return newToken(RDELIM);
                     }
-                    if ( isIDStartLetter(c) ) {
+                    if ( isIDStartLetter(current_char) ) {
                         Token id = mID();
                         String name = id.getText();
                         if ( name.equals("if") ) return newToken(IF);
@@ -305,8 +310,8 @@ public class STLexer implements TokenSource {
                         new NoViableAltException("",0,0,input);
                     re.line = startLine;
                     re.charPositionInLine = startCharPositionInLine;
-                    errMgr.lexerError(input.getSourceName(), "invalid character '"+str(c)+"'", templateToken, re);
-                    if (c==EOF) {
+                    errMgr.lexerError(input.getSourceName(), "invalid character '"+str(current_char)+"'", templateToken, re);
+                    if (current_char==EOF) {
                         return newToken(EOF_TYPE);
                     }
                     consume();
@@ -327,7 +332,7 @@ public class STLexer implements TokenSource {
         WS();
         argTokens.add( mID() );
         WS();
-        while ( c==',' ) {
+        while ( current_char==',' ) {
             consume();
             argTokens.add( newTokenFromPreviousChar(COMMA) );
             WS();
@@ -335,10 +340,10 @@ public class STLexer implements TokenSource {
             WS();
         }
         WS();
-        if ( c=='|' ) {
+        if ( current_char=='|' ) {
             consume();
             argTokens.add( newTokenFromPreviousChar(PIPE) );
-            if ( isWS(c) ) consume(); // ignore a single whitespace after |
+            if ( isWS(current_char) ) consume(); // ignore a single whitespace after |
             //System.out.println("matched args: "+argTokens);
             for (Token t : argTokens) emit(t);
             input.release(m);
@@ -361,16 +366,16 @@ public class STLexer implements TokenSource {
         startCharIndex = input.index();
         startCharPositionInLine = input.getCharPositionInLine();
         consume(); // kill \\
-        if ( c=='u') return UNICODE();
+        if ( current_char=='u') return UNICODE();
         String text;
-        switch ( c ) {
+        switch ( current_char ) {
             case '\\' : LINEBREAK(); return SKIP;
             case 'n'  : text = "\n"; break;
             case 't'  : text = "\t"; break;
             case ' '  : text = " "; break;
             default :
                 NoViableAltException e = new NoViableAltException("",0,0,input);
-                errMgr.lexerError(input.getSourceName(), "invalid escaped char: '"+str(c)+"'", templateToken, e);
+                errMgr.lexerError(input.getSourceName(), "invalid escaped char: '"+str(current_char)+"'", templateToken, e);
                 consume();
                 match(delimiterStopChar);
                 return SKIP;
@@ -384,29 +389,29 @@ public class STLexer implements TokenSource {
     Token UNICODE() {
         consume();
         char[] chars = new char[4];
-        if ( !isUnicodeLetter(c) ) {
+        if ( !isUnicodeLetter(current_char) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(c)+"'", templateToken, e);
+            errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(current_char)+"'", templateToken, e);
         }
-        chars[0] = c;
+        chars[0] = current_char;
         consume();
-        if ( !isUnicodeLetter(c) ) {
+        if ( !isUnicodeLetter(current_char) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(c)+"'", templateToken, e);
+            errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(current_char)+"'", templateToken, e);
         }
-        chars[1] = c;
+        chars[1] = current_char;
         consume();
-        if ( !isUnicodeLetter(c) ) {
+        if ( !isUnicodeLetter(current_char) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(c)+"'", templateToken, e);
+            errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(current_char)+"'", templateToken, e);
         }
-        chars[2] = c;
+        chars[2] = current_char;
         consume();
-        if ( !isUnicodeLetter(c) ) {
+        if ( !isUnicodeLetter(current_char) ) {
             NoViableAltException e = new NoViableAltException("",0,0,input);
-            errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(c)+"'", templateToken, e);
+            errMgr.lexerError(input.getSourceName(), "invalid unicode char: '"+str(current_char)+"'", templateToken, e);
         }
-        chars[3] = c;
+        chars[3] = current_char;
         // ESCAPE kills >
         char uc = (char)Integer.parseInt(new String(chars), 16);
         Token t = newToken(TEXT, String.valueOf(uc), input.getCharPositionInLine()-6);
@@ -418,10 +423,10 @@ public class STLexer implements TokenSource {
     Token mTEXT() {
         boolean modifiedText = false;
         StringBuilder buf = new StringBuilder();
-        while ( c != EOF && c != delimiterStartChar ) {
-            if ( c=='\r' || c=='\n') break;
-            if ( c=='}' && subtemplateDepth>0 ) break;
-            if ( c=='\\' ) {
+        while ( current_char != EOF && current_char != delimiterStartChar ) {
+            if ( current_char=='\r' || current_char=='\n') break;
+            if ( current_char=='}' && subtemplateDepth>0 ) break;
+            if ( current_char=='\\' ) {
                 if ( input.LA(2)=='\\' ) { // convert \\ to \
                     consume(); consume(); buf.append('\\');
                     modifiedText = true;
@@ -432,15 +437,15 @@ public class STLexer implements TokenSource {
                 {
                     modifiedText = true;
                     consume(); // toss out \ char
-                    buf.append(c); consume();
+                    buf.append(current_char); consume();
                 }
                 else {
-                    buf.append(c);
+                    buf.append(current_char);
                     consume();
                 }
                 continue;
             }
-            buf.append(c);
+            buf.append(current_char);
             consume();
         }
         if ( modifiedText ) return newToken(TEXT, buf.toString());
@@ -459,7 +464,7 @@ public class STLexer implements TokenSource {
         startLine = input.getLine();
         startCharPositionInLine = input.getCharPositionInLine();
         consume();
-        while ( isIDLetter(c) ) {
+        while ( isIDLetter(current_char) ) {
             consume();
         }
         return newToken(ID);
@@ -479,23 +484,23 @@ public class STLexer implements TokenSource {
         //{setText(getText().substring(1, getText().length()-1));}
         boolean sawEscape = false;
         StringBuilder buf = new StringBuilder();
-        buf.append(c); consume();
-        while ( c != '"' ) {
-            if ( c=='\\' ) {
+        buf.append(current_char); consume();
+        while ( current_char != '"' ) {
+            if ( current_char=='\\' ) {
                 sawEscape = true;
                 consume();
-                switch ( c ) {
+                switch ( current_char ) {
                     case 'n' : buf.append('\n'); break;
                     case 'r' : buf.append('\r'); break;
                     case 't' : buf.append('\t'); break;
-                    default : buf.append(c); break;
+                    default : buf.append(current_char); break;
                 }
                 consume();
                 continue;
             }
-            buf.append(c);
+            buf.append(current_char);
             consume();
-            if ( c==EOF ) {
+            if ( current_char==EOF ) {
                 RecognitionException re =
                     new MismatchedTokenException((int)'"', input);
                 re.line = input.getLine();
@@ -504,20 +509,20 @@ public class STLexer implements TokenSource {
                 break;
             }
         }
-        buf.append(c);
+        buf.append(current_char);
         consume();
         if ( sawEscape ) return newToken(STRING, buf.toString());
         else return newToken(STRING);
     }
 
     void WS() {
-        while ( c==' ' || c=='\t' || c=='\n' || c=='\r' ) consume();
+        while ( current_char==' ' || current_char=='\t' || current_char=='\n' || current_char=='\r' ) consume();
     }
 
     Token COMMENT() {
         match('!');
-        while ( !(c=='!' && input.LA(2)==delimiterStopChar) ) {
-            if (c==EOF) {
+        while ( !(current_char=='!' && input.LA(2)==delimiterStopChar) ) {
+            if (current_char==EOF) {
                 RecognitionException re =
                     new MismatchedTokenException((int)'!', input);
                 re.line = input.getLine();
@@ -536,8 +541,8 @@ public class STLexer implements TokenSource {
     void LINEBREAK() {
         match('\\'); // only kill 2nd \ as ESCAPE() kills first one
         match(delimiterStopChar);
-        while ( c==' ' || c=='\t' ) consume(); // scarf WS after <\\>
-        if ( c==EOF ) {
+        while ( current_char==' ' || current_char=='\t' ) consume(); // scarf WS after <\\>
+        if ( current_char==EOF ) {
             RecognitionException re = new RecognitionException(input);
             re.line = input.getLine();
             re.charPositionInLine = input.getCharPositionInLine();
@@ -545,15 +550,15 @@ public class STLexer implements TokenSource {
                               templateToken, re);
             return;
         }
-        if ( c=='\r' ) consume();
+        if ( current_char=='\r' ) consume();
         match('\n');
-        while ( c==' ' || c=='\t' ) consume(); // scarf any indent
+        while ( current_char==' ' || current_char=='\t' ) consume(); // scarf any indent
     }
 
-    public static boolean isIDStartLetter(char c) { return isIDLetter(c); }
-    public static boolean isIDLetter(char c) { return c>='a'&&c<='z' || c>='A'&&c<='Z' || c>='0'&&c<='9' || c=='-' || c=='_'; }
-    public static boolean isWS(char c) { return c==' ' || c=='\t' || c=='\n' || c=='\r'; }
-    public static boolean isUnicodeLetter(char c) { return c>='a'&&c<='f' || c>='A'&&c<='F' || c>='0'&&c<='9'; }
+    public static boolean isIDStartLetter(char current_char) { return isIDLetter(current_char); }
+    public static boolean isIDLetter(char current_char) { return current_char>='a'&&current_char<='z' || current_char>='A'&&current_char<='Z' || current_char>='0'&&current_char<='9' || current_char=='-' || current_char=='_'; }
+    public static boolean isWS(char current_char) { return current_char==' ' || current_char=='\t' || current_char=='\n' || current_char=='\r'; }
+    public static boolean isUnicodeLetter(char current_char) { return current_char>='a'&&current_char<='f' || current_char>='A'&&current_char<='F' || current_char>='0'&&current_char<='9'; }
 
     public Token newToken(int ttype) {
         STToken t = new STToken(input, ttype, startCharIndex, input.index()-1);
@@ -596,8 +601,8 @@ public class STLexer implements TokenSource {
         return "no idea";
     }
 
-    public static String str(int c) {
-        if ( c==EOF ) return "<EOF>";
-        return String.valueOf((char)c);
+    public static String str(int current_char) {
+        if ( current_char==EOF ) return "<EOF>";
+        return String.valueOf((char)current_char);
     }
 }
