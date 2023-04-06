@@ -55,7 +55,11 @@ public class StringRenderer implements AttributeRenderer<Object> {
         if ( formatString.equals("upper") ) return value.toUpperCase(locale);
         if ( formatString.equals("lower") ) return value.toLowerCase(locale);
         if ( formatString.equals("cap") ) {
-            return (value.length() > 0) ? Character.toUpperCase(value.charAt(0))+value.substring(1) : value;
+            if(value.length()>0) { 
+                String firstCharUpper=Character.toUpperCase(value.charAt(0))+value.substring(1);
+            return firstCharUpper;
+            }
+            else{ return value;}
         }
         if ( formatString.equals("url-encode") ) {
             try {

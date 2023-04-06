@@ -67,7 +67,7 @@ public abstract class BaseTest {
     public static final boolean interactive = Boolean.parseBoolean(System.getProperty("test.interactive"));
     public static final String newline = Misc.newline;
 
-    public String tmpdir = null;
+    public static String tmpdir = null;
 
     /**
      * When running from Maven, the junit tests are run via the surefire plugin. It sets the
@@ -372,7 +372,7 @@ public abstract class BaseTest {
         }
     }
 
-    public String getRandomDir() {
+    public static String getRandomDir() {
         File randomDir = new File(tmpdir, "dir" + String.valueOf((int)(Math.random() * 100000)));
         randomDir.mkdirs();
         return randomDir.getAbsolutePath();
