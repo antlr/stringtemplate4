@@ -27,11 +27,10 @@
 */
 package org.stringtemplate.v4.test;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.compiler.Compiler;
@@ -55,11 +54,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public abstract class BaseTest {
@@ -117,7 +117,7 @@ public abstract class BaseTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         STGroup.defaultGroup = new STGroup();
         Compiler.subtemplateCount = new AtomicInteger(0);

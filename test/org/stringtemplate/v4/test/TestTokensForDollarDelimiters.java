@@ -27,7 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestTokensForDollarDelimiters extends BaseTest {
     @Test public void testSimpleAttr() throws Exception {

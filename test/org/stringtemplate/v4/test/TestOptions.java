@@ -27,13 +27,13 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestOptions extends BaseTest {
     @Test public void testSeparator() throws Exception {

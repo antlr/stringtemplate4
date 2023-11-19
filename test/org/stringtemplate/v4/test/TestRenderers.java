@@ -27,9 +27,9 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.DateRenderer;
 import org.stringtemplate.v4.NumberRenderer;
 import org.stringtemplate.v4.ST;
@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestRenderers extends BaseTest {
 
@@ -53,7 +53,7 @@ public class TestRenderers extends BaseTest {
     // Make sure to use the US Locale during the tests
     private Locale origLocale;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() {
         super.setUp();
@@ -61,7 +61,7 @@ public class TestRenderers extends BaseTest {
         Locale.setDefault(Locale.US);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         Locale.setDefault(origLocale);
     }

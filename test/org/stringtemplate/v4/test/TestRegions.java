@@ -27,11 +27,12 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestRegions extends BaseTest {
     @Test public void testEmbeddedRegion() throws Exception {
@@ -431,7 +432,7 @@ public class TestRegions extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Ignore("will revisit the behavior of indented expressions spanning multiple lines for a future release")
+    @Disabled("will revisit the behavior of indented expressions spanning multiple lines for a future release")
     @Test public void testEmbeddedSubtemplate() throws Exception {
         String dir = getRandomDir();
         String groupFile =

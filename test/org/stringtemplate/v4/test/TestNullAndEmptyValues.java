@@ -27,7 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -41,8 +41,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestNullAndEmptyValues extends BaseTest {
     public static class T {
@@ -217,22 +217,19 @@ public class TestNullAndEmptyValues extends BaseTest {
     @Test public void testSingleValued() throws Exception {
         List<T> failed = testMatrix(singleValuedTests);
         List<T> expecting = Collections.emptyList();
-        assertArrayEquals("failed tests "+failed,
-                          expecting.toArray(), failed.toArray());
+        assertArrayEquals(expecting.toArray(), failed.toArray(), "failed tests "+failed);
     }
 
     @Test public void testMultiValued() throws Exception {
         List<T> failed = testMatrix(multiValuedTests);
         List<T> expecting = Collections.emptyList();
-        assertArrayEquals("failed tests "+failed,
-                          expecting.toArray(), failed.toArray());
+        assertArrayEquals(expecting.toArray(), failed.toArray(), "failed tests "+failed);
     }
 
     @Test public void testLists() throws Exception {
         List<T> failed = testMatrix(listTests);
         List<T> expecting = Collections.emptyList();
-        assertArrayEquals("failed tests "+failed,
-                          expecting.toArray(), failed.toArray());
+        assertArrayEquals(expecting.toArray(), failed.toArray(), "failed tests "+failed);
     }
 
     public List<T> testMatrix(T[] tests) throws Exception {
