@@ -54,7 +54,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.compiler.*;
 import org.stringtemplate.v4.compiler.Compiler;
@@ -62,7 +62,7 @@ import org.stringtemplate.v4.misc.*;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestCompiler extends BaseTest {
 

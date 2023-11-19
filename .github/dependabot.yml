@@ -1,0 +1,6 @@
+version: 2
+updates:
+- package-ecosystem: maven  # Update pom.xml dependencies and plugins weekly 
+  directory: "/"
+  schedule:
+    interval: weekly

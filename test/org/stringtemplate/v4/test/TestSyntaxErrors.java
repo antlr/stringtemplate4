@@ -27,14 +27,14 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.compiler.STException;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestSyntaxErrors extends BaseTest {
     @Test public void testEmptyExpr() throws Exception {

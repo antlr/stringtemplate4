@@ -27,8 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
@@ -39,8 +38,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestGroups extends BaseTest {
     @Test public void testSimpleGroup() throws Exception {
@@ -712,14 +712,14 @@ public class TestGroups extends BaseTest {
         writeFile(tmpdir, "g2.stg", "f() ::= \"g2\"\nf2() ::= \"f2\"\n");
         STGroup group = new org.stringtemplate.v4.STGroupFile(tmpdir + "/t.stg");
         ST st = group.getInstanceOf("main");
-        Assert.assertEquals("v1-g1", st.render());
+        assertEquals("v1-g1", st.render());
 
         // Change the text of group t, including the imports.
         writeFile(tmpdir, "t.stg",
                 "import \"g2.stg\"\n\nmain() ::= <<\nv2-<f()>;<f2()>\n>>");
         group.unload();
         st = group.getInstanceOf("main");
-        Assert.assertEquals("v2-g2;f2", st.render());
+        assertEquals("v2-g2;f2", st.render());
     }
 
     @Test public void testLineBreakInGroup() throws Exception {
@@ -731,9 +731,9 @@ public class TestGroups extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
         ST st = group.getInstanceOf("t");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         String expecting ="Foo bar";
-        Assert.assertEquals(expecting, st.render());
+        assertEquals(expecting, st.render());
     }
 
     @Test public void testLineBreakInGroup2() throws Exception {
@@ -745,9 +745,9 @@ public class TestGroups extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
         ST st = group.getInstanceOf("t");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         String expecting ="Foo bar";
-        Assert.assertEquals(expecting, st.render());
+        assertEquals(expecting, st.render());
     }
 
     @Test public void testLineBreakMissingTrailingNewline() throws Exception {

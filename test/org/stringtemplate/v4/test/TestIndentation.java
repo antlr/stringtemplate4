@@ -27,12 +27,12 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestIndentation extends BaseTest {
     @Test public void testIndentInFrontOfTwoExpr()

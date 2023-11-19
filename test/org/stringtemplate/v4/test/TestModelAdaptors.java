@@ -1,12 +1,12 @@
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
+import org.junit.jupiter.api.Test;
 
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 import org.stringtemplate.v4.misc.STRuntimeMessage;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.TreeMap;
 

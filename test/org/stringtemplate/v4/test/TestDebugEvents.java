@@ -27,13 +27,13 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.debug.InterpEvent;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestDebugEvents extends BaseTest {
     @Test public void testString() throws Exception {

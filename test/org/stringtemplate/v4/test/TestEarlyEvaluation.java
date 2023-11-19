@@ -1,7 +1,6 @@
 package org.stringtemplate.v4.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -9,6 +8,8 @@ import org.stringtemplate.v4.gui.STViz;
 
 import java.awt.*;
 import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestEarlyEvaluation extends BaseTest {
     /**
@@ -64,7 +65,7 @@ public class TestEarlyEvaluation extends BaseTest {
         ST st = group.getInstanceOf("main");
 
         String s = st.render();
-        Assert.assertEquals("-ax-*-ay-", s);
+        assertEquals("-ax-*-ay-", s);
 
         // Calling inspect led to an java.lang.ArrayIndexOutOfBoundsException in
         // 4.0.2
@@ -96,7 +97,7 @@ public class TestEarlyEvaluation extends BaseTest {
         ST st = group.getInstanceOf("main");
 
         String s = st.render();
-        Assert.assertEquals("-ax-*", s);
+        assertEquals("-ax-*", s);
 
         // When <f(...)> is invoked only once inspect throws no Exception in
         // 4.0.2
@@ -131,7 +132,7 @@ public class TestEarlyEvaluation extends BaseTest {
         ST st = group.getInstanceOf("main");
 
         String s = st.render();
-        Assert.assertEquals("Hello", s);
+        assertEquals("Hello", s);
 
         // Inspecting this template threw an ArrayIndexOutOfBoundsException
         // in 4.0.2.
@@ -160,11 +161,11 @@ public class TestEarlyEvaluation extends BaseTest {
         ST st = group.getInstanceOf("main");
 
         String s = st.render();
-        Assert.assertEquals(" bar ", s);
+        assertEquals(" bar ", s);
 
         st.add("x", "true");
         s = st.render();
-        Assert.assertEquals(" foo ", s);
+        assertEquals(" foo ", s);
     }
 
     @Test
@@ -177,7 +178,7 @@ public class TestEarlyEvaluation extends BaseTest {
         ST st = group.getInstanceOf("main");
 
         String s = st.render();
-        Assert.assertEquals(" foo ", s);
+        assertEquals(" foo ", s);
     }
 
     @Test
@@ -196,11 +197,11 @@ public class TestEarlyEvaluation extends BaseTest {
 
         st.add("x", null);
         String s = st.render();
-        Assert.assertEquals(" pt: other, if ", s);
+        assertEquals(" pt: other, if ", s);
 
         st.add("x", "arr");
         s = st.render();
-        Assert.assertEquals(" parrt: value, if ", s);
+        assertEquals(" parrt: value, if ", s);
     }
 
     @Test
@@ -216,11 +217,11 @@ public class TestEarlyEvaluation extends BaseTest {
 
         st.add("x", null);
         String s = st.render();
-        Assert.assertEquals(" pt: , else ", s); // m[null] has no default value so else clause
+        assertEquals(" pt: , else ", s); // m[null] has no default value so else clause
 
         st.add("x", "arr");
         s = st.render();
-        Assert.assertEquals(" parrt: value, if ", s);
+        assertEquals(" parrt: value, if ", s);
     }
 
 }

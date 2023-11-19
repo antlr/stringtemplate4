@@ -1,11 +1,12 @@
 package org.stringtemplate.v4.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestBuggyDefaultValueRaisesNPETest extends BaseTest {
     /**
@@ -28,7 +29,7 @@ public class TestBuggyDefaultValueRaisesNPETest extends BaseTest {
         String s = st.render();
 
         // Check the errors. This contained an "NullPointerException" before
-        Assert.assertEquals(
+        assertEquals(
                 "t.stg 1:12: mismatched input ')' expecting RDELIM"+newline,
                 errors.toString());
     }

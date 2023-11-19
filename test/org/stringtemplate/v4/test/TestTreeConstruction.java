@@ -2,13 +2,13 @@ package org.stringtemplate.v4.test;
 
 import org.antlr.runtime.RuleReturnScope;
 import org.antlr.runtime.tree.Tree;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import org.junit.*;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestTreeConstruction extends gUnitBase {
-    @Before public void setup() {
+    @BeforeEach public void setup() {
         lexerClassName = "org.stringtemplate.v4.compiler.STLexer";
         parserClassName = "org.stringtemplate.v4.compiler.STParser";
     }
@@ -17,7 +17,7 @@ public class TestTreeConstruction extends gUnitBase {
         RuleReturnScope rstruct = (RuleReturnScope)execParser("template", "<[]>", 16);
         Object actual = ((Tree)rstruct.getTree()).toStringTree();
         Object expecting = "(EXPR [)";
-        assertEquals("testing rule template", expecting, actual);
+        assertEquals(expecting, actual, "testing rule template");
     }
 
     @Test public void test_template2() throws Exception {
@@ -25,6 +25,6 @@ public class TestTreeConstruction extends gUnitBase {
         RuleReturnScope rstruct = (RuleReturnScope)execParser("template", "<[a,b]>", 17);
         Object actual = ((Tree)rstruct.getTree()).toStringTree();
         Object expecting = "(EXPR ([ a b))";
-        assertEquals("testing rule template", expecting, actual);
+        assertEquals(expecting, actual, "testing rule template");
     }
 }

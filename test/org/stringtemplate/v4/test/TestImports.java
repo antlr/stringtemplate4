@@ -27,7 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroup;
@@ -39,8 +39,8 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestImports extends BaseTest {
     @Test public void testImportDir() throws Exception {

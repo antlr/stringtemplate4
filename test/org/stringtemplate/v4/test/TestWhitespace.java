@@ -27,7 +27,8 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.*;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -35,7 +36,7 @@ import org.stringtemplate.v4.STGroupString;
 
 import java.io.StringWriter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestWhitespace extends BaseTest {
     @Test public void testTrimmedSubtemplates() throws Exception {
@@ -143,7 +144,7 @@ public class TestWhitespace extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Ignore("will revisit the behavior of indented expressions spanning multiple lines for a future release")
+    @Disabled("will revisit the behavior of indented expressions spanning multiple lines for a future release")
     @Test public void testTabBeforeEndInSubtemplates() throws Exception {
         STGroup group = new STGroup();
         group.defineTemplate("test", "names", "  <names:{n |\n" +

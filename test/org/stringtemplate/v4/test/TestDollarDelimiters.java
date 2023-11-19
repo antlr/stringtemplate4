@@ -28,14 +28,14 @@
 
 package org.stringtemplate.v4.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.STGroupString;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TestDollarDelimiters extends BaseTest {
     @Test public void testAttr() throws Exception {
@@ -158,14 +158,14 @@ public class TestDollarDelimiters extends BaseTest {
 
         // test html template directly
         ST st = group.getInstanceOf("html");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         String expected = "<table style=\"stuff\">";
         String result = st.render();
         assertEquals(expected, result);
 
         // test from entry template
         st = group.getInstanceOf("entry");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         expected = "<table style=\"stuff\">";
         result = st.render();
         assertEquals(expected, result);
@@ -196,14 +196,14 @@ public class TestDollarDelimiters extends BaseTest {
 
         // test html template directly
         ST st = group.getInstanceOf("html");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         String expected = "<table style=\"stuff\">";
         String result = st.render();
         assertEquals(expected, result);
 
         // test from entry template
         st = group.getInstanceOf("entry");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         expected = "<table style=\"stuff\">";
         result = st.render();
         assertEquals(expected, result);
@@ -235,14 +235,14 @@ public class TestDollarDelimiters extends BaseTest {
 
         // test html template directly
         ST st = group.getInstanceOf("html");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         String expected = "<table style=\"stuff\">";
         String result = st.render();
         assertEquals(expected, result);
 
         // test from entry template
         st = group.getInstanceOf("entry");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         expected = "<table style=\"stuff\">";
         result = st.render();
         assertEquals(expected, result);
@@ -275,14 +275,14 @@ public class TestDollarDelimiters extends BaseTest {
 
         // test html template directly
         ST st = group.getInstanceOf("html");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         String expected = "<table style=\"stuff\">";
         String result = st.render();
         assertEquals(expected, result);
 
         // test from entry template
         st = group.getInstanceOf("entry");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         expected = "<table style=\"stuff\">";
         result = st.render();
         assertEquals(expected, result);

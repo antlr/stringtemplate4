@@ -27,11 +27,11 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.*;
 import org.stringtemplate.v4.misc.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestInterptimeErrors extends BaseTest {
     public static class UserHiddenName {

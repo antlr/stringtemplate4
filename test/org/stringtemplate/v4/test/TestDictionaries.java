@@ -27,8 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -39,7 +38,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TestDictionaries extends BaseTest {
     @Test public void testDict() throws Exception {
@@ -375,12 +375,12 @@ public class TestDictionaries extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
         ST st = group.getInstanceOf("top");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         String expecting =
             "  electric <field>" + newline +
             "  <field> force" + newline +
             "  in <field> between";
-        Assert.assertEquals(expecting, st.render());
+        assertEquals(expecting, st.render());
     }
 
     @Test public void testTemplatesInDictionary() throws Exception {
@@ -404,12 +404,12 @@ public class TestDictionaries extends BaseTest {
         writeFile(tmpdir, "t.stg", templates);
         STGroup group = new STGroupFile(tmpdir + File.separatorChar + "t.stg");
         ST st = group.getInstanceOf("top");
-        Assert.assertNotNull(st);
+        assertNotNull(st);
         String expecting =
             "  electric foo" + newline +
             "  foo force" + newline +
             "  in foo between";
-        Assert.assertEquals(expecting, st.render());
+        assertEquals(expecting, st.render());
     }
 
     @Test

@@ -1,10 +1,10 @@
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.misc.TypeRegistry;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class TestTypeRegistry {
     // https://github.com/antlr/stringtemplate4/issues/122

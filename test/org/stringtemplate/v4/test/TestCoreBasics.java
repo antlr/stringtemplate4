@@ -27,7 +27,7 @@
 */
 package org.stringtemplate.v4.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.stringtemplate.v4.AutoIndentWriter;
 import org.stringtemplate.v4.NoIndentWriter;
 import org.stringtemplate.v4.ST;
@@ -45,7 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestCoreBasics extends BaseTest {
     @Test public void testNullAttr() throws Exception {
