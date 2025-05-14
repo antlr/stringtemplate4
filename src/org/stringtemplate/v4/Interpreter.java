@@ -937,8 +937,10 @@ public class Interpreter {
             // get a value for each attribute in list; put into ST instance
             int numEmpty = 0;
             ST embedded = group.createStringTemplateInternally(prototype);
-            embedded.rawSetAttribute("i0", i);
-            embedded.rawSetAttribute("i", i+1);
+            if ( embedded.impl.isAnonSubtemplate ) {
+                embedded.rawSetAttribute("i0", i);
+                embedded.rawSetAttribute("i", i+1);
+            }
             for (int a = 0; a < numExprs; a++) {
                 Iterator<?> it = (Iterator<?>) exprs.get(a);
                 if ( it!=null && it.hasNext() ) {
