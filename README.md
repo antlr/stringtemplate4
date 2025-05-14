@@ -73,3 +73,10 @@ If you would like to make changes to ST and build it yourself,
 just run `mvn install` from the root directory of the repo.
 
 You can also run `ant` from the root dir.
+
+## Dev Tools
+
+[IntelliJ plugin](https://plugins.jetbrains.com/plugin/8041-stringtemplate-v4)
+
+[Neovim plugin](https://github.com/Tralalero-Tralalal/nvim-stg)
+
